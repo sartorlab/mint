@@ -28,6 +28,7 @@ COMPARISON=${24}
 # Directories
 DATADIR=~/latte/mint/data/${PROJECT}
 ANALYSISDIR=~/latte/mint/analysis/${PROJECT}
+SCRIPTDIR=~/latte/mint/scripts
 HUBDIR=~/latte/mint/analysis/${PROJECT}/summary/ucsc_trackhub/hg19
 
 # Files
@@ -44,7 +45,7 @@ mSigBigwig=${HUBDIR}/${COMPARISON}.bw
 # Test for differentially methylated sites/regions with methylSig
 
     # CpG site resolution
-    Rscript ~/latte/Methylation/Methylation_Code/process_bisulfite_comparison_run_methylSig.R --project=$PROJECT --covfiles=$COV --cytfiles=$CYT --sampleids=$SAMPLES --assembly=hg19 --pipeline=bismark --context=CpG --resolution=base --treatment=$TREATMENT --destranded=$DESTRAND --maxcount=$MAX --mincount=$MIN --filterSNPs=$FILTER --ncores=$CORES --quiet=FALSE --tile=$TILE --dispersion=both --minpergroup=2,2 --comparison=$COMPARISON
+    Rscript ${SCRIPTDIR}/process_bisulfite_comparison_run_methylSig.R --project=$PROJECT --covfiles=$COV --cytfiles=$CYT --sampleids=$SAMPLES --assembly=hg19 --pipeline=bismark --context=CpG --resolution=base --treatment=$TREATMENT --destranded=$DESTRAND --maxcount=$MAX --mincount=$MIN --filterSNPs=$FILTER --ncores=$CORES --quiet=FALSE --tile=$TILE --dispersion=both --minpergroup=2,2 --comparison=$COMPARISON
 
 # Visualize methylSig differential methylation rates in UCSC Genome Browser
 
