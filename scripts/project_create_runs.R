@@ -96,8 +96,8 @@ boolComp = comparison != ''
       if(boolComp) {
         message('Creating bisulfite comparison scripts.')
 
-        covfiles = paste(paste(bisulfite$fullHumanID, '_trim', '.fastq.gz_bismark.bismark.cov', sep=''), collapse=',')
-        cytfiles = paste(paste(bisulfite$fullHumanID, '_trim', '.fastq.gz_bismark.CpG_report.txt', sep=''), collapse=',')
+        covfiles = paste(paste(datadir, '/bismark_extractor_calls/', bisulfite$fullHumanID, '_trim', '.fastq.gz_bismark.bismark.cov', sep=''), collapse=',')
+        cytfiles = paste(paste(datadir, '/bismark_extractor_calls/',bisulfite$fullHumanID, '_trim', '.fastq.gz_bismark.CpG_report.txt', sep=''), collapse=',')
         samples = paste(bisulfite$fullHumanID, collapse=',')
         treatment = paste(bisulfite$group, collapse=',')
         destrand = T
@@ -192,10 +192,10 @@ boolComp = comparison != ''
         chip1 = subset(subpull, input == 0 & group == 1)
         chip2 = subset(subpull, input == 0 & group == 0)
 
-        input1files = paste(paste(input1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
-        input2files = paste(paste(input2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
-        chip1files = paste(paste(chip1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
-        chip2files = paste(paste(chip2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        input1files = paste(paste(datadir, '/bowtie2_bams/', input1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        input2files = paste(paste(datadir, '/bowtie2_bams/', input2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        chip1files = paste(paste(datadir, '/bowtie2_bams/', chip1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        chip2files = paste(paste(datadir, '/bowtie2_bams/', chip2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
         pulldownComparison = sprintf('%s_%s', comparison, compContext)
 
         pullCompScript = sprintf('%s/%s_%s_pulldown_comparison.sh', projectscriptdir, project, compContext)

@@ -29,7 +29,10 @@ peprUcscSortedTmp=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_ucsc_sorted_tmp.bed
 peprBigbed=${HUBDIR}/${COMPARISON}_PePr_peaks_ucsc.bb
 
 # PePr to call differential Methylation
-python2.7 /home/rcavalca/.local/lib/python2.7/site-packages/PePr-1.0.8-py2.7.egg/PePr/PePr.py -input1=$INPUT1 --input2=$INPUT2 --chip1=$CHIP1 --chip2=$CHIP2 --name=$COMPARISON --file-format=bam --peaktype=sharp --diff --threshold 1e-03 --remove_artefacts --narrow_peak_width
+# Since PePr doesn't allow you to specify output directory, go to where you want
+# the files output and call PePr from there.
+cd ${ANALYSISDIR}/pepr_peaks/
+python2.7 /home/rcavalca/.local/lib/python2.7/site-packages/PePr-1.0.8-py2.7.egg/PePr/PePr.py --input1=$INPUT1 --input2=$INPUT2 --chip1=$CHIP1 --chip2=$CHIP2 --name=$COMPARISON --file-format=bam --peaktype=sharp --diff --threshold 1e-03 --remove_artefacts
 
 # NOTE: Should include set differencing of PePr up/down peaks here
 

@@ -17,8 +17,8 @@ HUBDIR=~/latte/mint/analysis/${PROJECT}/summary/ucsc_trackhub/hg19
 rawFastq=${DATADIR}/raw_fastqs/${sampleID}.fastq.gz
 trimFastq=${ANALYSISDIR}/trim_fastqs/${humanID}_trim.fastq.gz
 bismarkBam=${ANALYSISDIR}/bismark_bams/${humanID}_trim.fastq.gz_bismark.bam
-bismarkBedgraph=${ANALYSISDIR}/bismark_extractor_calls/${humanID}_trim.fastq.gz_bismark.bedGraph
-bismarkSortedBedgraph=${ANALYSISDIR}/bismark_extractor_calls/${humanID}_trim.fastq.gz_bismark_sorted.bedGraph
+bismarkBedgraph=${humanID}_trim.fastq.gz_bismark.bedGraph
+bismarkSortedBedgraph=${humanID}_trim.fastq.gz_bismark_sorted.bedGraph
 bismarkBigwig=${HUBDIR}/${humanID}_trim.fastq.gz_bismark.bw
 
 # FastQC raw data
@@ -35,8 +35,11 @@ fastqc --format fastq --noextract --outdir ${ANALYSISDIR}/trim_fastqcs $trimFast
 # Bismark on trimmed reads
 bismark --bam --seedlen 50 --output_dir ${ANALYSISDIR}/bismark_bams ~/latte/Homo_sapiens/ $trimFastq
 
-# Methylation Extractor on trimmed reads
-bismark_methylation_extractor --output ${ANALYSISDIR}/bismark_extractor_calls --single-end --bedGraph --cutoff 5 --cytosine_report --genome_folder ~/latte/Homo_sapiens/ $bismarkBam
+# Methylation Extractor bismark BAM output
+# The --bedGraph module of the methylation extractor does not support path information
+# in the reference to the extractor files, so we need to be in the bismark_extractor_calls folder
+cd ${ANALYSISDIR}/bismark_extractor_calls
+bismark_methylation_extractor --single-end --gzip --bedGraph --zero_based --cutoff 5 --cytosine_report --genome_folder ~/latte/Homo_sapiens/ $bismarkBam
 
 # Visualize methylation rates in UCSC Genome Browser (sample-wise)
 
