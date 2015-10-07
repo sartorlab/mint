@@ -19,6 +19,8 @@ trimFastq=${ANALYSISDIR}/trim_fastqs/${humanID}_trim.fastq.gz
 bismarkBam=${ANALYSISDIR}/bismark_bams/${humanID}_trim.fastq.gz_bismark.bam
 bismarkBedgraph=${humanID}_trim.fastq.gz_bismark.bedGraph
 bismarkSortedBedgraph=${humanID}_trim.fastq.gz_bismark_sorted.bedGraph
+bismarkCytReport=${humanID}_trim.fastq.gz_bismark.CpG_report.txt
+methylSigCytReport=${humanID}_trim.fastq.gz_bismark.CpG_report_for_methylSig.txt
 bismarkBigwig=${HUBDIR}/${humanID}_trim.fastq.gz_bismark.bw
 
 # FastQC raw data
@@ -40,6 +42,9 @@ bismark --bam --seedlen 50 --output_dir ${ANALYSISDIR}/bismark_bams ~/latte/Homo
 # in the reference to the extractor files, so we need to be in the bismark_extractor_calls folder
 cd ${ANALYSISDIR}/bismark_extractor_calls
 bismark_methylation_extractor --single-end --gzip --bedGraph --zero_based --cutoff 5 --cytosine_report --genome_folder ~/latte/Homo_sapiens/ $bismarkBam
+
+# Convert the CpG report into something useful for methylSigReadData
+awk '$4 + $5 > 5 { print $1 "." $2 "\t" $1 "\t" $2 "\t" $3 "\t" $4 + $5 "\t" ($4 / ($4 + $5))*100 "\t" ($5 / ($4 + $5))*100 }' $bismarkCytReport > $methylSigCytReport
 
 # Visualize methylation rates in UCSC Genome Browser (sample-wise)
 

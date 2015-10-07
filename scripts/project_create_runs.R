@@ -11,7 +11,7 @@ comparison = opt$comparison
 
 # Directories
 basedir = '~/latte/mint'
-datadir = sprintf('%s/data/%s', basedir, project)
+analysisdir = sprintf('%s/analysis/%s', basedir, project)
 scriptdir = sprintf('%s/scripts', basedir)
 projectscriptdir = sprintf('%s/scripts/%s', basedir, project)
 
@@ -96,8 +96,7 @@ boolComp = comparison != ''
       if(boolComp) {
         message('Creating bisulfite comparison scripts.')
 
-        covfiles = paste(paste(datadir, '/bismark_extractor_calls/', bisulfite$fullHumanID, '_trim', '.fastq.gz_bismark.bismark.cov', sep=''), collapse=',')
-        cytfiles = paste(paste(datadir, '/bismark_extractor_calls/',bisulfite$fullHumanID, '_trim', '.fastq.gz_bismark.CpG_report.txt', sep=''), collapse=',')
+        cytfiles = paste(paste(analysisdir, '/bismark_extractor_calls/',bisulfite$fullHumanID, '_trim', '.fastq.gz_bismark.CpG_report_for_methylSig.txt', sep=''), collapse=',')
         samples = paste(bisulfite$fullHumanID, collapse=',')
         treatment = paste(bisulfite$group, collapse=',')
         destrand = T
@@ -108,10 +107,9 @@ boolComp = comparison != ''
         cores = 2
 
         bisCompareScript = sprintf('%s/%s_bisulfite_comparison.sh', projectscriptdir, project)
-        command = sprintf('sh %s/process_bisulfite_comparison.sh -project %s -cov %s -cyt %s -samples %s -treatment %s -destrand %s -max %s -min %s -filter %s -tile %s -cores %s -comparison %s',
+        command = sprintf('sh %s/process_bisulfite_comparison.sh -project %s -cyt %s -samples %s -treatment %s -destrand %s -max %s -min %s -filter %s -tile %s -cores %s -comparison %s',
         scriptdir,
         project,
-        covfiles,
         cytfiles,
         samples,
         treatment,
@@ -192,10 +190,10 @@ boolComp = comparison != ''
         chip1 = subset(subpull, input == 0 & group == 1)
         chip2 = subset(subpull, input == 0 & group == 0)
 
-        input1files = paste(paste(datadir, '/bowtie2_bams/', input1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
-        input2files = paste(paste(datadir, '/bowtie2_bams/', input2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
-        chip1files = paste(paste(datadir, '/bowtie2_bams/', chip1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
-        chip2files = paste(paste(datadir, '/bowtie2_bams/', chip2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        input1files = paste(paste(analysisdir, '/bowtie2_bams/', input1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        input2files = paste(paste(analysisdir, '/bowtie2_bams/', input2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        chip1files = paste(paste(analysisdir, '/bowtie2_bams/', chip1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        chip2files = paste(paste(analysisdir, '/bowtie2_bams/', chip2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
         pulldownComparison = sprintf('%s_%s', comparison, compContext)
 
         pullCompScript = sprintf('%s/%s_%s_pulldown_comparison.sh', projectscriptdir, project, compContext)

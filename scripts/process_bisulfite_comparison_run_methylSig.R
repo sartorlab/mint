@@ -2,11 +2,10 @@ library(optparse)
 library(methylSig)
 
 # Example call
-#    Rscript ~/latte/Methylation/Methylation_Code/process_errbs_comparison-wise_run_methylSig.R --covfiles=IDH2mut_1_errbs.fastq_bismark.bismark.cov,IDH2mut_2_errbs.fastq_bismark.bismark.cov,IDH2mut_3_errbs.fastq_bismark.bismark.cov,NBM_1_errbs.fastq_bismark.bismark.cov,NBM_2_errbs.fastq_bismark.bismark.cov,NBM_3_errbs.fastq_bismark.bismark.cov --cytfiles=IDH2mut_1_errbs.fastq_bismark_cytosine.cov,IDH2mut_2_errbs.fastq_bismark_cytosine.cov,IDH2mut_3_errbs.fastq_bismark_cytosine.cov,NBM_1_errbs.fastq_bismark_cytosine.cov,NBM_2_errbs.fastq_bismark_cytosine.cov,NBM_3_errbs.fastq_bismark_cytosine.cov --sampleids=IDH2mut_1,IDH2mut_2,IDH2mut_3,NBM_1,NBM_2,NBM_3 --assembly=hg19 --pipeline=bismark --context=CpG --resolution=base --treatment=1,1,1,0,0,0 --destranded=TRUE --maxcount=500 --mincount=5 --filterSNPs=TRUE --ncores=6 --quiet=FALSE --tile=FALSE --dispersion=both --minpergroup=2,2
+#    Rscript ~/latte/Methylation/Methylation_Code/process_errbs_comparison-wise_run_methylSig.R  --cytfiles=IDH2mut_1_errbs.fastq_bismark_cytosine.cov,IDH2mut_2_errbs.fastq_bismark_cytosine.cov,IDH2mut_3_errbs.fastq_bismark_cytosine.cov,NBM_1_errbs.fastq_bismark_cytosine.cov,NBM_2_errbs.fastq_bismark_cytosine.cov,NBM_3_errbs.fastq_bismark_cytosine.cov --sampleids=IDH2mut_1,IDH2mut_2,IDH2mut_3,NBM_1,NBM_2,NBM_3 --assembly=hg19 --pipeline=bismark --context=CpG --resolution=base --treatment=1,1,1,0,0,0 --destranded=TRUE --maxcount=500 --mincount=5 --filterSNPs=TRUE --ncores=6 --quiet=FALSE --tile=FALSE --dispersion=both --minpergroup=2,2
 
 option_list = list(
     make_option('--project', type='character'),
-    make_option('--covfiles', type='character'),
     make_option('--cytfiles', type='character'),
     make_option('--sampleids', type='character'),
     make_option('--assembly', type='character'),
@@ -34,18 +33,17 @@ comparison = opt$comparison
 analysisdir = sprintf('~/latte/mint/analysis/%s/methylsig_calls', project)
 
 # Parse comma-separated arguments
-cov_files = unlist(strsplit(opt$covfiles, ','))
 cyt_files = unlist(strsplit(opt$cytfiles, ','))
 sample_id = unlist(strsplit(opt$sampleids, ','))
 treatment = as.integer(unlist(strsplit(opt$treatment, ',')))
 min_per_group = as.integer(unlist(strsplit(opt$minpergroup, ',')))
 
-meth = readBismarkData(
-    bismarkCovFiles = cov_files,
-    cytosineCovFiles = cyt_files,
+meth = methylSigReadData(
+    fileList = cyt_files,
     sample.ids = sample_id,
     assembly = opt$assembly,
     pipeline = opt$pipeline,
+    header= FALSE,
     context = opt$context,
     resolution = opt$resolution,
     treatment = treatment,
