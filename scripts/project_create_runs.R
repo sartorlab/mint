@@ -287,10 +287,8 @@ boolComp = comparison != ''
       exp2cov = paste(paste(sprintf('%s/analysis/%s/pulldown_coverages/', basedir, project), compList[['0']]$fullHumanID, '_pulldown_coverage.bdg', sep=''), collapse=',')
 
       # Paths to comparison_prepare script results
-      methylfiles = sprintf('%s_methylSig_DM_up.bed,%s_methylSig_DM_down.bed,%s_methylSig_noDM_signal.bed,%s_methylSig_noDM_nosignal.bed',
-      comparison, comparison, comparison, comparison)
-      hydroxyfiles = sprintf('%s_PePr_up_peaks.bed,%s_PePr_down_peaks.bed,%s_PePr_noDM_signal.bed,%s_PePr_noDM_nosignal.bed',
-      pulldownComparison, pulldownComparison, pulldownComparison, pulldownComparison)
+      methylfiles = paste(apply(expand.grid(sprintf('%s/analysis/%s/methylsig_calls/', basedir, project), comparison, '_methylSig_', c('DM_up','DM_down','noDM_signal','noDM_nosignal'), '.bed', stringsAsFactors=F),1,paste,collapse=''), collapse=',')
+      hydroxyfiles = paste(apply(expand.grid(sprintf('%s/analysis/%s/pepr_peaks/', basedir, project), comparison, '_hmc_PePr_', c('up_peaks','down_peaks','noDM_signal','noDM_nosignal'), '.bed', stringsAsFactors=F),1,paste,collapse=''), collapse=',')
 
       compClassScript = sprintf('%s/%s_classification_comparison.sh', projectscriptdir, project)
       command1 = sprintf('sh %s/classify_comparison_prepare_bisulfite.sh -project %s -comparison %s',

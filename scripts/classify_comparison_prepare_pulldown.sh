@@ -50,8 +50,8 @@ noDMNoSignalPeaks=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_noDM_nosignal.bed
 noDMSignalPeaksSorted=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_noDM_signal_sorted.bed
 noDMNoSignalPeaksSorted=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_noDM_nosignal_sorted.bed
 
-signal=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_signal_affinity.bed
-noSignal=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_nosignal_affinity.bed
+signal=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_signal_pulldown.bed
+noSignal=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_nosignal_pulldown.bed
 
 # Split PePr results into up, down, no DM / signal, and no DM / no signal
 # These 5hmC files are the corresponding rows of the classification table
