@@ -8,20 +8,18 @@ PROJECT=$2
 sampleID=$4
 humanID=$6
 
-# Directories
-DATADIR=~/latte/mint/data/${PROJECT}
-ANALYSISDIR=~/latte/mint/analysis/${PROJECT}
-HUBDIR=~/latte/mint/analysis/${PROJECT}/summary/ucsc_trackhub/hg19
+# Go to the project directory
+cd ~/latte/mint/${PROJECT}
 
 # Files
-rawFastq=${DATADIR}/raw_fastqs/${sampleID}.fastq.gz
-bowtie2Bam=${ANALYSISDIR}/bowtie2_bams/${humanID}_pulldown_aligned.bam
-bowtie2BamPrefix=${ANALYSISDIR}/bowtie2_bams/${humanID}_pulldown_aligned
-pulldownBedgraph=${ANALYSISDIR}/pulldown_coverages/${humanID}_pulldown_coverage.bdg
-pulldownBigwig=${HUBDIR}/${humanID}_pulldown_coverage.bw
+rawFastq=./data/raw_fastqs/${sampleID}.fastq.gz
+bowtie2Bam=./analysis/bowtie2_bams/${humanID}_pulldown_aligned.bam
+bowtie2BamPrefix=./analysis/bowtie2_bams/${humanID}_pulldown_aligned
+pulldownBedgraph=./analysis/pulldown_coverages/${humanID}_pulldown_coverage.bdg
+pulldownBigwig=./analysis/summary/ucsc_trackhub/hg19/${humanID}_pulldown_coverage.bw
 
 # FastQC
-fastqc --format fastq --noextract --outdir ${ANALYSISDIR}/raw_fastqcs $rawFastq
+fastqc --format fastq --noextract --outdir ./analysis/raw_fastqcs $rawFastq
 
 # Bowtie2 to align to reference genome
 bowtie2 -q -x ~/latte/Homo_sapiens/genome -U $rawFastq | samtools view -bS - > $bowtie2Bam

@@ -5,36 +5,38 @@ BASEDIR=~/latte/mint/
 # The desired name of the project. Directory structure will be compartmentalized
 PROJECT=$1
 
-# Go to base dir
-cd $BASEDIR
+# Go to base dir and create project directory
+cd ${BASEDIR}
 
 # Make project specific folders in data/, analysis/, and scripts/
-mkdir data/${PROJECT}
-mkdir analysis/${PROJECT}
-mkdir scripts/${PROJECT}
+mkdir ${PROJECT}
+cd ${PROJECT}
+
+mkdir data/
+mkdir analysis/
+mkdir scripts/
 
 # Make subfolders in data/ and analysis/
-mkdir data/${PROJECT}/raw_fastqs
+mkdir data/raw_fastqs
+mkdir analysis/raw_fastqcs
+mkdir analysis/trim_fastqs
+mkdir analysis/trim_fastqcs
+mkdir analysis/bowtie2_bams
+mkdir analysis/pulldown_coverages
+mkdir analysis/bismark_bams
+mkdir analysis/bismark_extractor_calls
+mkdir analysis/macs_peaks
+mkdir analysis/pepr_peaks
+mkdir analysis/methylsig_calls
+mkdir analysis/classification_simple
+mkdir analysis/classification_sample
+mkdir analysis/classification_comparison
 
-mkdir analysis/${PROJECT}/raw_fastqcs
-mkdir analysis/${PROJECT}/trim_fastqs
-mkdir analysis/${PROJECT}/trim_fastqcs
-mkdir analysis/${PROJECT}/bowtie2_bams
-mkdir analysis/${PROJECT}/pulldown_coverages
-mkdir analysis/${PROJECT}/bismark_bams
-mkdir analysis/${PROJECT}/bismark_extractor_calls
-mkdir analysis/${PROJECT}/macs_peaks
-mkdir analysis/${PROJECT}/pepr_peaks
-mkdir analysis/${PROJECT}/methylsig_calls
-mkdir analysis/${PROJECT}/classification_simple
-mkdir analysis/${PROJECT}/classification_sample
-mkdir analysis/${PROJECT}/classification_comparison
+mkdir analysis/summary
 
-mkdir analysis/${PROJECT}/summary
+mkdir analysis/summary/figures
+mkdir analysis/summary/tables
+mkdir analysis/summary/reports
 
-mkdir analysis/${PROJECT}/summary/figures
-mkdir analysis/${PROJECT}/summary/tables
-mkdir analysis/${PROJECT}/summary/reports
-
-mkdir analysis/${PROJECT}/summary/ucsc_trackhub
-mkdir analysis/${PROJECT}/summary/ucsc_trackhub/hg19
+mkdir analysis/summary/ucsc_trackhub
+mkdir analysis/summary/ucsc_trackhub/hg19

@@ -14,27 +14,25 @@ CHIP1=$8
 CHIP2=${10}
 COMPARISON=${12}
 
-# Directories
-DATADIR=~/latte/mint/data/${PROJECT}
-ANALYSISDIR=~/latte/mint/analysis/${PROJECT}
-HUBDIR=~/latte/mint/analysis/${PROJECT}/summary/ucsc_trackhub/hg19
+# Go to the project directory
+cd ~/latte/mint/${PROJECT}
 
 # Create appropriate file names
-peprUp=${ANALYSISDIR}/pepr_peaks/${COMPARISON}__PePr_up_peaks.bed
-peprDown=${ANALYSISDIR}/pepr_peaks/${COMPARISON}__PePr_down_peaks.bed
-peprUpTmp=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_up_tmp.bed
-peprDownTmp=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_down_tmp.bed
-peprUcscTmp=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_ucsc_tmp.bed
-peprUcscSortedTmp=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_ucsc_sorted_tmp.bed
-peprBigbed=${HUBDIR}/${COMPARISON}_PePr_peaks_ucsc.bb
+peprUp=${COMPARISON}__PePr_up_peaks.bed
+peprDown=${COMPARISON}__PePr_down_peaks.bed
+peprUpTmp=${COMPARISON}_up_tmp.bed
+peprDownTmp=${COMPARISON}_down_tmp.bed
+peprUcscTmp=${COMPARISON}_ucsc_tmp.bed
+peprUcscSortedTmp=${COMPARISON}_ucsc_sorted_tmp.bed
+peprBigbed=./analysis/summary/ucsc_trackhub/hg19/${COMPARISON}_PePr_peaks.bb
+
+# Since PePr doesn't allow you to specify output directory, cd into the directory
+# where we want the result files to live
+cd ./analysis/pepr_peaks/
 
 # PePr to call differential Methylation
-# Since PePr doesn't allow you to specify output directory, go to where you want
-# the files output and call PePr from there.
-cd ${ANALYSISDIR}/pepr_peaks/
+# The input files should be preceded by ../bowtie2_bams/ since we are in ${PROJECT}/analysis/pepr_peaks/ from the cd above
 python2.7 /home/rcavalca/.local/lib/python2.7/site-packages/PePr-1.0.8-py2.7.egg/PePr/PePr.py --input1=$INPUT1 --input2=$INPUT2 --chip1=$CHIP1 --chip2=$CHIP2 --name=$COMPARISON --file-format=bam --peaktype=sharp --diff --threshold 1e-03 --remove_artefacts
-
-# NOTE: Should include set differencing of PePr up/down peaks here
 
 # Visualization in UCSC Genome Browser
 

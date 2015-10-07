@@ -27,24 +27,22 @@ COMPARISON=$4
 METHYLFILES=$6
 HYDROXYFILES=$8
 
-# Directories
-DATADIR=~/latte/mint/data/${PROJECT}
-ANALYSISDIR=~/latte/mint/analysis/${PROJECT}
-HUBDIR=~/latte/mint/analysis/${PROJECT}/summary/ucsc_trackhub/hg19
+# Go to the project directory
+cd ~/latte/mint/${PROJECT}
 
-# Argument parsing
+# Argument expansion
 methylFiles=$(echo $METHYLFILES | tr "," " ")
 hydroxyFiles=$(echo $HYDROXYFILES | tr "," " ")
 
 # Files
-checkEqualTwo=${ANALYSISDIR}/classification_comparison/${COMPARISON}_classification_test_not2.bed
-checkDoubleM=${ANALYSISDIR}/classification_comparison/${COMPARISON}_classification_test_doubleM.bed
-checkDoubleH=${ANALYSISDIR}/classification_comparison/${COMPARISON}_classification_test_doubleH.bed
-multiInterFile=${ANALYSISDIR}/classification_comparison/${COMPARISON}_classification_multiintersection.bed
-firstClassFile=${ANALYSISDIR}/classification_comparison/${COMPARISON}_classification_encoding.bed
-finalClassFile=${ANALYSISDIR}/classification_comparison/${COMPARISON}_classification_regions_final.bed
-sortedFinalClassFile=${ANALYSISDIR}/classification_comparison/${COMPARISON}_classification_regions_final_sorted.bed
-classBB=${HUBDIR}/${COMPARISON}_classification_regions.bb
+checkEqualTwo=./analysis/classification_comparison/${COMPARISON}_classification_test_not2.bed
+checkDoubleM=./analysis/classification_comparison/${COMPARISON}_classification_test_doubleM.bed
+checkDoubleH=./analysis/classification_comparison/${COMPARISON}_classification_test_doubleH.bed
+multiInterFile=./analysis/classification_comparison/${COMPARISON}_classification_multiintersection.bed
+firstClassFile=./analysis/classification_comparison/${COMPARISON}_classification_encoding.bed
+finalClassFile=./analysis/classification_comparison/${COMPARISON}_classification_regions_final.bed
+sortedFinalClassFile=./analysis/classification_comparison/${COMPARISON}_classification_regions_final_sorted.bed
+classBB=./analysis/summary/ucsc_trackhub/hg19/${COMPARISON}_classification_regions.bb
 
     # This accomplishes the same partition and determines which file is responsible for the intersection!
     bedtools multiinter -header -names mDMup mDMdown mnDMs mnDMns hDMup hDMdown hnDMs hnDMns -empty -i  $methylFiles $hydroxyFiles -g ~/latte/Homo_sapiens/chromInfo_hg19.txt > $multiInterFile
@@ -65,7 +63,7 @@ classBB=${HUBDIR}/${COMPARISON}_classification_regions.bb
     awk '{print $1 "\t" $2 "\t" $3 "\t" ($6 * 3) + ($7 * 5) + ($8 * 7) + ($9 * 11) "\t" ($10 * 2) + ($11 * 4) + ($12 * 6) + ($13 * 8) "\t" (($6 * 3) + ($7 * 5) + ($8 * 7) + ($9 * 11)) * (($10 * 2) + ($11 * 4) + ($12 * 6) + ($13 * 8))}' $multiInterFile > $firstClassFile
 
 # R code to merge the encoded BED on the appropriate color scheme for the bigBed
-    Rscript ~/latte/mint/scripts/classify_comparison.R --project=$PROJECT --comparison=$COMPARISON --bedclassifier=$firstClassFile
+    Rscript ~/latte/mint/scripts/classify_comparison.R --project=$PROJECT --comparison=$COMPARISON --inbed=$firstClassFile --outbed=$finalClassFile
 
 # End R Code, now sort the result because R::merge messes it up
     sort -T . -k1,1 -k2,2n $finalClassFile > $sortedFinalClassFile

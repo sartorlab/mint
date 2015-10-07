@@ -11,9 +11,26 @@ comparison = opt$comparison
 
 # Directories
 basedir = '~/latte/mint'
-analysisdir = sprintf('%s/analysis/%s', basedir, project)
+
 scriptdir = sprintf('%s/scripts', basedir)
-projectscriptdir = sprintf('%s/scripts/%s', basedir, project)
+projectscriptdir = sprintf('%s/%s/scripts', basedir, project)
+analysisdir = sprintf('%s/%s/analysis', basedir, project)
+
+rawfastqdir = './data/raw_fastqs'
+rawfastqcsdir = './analysis/raw_fastqcs'
+trimfastqsdir= './analysis/trim_fastqs'
+trimfastqcsdir= './analysis/trim_fastqcs'
+bowtie2bamdir = './analysis/bowtie2_bams'
+pulldowncovdir = './analysis/pulldown_coverages'
+bismarkbamdir = './analysis/bismark_bams'
+extractordir = './analysis/bismark_extractor_calls'
+macsdir = './analysis/macs_peaks'
+peprdir = './analysis/pepr_peaks'
+methylsigdir = './analysis/methylsig_calls'
+classsimpledir = './analysis/classification_simple'
+classsampledir = './analysis/classification_sample'
+classcomparedir = './analysis/classification_comparison'
+
 
 # Expect a tab-delimited text file (${PROJECT}_annotation.txt) to be placed in data/${PROJECT} with the columns:
 # 1. projectID - Same name used for project_init.sh
@@ -30,7 +47,7 @@ projectscriptdir = sprintf('%s/scripts/%s', basedir, project)
 #    (input == 1 && ((5mc == 1 && 5hmc == 0) || (5mc == 0 && 5hmc == 1))) then the input is antibody matched.
 # 9. group - 0/1 indicates data grouping for comparison in methylSig and/ or PePr
 #    if all are 0 then the assumption is a sample-wise analysis only.
-annotfile = sprintf('%s/data/%s/%s_annotation.txt', basedir, project, project)
+annotfile = sprintf('%s/%s/data/%s_annotation.txt', basedir, project, project)
 annotation = read.table(annotfile, header=T, sep='\t', quote='', comment.char='', stringsAsFactors=F)
 colnames(annotation) = c('projectID','sampleID','humanID','pulldown','bisulfite','mc','hmc','input','group')
 
@@ -96,7 +113,8 @@ boolComp = comparison != ''
       if(boolComp) {
         message('Creating bisulfite comparison scripts.')
 
-        cytfiles = paste(paste(analysisdir, '/bismark_extractor_calls/',bisulfite$fullHumanID, '_trim', '.fastq.gz_bismark.CpG_report_for_methylSig.txt', sep=''), collapse=',')
+        # Files are in ./analysis/bismark_extractor_calls/
+        cytfiles = paste(paste(extractordir, '/', bisulfite$fullHumanID, '_trim', '.fastq.gz_bismark.CpG_report_for_methylSig.txt', sep=''), collapse=',')
         samples = paste(bisulfite$fullHumanID, collapse=',')
         treatment = paste(bisulfite$group, collapse=',')
         destrand = T
@@ -108,18 +126,18 @@ boolComp = comparison != ''
 
         bisCompareScript = sprintf('%s/%s_bisulfite_comparison.sh', projectscriptdir, project)
         command = sprintf('sh %s/process_bisulfite_comparison.sh -project %s -cyt %s -samples %s -treatment %s -destrand %s -max %s -min %s -filter %s -tile %s -cores %s -comparison %s',
-        scriptdir,
-        project,
-        cytfiles,
-        samples,
-        treatment,
-        destrand,
-        max,
-        min,
-        filter,
-        tile,
-        cores,
-        comparison)
+          scriptdir,
+          project,
+          cytfiles,
+          samples,
+          treatment,
+          destrand,
+          max,
+          min,
+          filter,
+          tile,
+          cores,
+          comparison)
         cat(command, file=bisCompareScript, sep='\n', append=T)
 
       } else {
@@ -190,10 +208,11 @@ boolComp = comparison != ''
         chip1 = subset(subpull, input == 0 & group == 1)
         chip2 = subset(subpull, input == 0 & group == 0)
 
-        input1files = paste(paste(analysisdir, '/bowtie2_bams/', input1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
-        input2files = paste(paste(analysisdir, '/bowtie2_bams/', input2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
-        chip1files = paste(paste(analysisdir, '/bowtie2_bams/', chip1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
-        chip2files = paste(paste(analysisdir, '/bowtie2_bams/', chip2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        # Files are in ./analysis/bowtie2_bams/
+        input1files = paste(paste(bowtie2bamdir, '/', input1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        input2files = paste(paste(bowtie2bamdir, '/', input2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        chip1files = paste(paste(bowtie2bamdir, '/', chip1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        chip2files = paste(paste(bowtie2bamdir, '/', chip2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
         pulldownComparison = sprintf('%s_%s', comparison, compContext)
 
         pullCompScript = sprintf('%s/%s_%s_pulldown_comparison.sh', projectscriptdir, project, compContext)
@@ -221,8 +240,9 @@ boolComp = comparison != ''
         chipID = subset(subSampList, subSampList$input == 0)$fullHumanID
         inputID = subset(subSampList, subSampList$input == 1)$fullHumanID
 
-        chipFile = sprintf('%s_pulldown_aligned.bam', chipID)
-        inputFile = sprintf('%s_pulldown_aligned.bam', inputID)
+        # Files are in ./analysis/bowtie2_bams/
+        chipFile = sprintf('%s/%s_pulldown_aligned.bam', bowtie2bamdir, chipID)
+        inputFile = sprintf('%s/%s_pulldown_aligned.bam', bowtie2bamdir, inputID)
 
         command = sprintf('sh %s/process_pulldown_sample.sh -project %s -chip %s -input %s -name %s',
           scriptdir,
@@ -262,6 +282,7 @@ boolComp = comparison != ''
         pulldownID = subset(subSampList, subSampList$pulldown == 1 & subSampList$input == 0)$fullHumanID
         pulldownInputID = subset(subSampList, subSampList$pulldown == 1 & subSampList$input == 1)$fullHumanID
 
+        # Note, the appropriate file paths are established in the classify_sample.R script
         sampleClassScript = sprintf('%s/%s_classification_sample.sh', projectscriptdir, project)
         command = sprintf('Rscript %s/classify_sample.R --project %s --bisulfiteID %s --pulldownID %s --pulldownInputID %s --humanID %s --winsize %s',
           scriptdir,
@@ -282,13 +303,13 @@ boolComp = comparison != ''
 
       compList = split(subset(pulldown, input == 0), subset(pulldown, input == 0)$group)
 
-      # Paths to pulldown coverage bedgraphs
-      exp1cov = paste(paste(sprintf('%s/analysis/%s/pulldown_coverages/', basedir, project), compList[['1']]$fullHumanID, '_pulldown_coverage.bdg', sep=''), collapse=',')
-      exp2cov = paste(paste(sprintf('%s/analysis/%s/pulldown_coverages/', basedir, project), compList[['0']]$fullHumanID, '_pulldown_coverage.bdg', sep=''), collapse=',')
+      # Files are in ./analysis/pulldown_coverages/
+      exp1cov = paste(paste(pulldowncovdir, '/', compList[['1']]$fullHumanID, '_pulldown_coverage.bdg', sep=''), collapse=',')
+      exp2cov = paste(paste(pulldowncovdir, '/', compList[['0']]$fullHumanID, '_pulldown_coverage.bdg', sep=''), collapse=',')
 
       # Paths to comparison_prepare script results
-      methylfiles = paste(apply(expand.grid(sprintf('%s/analysis/%s/methylsig_calls/', basedir, project), comparison, '_methylSig_', c('DM_up','DM_down','noDM_signal','noDM_nosignal'), '.bed', stringsAsFactors=F),1,paste,collapse=''), collapse=',')
-      hydroxyfiles = paste(apply(expand.grid(sprintf('%s/analysis/%s/pepr_peaks/', basedir, project), comparison, '_hmc_PePr_', c('up_peaks','down_peaks','noDM_signal','noDM_nosignal'), '.bed', stringsAsFactors=F),1,paste,collapse=''), collapse=',')
+      methylfiles = paste(apply(expand.grid(methylsigdir, '/', comparison, '_methylSig_', c('DM_up','DM_down','noDM_signal','noDM_nosignal'), '.bed', stringsAsFactors=F),1,paste,collapse=''), collapse=',')
+      hydroxyfiles = paste(apply(expand.grid(peprdir, '/', comparison, '_hmc_PePr_', c('up_peaks','down_peaks','noDM_signal','noDM_nosignal'), '.bed', stringsAsFactors=F),1,paste,collapse=''), collapse=',')
 
       compClassScript = sprintf('%s/%s_classification_comparison.sh', projectscriptdir, project)
       command1 = sprintf('sh %s/classify_comparison_prepare_bisulfite.sh -project %s -comparison %s',
@@ -336,8 +357,8 @@ boolComp = comparison != ''
         }
 
         # Paths to pulldown coverage bedgraphs
-        exp1cov = paste(paste(sprintf('%s/analysis/%s/pulldown_coverages/', basedir, project), subCompList1$fullHumanID, '_pulldown_coverage.bdg', sep=''), collapse=',')
-        exp2cov = paste(paste(sprintf('%s/analysis/%s/pulldown_coverages/', basedir, project), subCompList2$fullHumanID, '_pulldown_coverage.bdg', sep=''), collapse=',')
+        exp1cov = paste(paste(pulldowncovdir, '/', subCompList1$fullHumanID, '_pulldown_coverage.bdg', sep=''), collapse=',')
+        exp2cov = paste(paste(pulldowncovdir, '/', subCompList2$fullHumanID, '_pulldown_coverage.bdg', sep=''), collapse=',')
 
         command1 = sprintf('sh %s/classify_comparison_prepare_pulldown.sh -project %s -comparison %s -exp1cov %s -exp2cov %ss',
           scriptdir,
@@ -350,8 +371,8 @@ boolComp = comparison != ''
 
       }
       # Paths to comparison_prepare script results
-      methylfiles = paste(apply(expand.grid(sprintf('%s/analysis/%s/pepr_peaks/', basedir, project), comparison, '_mc_PePr_', c('up_peaks','down_peaks','noDM_signal','noDM_nosignal'), '.bed', stringsAsFactors=F),1,paste,collapse=''), collapse=',')
-      hydroxyfiles = paste(apply(expand.grid(sprintf('%s/analysis/%s/pepr_peaks/', basedir, project), comparison, '_hmc_PePr_', c('up_peaks','down_peaks','noDM_signal','noDM_nosignal'), '.bed', stringsAsFactors=F),1,paste,collapse=''), collapse=',')
+      methylfiles = paste(apply(expand.grid(peprdir, '/', comparison, '_mc_PePr_', c('up_peaks','down_peaks','noDM_signal','noDM_nosignal'), '.bed', stringsAsFactors=F),1,paste,collapse=''), collapse=',')
+      hydroxyfiles = paste(apply(expand.grid(peprdir, '/', comparison, '_hmc_PePr_', c('up_peaks','down_peaks','noDM_signal','noDM_nosignal'), '.bed', stringsAsFactors=F),1,paste,collapse=''), collapse=',')
 
       command2 = sprintf('sh %s/classify_comparison.sh -project %s -comparison %s -methylfiles %s -hydroxyfiles %s',
         scriptdir,

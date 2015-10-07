@@ -2,7 +2,7 @@ library(optparse)
 library(methylSig)
 
 # Example call
-#    Rscript ~/latte/Methylation/Methylation_Code/process_errbs_comparison-wise_run_methylSig.R  --cytfiles=IDH2mut_1_errbs.fastq_bismark_cytosine.cov,IDH2mut_2_errbs.fastq_bismark_cytosine.cov,IDH2mut_3_errbs.fastq_bismark_cytosine.cov,NBM_1_errbs.fastq_bismark_cytosine.cov,NBM_2_errbs.fastq_bismark_cytosine.cov,NBM_3_errbs.fastq_bismark_cytosine.cov --sampleids=IDH2mut_1,IDH2mut_2,IDH2mut_3,NBM_1,NBM_2,NBM_3 --assembly=hg19 --pipeline=bismark --context=CpG --resolution=base --treatment=1,1,1,0,0,0 --destranded=TRUE --maxcount=500 --mincount=5 --filterSNPs=TRUE --ncores=6 --quiet=FALSE --tile=FALSE --dispersion=both --minpergroup=2,2
+#    Rscript ~/latte/Methylation/Methylation_Code/process_errbs_comparison-wise_run_methylSig.R  --cytfiles=./analysis/bismark_extractor_calls/IDH2mut_1_errbs.fastq.gz_bismark.CpG_report.txt,./analysis/bismark_extractor_calls/IDH2mut_2_errbs.fastq.gz_bismark.CpG_report.txt,./analysis/bismark_extractor_calls/IDH2mut_3_errbs.fastq.gz_bismark.CpG_report.txt,./analysis/bismark_extractor_calls/NBM_1_errbs.fastq.gz_bismark.CpG_report.txt,./analysis/bismark_extractor_calls/NBM_2_errbs.fastq.gz_bismark.CpG_report.txt,./analysis/bismark_extractor_calls/NBM_3_errbs.fastq.gz_bismark.CpG_report.txt --sampleids=IDH2mut_1,IDH2mut_2,IDH2mut_3,NBM_1,NBM_2,NBM_3 --assembly=hg19 --pipeline=bismark --context=CpG --resolution=base --treatment=1,1,1,0,0,0 --destranded=TRUE --maxcount=500 --mincount=5 --filterSNPs=TRUE --ncores=6 --quiet=FALSE --tile=FALSE --dispersion=both --minpergroup=2,2
 
 option_list = list(
     make_option('--project', type='character'),
@@ -30,7 +30,6 @@ opt = parse_args(OptionParser(option_list=option_list))
 # Setup data directory string
 project = opt$project
 comparison = opt$comparison
-analysisdir = sprintf('~/latte/mint/analysis/%s/methylsig_calls', project)
 
 # Parse comma-separated arguments
 cyt_files = unlist(strsplit(opt$cytfiles, ','))
@@ -54,7 +53,7 @@ meth = methylSigReadData(
     num.cores = opt$ncores,
     quiet= opt$quiet)
 
-save(meth, file=sprintf('%s/%s_raw_data.RData', analysisdir, comparison))
+save(meth, file=sprintf('./analysis/methylsig_calls/%s_raw_data.RData', comparison))
 
 if(opt$tile) {
     message('Doing tiled analysis')
@@ -68,7 +67,7 @@ if(opt$tile) {
         num.cores= opt$ncores
         )
 
-    write.methylSigDiff(diff_meth, file=sprintf('%s/%s.txt', analysisdir, comparison), row.names=F,quote=F,sep='\t')
+    write.methylSigDiff(diff_meth, file=sprintf('./analysis/methylsig_calls/%s.txt', comparison), row.names=F,quote=F,sep='\t')
 } else {
     message('Doing CpG analysis')
     diff_meth = methylSigCalc(
@@ -79,6 +78,6 @@ if(opt$tile) {
         num.cores = opt$ncores
         )
 
-    write.methylSigDiff(diff_meth, file=sprintf('%s/%s.txt', analysisdir, comparison), row.names=F,quote=F,sep='\t')
+    write.methylSigDiff(diff_meth, file=sprintf('./analysis/methylsig_calls/%s.txt', comparison), row.names=F,quote=F,sep='\t')
 
 }

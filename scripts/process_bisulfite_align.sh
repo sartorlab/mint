@@ -8,20 +8,19 @@ PROJECT=$2
 sampleID=$4
 humanID=$6
 
-# Directories
-DATADIR=~/latte/mint/data/${PROJECT}
-ANALYSISDIR=~/latte/mint/analysis/${PROJECT}
-HUBDIR=~/latte/mint/analysis/${PROJECT}/summary/ucsc_trackhub/hg19
+# Go to the project directory
+cd ~/latte/mint/${PROJECT}
 
 # Files
-rawFastq=${DATADIR}/raw_fastqs/${sampleID}.fastq.gz
-trimFastq=${ANALYSISDIR}/trim_fastqs/${humanID}_trim.fastq.gz
-bismarkBam=${ANALYSISDIR}/bismark_bams/${humanID}_trim.fastq.gz_bismark.bam
+rawFastq=./data/raw_fastqs/${sampleID}.fastq.gz
+trimFastq=./analysis/trim_fastqs/${humanID}_trim.fastq.gz
+bismarkBam=../bismark_bams/${humanID}_trim.fastq.gz_bismark.bam
+bismarkBedgraphgz=${humanID}_trim.fastq.gz_bismark.bedGraph.gz
 bismarkBedgraph=${humanID}_trim.fastq.gz_bismark.bedGraph
 bismarkSortedBedgraph=${humanID}_trim.fastq.gz_bismark_sorted.bedGraph
 bismarkCytReport=${humanID}_trim.fastq.gz_bismark.CpG_report.txt
 methylSigCytReport=${humanID}_trim.fastq.gz_bismark.CpG_report_for_methylSig.txt
-bismarkBigwig=${HUBDIR}/${humanID}_trim.fastq.gz_bismark.bw
+bismarkBigwig=./analysis/summary/ucsc_trackhub/hg19/${humanID}_trim.fastq.gz_bismark.bw
 
 # FastQC raw data
 fastqc --format fastq --noextract --outdir ${ANALYSISDIR}/raw_fastqcs $rawFastq
@@ -35,18 +34,23 @@ cutadapt --error-rate=0.2 --adapter=NNTGAGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATC
 fastqc --format fastq --noextract --outdir ${ANALYSISDIR}/trim_fastqcs $trimFastq
 
 # Bismark on trimmed reads
-bismark --bam --seedlen 50 --output_dir ${ANALYSISDIR}/bismark_bams ~/latte/Homo_sapiens/ $trimFastq
+bismark --bowtie1 --bam --seedlen 50 --output_dir ./analysis/bismark_bams ~/latte/Homo_sapiens/ $trimFastq
 
-# Methylation Extractor bismark BAM output
 # The --bedGraph module of the methylation extractor does not support path information
 # in the reference to the extractor files, so we need to be in the bismark_extractor_calls folder
-cd ${ANALYSISDIR}/bismark_extractor_calls
-bismark_methylation_extractor --single-end --gzip --bedGraph --zero_based --cutoff 5 --cytosine_report --genome_folder ~/latte/Homo_sapiens/ $bismarkBam
+cd ./analysis/bismark_extractor_calls
+
+# Methylation Extractor bismark BAM output
+# Since we are in ./analysis/bismark_extractor calls, the input bams are in ../bismark_bams/
+bismark_methylation_extractor --single-end --gzip --bedGraph --cutoff 5 --cytosine_report --genome_folder ~/latte/Homo_sapiens/ $bismarkBam
 
 # Convert the CpG report into something useful for methylSigReadData
-awk '$4 + $5 > 5 { print $1 "." $2 "\t" $1 "\t" $2 "\t" $3 "\t" $4 + $5 "\t" ($4 / ($4 + $5))*100 "\t" ($5 / ($4 + $5))*100 }' $bismarkCytReport > $methylSigCytReport
+# We are requiring the coverage to be at least 5 reads
+awk '$4 + $5 > 4 { print $1 "." $2 "\t" $1 "\t" $2 "\t" $3 "\t" $4 + $5 "\t" ($4 / ($4 + $5))*100 "\t" ($5 / ($4 + $5))*100 }' $bismarkCytReport > $methylSigCytReport
 
 # Visualize methylation rates in UCSC Genome Browser (sample-wise)
+# v0.14.4 of Bismark automatically gz's bedGraph and coverage files
+gunzip $bismarkBedgraphgz
 
     # Remove first line of bedGraph
     sed -i "1d" $bismarkBedgraph

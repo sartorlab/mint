@@ -20,23 +20,17 @@ humanID = opt$humanID
 winsize = opt$winsize
 
 # Setup directory paths
-basedir = '~/latte/mint'
-referencedir = sprintf('%s/data/reference', basedir)
-macsdir = sprintf('%s/analysis/%s/macs_peaks', basedir, project)
-extractordir = sprintf('%s/analysis/%s/bismark_extractor_calls', basedir, project)
-coveragesdir = sprintf('%s/analysis/%s/pulldown_coverages', basedir, project)
-sampleclassifydir = sprintf('%s/analysis/%s/classification_sample', basedir, project)
-hubdir = sprintf('%s/analysis/%s/summary/ucsc_trackhub/hg19', basedir, project)
+setwd(sprintf('~/latte/mint/%s'), project)
 
 # Setup file paths
-pulldown_file = sprintf('%s/%s_pulldown_macs2_peaks.narrowPeak', macsdir, pulldownID)
-pulldown_input_file = sprintf('%s/%s_pulldown_zero.bdg', coveragesdir, pulldownInputID)
-cov_file = sprintf('%s/%s_trim.fastq.gz_bismark.bismark.cov', extractordir, bisulfiteID)
-cyt_file = sprintf('%s/%s_trim.fastq.gz_bismark.CpG_report.txt', extractordir, bisulfiteID)
-class_bed_file = sprintf('%s/%s_sample_classification_regions.bed', sampleclassifydir, humanID)
-class_bb_file = sprintf('%s/%s_sample_classification_regions.bb', hubdir, humanID)
+macs_file = sprintf('./analysis/macs_peaks/%s_pulldown_macs2_peaks.narrowPeak', pulldownID)
+pulldown_zero_file = sprintf('./analysis/pulldown_coverages/%s_pulldown_zero.bdg', pulldownInputID)
+cov_file = sprintf('./analysis/bismark_extractor_calls/%s_trim.fastq.gz_bismark.bismark.cov.gz', bisulfiteID)
+cyt_file = sprintf('./analysis/bismark_extractor_calls/%s_trim.fastq.gz_bismark.CpG_report.txt', bisulfiteID)
+class_bed_file = sprintf('./analysis/classification_simple/%s_sample_classification_regions.bed', humanID)
+class_bb_file = sprintf('./analysis/summary/ucsc_trackhub/hg19/%s_sample_classification_regions.bb', humanID)
 
-chr_lengths = read.table(sprintf('%s/chromInfo_hg19.txt',referencedir), header=F, sep='\t', stringsAsFactors=F)
+chr_lengths = read.table('~/latte/Homo_sapiens/chromInfo_hg19.txt', header=F, sep='\t', stringsAsFactors=F)
 
 classification = data.frame(
     code = c(0, 12, 14, 18, 21, 24, 28, 30, 35),
@@ -48,11 +42,11 @@ classification = data.frame(
 message(sprintf('Processing sample: %s',sample))
 
     # File checks
-        if(!file.exists(pulldown_file)) {
-            stop(sprintf('%s does not exist!',pulldown_file))
+        if(!file.exists(macs_file)) {
+            stop(sprintf('%s does not exist!',macs_file))
         }
-        if(!file.exists(pulldown_input_file)) {
-            stop(sprintf('%s does not exist!',pulldown_input_file))
+        if(!file.exists(pulldown_zero_file)) {
+            stop(sprintf('%s does not exist!',pulldown_zero_file))
         }
         if(!file.exists(cov_file)) {
             stop(sprintf('%s does not exist!',cov_file))
@@ -64,7 +58,7 @@ message(sprintf('Processing sample: %s',sample))
 # Peaks from MACS2
 # Presumably 0-based because they are narrowPeaks which are a kind of BED
     message('Reading pulldown narrowPeak...')
-    pulldown = read.table(pulldown_file, sep='\t', header=F, quote='', comment.char='', stringsAsFactors=F)
+    pulldown = read.table(macs_file, sep='\t', header=F, quote='', comment.char='', stringsAsFactors=F)
     colnames(pulldown) = c('chrom','start','end','name','score','strand','fold','log10p','log10q','summit')
 
     pulldown_gr = GRanges(
@@ -82,7 +76,7 @@ message(sprintf('Processing sample: %s',sample))
 # 0-based
 # bedtools genomecov -bga -ibam $bamFile -g ~/latte/Methylation/Data/chromInfo_hg19.txt | grep -w '0$' > $bedFile
     message('Reading pulldown zero input regions...')
-    pulldown_input = read.table(pulldown_input_file, sep='\t', header=F, quote='', comment.char='', stringsAsFactors=F)
+    pulldown_input = read.table(pulldown_zero_file, sep='\t', header=F, quote='', comment.char='', stringsAsFactors=F)
     colnames(pulldown_input) = c('chrom','start','end','coverage')
 
     pulldown_input_gr = GRanges(
@@ -183,7 +177,7 @@ message(sprintf('Processing sample: %s',sample))
 
 # Convert to bigBed
     message('Converting BED to bigBED...')
-    command = sprintf('bedToBigBed %s ~/latte/Methylation/Data/chromInfo_hg19.txt %s', class_bed_file, class_bb_file)
+    command = sprintf('bedToBigBed %s ~/latte/Homo_sapiens/chromInfo_hg19.txt %s', class_bed_file, class_bb_file)
     system(command)
 
     # Add new track to the custom track file

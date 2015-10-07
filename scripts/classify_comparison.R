@@ -3,16 +3,20 @@ library(optparse)
 option_list = list(
     make_option('--project', type='character'),
     make_option('--comparison', type='character'),
-    make_option('--bedclassifier', type='character')
+    make_option('--inbed', type='character'),
+    make_option('--outbed', type='character')
 )
 opt = parse_args(OptionParser(option_list=option_list))
 
 project=opt$project
-name=opt$comparison
-inBed=opt$bedclassifier
-outFile=sprintf('%s_classification_regions_final.bed',name)
+comparison=opt$comparison
+inbed=opt$inbed
+outbed=opt$outbed
 
-classification = read.table(inBed, header=F, sep='\t', comment.char='', quote='', stringsAsFactors=F)
+# Set working directory
+setwd(sprintf('~/latte/mint/%s', project))
+
+classification = read.table(inbed, header=F, sep='\t', comment.char='', quote='', stringsAsFactors=F)
 colnames(classification) = c('chr','start','end','ms_class','p_class','code')
 scheme = data.frame(
     name = c(
@@ -46,4 +50,4 @@ classification$score = 1000
 
 prelim_classification = merge(classification, merge_scheme, by='code', sort=F)
 final_classification = prelim_classification[, c('chr','start','end','name','score','strand','thickStart','thickEnd','rgb')]
-write.table(final_classification, file=outFile, sep='\t', col.names=F, row.names=F, quote=F)
+write.table(final_classification, file=outbed, sep='\t', col.names=F, row.names=F, quote=F)

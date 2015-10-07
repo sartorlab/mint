@@ -17,9 +17,8 @@ COMPARISON=$4
 EXP1COV=$6
 EXP2COV=$8
 
-# Directories
-DATADIR=~/latte/mint/data/${PROJECT}
-ANALYSISDIR=~/latte/mint/analysis/${PROJECT}
+# Go to the project directory
+cd ~/latte/mint/${PROJECT}
 
 # Split PePr output into up, down, no DM / signal, and no DM / no signal
 # Also need to give bedGraphs of read coverage to determine signal
@@ -27,31 +26,31 @@ ANALYSISDIR=~/latte/mint/analysis/${PROJECT}
 exp1=$(echo $EXP1COV | tr "," " ")
 exp2=$(echo $EXP2COV | tr "," " ")
 
-ogUpPeaks=${ANALYSISDIR}/pepr_peaks/${COMPARISON}__PePr_up_peaks.bed
-ogDownPeaks=${ANALYSISDIR}/pepr_peaks/${COMPARISON}__PePr_down_peaks.bed
+ogUpPeaks=./analysis/pepr_peaks/${COMPARISON}__PePr_up_peaks.bed
+ogDownPeaks=./analysis/pepr_peaks/${COMPARISON}__PePr_down_peaks.bed
 
-upSorted=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_up_peaks_sorted.bed
-downSorted=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_down_peaks_sorted.bed
+upSorted=./analysis/pepr_peaks/${COMPARISON}_PePr_up_peaks_sorted.bed
+downSorted=./analysis/pepr_peaks/${COMPARISON}_PePr_down_peaks_sorted.bed
 
-upDisjoint=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_up_peaks_disjoint.bed
-downDisjoint=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_down_peaks_disjoint.bed
+upDisjoint=./analysis/pepr_peaks/${COMPARISON}_PePr_up_peaks_disjoint.bed
+downDisjoint=./analysis/pepr_peaks/${COMPARISON}_PePr_down_peaks_disjoint.bed
 
-upPeaks=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_up_peaks.bed
-downPeaks=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_down_peaks.bed
+upPeaks=./analysis/pepr_peaks/${COMPARISON}_PePr_up_peaks.bed
+downPeaks=./analysis/pepr_peaks/${COMPARISON}_PePr_down_peaks.bed
 
-allPeaks=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_peaks.bed
-allSorted=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_peaks_sorted.bed
+allPeaks=./analysis/pepr_peaks/${COMPARISON}_PePr_peaks.bed
+allSorted=./analysis/pepr_peaks/${COMPARISON}_PePr_peaks_sorted.bed
 
-allPeaksNoDM=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_noDM.bed
+allPeaksNoDM=./analysis/pepr_peaks/${COMPARISON}_PePr_noDM.bed
 
-noDMSignalPeaks=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_noDM_signal.bed
-noDMNoSignalPeaks=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_noDM_nosignal.bed
+noDMSignalPeaks=./analysis/pepr_peaks/${COMPARISON}_PePr_noDM_signal.bed
+noDMNoSignalPeaks=./analysis/pepr_peaks/${COMPARISON}_PePr_noDM_nosignal.bed
 
-noDMSignalPeaksSorted=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_noDM_signal_sorted.bed
-noDMNoSignalPeaksSorted=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_PePr_noDM_nosignal_sorted.bed
+noDMSignalPeaksSorted=./analysis/pepr_peaks/${COMPARISON}_PePr_noDM_signal_sorted.bed
+noDMNoSignalPeaksSorted=./analysis/pepr_peaks/${COMPARISON}_PePr_noDM_nosignal_sorted.bed
 
-signal=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_signal_pulldown.bed
-noSignal=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_nosignal_pulldown.bed
+signal=./analysis/pepr_peaks/${COMPARISON}_signal_pulldown.bed
+noSignal=./analysis/pepr_peaks/${COMPARISON}_nosignal_pulldown.bed
 
 # Split PePr results into up, down, no DM / signal, and no DM / no signal
 # These 5hmC files are the corresponding rows of the classification table
@@ -109,10 +108,16 @@ noSignal=${ANALYSISDIR}/pepr_peaks/${COMPARISON}_nosignal_pulldown.bed
         # *_PePr_down_peaks.bed
         # *_PePr_noDM_signal.bed
         # *_PePr_noDM_nosignal.bed
-
+        echo 'All of the following values should be 0!'
+        echo 'Up peaks disjoint from down peaks?'
         bedtools intersect -a $upPeaks -b $downPeaks | wc -l
+        echo 'Up peaks distinct from no DM and signal regions?'
         bedtools intersect -a $upPeaks -b $noDMSignalPeaks | wc -l
+        echo 'Up peaks distinct from no DM and no signal regions?'
         bedtools intersect -a $upPeaks -b $noDMNoSignalPeaks | wc -l
+        echo 'Down peaks distinct from no DM and signal regions?'
         bedtools intersect -a $downPeaks -b $noDMSignalPeaks | wc -l
+        echo 'Down peaks distinct from no DM and no signal regions?'
         bedtools intersect -a $downPeaks -b $noDMNoSignalPeaks | wc -l
+        echo 'No DM signal regions distinct from no DM no signal regions?'
         bedtools intersect -a $noDMSignalPeaks -b $noDMNoSignalPeaks | wc -l

@@ -10,23 +10,21 @@ chipID=$4
 inputID=$6
 humanID=$8
 
-# Directories
-DATADIR=~/latte/mint/data/${PROJECT}
-ANALYSISDIR=~/latte/mint/analysis/${PROJECT}
-HUBDIR=~/latte/mint/analysis/${PROJECT}/summary/ucsc_trackhub/hg19
+# Go to the project directory
+cd ~/latte/mint/${PROJECT}
 
 # Create appropriate file names
-bowtie2Bam=${ANALYSISDIR}/bowtie2_bams/${chipID}_pulldown_aligned.bam
-bowtie2InputBam=${ANALYSISDIR}/bowtie2_bams/${inputID}_pulldown_aligned.bam
+bowtie2Bam=./analysis/bowtie2_bams/${chipID}_pulldown_aligned.bam
+bowtie2InputBam=./analysis/bowtie2_bams/${inputID}_pulldown_aligned.bam
 macsPrefix=${humanID}_pulldown_macs2
-macsNarrowpeak=${ANALYSISDIR}/macs_peaks/${humanID}_pulldown_macs2_peaks.narrowPeak
-macsNarrowpeakSorted=${ANALYSISDIR}/macs_peaks/${humanID}_sorted_tmp.narrowPeak
-macsNarrowpeakCeiling=${ANALYSISDIR}/macs_peaks/${humanID}_ceiling_tmp.narrowPeak
-bowtie2InputBedgraph=${ANALYSISDIR}/pulldown_coverages/${inputID}_pulldown_zero.bdg
-macsBigbed=${HUBDIR}/${humanID}_pulldown_macs2_peaks_ucsc.bb
+macsNarrowpeak=./analysis/macs_peaks/${humanID}_pulldown_macs2_peaks.narrowPeak
+macsNarrowpeakSorted=./analysis/macs_peaks/${humanID}_sorted_tmp.narrowPeak
+macsNarrowpeakCeiling=./analysis/macs_peaks/${humanID}_ceiling_tmp.narrowPeak
+bowtie2InputBedgraph=./analysis/pulldown_coverages/${inputID}_pulldown_zero.bdg
+macsBigbed=./analysis/summary/ucsc_trackhub/hg19/${humanID}_pulldown_macs2_peaks_ucsc.bb
 
 # MACS2 to call peaks
-macs2 callpeak -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ${ANALYSISDIR}/macs_peaks -n $macsPrefix
+macs2 callpeak -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/macs_peaks -n $macsPrefix
 
 # Remove extraneous MACS2 output to minimize footprint
 # Excel output is truly unnecessary, and summits information can be recovered

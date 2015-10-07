@@ -6,27 +6,26 @@
 PROJECT=$2
 COMPARISON=$4
 
-# Directories
-DATADIR=~/latte/mint/data/${PROJECT}
-ANALYSISDIR=~/latte/mint/analysis/${PROJECT}
+# Go to the project directory
+cd ~/latte/mint/${PROJECT}
 
 # Split methylSig results into up, down, no DM / signal, and no DM / no signal
 # we are using the 5th (pvalue) column instead of the 6th (qvalue) column
 
-methylSigFile=${ANALYSISDIR}/methylsig_calls/${COMPARISON}.txt
-methylSigSmall=${ANALYSISDIR}/methylsig_calls/${COMPARISON}.bed
+methylSigFile=./analysis/methylsig_calls/${COMPARISON}.txt
+methylSigSmall=./analysis/methylsig_calls/${COMPARISON}.bed
 
-dmUp=${ANALYSISDIR}/methylsig_calls/${COMPARISON}_methylSig_DM_up.bed
-dmDown=${ANALYSISDIR}/methylsig_calls/${COMPARISON}_methylSig_DM_down.bed
+dmUp=./analysis/methylsig_calls/${COMPARISON}_methylSig_DM_up.bed
+dmDown=./analysis/methylsig_calls/${COMPARISON}_methylSig_DM_down.bed
 
-dmAll=${ANALYSISDIR}/methylsig_calls/${COMPARISON}_methylSig_DM.bed
-dmAllSorted=${ANALYSISDIR}/methylsig_calls/${COMPARISON}_methylSig_DM_sorted.bed
+dmAll=./analysis/methylsig_calls/${COMPARISON}_methylSig_DM.bed
+dmAllSorted=./analysis/methylsig_calls/${COMPARISON}_methylSig_DM_sorted.bed
 
-noDMSignal=${ANALYSISDIR}/methylsig_calls/${COMPARISON}_methylSig_noDM_signal.bed
-noDMNoSignal=${ANALYSISDIR}/methylsig_calls/${COMPARISON}_methylSig_noDM_nosignal.bed
+noDMSignal=./analysis/methylsig_calls/${COMPARISON}_methylSig_noDM_signal.bed
+noDMNoSignal=./analysis/methylsig_calls/${COMPARISON}_methylSig_noDM_nosignal.bed
 
-noDMSignalSorted=${ANALYSISDIR}/methylsig_calls/${COMPARISON}_methylSig_noDM_signal_sorted.bed
-noDMNoSignalSorted=${ANALYSISDIR}/methylsig_calls/${COMPARISON}_methylSig_noDM_nosignal_sorted.bed
+noDMSignalSorted=./analysis/methylsig_calls/${COMPARISON}_methylSig_noDM_signal_sorted.bed
+noDMNoSignalSorted=./analysis/methylsig_calls/${COMPARISON}_methylSig_noDM_nosignal_sorted.bed
 
     # NOTE: For DM up and down, it may be desirable to require a minimum methylation differential
     # DM up
@@ -66,9 +65,16 @@ noDMNoSignalSorted=${ANALYSISDIR}/methylsig_calls/${COMPARISON}_methylSig_noDM_n
         # $noDMSignal
         # $noDMNoSignal
 
+        echo 'All of the following values should be 0!'
+        echo 'Up regions disjoint from down regions?'
         bedtools intersect -a $dmUp -b $dmDown | wc -l
+        echo 'Up regions distinct from no DM and signal regions?'
         bedtools intersect -a $dmUp -b $noDMSignal | wc -l
+        echo 'Up regions distinct from no DM and no signal regions?'
         bedtools intersect -a $dmUp -b $noDMNoSignal | wc -l
+        echo 'Down regions distinct from no DM and signal regions?'
         bedtools intersect -a $dmDown -b $noDMSignal | wc -l
+        echo 'Down regions distinct from no DM and no signal regions?'
         bedtools intersect -a $dmDown -b $noDMNoSignal | wc -l
+        echo 'No DM signal regions distinct from no DM no signal regions?'
         bedtools intersect -a $noDMSignal -b $noDMNoSignal | wc -l

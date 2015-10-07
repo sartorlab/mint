@@ -9,16 +9,13 @@ opt = parse_args(OptionParser(option_list=option_list))
 project = opt$project
 humanID = opt$humanID
 
-# Setup directory paths
-basedir = '~/latte/mint'
-macsdir = sprintf('%s/analysis/%s/macs_peaks', basedir, project)
-simpleclassifydir = sprintf('%s/analysis/%s/classification_simple', basedir, project)
-hubdir = sprintf('%s/analysis/%s/summary/ucsc_trackhub/hg19', basedir, project)
+# Set working directory
+setwd(sprintf('~/latte/mint/%s', project))
 
 # Setup file paths
-pulldown_file = sprintf('%s/%s_pulldown_macs2_peaks.narrowPeak', humanID, macsdir)
-class_bed_file = sprintf('%s/%s_simple_classification.bed', humanID, simpleclassifydir)
-class_bb_file = sprintf('%s/%s_simple_classification.bb', humanID, hubdir)
+pulldown_file = sprintf('./analysis/macs_peaks/%s_pulldown_macs2_peaks.narrowPeak', humanID, macsdir)
+class_bed_file = sprintf('./analysis/classification_simple/%s_simple_classification.bed', humanID, simpleclassifydir)
+class_bb_file = sprintf('./analysis/summary/ucsc_trackhub/hg19/%s_simple_classification.bb', humanID, hubdir)
 
 # Interpret antibody and corresponding coding
 if(grepl('_hmc', humanID)) {
@@ -84,5 +81,5 @@ write.table(merged_final, file=class_bed_file, sep='\t', row.names=F, col.names=
 
 # Convert to bigBed
 message('Converting BED to bigBED...')
-command = sprintf('bedToBigBed %s ~/latte/Methylation/Data/chromInfo_hg19.txt %s', class_bed_file, class_bb_file)
+command = sprintf('bedToBigBed %s ~/latte/Homo_sapiens/chromInfo_hg19.txt %s', class_bed_file, class_bb_file)
 system(command)

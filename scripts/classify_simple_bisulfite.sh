@@ -6,21 +6,18 @@
 PROJECT=$2
 humanID=$4
 
-# Directories
-DATADIR=~/latte/mint/data/${PROJECT}
-EXTRACTORDIR=~/latte/mint/analysis/${PROJECT}/bismark_extractor_calls
-CLASSIFYDIR=~/latte/mint/analysis/${PROJECT}/classification_simple
-HUBDIR=~/latte/mint/analysis/${PROJECT}/summary/ucsc_trackhub/hg19
+# Go to the project directory
+cd ~/latte/mint/${PROJECT}
 
 # Create appropriate file names
-coverage=${EXTRACTORDIR}/${humanID}_trim.fastq.gz_bismark.bismark.cov
-noCoverage=${CLASSIFYDIR}/${humanID}_simple_tmp_no.bed
-lowCoverage=${CLASSIFYDIR}/${humanID}_simple_tmp_low.bed
-medCoverage=${CLASSIFYDIR}/${humanID}_simple_tmp_med.bed
-highCoverage=${CLASSIFYDIR}/${humanID}_simple_tmp_high.bed
-simpleTmp=${CLASSIFYDIR}/${humanID}_errbs_simple_tmp.bed
-simpleSorted=${CLASSIFYDIR}/${humanID}_bisulfite_classification_simple.bed
-simpleBigbed=${HUBDIR}/${humanID}_bisulfite_classification_simple.bb
+coverage=./analysis/bismark_extractor_calls/${humanID}_trim.fastq.gz_bismark.bismark.cov
+noCoverage=./analysis/classification_simple/${humanID}_simple_tmp_no.bed
+lowCoverage=./analysis/classification_simple/${humanID}_simple_tmp_low.bed
+medCoverage=./analysis/classification_simple/${humanID}_simple_tmp_med.bed
+highCoverage=./analysis/classification_simple/${humanID}_simple_tmp_high.bed
+simpleTmp=./analysis/classification_simple/${humanID}_errbs_simple_tmp.bed
+simpleSorted=./analysis/classification_simple/${humanID}_bisulfite_classification_simple.bed
+simpleBigbed=./analysis/summary/ucsc_trackhub/hg19/${humanID}_bisulfite_classification_simple.bb
 
 # Create color variables
 no=0,0,0
