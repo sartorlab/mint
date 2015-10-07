@@ -87,7 +87,7 @@ pulldown = subset(annotation, annotation$pulldown == 1)
 # Control checks for script creation
 boolBis = nrow(bisulfite) > 0
 boolPull = nrow(pulldown) > 0
-boolComp = comparison != ''
+boolComp = comparison != 'none'
 
 # Bisulfite scripts
   if(boolBis) {
