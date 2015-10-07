@@ -23,7 +23,7 @@ methylSigCytReport=${humanID}_trim.fastq.gz_bismark.CpG_report_for_methylSig.txt
 bismarkBigwig=./analysis/summary/ucsc_trackhub/hg19/${humanID}_trim.fastq.gz_bismark.bw
 
 # FastQC raw data
-fastqc --format fastq --noextract --outdir ${ANALYSISDIR}/raw_fastqcs $rawFastq
+fastqc --format fastq --noextract --outdir ./analysis/raw_fastqcs $rawFastq
 
 # Trim reads of adapter sequence (maybe by quality with trim_galore later)
 # Based on https://cutadapt.readthedocs.org/en/stable/guide.html#bisulfite-sequencing-rrbs
@@ -31,7 +31,7 @@ fastqc --format fastq --noextract --outdir ${ANALYSISDIR}/raw_fastqcs $rawFastq
 cutadapt --error-rate=0.2 --adapter=NNTGAGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATCTCGTATGC --minimum-length=21 --overlap=6 --output=$trimFastq $rawFastq
 
 # FastQC trimmed reads
-fastqc --format fastq --noextract --outdir ${ANALYSISDIR}/trim_fastqcs $trimFastq
+fastqc --format fastq --noextract --outdir ./analysis/trim_fastqcs $trimFastq
 
 # Bismark on trimmed reads
 bismark --bowtie1 --bam --seedlen 50 --output_dir ./analysis/bismark_bams ~/latte/Homo_sapiens/ $trimFastq
