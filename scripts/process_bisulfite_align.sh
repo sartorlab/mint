@@ -14,6 +14,7 @@ cd ~/latte/mint/${PROJECT}
 # Files
 rawFastq=./data/raw_fastqs/${sampleID}.fastq.gz
 trimFastq=./analysis/trim_fastqs/${humanID}_trim.fastq.gz
+bismarkBamPrefix=./bismark_bams/${humanID}_trim.fastq.gz_bismark
 bismarkBam=../bismark_bams/${humanID}_trim.fastq.gz_bismark.bam
 bismarkBedgraphgz=${humanID}_trim.fastq.gz_bismark.bedGraph.gz
 bismarkBedgraph=${humanID}_trim.fastq.gz_bismark.bedGraph
@@ -35,6 +36,10 @@ fastqc --format fastq --noextract --outdir ./analysis/trim_fastqcs $trimFastq
 
 # Bismark on trimmed reads
 bismark --bowtie1 --bam --seedlen 50 --output_dir ./analysis/bismark_bams --temp_dir ./analysis/bismark_bams ~/latte/Homo_sapiens/ $trimFastq
+
+# Sort and index the .bam from bismark for more efficient storage and downstream use
+samtools sort ${bismarkBamPrefix}.bam $bismarkBamPrefix
+samtools index ${bismarkBamPrefix}.bam
 
 # The --bedGraph module of the methylation extractor does not support path information
 # in the reference to the extractor files, so we need to be in the bismark_extractor_calls folder
