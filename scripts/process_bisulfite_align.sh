@@ -21,7 +21,7 @@ bismarkBedgraph=${humanID}_trim.fastq.gz_bismark.bedGraph
 bismarkSortedBedgraph=${humanID}_trim.fastq.gz_bismark_sorted.bedGraph
 bismarkCytReport=${humanID}_trim.fastq.gz_bismark.CpG_report.txt
 methylSigCytReport=${humanID}_trim.fastq.gz_bismark.CpG_report_for_methylSig.txt
-bismarkBigwig=./analysis/summary/ucsc_trackhub/hg19/${humanID}_trim.fastq.gz_bismark.bw
+bismarkBigwig=../summary/ucsc_trackhub/hg19/${humanID}_trim.fastq.gz_bismark.bw
 
 # FastQC raw data
 fastqc --format fastq --noextract --outdir ./analysis/raw_fastqcs $rawFastq
@@ -64,6 +64,8 @@ gunzip $bismarkBedgraphgz
     # Convert to bigWig and replace original bedGraph with sorted version
     bedGraphToBigWig $bismarkSortedBedgraph ~/latte/Homo_sapiens/chromInfo_hg19.txt $bismarkBigwig
     mv $bismarkSortedBedgraph $bismarkBedgraph
+
+gzip $bismarkBedgraph
 
     # Create custom track file and add the relevant track
     # echo '' > $customTracks

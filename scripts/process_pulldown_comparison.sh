@@ -24,7 +24,7 @@ peprUpTmp=${COMPARISON}_up_tmp.bed
 peprDownTmp=${COMPARISON}_down_tmp.bed
 peprUcscTmp=${COMPARISON}_ucsc_tmp.bed
 peprUcscSortedTmp=${COMPARISON}_ucsc_sorted_tmp.bed
-peprBigbed=./analysis/summary/ucsc_trackhub/hg19/${COMPARISON}_PePr_peaks.bb
+peprBigbed=../summary/ucsc_trackhub/hg19/${COMPARISON}_PePr_peaks.bb
 
 # Since PePr doesn't allow you to specify output directory, cd into the directory
 # where we want the result files to live
