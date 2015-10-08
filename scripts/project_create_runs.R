@@ -249,7 +249,7 @@ boolComp = comparison != 'none'
           project,
           chipFile,
           inputFile,
-          hID)
+          chipID)
         cat(command, file=pullSampleScript, sep='\n', append=T)
 
         pullSimpClassScript = sprintf('%s/%s_pulldown_classification_simple.sh', projectscriptdir, project)

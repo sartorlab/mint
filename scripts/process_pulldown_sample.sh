@@ -29,8 +29,8 @@ macs2 callpeak -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analys
 # Remove extraneous MACS2 output to minimize footprint
 # Excel output is truly unnecessary, and summits information can be recovered
 # from the narrowPeak output
-    rm *peaks.xls
-    rm *summits.bed
+    rm ./analysis/macs_peaks/*peaks.xls
+    rm ./analysis/macs_peaks/*summits.bed
 
 # Determine region of zero input coverage for classification
 bedtools genomecov -bga -ibam $bowtie2InputBam -g ~/latte/Homo_sapiens/chromInfo_hg19.txt | grep -w '0$' > $bowtie2InputBedgraph
