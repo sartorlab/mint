@@ -1,6 +1,5 @@
 # mint
 ## A pipeline for the analysis, integration, and visualization of DNA methylation data
-—————
 
 ## Motivation
 DNA methylation is known to occur in a variety of forms. Canonical 5-methylcytosine (5mC) is the best studied, and has been shown to have a variety of roles in differentiation and regulation. More recently, studies of 5-hydroxymethylcytosine (5hmC) imply it is a stable base-modification with biological roles distinct from those of 5mC. 5‐formylcytosine (5fC) and 5‐carboxycytosine (5caC) are less well known, but are increasingly being explored.
