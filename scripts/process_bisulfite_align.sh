@@ -34,7 +34,7 @@ cutadapt --error-rate=0.2 --adapter=NNTGAGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATC
 fastqc --format fastq --noextract --outdir ./analysis/trim_fastqcs $trimFastq
 
 # Bismark on trimmed reads
-bismark --bowtie1 --bam --seedlen 50 --output_dir ./analysis/bismark_bams ~/latte/Homo_sapiens/ $trimFastq
+bismark --bowtie1 --bam --seedlen 50 --output_dir ./analysis/bismark_bams --temp_dir ./analysis/bismark_bams ~/latte/Homo_sapiens/ $trimFastq
 
 # The --bedGraph module of the methylation extractor does not support path information
 # in the reference to the extractor files, so we need to be in the bismark_extractor_calls folder
