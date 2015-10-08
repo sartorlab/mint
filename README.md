@@ -6,7 +6,7 @@ DNA methylation is known to occur in a variety of forms. Canonical 5-methylcytos
 
 Current bisulfite-conversion + sequencing technologies (e.g. BS-seq and RRBS) are unable to distinguish between 5mC and 5hmC because both marks protect the cytosine from bisulfite-conversion. Newer technologies designed to detect only 5hmC (e.g. oxBS-seq and TAB-seq) currently have low-reproducibility and conversion efficiency. There are, however, specific antibodies capable of pulling down either 5mC or 5hmC alone. These pulldown methods, unfortunately, do not achieve base-pair resolution, and are qualitative in nature.
 
-We have developed a __m__ethylation __int__egration pipeline using established bioinformatics tools to determine regions of 5mC and 5hmC genome-wide, and newly developed classifiers to attempt to pull apart 5mC regions versus 5hmC regions.
+We have developed a methylation integration pipeline using established bioinformatics tools to determine regions of 5mC and 5hmC genome-wide, and newly developed classifiers to attempt to pull apart 5mC regions versus 5hmC regions.
 
 ## Methods
 Bisulfite-conversion methods (e.g. BS-seq and RRBS) quantify 5mC + 5hmC levels while pulldown methods (e.g. MeDIP-seq and hMeDIP-seq) give relative 5mC or 5hmC levels. We have developed a simple classifier that integrates data from these two classes of experiments to label regions 5mC or 5hmC.
