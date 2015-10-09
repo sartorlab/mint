@@ -20,14 +20,13 @@ humanID = opt$humanID
 winsize = opt$winsize
 
 # Setup directory paths
-setwd(sprintf('~/latte/mint/%s'), project)
+setwd(sprintf('~/latte/mint/%s', project))
 
 # Setup file paths
 macs_file = sprintf('./analysis/macs_peaks/%s_pulldown_macs2_peaks.narrowPeak', pulldownID)
 pulldown_zero_file = sprintf('./analysis/pulldown_coverages/%s_pulldown_zero.bdg', pulldownInputID)
-cov_file = sprintf('./analysis/bismark_extractor_calls/%s_trim.fastq.gz_bismark.bismark.cov.gz', bisulfiteID)
-cyt_file = sprintf('./analysis/bismark_extractor_calls/%s_trim.fastq.gz_bismark.CpG_report.txt', bisulfiteID)
-class_bed_file = sprintf('./analysis/classification_simple/%s_sample_classification_regions.bed', humanID)
+cyt_file = sprintf('./analysis/bismark_extractor_calls/%s_trim.fastq.gz_bismark.CpG_report_for_methylSig.txt', bisulfiteID)
+class_bed_file = sprintf('./analysis/classification_sample/%s_sample_classification_regions.bed', humanID)
 class_bb_file = sprintf('./analysis/summary/ucsc_trackhub/hg19/%s_sample_classification_regions.bb', humanID)
 
 chr_lengths = read.table('~/latte/Homo_sapiens/chromInfo_hg19.txt', header=F, sep='\t', stringsAsFactors=F)
@@ -39,7 +38,7 @@ classification = data.frame(
     color_name = c('blue','cyan','gray','black','black','magenta','yellow','red','green'),
     stringsAsFactors=F)
 
-message(sprintf('Processing sample: %s',sample))
+message(sprintf('Processing sample: %s',humanID))
 
     # File checks
         if(!file.exists(macs_file)) {
@@ -47,9 +46,6 @@ message(sprintf('Processing sample: %s',sample))
         }
         if(!file.exists(pulldown_zero_file)) {
             stop(sprintf('%s does not exist!',pulldown_zero_file))
-        }
-        if(!file.exists(cov_file)) {
-            stop(sprintf('%s does not exist!',cov_file))
         }
         if(!file.exists(cyt_file)) {
             stop(sprintf('%s does not exist!',cyt_file))
@@ -91,10 +87,9 @@ message(sprintf('Processing sample: %s',sample))
 # Methylation calls from bismark_methylation_extractor
 # 1-based?
     message('Reading bismark_methylation_extractor into methylSig...')
-    bisulfite = readBismarkData(
-        bismarkCovFiles=cov_file,
-        cytosineCovFiles=cyt_file,
-        sample.ids=sample,
+    bisulfite = methylSigReadData(
+        fileList=cyt_file,
+        sample.ids=humanID,
         assembly='hg19',
         pipeline='bismark',
         context='CpG',
