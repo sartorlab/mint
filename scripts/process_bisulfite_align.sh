@@ -1,4 +1,7 @@
 #!/bin/bash
+set -e
+set -u
+set -o pipefail
 
 # Arguments
 # -project The project name given to init_project.sh
@@ -51,7 +54,7 @@ bismark_methylation_extractor --single-end --gzip --bedGraph --cutoff 5 --cytosi
 
 # Convert the CpG report into something useful for methylSigReadData
 # We are requiring the coverage to be at least 5 reads
-awk '$4 + $5 > 4 { print $1 "." $2 "\t" $1 "\t" $2 "\t" $3 "\t" $4 + $5 "\t" ($4 / ($4 + $5))*100 "\t" ($5 / ($4 + $5))*100 }' $bismarkCytReport > $methylSigCytReport
+awk -v OFS="\t" '$4 + $5 > 4 { print $1 "." $2, $1, $2, $3, $4 + $5, ($4 / ($4 + $5))*100, ($5 / ($4 + $5))*100 }' $bismarkCytReport > $methylSigCytReport
 
 # Visualize methylation rates in UCSC Genome Browser (sample-wise)
 # v0.14.4 of Bismark automatically gz's bedGraph and coverage files

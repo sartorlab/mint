@@ -1,4 +1,7 @@
 #!/bin/bash
+set -e
+set -u
+set -o pipefail
 
 # Argument order
 # -project The project name given to init_project.sh
@@ -38,8 +41,8 @@ python2.7 /home/rcavalca/.local/lib/python2.7/site-packages/PePr-1.0.8-py2.7.egg
 
     # This is BED format with the following \t separated columns
     # chrom, start, end, name, score, strand, thickStart, thickEnd, color
-    awk '{ print $1 "\t" $2 "\t" $3 "\t" "up"$1":"$2 "\t" "1000" "\t" "." "\t" $2 "\t" $3 "\t" "0,0,255" }' $peprUp > $peprUpTmp
-    awk '{ print $1 "\t" $2 "\t" $3 "\t" "down"$1":"$2 "\t" "1000" "\t" "." "\t" $2 "\t" $3 "\t" "102,102,255" }' $peprDown > $peprDownTmp
+    awk -v OFS="\t" '{ print $1, $2, $3, "up"$1":"$2, "1000", ".", $2, $3, "0,0,255" }' $peprUp > $peprUpTmp
+    awk -v OFS="\t" '{ print $1, $2, $3, "down"$1":"$2, "1000", ".", $2, $3, "102,102,255" }' $peprDown > $peprDownTmp
     cat $peprUpTmp $peprDownTmp > $peprUcscTmp
 
     rm $peprUpTmp

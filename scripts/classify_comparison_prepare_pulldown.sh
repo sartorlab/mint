@@ -1,4 +1,7 @@
 #!/bin/bash
+set -e
+set -u
+set -o pipefail
 
 # Example usage
 # sh classification_comparison_prepare_pulldown.sh -project GSE52945 -comparison IDH2vNBM -exp1cov IDH2mut_1_affinity.bdg,IDH2mut_2_affinity.bdg,IDH2mut_3_affinity.bdg -exp2cov NBM_1_affinity.bdg,NBM_2_affinity.bdg,NBM_3_affinity.bdg

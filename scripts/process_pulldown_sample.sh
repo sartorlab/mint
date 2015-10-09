@@ -1,4 +1,8 @@
 #!/bin/bash
+set -e
+set -u
+set -o pipefail
+
 
 # Arguments
 # -project The project name given to init_project.sh
@@ -41,7 +45,7 @@ bedtools genomecov -bga -ibam $bowtie2InputBam -g ~/latte/Homo_sapiens/chromInfo
     sort -T . -k1,1 -k2,2n $macsNarrowpeak > $macsNarrowpeakSorted
     # Make sure MACS2 output score field doesn't exceed 1000
     # Fifth column of narrowPeak is the score
-    awk '$5 > 1000 { print $1 "\t" $2 "\t" $3 "\t" $4 "\t" "1000" "\t" $6 "\t" $7 "\t" $8 "\t" $9 "\t" $10 } $5 <= 1000 { print $1 "\t" $2 "\t" $3 "\t" $4 "\t" $5 "\t" $6 "\t" $7 "\t" $8 "\t" $9 "\t" $10 }' $macsNarrowpeakSorted > $macsNarrowpeakCeiling
+    awk -v OFS="\t" '$5 > 1000 { print $1, $2, $3, $4, "1000", $6, $7, $8, $9, $10 } $5 <= 1000 { print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10 }' $macsNarrowpeakSorted > $macsNarrowpeakCeiling
     # Convert to bigBed
     # The *.as file apparently needs to be in the same folder as the files being converted
     bedToBigBed -type=bed6+4 -as=narrowPeak.as $macsNarrowpeakCeiling ~/latte/Homo_sapiens/chromInfo_hg19.txt $macsBigbed

@@ -1,4 +1,7 @@
 #!/bin/bash
+set -e
+set -u
+set -o pipefail
 
 # Steps required prior to classification
 
@@ -50,17 +53,17 @@ classBB=./analysis/summary/ucsc_trackhub/hg19/${COMPARISON}_classification_regio
     # Checks that all rows have one classification per 5mC + 5hmC and 5hmC each
         # Check that the number of intersections is always two. In other words, every region is always
         # categorized as DMup, DMdown, noDMsignal, or noDMnosignal with respect to 5mC (or 5mC + 5hmC) and 5hmC.
-        awk '$4 > 2 || $4 < 2 { print $1 "\t" $2 "\t" $3 "\t" $4 "\t" $5 }' $multiInterFile > $checkEqualTwo
+        awk -v OFS="\t" '$4 > 2 || $4 < 2 { print $1, $2, $3, $4, $5 }' $multiInterFile > $checkEqualTwo
 
         # Check that there is only one assignment in 5mC (or 5mC + 5hmC)
-        awk '$6 + $7 + $8 + $9 > 1 { print $1 "\t" $2 "\t" $3 "\t" $4 "\t" $5 }' $multiInterFile > $checkDoubleM
+        awk -v OFS="\t" '$6 + $7 + $8 + $9 > 1 { print $1, $2, $3, $4, $5 }' $multiInterFile > $checkDoubleM
 
         # Check that there is only one assignment in 5hmC
-        awk '$10 + $11 + $12 + $13 > 1 { print $1 "\t" $2 "\t" $3 "\t" $4 "\t" $5 }' $multiInterFile > $checkDoubleH
+        awk -v OFS="\t" '$10 + $11 + $12 + $13 > 1 { print $1, $2, $3, $4, $5 }' $multiInterFile > $checkDoubleH
 
     # Do the numerical encoding according to the classification table. The interpretation is the same whether
     # there is a hybrid experimental setup or a pure affinity experiment setup.
-    awk '{print $1 "\t" $2 "\t" $3 "\t" ($6 * 3) + ($7 * 5) + ($8 * 7) + ($9 * 11) "\t" ($10 * 2) + ($11 * 4) + ($12 * 6) + ($13 * 8) "\t" (($6 * 3) + ($7 * 5) + ($8 * 7) + ($9 * 11)) * (($10 * 2) + ($11 * 4) + ($12 * 6) + ($13 * 8))}' $multiInterFile > $firstClassFile
+    awk -v OFS="\t" '{print $1, $2, $3, ($6 * 3) + ($7 * 5) + ($8 * 7) + ($9 * 11), ($10 * 2) + ($11 * 4) + ($12 * 6) + ($13 * 8), (($6 * 3) + ($7 * 5) + ($8 * 7) + ($9 * 11)) * (($10 * 2) + ($11 * 4) + ($12 * 6) + ($13 * 8))}' $multiInterFile > $firstClassFile
 
 # R code to merge the encoded BED on the appropriate color scheme for the bigBed
     Rscript ~/latte/mint/scripts/classify_comparison.R --project=$PROJECT --comparison=$COMPARISON --inbed=$firstClassFile --outbed=$finalClassFile

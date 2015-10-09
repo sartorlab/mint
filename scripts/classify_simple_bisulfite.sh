@@ -1,4 +1,7 @@
 #!/bin/bash
+set -e
+set -u
+set -o pipefail
 
 # Arguments
 # -project The project name given to init_project.sh
@@ -27,10 +30,10 @@ high=102,0,102
 
 # Create individual low, med, high files
 # Add in something for less than 3% - 4%
-awk '$4 < 5 { print $1 "\t" $2 - 1 "\t" $3 "\t" "5mC_5hmC_none" "\t" "1000" "\t" "." "\t" $2 "\t" $3 "\t" "0,0,0"}' $coverage > $noCoverage
-awk '$4 < 33 && $4 >=5 { print $1 "\t" $2 - 1 "\t" $3 "\t" "5mC_5hmC_low" "\t" "1000" "\t" "." "\t" $2 "\t" $3 "\t" "255,153,255"}' $coverage > $lowCoverage
-awk '$4 >= 33 && $4 < 66 { print $1 "\t" $2 - 1 "\t" $3 "\t" "5mC_5hmC_med" "\t" "1000" "\t" "." "\t" $2 "\t" $3 "\t" "255,0,255"}' $coverage > $medCoverage
-awk '$4 >= 66 { print $1 "\t" $2 - 1 "\t" $3 "\t" "5mC_5hmC_high" "\t" "1000" "\t" "." "\t" $2 "\t" $3 "\t" "102,0,102"}' $coverage > $highCoverage
+awk -v OFS="\t" '$4 < 5 { print $1, $2 - 1, $3, "5mC_5hmC_none", "1000", ".", $2, $3, "0,0,0"}' $coverage > $noCoverage
+awk -v OFS="\t" '$4 < 33 && $4 >=5 { print $1, $2 - 1, $3, "5mC_5hmC_low", "1000", ".", $2, $3, "255,153,255"}' $coverage > $lowCoverage
+awk -v OFS="\t" '$4 >= 33 && $4 < 66 { print $1, $2 - 1, $3, "5mC_5hmC_med", "1000", ".", $2, $3, "255,0,255"}' $coverage > $medCoverage
+awk -v OFS="\t" '$4 >= 66 { print $1, $2 - 1, $3, "5mC_5hmC_high", "1000", ".", $2, $3, "102,0,102"}' $coverage > $highCoverage
 
 # Concatenate and sort
 cat $noCoverage $lowCoverage $medCoverage $highCoverage > $simpleTmp
