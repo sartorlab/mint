@@ -212,7 +212,7 @@ boolComp = comparison != 'none'
         input1files = paste(paste('../bowtie2_bams/', input1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
         input2files = paste(paste('../bowtie2_bams/', input2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
         chip1files = paste(paste('../bowtie2_bams/', chip1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
-        chip2files = paste(paste('../bowtie2_bams', chip2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        chip2files = paste(paste('../bowtie2_bams/', chip2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
         pulldownComparison = sprintf('%s_%s', comparison, compContext)
 
         pullCompScript = sprintf('%s/%s_%s_pulldown_comparison.sh', projectscriptdir, project, compContext)
