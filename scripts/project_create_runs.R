@@ -209,10 +209,10 @@ boolComp = comparison != 'none'
         chip2 = subset(subpull, input == 0 & group == 0)
 
         # Files are in ../bowtie2_bams/ relative to analysis/pepr_peaks/ (execution context)
-        input1files = paste(paste('../', input1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
-        input2files = paste(paste('../', input2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
-        chip1files = paste(paste('../', chip1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
-        chip2files = paste(paste('../', chip2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        input1files = paste(paste('../bowtie2_bams/', input1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        input2files = paste(paste('../bowtie2_bams/', input2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        chip1files = paste(paste('../bowtie2_bams/', chip1$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
+        chip2files = paste(paste('../bowtie2_bams', chip2$fullHumanID, '_pulldown_aligned.bam', sep=''), collapse=',')
         pulldownComparison = sprintf('%s_%s', comparison, compContext)
 
         pullCompScript = sprintf('%s/%s_%s_pulldown_comparison.sh', projectscriptdir, project, compContext)
