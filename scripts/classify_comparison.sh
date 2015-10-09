@@ -73,7 +73,7 @@ classBB=./analysis/summary/ucsc_trackhub/hg19/${COMPARISON}_classification_regio
     mv $sortedFinalClassFile $finalClassFile
 
     # Create bigBed
-    bedToBigBed $sortedFinalClassFile ~/latte/Homo_sapiens/chromInfo_hg19.txt $classBB
+    bedToBigBed $finalClassFile ~/latte/Homo_sapiens/chromInfo_hg19.txt $classBB
 
     # scp $classBB rcavalca@sftp.itd.umich.edu:/afs/umich.edu/user/r/c/rcavalca/Public/html/GSE52945
     # Create customtrack
