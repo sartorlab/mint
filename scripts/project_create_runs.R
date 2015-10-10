@@ -360,7 +360,7 @@ boolComp = comparison != 'none'
         exp1cov = paste(paste(pulldowncovdir, '/', subCompList1$fullHumanID, '_pulldown_coverage.bdg', sep=''), collapse=',')
         exp2cov = paste(paste(pulldowncovdir, '/', subCompList2$fullHumanID, '_pulldown_coverage.bdg', sep=''), collapse=',')
 
-        command1 = sprintf('sh %s/classify_comparison_prepare_pulldown.sh -project %s -comparison %s -exp1cov %s -exp2cov %ss',
+        command1 = sprintf('sh %s/classify_comparison_prepare_pulldown.sh -project %s -comparison %s -exp1cov %s -exp2cov %s',
           scriptdir,
           project,
           pulldownComparison,
