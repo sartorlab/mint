@@ -282,9 +282,9 @@ boolComp = comparison != 'none'
         pulldownID = subset(subSampList, subSampList$pulldown == 1 & subSampList$input == 0)$fullHumanID
         pulldownInputID = subset(subSampList, subSampList$pulldown == 1 & subSampList$input == 1)$fullHumanID
 
-        # Note, the appropriate file paths are established in the classify_sample.R script
-        sampleClassScript = sprintf('%s/%s_classification_sample.sh', projectscriptdir, project)
-        command = sprintf('Rscript %s/classify_sample.R --project %s --bisulfiteID %s --pulldownID %s --pulldownInputID %s --humanID %s --winsize %s',
+        # Note, the appropriate file paths are established in the classify_sample_hybrid.R script
+        sampleClassScript = sprintf('%s/%s_classification_sample_hybrid.sh', projectscriptdir, project)
+        command = sprintf('Rscript %s/classify_sample_hybrid.R --project %s --bisulfiteID %s --pulldownID %s --pulldownInputID %s --humanID %s --winsize %s',
           scriptdir,
           project,
           bisulfiteID,
@@ -334,7 +334,37 @@ boolComp = comparison != 'none'
 
   } else if (!boolBis && boolPull && !boolComp) {
     # Prepare sample classifier scripts in pulldown case
-    message('WARNING: sample classifier scripts for pulldown experimental setup is not yet setup.')
+    # Prepare sample classifier scripts in hybrid case
+    message('Creating sample classifier scripts for pulldown experimental setup.')
+
+      sampList = split(annotation, annotation$humanID)
+
+      for(hID in names(sampList)) {
+        subSampList = sampList[[hID]]
+        mcPeaksID = subset(subSampList, subSampList$pulldown == 1 & subSampList$mc == 1)$fullHumanID
+        hmcPeaksID = subset(subSampList, subSampList$pulldown == 1 & subSampList$hmc == 1)$fullHumanID
+        if(nrow(subSampList) == 3) {
+          # Share input
+          mcZeroID = subset(subSampList, subSampList$pulldown == 1 & subSampList$input == 1)$fullHumanID
+          hmcZeroID = subset(subSampList, subSampList$pulldown == 1 & subSampList$input == 1)$fullHumanID
+        } else {
+          # Matched input
+          mcZeroID = subset(subSampList, subSampList$pulldown == 1 & subSampList$mc == 1 & subSampList$input == 1)$fullHumanID
+          hmcZeroID = subset(subSampList, subSampList$pulldown == 1 & subSampList$hmc == 1 & subSampList$input == 1)$fullHumanID
+        }
+
+        # Note, the appropriate file paths are established in the classify_sample_pulldown.sh script
+        sampleClassScript = sprintf('%s/%s_classification_sample_pulldown.sh', projectscriptdir, project)
+        command = sprintf('sh %s/classify_sample_pulldown.sh -project %s -mcPeaksID %s --mcZeroID %s -hmcPeaksID %s -hmcZeroID %s -humanID %s',
+          scriptdir,
+          project,
+          mcPeaksID,
+          mcZeroID,
+          hmcPeaksID,
+          hmcZeroID,
+          hID)
+        cat(command, file=sampleClassScript, sep='\n', append=T)
+      }
 
   } else if (!boolBis && boolPull && boolComp) {
     # Prepare comparison classifier scripts in pulldown case
