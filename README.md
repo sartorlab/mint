@@ -34,66 +34,65 @@ The mint pipeline can be used for any combination of the following two experimen
 
 ## Initializing a project
 
-1. After obtaining mint, and installing all dependencies, users can navigate to the `mint/scripts/` directory and do the following:
-```{bash}
-sh project_init.sh project_name
-```
-This initiates a project with a fixed directory structure for organizing files output by the workflow.
-
-2. Provide a tab-delimited annotation file `project_name_annotation.txt` in the `mint/project_name/data/` directory. It should include 9 columns:
-
-  1. `projectID`: The name giving in the call to `project_init.sh`.
-  2. `sampleID`: An alphanumeric ID (e.g. from SRA, GEO, sequencing core, etc.).
-  3. `humanID`: The corresponding human readable ID.
-  4. `pulldown`: A binary value indicating whether the sample is the result of a pulldown experiment (1) or not (0).
-  5. `bisulfite`: A binary value indicating whether the sample is the result of a bisulfite-conversion experiment (1) or not (0).
-  6. `mc`: A binary value indicating whether the sample represents 5mC methylation.
-  7. `hmc`: A binary value indicating whether the sample represents 5hmC methylation.
-  8. `input`: A binary value indicating whether the sample represents an input.
-  9. `group`: A binary value indicating which samples belong to one of two groups.
-
-  Note that bisulfite-conversion experiments that represent both mC and hmC should have a 1 in each column. Input pulldowns can be matched to the pulldown (e.g. `mc=1` and `hmc=0` and `input=1`) or not (e.g. `mc=0` and `hmc=0` and `input=1`).
-
-  An example of a pulldown experimental setup with sample-wise analysis is:
+  1. After obtaining mint, and installing all dependencies, users can navigate to the `mint/scripts/` directory and do the following:
   ```{bash}
-  projectID       sampleID        humanID pulldown        bisulfite       mc      hmc     input   group
-  GSE63743        SRR1686689      preeclamptic_1  1       0       0       1       0       0
-  GSE63743        SRR1686690      preeclamptic_2  1       0       0       1       0       0
-  GSE63743        SRR1686693      normal_1        1       0       0       1       0       0
-  GSE63743        SRR1686694      normal_2        1       0       0       1       0       0
-  GSE63743        SRR1686697      preeclamptic_1  1       0       1       0       0       0
-  GSE63743        SRR1686698      preeclamptic_2  1       0       1       0       0       0
-  GSE63743        SRR1686701      normal_1        1       0       1       0       0       0
-  GSE63743        SRR1686702      normal_2        1       0       1       0       0       0
-  GSE63743        SRR1686705      preeclamptic_1  1       0       0       0       1       0
-  GSE63743        SRR1686706      preeclamptic_2  1       0       0       0       1       0
-  GSE63743        SRR1686709      normal_1        1       0       0       0       1       0
-  GSE63743        SRR1686710      normal_2        1       0       0       0       1       0
+  sh project_init.sh project_name
   ```
-  An example of a hybrid experimental setup with comparison-wise analysis is:
-  ```{bash}
-  projectID       sampleID        humanID pulldown        bisulfite       mc      hmc     input   group
-  GSE52945        SRR1041959      IDH2mut_1       1       0       0       1       0       1
-  GSE52945        SRR1041960      IDH2mut_2       1       0       0       1       0       1
-  GSE52945        SRR1041977      IDH2mut_1       1       0       0       1       1       1
-  GSE52945        SRR1041978      IDH2mut_2       1       0       0       1       1       1
-  GSE52945        SRR1041992      IDH2mut_1       0       1       1       1       0       1
-  GSE52945        SRR1041993      IDH2mut_2       0       1       1       1       0       1
-  GSE52945        SRR1638715      NBM_1   1       0       0       1       0       0
-  GSE52945        SRR1638716      NBM_2   1       0       0       1       0       0
-  GSE52945        SRR1638720      NBM_1   1       0       0       1       1       0
-  GSE52945        SRR1638721      NBM_2   1       0       0       1       1       0
-  GSE52945        SRR1638726      NBM_2   0       1       1       1       0       0
-  GSE52945        SRR1638727      NBM_1   0       1       1       1       0       0
-  ```
+  This initiates a project with a fixed directory structure for organizing files output by the workflow.
 
-3. Navigate to `mint/scripts/` and do the following:
-  ```{bash}
-  Rscript project_create_runs.R --project project_name --comparison comparison_name
-  ```
-  This will generate all the scripts required to run the pipeline in the `mint/project_name/scripts/` directory.
+  2. Provide a tab-delimited annotation file `project_name_annotation.txt` in the `mint/project_name/data/` directory. It should include 9 columns:
+    1. `projectID`: The name giving in the call to `project_init.sh`.
+    2. `sampleID`: An alphanumeric ID (e.g. from SRA, GEO, sequencing core, etc.).
+    3. `humanID`: The corresponding human readable ID.
+    4. `pulldown`: A binary value indicating whether the sample is the result of a pulldown experiment (1) or not (0).
+    5. `bisulfite`: A binary value indicating whether the sample is the result of a bisulfite-conversion experiment (1) or not (0).
+    6. `mc`: A binary value indicating whether the sample represents 5mC methylation.
+    7. `hmc`: A binary value indicating whether the sample represents 5hmC methylation.
+    8. `input`: A binary value indicating whether the sample represents an input.
+    9. `group`: A binary value indicating which samples belong to one of two groups.
 
-  Scripts should be run in the following order:
-  1. `*alignment.sh`
-  2. `*comparison.sh` or `*sample.sh`
-  3. `*classification*.sh`
+    Note that bisulfite-conversion experiments that represent both mC and hmC should have a 1 in each column. Input pulldowns can be matched to the pulldown (e.g. `mc=1` and `hmc=0` and `input=1`) or not (e.g. `mc=0` and `hmc=0` and `input=1`).
+
+    An example of a pulldown experimental setup with sample-wise analysis is:
+    ```{bash}
+    projectID       sampleID        humanID pulldown        bisulfite       mc      hmc     input   group
+    GSE63743        SRR1686689      preeclamptic_1  1       0       0       1       0       0
+    GSE63743        SRR1686690      preeclamptic_2  1       0       0       1       0       0
+    GSE63743        SRR1686693      normal_1        1       0       0       1       0       0
+    GSE63743        SRR1686694      normal_2        1       0       0       1       0       0
+    GSE63743        SRR1686697      preeclamptic_1  1       0       1       0       0       0
+    GSE63743        SRR1686698      preeclamptic_2  1       0       1       0       0       0
+    GSE63743        SRR1686701      normal_1        1       0       1       0       0       0
+    GSE63743        SRR1686702      normal_2        1       0       1       0       0       0
+    GSE63743        SRR1686705      preeclamptic_1  1       0       0       0       1       0
+    GSE63743        SRR1686706      preeclamptic_2  1       0       0       0       1       0
+    GSE63743        SRR1686709      normal_1        1       0       0       0       1       0
+    GSE63743        SRR1686710      normal_2        1       0       0       0       1       0
+    ```
+    An example of a hybrid experimental setup with comparison-wise analysis is:
+    ```{bash}
+    projectID       sampleID        humanID pulldown        bisulfite       mc      hmc     input   group
+    GSE52945        SRR1041959      IDH2mut_1       1       0       0       1       0       1
+    GSE52945        SRR1041960      IDH2mut_2       1       0       0       1       0       1
+    GSE52945        SRR1041977      IDH2mut_1       1       0       0       1       1       1
+    GSE52945        SRR1041978      IDH2mut_2       1       0       0       1       1       1
+    GSE52945        SRR1041992      IDH2mut_1       0       1       1       1       0       1
+    GSE52945        SRR1041993      IDH2mut_2       0       1       1       1       0       1
+    GSE52945        SRR1638715      NBM_1   1       0       0       1       0       0
+    GSE52945        SRR1638716      NBM_2   1       0       0       1       0       0
+    GSE52945        SRR1638720      NBM_1   1       0       0       1       1       0
+    GSE52945        SRR1638721      NBM_2   1       0       0       1       1       0
+    GSE52945        SRR1638726      NBM_2   0       1       1       1       0       0
+    GSE52945        SRR1638727      NBM_1   0       1       1       1       0       0
+    ```
+
+  3. Navigate to `mint/scripts/` and do the following:
+    ```{bash}
+    Rscript project_create_runs.R --project project_name --comparison comparison_name
+    ```
+    This will generate all the scripts required to run the pipeline in the `mint/project_name/scripts/` directory.
+  
+    Scripts should be run in the following order:
+    1. `*alignment.sh`
+    2. `*comparison.sh` or `*sample.sh`
+    3. `*classification*.sh`
