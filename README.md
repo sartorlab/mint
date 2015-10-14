@@ -94,7 +94,7 @@ The mint pipeline can be used for any combination of the following two experimen
 
   4. Copy (or create symlinks to) `.fastq.gz` files bearing filenames corresponding to the `sampleID` column of `project_name_annotation.txt` into the `mint/project_name/data/raw_fastqs/` directory.
 
-  5. Scripts should be run in the following order:
+  5. Project specific scripts in the `mint/project_name/scripts/` directory should be run in the following order:
     1. `*alignment.sh`
     2. `*comparison.sh` or `*sample.sh`
     3. `*classification*.sh`
