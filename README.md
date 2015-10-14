@@ -39,6 +39,7 @@ The mint pipeline can be used for any combination of the following two experimen
 sh project_init.sh project_name
 ```
 This initiates a project with a fixed directory structure for organizing files output by the workflow.
+
 2. Provide a tab-delimited annotation file `project_name_annotation.txt` in the `mint/project_name/data/` directory. It should include 9 columns:
 
   1. `projectID`: The name giving in the call to `project_init.sh`.
@@ -85,6 +86,7 @@ This initiates a project with a fixed directory structure for organizing files o
   GSE52945        SRR1638726      NBM_2   0       1       1       1       0       0
   GSE52945        SRR1638727      NBM_1   0       1       1       1       0       0
   ```
+
 3. Navigate to `mint/scripts/` and do the following:
   ```{bash}
   Rscript project_create_runs.R --project project_name --comparison comparison_name
