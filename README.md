@@ -1,29 +1,97 @@
-## mint: a pipeline for *m*ethylation *int*egration
+# mint: a pipeline for *m*ethylation *int*egration
 
-## Motivation
+# Motivation
+
 DNA methylation is known to occur in a variety of forms. Canonical 5-methylcytosine (5mC) is the best studied, and has been shown to have a variety of roles in differentiation and regulation. More recently, studies of 5-hydroxymethylcytosine (5hmC) imply it is a stable base-modification with biological roles distinct from those of 5mC.
 
 Current bisulfite-conversion + sequencing technologies (e.g. BS-seq and RRBS) are unable to distinguish between 5mC and 5hmC because both marks protect the cytosine from bisulfite-conversion. Newer technologies designed to detect only 5hmC (e.g. oxBS-seq and TAB-seq) currently have low-reproducibility and conversion efficiency. There are, however, specific antibodies capable of pulling down either 5mC or 5hmC alone. These pulldown methods, unfortunately, do not achieve base-pair resolution, and are qualitative in nature.
 
-We have developed a methylation integration pipeline using established bioinformatics tools to determine regions of 5mC and 5hmC genome-wide, and newly developed classifiers to attempt to pull apart 5mC regions versus 5hmC regions.
+We have developed the mint pipeline to classify regions of the genome into those containing 5mC, 5hmC, both, or neither on the basis of combined information from multiple sequencing experiments.
 
-## Methods
-Bisulfite-conversion methods (e.g. BS-seq and RRBS) quantify 5mC + 5hmC levels while pulldown methods (e.g. MeDIP-seq and hMeDIP-seq) give relative 5mC or 5hmC levels. We have developed a simple classifier that integrates data from these two classes of experiments to label regions 5mC or 5hmC.
+# Methods
 
-### Experimental Setups and Analysis Steps
-Our pipeline allows for the integration of bisulfite-converted and pulldown data (hybrid setup) as well as the integration of purely pulldown data (pulldown setup). Integration can occur at the sample/replicate level, or at the differential level where two conditions are tested.
+For bisulfite-conversion data we use [cutadapt](https://cutadapt.readthedocs.org/en/stable/) to trim adapter sequence from reads and [bismark](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) to align reads to the reference genome and determine methylation rates at CpG resolution. We use [methylSig](https://github.com/sartorlab/methylSig) to determine regions of differential methylation.
 
-### Hybrid Sample/Replicate-level Analysis
-Bisulfite-converted data from BS-seq or RRBS is analyzed with Bismark (currently v0.14.4) to determine methylation rates per sample/replicate. Pulldown data from hMeDIP-seq or hMe-Seal is aligned to the genome using Bowtie2 and regions of methylation are called using MACS2. Our classifier then combines the methylation calls from Bismark with the peaks from MACS2 to determine sample/replicate-wise regions of 5mC and 5hmC. Quality information and statistics are given along with a track hub for visualization in the UCSC Genome Browser.
+For pulldown data we use [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) to align the reads to the reference genome, [MACS2](https://github.com/taoliu/MACS/tree/master/MACS2) to determine peaks for individual samples, and [PePr](https://github.com/shawnzhangyx/PePr) to determine regions of differential methylation.
 
-### Pulldown Sample/Replicate-level Analysis
-Bowtie2 + MACS2 pipeline is used for both the 5mC and 5hmC pulldown data. Quality information, statistics, and a UCSC Genome Browser track hub are provided to the user.
+Classification is done by intersecting the resulting regions from the above tools using the [GenomicRanges](http://bioconductor.org/packages/release/bioc/html/GenomicRanges.html) package in R, or by using [bedtools](https://bedtools.readthedocs.org/en/latest/).
+# Usage
+The mint pipeline can be used for any combination of the following two experimental setups and two analysis workflows.
 
-### Hybrid Group Comparison Analysis
-Bisulfite-converted data is analyzed with Bismark, and pulldown data with Bowtie2. Regions of differential methylation for bisulfite-converted data are determined using methylSig. Regions of differential methylation for pulldown data are determined using PePr. A classifier integrates the differential methylation information. Summary information and UCSC track hubs are output as before.
+## Supported Experimental Setups
 
-### Pulldown Group Comparison
-Pulldown data for both 5mC and 5hmC is aligned with Bowtie2 and differential methylation is determined using PePr. Peaks from PePr are then integrated with a classifier and summary information is provided.
+* **Hybrid** experimental setups include data from both bisulfite-conversion experiments (BS-seq, WGBS, RRBS, etc.) and pulldown experiments (hMeDIP-seq, hMeSeal, etc.).
 
-## Future Work
-As oxBS-seq and TAB-seq become more reliable, we intend to implement a base-resolution classifier.
+* **Pulldown** experimental setups include only data from pulldowns with an antibody such as MeDIP-seq, hMeDIP-seq, etc.
+
+* Note, purely bisulfite-conversion workflows (e.g. RRBS + oxBS-seq, RRBS + TAB-seq, etc.) are not currently supported.
+
+## Supported Analysis Workflows
+
+* **Sample-wise** analysis workflows combine information from experiments at the sample level only.
+
+* **Comparison-wise** analysis workflows combine information from experiments at the level of groups to be compared for differential methylation.
+
+## Initializing a project
+
+1. After obtaining mint, and installing all dependencies, users can navigate to the `mint/scripts/` directory and do the following:
+```{bash}
+sh project_init.sh project_name
+```
+This initiates a project with a fixed directory structure for organizing files output by the workflow.
+2. Provide a tab-delimited annotation file `project_name_annotation.txt` in the `mint/project_name/data/` directory. It should include 9 columns:
+
+  1. `projectID`: The name giving in the call to `project_init.sh`.
+  2. `sampleID`: An alphanumeric ID (e.g. from SRA, GEO, sequencing core, etc.).
+  3. `humanID`: The corresponding human readable ID.
+  4. `pulldown`: A binary value indicating whether the sample is the result of a pulldown experiment (1) or not (0).
+  5. `bisulfite`: A binary value indicating whether the sample is the result of a bisulfite-conversion experiment (1) or not (0).
+  6. `mc`: A binary value indicating whether the sample represents 5mC methylation.
+  7. `hmc`: A binary value indicating whether the sample represents 5hmC methylation.
+  8. `input`: A binary value indicating whether the sample represents an input.
+  9. `group`: A binary value indicating which samples belong to one of two groups.
+
+  Note that bisulfite-conversion experiments that represent both mC and hmC should have a 1 in each column. Input pulldowns can be matched to the pulldown (e.g. `mc=1` and `hmc=0` and `input=1`) or not (e.g. `mc=0` and `hmc=0` and `input=1`).
+
+  An example of a pulldown experimental setup with sample-wise analysis is:
+  ```{bash}
+  projectID       sampleID        humanID pulldown        bisulfite       mc      hmc     input   group
+  GSE63743        SRR1686689      preeclamptic_1  1       0       0       1       0       0
+  GSE63743        SRR1686690      preeclamptic_2  1       0       0       1       0       0
+  GSE63743        SRR1686693      normal_1        1       0       0       1       0       0
+  GSE63743        SRR1686694      normal_2        1       0       0       1       0       0
+  GSE63743        SRR1686697      preeclamptic_1  1       0       1       0       0       0
+  GSE63743        SRR1686698      preeclamptic_2  1       0       1       0       0       0
+  GSE63743        SRR1686701      normal_1        1       0       1       0       0       0
+  GSE63743        SRR1686702      normal_2        1       0       1       0       0       0
+  GSE63743        SRR1686705      preeclamptic_1  1       0       0       0       1       0
+  GSE63743        SRR1686706      preeclamptic_2  1       0       0       0       1       0
+  GSE63743        SRR1686709      normal_1        1       0       0       0       1       0
+  GSE63743        SRR1686710      normal_2        1       0       0       0       1       0
+  ```
+  An example of a hybrid experimental setup with comparison-wise analysis is:
+  ```{bash}
+  projectID       sampleID        humanID pulldown        bisulfite       mc      hmc     input   group
+  GSE52945        SRR1041959      IDH2mut_1       1       0       0       1       0       1
+  GSE52945        SRR1041960      IDH2mut_2       1       0       0       1       0       1
+  GSE52945        SRR1041977      IDH2mut_1       1       0       0       1       1       1
+  GSE52945        SRR1041978      IDH2mut_2       1       0       0       1       1       1
+  GSE52945        SRR1041992      IDH2mut_1       0       1       1       1       0       1
+  GSE52945        SRR1041993      IDH2mut_2       0       1       1       1       0       1
+  GSE52945        SRR1638715      NBM_1   1       0       0       1       0       0
+  GSE52945        SRR1638716      NBM_2   1       0       0       1       0       0
+  GSE52945        SRR1638720      NBM_1   1       0       0       1       1       0
+  GSE52945        SRR1638721      NBM_2   1       0       0       1       1       0
+  GSE52945        SRR1638726      NBM_2   0       1       1       1       0       0
+  GSE52945        SRR1638727      NBM_1   0       1       1       1       0       0
+  ```
+3. Navigate to `mint/scripts/` and do the following:
+  ```{bash}
+  Rscript project_create_runs.R --project project_name --comparison comparison_name
+  ```
+  This will generate all the scripts required to run the pipeline in the `mint/project_name/scripts/` directory.
+
+  Scripts should be run in the following order:
+  1. `*alignment.sh`
+  2. `*comparison.sh` or `*sample.sh`
+  3. `*classification*.sh`
