@@ -41,8 +41,8 @@ The mint pipeline can be used for any combination of the following two experimen
   This initiates a project with a fixed directory structure for organizing files output by the workflow.
 
   2. Provide a tab-delimited annotation file `project_name_annotation.txt` in the `mint/project_name/data/` directory. It should include 9 columns:
-    1. `projectID`: The name giving in the call to `project_init.sh`.
-    2. `sampleID`: An alphanumeric ID (e.g. from SRA, GEO, sequencing core, etc.).
+    1. `projectID`: The name given in the call to `project_init.sh`.
+    2. `sampleID`: An alphanumeric ID (e.g. from SRA, GEO, sequencing core, etc.). Typically these will be the names of the `.fastq` files.
     3. `humanID`: The corresponding human readable ID.
     4. `pulldown`: A binary value indicating whether the sample is the result of a pulldown experiment (1) or not (0).
     5. `bisulfite`: A binary value indicating whether the sample is the result of a bisulfite-conversion experiment (1) or not (0).
@@ -91,8 +91,10 @@ The mint pipeline can be used for any combination of the following two experimen
     Rscript project_create_runs.R --project project_name --comparison comparison_name
     ```
     This will generate all the scripts required to run the pipeline in the `mint/project_name/scripts/` directory.
-  
+
     Scripts should be run in the following order:
     1. `*alignment.sh`
     2. `*comparison.sh` or `*sample.sh`
     3. `*classification*.sh`
+
+  4. Copy (or create symlinks to) `.fastq` files bearing filenames corresponding to the `sampleID` column of `project_name_annotation.txt` into the `mint/project_name/data/raw_fastqs/` directory.
