@@ -19,7 +19,7 @@ rawFastq=./data/raw_fastqs/${sampleID}.fastq.gz
 bowtie2Bam=./analysis/bowtie2_bams/${humanID}_pulldown_aligned.bam
 bowtie2BamPrefix=./analysis/bowtie2_bams/${humanID}_pulldown_aligned
 pulldownBedgraph=./analysis/pulldown_coverages/${humanID}_pulldown_coverage.bdg
-pulldownBigwig=./analysis/summary/ucsc_trackhub/hg19/${humanID}_pulldown_coverage.bw
+pulldownBigwig=./analysis/summary/${PROJECT}_hub/hg19/${humanID}_pulldown_coverage.bw
 
 # FastQC
 fastqc --format fastq --noextract --outdir ./analysis/raw_fastqcs $rawFastq

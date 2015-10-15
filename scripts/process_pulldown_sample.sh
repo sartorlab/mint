@@ -25,7 +25,7 @@ macsNarrowpeak=./analysis/macs_peaks/${humanID}_pulldown_macs2_peaks.narrowPeak
 macsNarrowpeakSorted=./analysis/macs_peaks/${humanID}_sorted_tmp.narrowPeak
 macsNarrowpeakCeiling=./analysis/macs_peaks/${humanID}_ceiling_tmp.narrowPeak
 bowtie2InputBedgraph=./analysis/pulldown_coverages/${inputID}_pulldown_zero.bdg
-macsBigbed=./analysis/summary/ucsc_trackhub/hg19/${humanID}_pulldown_macs2_peaks_ucsc.bb
+macsBigbed=./analysis/summary/${PROJECT}_hub/hg19/${humanID}_pulldown_macs2_peaks_ucsc.bb
 
 # MACS2 to call peaks
 macs2 callpeak -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/macs_peaks -n $macsPrefix

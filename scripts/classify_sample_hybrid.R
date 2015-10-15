@@ -27,7 +27,7 @@ macs_file = sprintf('./analysis/macs_peaks/%s_pulldown_macs2_peaks.narrowPeak', 
 pulldown_zero_file = sprintf('./analysis/pulldown_coverages/%s_pulldown_zero.bdg', pulldownInputID)
 cyt_file = sprintf('./analysis/bismark_extractor_calls/%s_trim.fastq.gz_bismark.CpG_report_for_methylSig.txt', bisulfiteID)
 class_bed_file = sprintf('./analysis/classification_sample/%s_sample_classification_regions.bed', humanID)
-class_bb_file = sprintf('./analysis/summary/ucsc_trackhub/hg19/%s_sample_classification_regions.bb', humanID)
+class_bb_file = sprintf('./analysis/summary/%s_hub/hg19/%s_sample_classification_regions.bb', project, humanID)
 
 chr_lengths = read.table('~/latte/Homo_sapiens/chromInfo_hg19.txt', header=F, sep='\t', stringsAsFactors=F)
 

@@ -38,5 +38,5 @@ mkdir analysis/summary/figures
 mkdir analysis/summary/tables
 mkdir analysis/summary/reports
 
-mkdir analysis/summary/ucsc_trackhub
-mkdir analysis/summary/ucsc_trackhub/hg19
+mkdir analysis/summary/${PROJECT}_hub
+mkdir analysis/summary/${PROJECT}_hub/hg19

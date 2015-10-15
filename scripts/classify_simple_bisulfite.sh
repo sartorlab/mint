@@ -20,7 +20,7 @@ medCoverage=./analysis/classification_simple/${humanID}_simple_tmp_med.bed
 highCoverage=./analysis/classification_simple/${humanID}_simple_tmp_high.bed
 simpleTmp=./analysis/classification_simple/${humanID}_bisulfite_simple_tmp.bed
 simpleSorted=./analysis/classification_simple/${humanID}_bisulfite_classification_simple.bed
-simpleBigbed=./analysis/summary/ucsc_trackhub/hg19/${humanID}_bisulfite_classification_simple.bb
+simpleBigbed=./analysis/summary/${PROJECT}_hub/hg19/${humanID}_bisulfite_classification_simple.bb
 
 # Create color variables
 no=0,0,0

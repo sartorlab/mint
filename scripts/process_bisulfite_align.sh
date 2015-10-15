@@ -24,7 +24,7 @@ bismarkBedgraph=${humanID}_trim.fastq.gz_bismark.bedGraph
 bismarkSortedBedgraph=${humanID}_trim.fastq.gz_bismark_sorted.bedGraph
 bismarkCytReport=${humanID}_trim.fastq.gz_bismark.CpG_report.txt
 methylSigCytReport=${humanID}_trim.fastq.gz_bismark.CpG_report_for_methylSig.txt
-bismarkBigwig=../summary/ucsc_trackhub/hg19/${humanID}_trim.fastq.gz_bismark.bw
+bismarkBigwig=../summary/${PROJECT}_hub/hg19/${humanID}_trim.fastq.gz_bismark.bw
 
 # FastQC raw data
 fastqc --format fastq --noextract --outdir ./analysis/raw_fastqcs $rawFastq
