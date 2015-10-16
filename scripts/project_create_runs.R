@@ -1,3 +1,41 @@
+# The logic of this script is as follows:
+#
+# - Read annotation file and determine if setup is hybrid/pulldown and comparison/sample.
+# - IF BISULFITE
+#   - Create alignment scripts
+#   - Create tracks for sample methylation rates
+#   - IF COMPARISON
+#     - Create methylSig scripts
+#     - Create tracks for methylSig differential methylation rates
+#   - ELSE (SAMPLE)
+#     - Create simple classification scripts
+#     - Create tracks for simple classification of sample methylation rates
+# - IF PULLDOWN
+#   - Create alignment scripts (both IP and input)
+#   - Create tracks for pulldown coverage (both IP and input)
+#   - IF COMPARISON
+#     - Create PePr scripts (for both 5mC and 5hmC if !BISULFITE)
+#     - Create tracks for PePr regions of differential methylation
+#   - ELSE (SAMPLE)
+#     - Create MACS2 scripts (for both 5mC and 5hmC if !BISULFITE)
+#     - Create simple classification scripts (for both 5mC and 5hmC if !BISULFITE)
+#     - Create tracks for MACS2 peaks and simple classification of sample qualitative methylation rates
+# - IF BISULFITE && PULLDOWN && !COMPARISON
+#   - Create hybrid sample classification scripts
+#   - Create tracks for hybrid sample classifications
+# - ELSE IF BISULFITE && PULLDOWN && COMPARISON
+#   - Create hybrid comparison preparation scripts and hybrid comparison classification scripts
+#   - Create tracks for hybrid comparison classifications
+# - ELSE IF !BISULFITE && PULLDOWN && !COMPARISON
+#   - Create pulldown sample classification scripts
+#   - Create tracks for pulldown sample classifications
+# - ELSE IF !BISULFITE && PULLDOWN && COMPARISON
+#   - Create pulldown comparison preparation scripts (both 5mC and 5hmC) and pulldown comparison classification scripts
+#   - Create tracks for pulldown comparison classifications
+
+#######################################################################################################
+# Argument parsing
+
 library(optparse)
 
 option_list = list(
@@ -9,94 +47,96 @@ opt = parse_args(OptionParser(option_list=option_list))
 project = opt$project
 comparison = opt$comparison
 
-# Directories
-basedir = '~/latte/mint'
+#######################################################################################################
+# Preamble
 
-scriptdir = sprintf('%s/scripts', basedir)
-projectscriptdir = sprintf('%s/%s/scripts', basedir, project)
-analysisdir = sprintf('%s/%s/analysis', basedir, project)
+  # Directories
+  basedir = '~/latte/mint'
 
-rawfastqdir = './data/raw_fastqs'
-rawfastqcsdir = './analysis/raw_fastqcs'
-trimfastqsdir= './analysis/trim_fastqs'
-trimfastqcsdir= './analysis/trim_fastqcs'
-bowtie2bamdir = './analysis/bowtie2_bams'
-pulldowncovdir = './analysis/pulldown_coverages'
-bismarkbamdir = './analysis/bismark_bams'
-extractordir = './analysis/bismark_extractor_calls'
-macsdir = './analysis/macs_peaks'
-peprdir = './analysis/pepr_peaks'
-methylsigdir = './analysis/methylsig_calls'
-classsimpledir = './analysis/classification_simple'
-classsampledir = './analysis/classification_sample'
-classcomparedir = './analysis/classification_comparison'
-hubdir = sprintf('../%s/analysis/summary/%s_hub', project, project)
+  scriptdir = sprintf('%s/scripts', basedir)
+  projectscriptdir = sprintf('%s/%s/scripts', basedir, project)
+  analysisdir = sprintf('%s/%s/analysis', basedir, project)
 
-# The trackDb.txt file is used no matter the situation
-# Make sure we start fresh each time
-hubtrackdbfile = sprintf('../%s/analysis/summary/%s_hub/hg19/trackDb.txt', project, project)
-cat('', file=hubtrackdbfile)
-priority = 1
+  rawfastqdir = './data/raw_fastqs'
+  rawfastqcsdir = './analysis/raw_fastqcs'
+  trimfastqsdir= './analysis/trim_fastqs'
+  trimfastqcsdir= './analysis/trim_fastqcs'
+  bowtie2bamdir = './analysis/bowtie2_bams'
+  pulldowncovdir = './analysis/pulldown_coverages'
+  bismarkbamdir = './analysis/bismark_bams'
+  extractordir = './analysis/bismark_extractor_calls'
+  macsdir = './analysis/macs_peaks'
+  peprdir = './analysis/pepr_peaks'
+  methylsigdir = './analysis/methylsig_calls'
+  classsimpledir = './analysis/classification_simple'
+  classsampledir = './analysis/classification_sample'
+  classcomparedir = './analysis/classification_comparison'
+  hubdir = sprintf('../%s/analysis/summary/%s_hub', project, project)
 
-# Expect a tab-delimited text file (${PROJECT}_annotation.txt) to be placed in data/${PROJECT} with the columns:
-# 1. projectID - Same name used for project_init.sh
-# 2. sampleID - SRA, GEO, Sequencing Core, etc ID (usually alpha-numeric)
-# 3. humanID - Corresponding human readable name to more quickly interpret file
-# 4. pulldown - 0/1 indicating data is from pulldown (1) or not (0)
-# 5. bisulfite - 0/1 indicating data is bisulfite converted (1) or not (0)
-# 6. mc - 0/1 indicating data uses a 5mc antibody or, if input == 1, is 5mc matched input
-# 7. hmc - 0/1 indicating data uses a 5hmc antibody or, if input == 1, is 5hmc matched input
-#    NOTE: These two can be 1 when pulldown == 0 once TAB-seq / oxBS-seq are reproducible
-#    and an appropriate pipeline will be run for pure bisulfite conversion data.
-# 8. input - 0/1 indicating data is input control for pulldown, if (input == 1 && 5mc == 0 && 5hmc == 0)
-#    then the input is not matched to antibody and is used (possibly) twice, otherwise, if
-#    (input == 1 && ((5mc == 1 && 5hmc == 0) || (5mc == 0 && 5hmc == 1))) then the input is antibody matched.
-# 9. group - 0/1 indicates data grouping for comparison in methylSig and/ or PePr
-#    if all are 0 then the assumption is a sample-wise analysis only.
-annotfile = sprintf('%s/%s/data/%s_annotation.txt', basedir, project, project)
-annotation = read.table(annotfile, header=T, sep='\t', quote='', comment.char='', stringsAsFactors=F)
-colnames(annotation) = c('projectID','sampleID','humanID','pulldown','bisulfite','mc','hmc','input','group')
+  # The trackDb.txt file is used no matter the situation
+  # Make sure we start fresh each time
+  hubtrackdbfile = sprintf('../%s/analysis/summary/%s_hub/hg19/trackDb.txt', project, project)
+  cat('', file=hubtrackdbfile)
 
-# Create fullHumanID column to simplify file tracking
-annotation$fullHumanID = ''
-for(i in 1:nrow(annotation)) {
-  if(annotation[i,'pulldown'] == 1){
-    if(annotation[i,'mc'] == 1 && annotation[i,'input'] == 0) {
-      annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'mc')
-    } else if (annotation[i,'mc'] == 1 && annotation[i,'input'] == 1) {
-      annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'mc_input')
-    } else if (annotation[i,'hmc'] == 1 && annotation[i,'input'] == 0) {
-      annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'hmc')
-    } else if (annotation[i,'hmc'] == 1 && annotation[i,'input'] == 1) {
-      annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'hmc_input')
-    } else if (annotation[i,'input'] == 1) {
-      annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'input')
+  # Expect a tab-delimited text file (${PROJECT}_annotation.txt) to be placed in data/${PROJECT} with the columns:
+  # 1. projectID - Same name used for project_init.sh
+  # 2. sampleID - SRA, GEO, Sequencing Core, etc ID (usually alpha-numeric)
+  # 3. humanID - Corresponding human readable name to more quickly interpret file
+  # 4. pulldown - 0/1 indicating data is from pulldown (1) or not (0)
+  # 5. bisulfite - 0/1 indicating data is bisulfite converted (1) or not (0)
+  # 6. mc - 0/1 indicating data uses a 5mc antibody or, if input == 1, is 5mc matched input
+  # 7. hmc - 0/1 indicating data uses a 5hmc antibody or, if input == 1, is 5hmc matched input
+  #    NOTE: These two can be 1 when pulldown == 0 once TAB-seq / oxBS-seq are reproducible
+  #    and an appropriate pipeline will be run for pure bisulfite conversion data.
+  # 8. input - 0/1 indicating data is input control for pulldown, if (input == 1 && 5mc == 0 && 5hmc == 0)
+  #    then the input is not matched to antibody and is used (possibly) twice, otherwise, if
+  #    (input == 1 && ((5mc == 1 && 5hmc == 0) || (5mc == 0 && 5hmc == 1))) then the input is antibody matched.
+  # 9. group - 0/1 indicates data grouping for comparison in methylSig and/ or PePr
+  #    if all are 0 then the assumption is a sample-wise analysis only.
+  annotfile = sprintf('%s/%s/data/%s_annotation.txt', basedir, project, project)
+  annotation = read.table(annotfile, header=T, sep='\t', quote='', comment.char='', stringsAsFactors=F)
+  colnames(annotation) = c('projectID','sampleID','humanID','pulldown','bisulfite','mc','hmc','input','group')
+
+  # Create fullHumanID column to simplify file tracking
+  annotation$fullHumanID = ''
+  for(i in 1:nrow(annotation)) {
+    if(annotation[i,'pulldown'] == 1){
+      if(annotation[i,'mc'] == 1 && annotation[i,'input'] == 0) {
+        annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'mc')
+      } else if (annotation[i,'mc'] == 1 && annotation[i,'input'] == 1) {
+        annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'mc_input')
+      } else if (annotation[i,'hmc'] == 1 && annotation[i,'input'] == 0) {
+        annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'hmc')
+      } else if (annotation[i,'hmc'] == 1 && annotation[i,'input'] == 1) {
+        annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'hmc_input')
+      } else if (annotation[i,'input'] == 1) {
+        annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'input')
+      }
+    }
+
+    if(annotation[i,'bisulfite'] == 1) {
+      if(annotation[i,'mc'] == 1 && annotation[i,'hmc'] == 0) {
+        annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'mc')
+      } else if (annotation[i,'mc'] == 0 && annotation[i,'hmc'] == 1) {
+        annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'hmc')
+      } else if (annotation[i,'mc'] == 1 && annotation[i,'hmc'] == 1) {
+        annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'mc_hmc')
+      }
     }
   }
 
-  if(annotation[i,'bisulfite'] == 1) {
-    if(annotation[i,'mc'] == 1 && annotation[i,'hmc'] == 0) {
-      annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'mc')
-    } else if (annotation[i,'mc'] == 0 && annotation[i,'hmc'] == 1) {
-      annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'hmc')
-    } else if (annotation[i,'mc'] == 1 && annotation[i,'hmc'] == 1) {
-      annotation[i,'fullHumanID'] = sprintf('%s_%s', annotation[i,'humanID'], 'mc_hmc')
-    }
-  }
-}
+  ##################################
+  # Pull out subtables
+  bisulfite = subset(annotation, annotation$bisulfite == 1)
+  pulldown = subset(annotation, annotation$pulldown == 1)
 
-##################################
-# Pull out subtables
-bisulfite = subset(annotation, annotation$bisulfite == 1)
-pulldown = subset(annotation, annotation$pulldown == 1)
-
-# Control checks for script creation
-boolBis = nrow(bisulfite) > 0
-boolPull = nrow(pulldown) > 0
-boolComp = comparison != 'none'
+  # Control checks for script creation
+  boolBis = nrow(bisulfite) > 0
+  boolPull = nrow(pulldown) > 0
+  boolComp = comparison != 'none'
 
 #######################################################################################################
-# Workflow agnostic track hub files
+# Workflow-agnostic track hub files
 # hubdir/genomes.txt
 # hubdir/hub.txt
 # hubdir/project_name_hub.html
@@ -117,6 +157,34 @@ boolComp = comparison != 'none'
   cat(hub, file=sprintf('%s/hub.txt', hubdir), sep='\n')
 # project_name_hub.html
   cat(' ', file=sprintf('%s/%s_hub.html',hubdir, project))
+
+priority = 1
+# superTracks
+if(boolComp) {
+  trackEntry = c(
+    sprintf('track %s_group_comparison', comparison),
+    'superTrack on show',
+    sprintf('group %s_group_comparison', comparison),
+    sprintf('shortLabel %s comparison', comparison),
+    sprintf('longLabel %s comparison', comparison),
+    sprintf('priority %s', priority),
+    ' ')
+  cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+  priority = priority + 1
+}
+
+for(sample in sort(unique(annotation$humanID))) {
+  trackEntry = c(
+    sprintf('track %s_sample', sample),
+    'superTrack on show',
+    sprintf('group %s_sample', sample),
+    sprintf('shortLabel %s_sample', sample),
+    sprintf('longLabel Sample-level tracks for %s', sample),
+    sprintf('priority %s', priority),
+    ' ')
+  cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+  priority = priority + 1
+}
 
 #######################################################################################################
 # Bisulfite scripts
@@ -145,13 +213,12 @@ boolComp = comparison != 'none'
         trackEntry = c(
           sprintf('track %s_pct_meth', bisulfite[i,'fullHumanID']),
           sprintf('parent %s_sample', bisulfite[i,'humanID']),
-          sprintf('bigDataUrl http://www-personal.umich.edu/~rcavalca/%s_hub/hg19/%s_trim.fastq.gz_bismark.bw', project, bisulfite[i,'fullHumanID']),
+          sprintf('bigDataUrl %s_trim.fastq.gz_bismark.bw', bisulfite[i,'fullHumanID']),
           sprintf('shortLabel %s_pct_meth', bisulfite[i,'fullHumanID']),
           sprintf('longLabel %s_percent_methylation', bisulfite[i,'fullHumanID']),
           'visibility full',
           'viewLimits 0:100',
           'type bigWig',
-          sprintf('priority %s',priority),
           ' ')
         cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
@@ -193,7 +260,7 @@ boolComp = comparison != 'none'
         trackEntry = c(
           sprintf('track %s_DM_mSig', comparison),
           sprintf('parent %s_group_comparison', comparison),
-          sprintf('bigDataUrl http://www-personal.umich.edu/~rcavalca/%s_hub/hg19/%s_methylSig_regions.bw', project, comparison),
+          sprintf('bigDataUrl %s_methylSig.bw', comparison),
           sprintf('shortLabel %s_DM_mSig', comparison),
           sprintf('longLabel %s_DM_mSig_regions', comparison),
           'visibility full',
@@ -201,7 +268,6 @@ boolComp = comparison != 'none'
           'alwaysZero on',
           'at y=0.0 on',
           'type bigWig',
-          sprintf('priority %s', priority),
           ' ')
         cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
@@ -222,13 +288,12 @@ boolComp = comparison != 'none'
           trackEntry = c(
             sprintf('track %s_simple_class', bisulfite[i,'fullHumanID']),
             sprintf('parent %s_sample', bisulfite[i,'humanID']),
-            sprintf('bigDataUrl http://www-personal.umich.edu/~rcavalca/%s_hub/hg19/%s_simple_classification.bb', project, bisulfite[i,'fullHumanID']),
+            sprintf('bigDataUrl %s_bisulfite_classification_simple.bb', bisulfite[i,'fullHumanID']),
             sprintf('shortLabel %s_bis_simp_class', bisulfite[i,'fullHumanID']),
             sprintf('longLabel %s_bisulfite_simple_classification', bisulfite[i,'fullHumanID']),
             'visibility pack',
             'itemRgb on',
             'type bigBed 9 .',
-            sprintf('priority %s', priority),
             ' ')
           cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
         }
@@ -240,7 +305,7 @@ boolComp = comparison != 'none'
     message('No bisulfite experiments annotated.')
   }
 
-##################################
+#######################################################################################################
 # Pulldown scripts
   # If pulldown, then create pulldown alignment scripts
   if(boolPull) {
@@ -262,13 +327,12 @@ boolComp = comparison != 'none'
       trackEntry = c(
         sprintf('track %s_cov', pulldown[i,'fullHumanID']),
         sprintf('parent %s_sample', pulldown[i,'humanID']),
-        sprintf('bigDataUrl http://www-personal.umich.edu/~rcavalca/%s_hub/hg19/%s_pulldown_coverage.bw', project, pulldown[i,'fullHumanID']),
+        sprintf('bigDataUrl %s_pulldown_coverage.bw', pulldown[i,'fullHumanID']),
         sprintf('shortLabel %s_cov', pulldown[i,'fullHumanID']),
         sprintf('longLabel %s_coverage', pulldown[i,'fullHumanID']),
         'visibility full',
         'autoScale on',
         'type bigWig',
-        sprintf('priority %s', priority),
         ' ')
       cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
@@ -331,13 +395,12 @@ boolComp = comparison != 'none'
         trackEntry = c(
           sprintf('track %s_DM_PePr', comparison),
           sprintf('parent %s_group_comparison', comparison),
-          sprintf('bigDataUrl http://www-personal.umich.edu/~rcavalca/%s_hub/hg19/%s_PePr_peaks_ucsc.bb', project, comparison),
+          sprintf('bigDataUrl %s_%s_PePr_peaks.bb', compContext, comparison),
           sprintf('shortLabel %s_DM_PePr', comparison),
           sprintf('longLabel %s_DM_PePr_peaks', comparison),
           'visibility pack',
           'itemRgb on',
           'type bigBed 9 .',
-          sprintf('priority %s', priority),
           ' ')
         cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
@@ -401,12 +464,11 @@ boolComp = comparison != 'none'
           trackEntry = c(
             sprintf('track %s_peaks', chipID),
             sprintf('parent %s_sample', hID),
-            sprintf('bigDataUrl http://www-personal.umich.edu/~rcavalca/%s_hub/hg19/%s_macs2_peaks_ucsc.bb', project, chipID),
+            sprintf('bigDataUrl %s_macs2_peaks_ucsc.bb', chipID),
             sprintf('shortLabel %s_peaks', chipID),
             sprintf('longLabel %s_MACS_peaks', chipID),
             'visibility dense',
             'type bigBed',
-            sprintf('priority %s', priority),
             ' ')
           cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
@@ -420,13 +482,12 @@ boolComp = comparison != 'none'
           trackEntry = c(
             sprintf('track %s_simple_class', chipID),
             sprintf('parent %s_sample', hID),
-            sprintf('bigDataUrl http://www-personal.umich.edu/~rcavalca/%s_hub/hg19/%s_simple_classification.bb', project, chipID),
+            sprintf('bigDataUrl %s_pulldown_simple_classification.bb', chipID),
             sprintf('shortLabel %s_pull_simp_class', chipID),
             sprintf('longLabel %s_pulldown_simple_classification', chipID),
             'visibility pack',
             'itemRgb on',
             'type bigBed 9 .',
-            sprintf('priority %s', priority),
             ' ')
           cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
         }
@@ -471,13 +532,12 @@ boolComp = comparison != 'none'
         trackEntry = c(
           sprintf('track %s_hybrid_sample_classification', hID),
           sprintf('parent %s_sample', hID),
-          sprintf('bigDataUrl http://www-personal.umich.edu/~rcavalca/%s_hub/hg19/%s_sample_classification_regions.bb', project, hID),
+          sprintf('bigDataUrl %s_sample_classification_regions.bb', hID),
           sprintf('shortLabel %s_hybrid_sample_class', hID),
           sprintf('longLabel %s_hybrid_sample_classification', hID),
           'visibility pack',
           'itemRgb on',
           'type bigBed 9 .',
-          sprintf('priority %s', priority),
           ' ')
         cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
       }
@@ -525,13 +585,12 @@ boolComp = comparison != 'none'
       trackEntry = c(
         sprintf('track %s_DM_classification', comparison),
         sprintf('parent %s_group_comparison', comparison),
-        sprintf('bigDataUrl http://www-personal.umich.edu/~rcavalca/%s_hub/hg19/%s_classification_regions.bb', project, comparison),
+        sprintf('bigDataUrl %s_classification_regions.bb', comparison),
         sprintf('shortLabel %s_DM_class', comparison),
         sprintf('longLabel %s_DM_classification', comparison),
         'visibility pack',
         'itemRgb on',
         'type bigBed 9 .',
-        sprintf('priority %s', priority),
         ' ')
       cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
@@ -573,13 +632,12 @@ boolComp = comparison != 'none'
         trackEntry = c(
           sprintf('track %s_pulldown_sample_classification', hID),
           sprintf('parent %s_sample', hID),
-          sprintf('bigDataUrl http://www-personal.umich.edu/~rcavalca/%s_hub/hg19/%s_sample_classification_pulldown.bb', project, hID),
+          sprintf('bigDataUrl %s_sample_classification_pulldown.bb', hID),
           sprintf('shortLabel %s_pull_sample_class', hID),
           sprintf('longLabel %s_pulldown_sample_classification', hID),
           'visibility pack',
           'itemRgb on',
           'type bigBed 9 .',
-          sprintf('priority %s', priority),
           ' ')
         cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
       }
@@ -636,13 +694,12 @@ boolComp = comparison != 'none'
       trackEntry = c(
         sprintf('track %s_DM_pulldown_classification', comparison),
         sprintf('parent %s_group_comparison', comparison),
-        sprintf('bigDataUrl http://www-personal.umich.edu/~rcavalca/%s_hub/hg19/%s_classification_regions.bb', project, comparison),
+        sprintf('bigDataUrl %s_classification_regions.bb', comparison),
         sprintf('shortLabel %s_DM_pull_class', comparison),
         sprintf('longLabel %s_DM_pulldown_classification', comparison),
         'visibility pack',
         'itemRgb on',
         'type bigBed 9 .',
-        sprintf('priority %s', priority),
         ' ')
       cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
   }
