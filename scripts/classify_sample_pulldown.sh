@@ -25,8 +25,8 @@ mcNarrowpeak=./analysis/macs_peaks/${mcPeaksID}_pulldown_macs2_peaks.narrowPeak
 mcZero=./analysis/pulldown_coverages/${mcZeroID}_pulldown_zero.bdg
 hmcNarrowpeak=./analysis/macs_peaks/${hmcPeaksID}_pulldown_macs2_peaks.narrowPeak
 hmcZero=./analysis/pulldown_coverages/${hmcZeroID}_pulldown_zero.bdg
-classBed=./analysis/classification_sample/${humanID}_sample_classification_pulldown.bed
-classBB=./analysis/summary/${PROJECT}_hub/hg19/${humanID}_sample_classification_pulldown.bb
+classBed=./analysis/classification_sample/${humanID}_pulldown_classification_sample.bed
+classBB=./analysis/summary/${PROJECT}_hub/hg19/${humanID}_pulldown_classification_sample.bb
 
 # Create tmp file names
 # Need these dynamically named so we can classify samples in parallel without collisions

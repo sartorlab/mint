@@ -14,8 +14,8 @@ setwd(sprintf('~/latte/mint/%s', project))
 
 # Setup file paths
 pulldown_file = sprintf('./analysis/macs_peaks/%s_pulldown_macs2_peaks.narrowPeak', humanID)
-class_bed_file = sprintf('./analysis/classification_simple/%s_pulldown_simple_classification.bed', humanID)
-class_bb_file = sprintf('./analysis/summary/%s_hub/hg19/%s_pulldown_simple_classification.bb', project, humanID)
+class_bed_file = sprintf('./analysis/classification_simple/%s_pulldown_classification_simple.bed', humanID)
+class_bb_file = sprintf('./analysis/summary/%s_hub/hg19/%s_pulldown_classification_simple.bb', project, humanID)
 
 # Interpret antibody and corresponding coding
 if(grepl('_hmc', humanID)) {

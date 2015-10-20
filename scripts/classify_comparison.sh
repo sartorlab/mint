@@ -43,9 +43,9 @@ checkDoubleM=./analysis/classification_comparison/${COMPARISON}_classification_t
 checkDoubleH=./analysis/classification_comparison/${COMPARISON}_classification_test_doubleH.bed
 multiInterFile=./analysis/classification_comparison/${COMPARISON}_classification_multiintersection.bed
 firstClassFile=./analysis/classification_comparison/${COMPARISON}_classification_encoding.bed
-finalClassFile=./analysis/classification_comparison/${COMPARISON}_classification_regions_final.bed
-sortedFinalClassFile=./analysis/classification_comparison/${COMPARISON}_classification_regions_final_sorted.bed
-classBB=./analysis/summary/${PROJECT}_hub/hg19/${COMPARISON}_classification_regions.bb
+finalClassFile=./analysis/classification_comparison/${COMPARISON}_classification_comparison.bed
+sortedFinalClassFile=./analysis/classification_comparison/${COMPARISON}_classification_comparison_sorted.bed
+classBB=./analysis/summary/${PROJECT}_hub/hg19/${COMPARISON}_classification_comparison.bb
 
     # This accomplishes the same partition and determines which file is responsible for the intersection!
     bedtools multiinter -header -names mDMup mDMdown mnDMs mnDMns hDMup hDMdown hnDMs hnDMns -empty -i  $methylFiles $hydroxyFiles -g ~/latte/Homo_sapiens/chromInfo_hg19.txt > $multiInterFile
