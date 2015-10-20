@@ -53,7 +53,8 @@ classBB=./analysis/summary/${PROJECT}_hub/hg19/${COMPARISON}_classification_comp
     # Checks that all rows have one classification per 5mC + 5hmC and 5hmC each
         # Check that the number of intersections is always two. In other words, every region is always
         # categorized as DMup, DMdown, noDMsignal, or noDMnosignal with respect to 5mC (or 5mC + 5hmC) and 5hmC.
-        awk -v OFS="\t" '$4 > 2 || $4 < 2 { print $1, $2, $3, $4, $5 }' $multiInterFile > $checkEqualTwo
+        # The header row satisfies the original, so we impose NR > 1 to skip it
+        awk -v OFS="\t" 'NR > 1 && ($4 > 2 || $4 < 2) { print $1, $2, $3, $4, $5 }' $multiInterFile > $checkEqualTwo
 
         # Check that there is only one assignment in 5mC (or 5mC + 5hmC)
         awk -v OFS="\t" '$6 + $7 + $8 + $9 > 1 { print $1, $2, $3, $4, $5 }' $multiInterFile > $checkDoubleM
@@ -63,7 +64,8 @@ classBB=./analysis/summary/${PROJECT}_hub/hg19/${COMPARISON}_classification_comp
 
     # Do the numerical encoding according to the classification table. The interpretation is the same whether
     # there is a hybrid experimental setup or a pure affinity experiment setup.
-    awk -v OFS="\t" '{print $1, $2, $3, ($6 * 3) + ($7 * 5) + ($8 * 7) + ($9 * 11), ($10 * 2) + ($11 * 4) + ($12 * 6) + ($13 * 8), (($6 * 3) + ($7 * 5) + ($8 * 7) + ($9 * 11)) * (($10 * 2) + ($11 * 4) + ($12 * 6) + ($13 * 8))}' $multiInterFile > $firstClassFile
+    # Skip the header file with NR > 1
+    awk -v OFS="\t" 'NR > 1 {print $1, $2, $3, ($6 * 3) + ($7 * 5) + ($8 * 7) + ($9 * 11), ($10 * 2) + ($11 * 4) + ($12 * 6) + ($13 * 8), (($6 * 3) + ($7 * 5) + ($8 * 7) + ($9 * 11)) * (($10 * 2) + ($11 * 4) + ($12 * 6) + ($13 * 8))}' $multiInterFile > $firstClassFile
 
 # R code to merge the encoded BED on the appropriate color scheme for the bigBed
     Rscript ~/latte/mint/scripts/classify_comparison.R --project=$PROJECT --comparison=$COMPARISON --inbed=$firstClassFile --outbed=$finalClassFile
