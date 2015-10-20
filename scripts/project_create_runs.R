@@ -219,6 +219,7 @@ for(sample in sort(unique(annotation$humanID))) {
           'visibility full',
           'viewLimits 0:100',
           'type bigWig',
+          'priority 1.4',
           ' ')
         cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
@@ -268,6 +269,7 @@ for(sample in sort(unique(annotation$humanID))) {
           'alwaysZero on',
           'at y=0.0 on',
           'type bigWig',
+          'priority 1.2',
           ' ')
         cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
@@ -294,6 +296,7 @@ for(sample in sort(unique(annotation$humanID))) {
             'visibility pack',
             'itemRgb on',
             'type bigBed 9 .',
+            'priority 1.2',
             ' ')
           cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
         }
@@ -333,6 +336,7 @@ for(sample in sort(unique(annotation$humanID))) {
         'visibility full',
         'autoScale on',
         'type bigWig',
+        'priority 1.6',
         ' ')
       cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
@@ -395,12 +399,13 @@ for(sample in sort(unique(annotation$humanID))) {
         trackEntry = c(
           sprintf('track %s_DM_PePr', comparison),
           sprintf('parent %s_group_comparison', comparison),
-          sprintf('bigDataUrl %s_%s_PePr_peaks.bb', compContext, comparison),
+          sprintf('bigDataUrl %s_%s_PePr_peaks.bb', comparison, compContext),
           sprintf('shortLabel %s_DM_PePr', comparison),
           sprintf('longLabel %s_DM_PePr_peaks', comparison),
           'visibility pack',
           'itemRgb on',
           'type bigBed 9 .',
+          'priority 1.3',
           ' ')
         cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
@@ -464,11 +469,12 @@ for(sample in sort(unique(annotation$humanID))) {
           trackEntry = c(
             sprintf('track %s_peaks', chipID),
             sprintf('parent %s_sample', hID),
-            sprintf('bigDataUrl %s_macs2_peaks.bb', chipID),
+            sprintf('bigDataUrl %s_pulldown_macs2_peaks.bb', chipID),
             sprintf('shortLabel %s_peaks', chipID),
             sprintf('longLabel %s_MACS_peaks', chipID),
             'visibility dense',
             'type bigBed',
+            'priority 1.5',
             ' ')
           cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
@@ -488,6 +494,7 @@ for(sample in sort(unique(annotation$humanID))) {
             'visibility pack',
             'itemRgb on',
             'type bigBed 9 .',
+            'priority 1.2',
             ' ')
           cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
         }
@@ -538,6 +545,7 @@ for(sample in sort(unique(annotation$humanID))) {
           'visibility pack',
           'itemRgb on',
           'type bigBed 9 .',
+          'priority 1.1',
           ' ')
         cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
       }
@@ -591,6 +599,7 @@ for(sample in sort(unique(annotation$humanID))) {
         'visibility pack',
         'itemRgb on',
         'type bigBed 9 .',
+        'priority 1.1',
         ' ')
       cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
@@ -638,6 +647,7 @@ for(sample in sort(unique(annotation$humanID))) {
           'visibility pack',
           'itemRgb on',
           'type bigBed 9 .',
+          'priority 1.1',
           ' ')
         cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
       }
@@ -700,6 +710,7 @@ for(sample in sort(unique(annotation$humanID))) {
         'visibility pack',
         'itemRgb on',
         'type bigBed 9 .',
+        'priority 1.1',
         ' ')
       cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
   }
