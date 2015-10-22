@@ -16,7 +16,7 @@ For pulldown data we use [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/ind
 
 Classification is done by intersecting the resulting regions from the above tools using the [GenomicRanges](http://bioconductor.org/packages/release/bioc/html/GenomicRanges.html) package in R, or by using [bedtools](https://bedtools.readthedocs.org/en/latest/).
 # Usage
-The mint pipeline can be used for any combination of the following two experimental setups and two analysis workflows.
+The mint pipeline can be used for any combination of the following two experimental setups and two analysis workflows. At present, we support only single-end sequencing data.
 
 ## Supported Experimental Setups
 
