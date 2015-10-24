@@ -161,7 +161,7 @@ message(sprintf('Processing sample: %s',humanID))
 # Convert to data.frame, tidy up, and write as .bed
 # Note that the width column should really just be 1000 for the .bed
     message('Building BED file...')
-    cpgs_df = as.data.frame(bisulfite_gr)[,c('seqnames','start','end','final_code','width','strand','thickStart','thickEnd','rgb')]
+    cpgs_df = as.data.frame(bisulfite_gr)[,c('seqnames','start','end','class','width','strand','thickStart','thickEnd','rgb')]
     cpgs_df$start = as.integer(cpgs_df$start - 1)
     cpgs_df$end = as.integer(cpgs_df$end)
     cpgs_df$width = 1000
