@@ -1,6 +1,9 @@
 # Annotation Data
 This file describes the data in `mint/data/annotation`.
 
+## andersson_permissive_enhancers.bed
+These are the ~43,000 permissive enhancers determined by [Andersson, et al](http://www.nature.com/nature/journal/v507/n7493/abs/nature12787.html). Data were downloaded directly from the pre-defined enhancer sets of the [Transcribed Enhancer Atlas](http://enhancer.binf.ku.dk/presets/). The direct URL for the data is [http://enhancer.binf.ku.dk/presets/robust_enhancers.bed](http://enhancer.binf.ku.dk/presets/robust_enhancers.bed).
+
 ## chromInfo_hg19.txt
 These are chromosome lengths for hg19 taken directly from the UCSC Genome Browser. Datestamp 04-27-2009.
 
