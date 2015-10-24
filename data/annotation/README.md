@@ -20,3 +20,14 @@ awk -v OFS='\t' 'NR > 1 {print $2, $3, $4}' ~/latte/mint/data/annotation/cpg_isl
 
 ## ldef_5kb_hg19_reduced.bed
 These are the 5kb locus definitions from `chipenrich.data` run through the `mint/data/scripts/reduce_ldef.R` script. The result is that each locus should correspond to one line, except in the cases where a locus may be interrupted by another on the opposite strand. They will be used as the promoter regions.
+
+To get original 5kb locus definitions from `chipenrich.data`:
+```{r}
+library(chipenrich.data)
+data('locusdef.hg19.5kb')
+write.table(locusdef.hg19.5kb@dframe, file='path/to/ldef_5kb_hg19.bed', sep='\t', col.names=F, row.names=F, quote=F)
+```
+And to get the reduced locus definitions:
+```{bash}
+Rscript reduce_ldef.R --inpath path/to/ldef_5kb_hg19.bed --outpath path/to/ldef_5kb_hg19_reduced.bed
+```
