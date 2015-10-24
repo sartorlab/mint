@@ -2,7 +2,22 @@ library(ggplot2)
 
 setwd('~/Desktop')
 
-# Average % methylation
+################################################################################
+# % methylation and coverage across all sites in sample
+
+  data = read.table('IDH2mut_1_mc_hmc_trim.fastq.gz_bismark.bismark.cov.gz', header=F, sep='\t', quote='', comment.char='', stringsAsFactors=F, col.names=c('chrom','start','end','perc_meth','numC','numT'))
+  data$coverage = log10(data$numC + data$numT)
+
+  # % methylation
+  per_meth_plot = ggplot(data, aes(perc_meth)) + geom_histogram(binwidth=5, aes(y=..density..)) + theme_bw()
+  ggsave(filename='IDH2mut_1_mc_hmc_sample_per_meth.png', plot = per_meth_plot, width=6, height=6, dpi=300)
+
+  # coverage
+  coverage_plot = ggplot(data, aes(coverage)) + geom_histogram(aes(y=..density..)) + theme_bw()
+  ggsave(filename='IDH2mut_1_mc_hmc_sample_coverage.png', plot = coverage_plot, width=6, height=6, dpi=300)
+
+################################################################################
+# Average % methylation across annotations
 
   files = list.files(pattern='avg_meth')
 
@@ -18,7 +33,8 @@ setwd('~/Desktop')
 
   ggsave(filename='IDH2mut_1_mc_hmc_avg_meth_annotations.png', plot = avg_meth_plot, width = 8, height = 4, dpi = 300)
 
-# Average coverage
+################################################################################
+# Average coverage across annotations
 
   files = list.files(pattern='avg_coverage')
 
