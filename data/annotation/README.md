@@ -17,3 +17,6 @@ These are the CpG shores, where a shore is defined as 1kb up and downstream of t
 ```{bash}
 awk -v OFS='\t' 'NR > 1 {print $2, $3, $4}' ~/latte/mint/data/annotation/cpg_islands_hg19_ucsc.txt | bedtools flank -b 1000 -g ~/latte/mint/data/annotation/chromInfo_hg19.txt | sort -T . -k1,1 -k2,2n | bedtools merge > cpg_shores_hg19_ucsc.txt
 ```
+
+## ldef_5kb_hg19_reduced.bed
+These are the 5kb locus definitions from `chipenrich.data` run through the `mint/data/scripts/reduce_ldef.R` script. The result is that each locus should correspond to one line, except in the cases where a locus may be interrupted by another on the opposite strand.
