@@ -100,3 +100,30 @@ setwd('~/Desktop')
   avg_diff_meth_in_DM_plot = ggplot(df, aes(avg_diff_meth_in_DM)) + geom_histogram(binwidth=5, aes(y=..density..)) + facet_grid(. ~ annotation) + ggtitle('% Methylation Difference Across Annotations') + theme_bw()
 
   ggsave(filename='IDH2mut_v_NBM_mc_hmc_avg_diff_meth_in_DM_annotations.png', plot = avg_diff_meth_in_DM_plot, width = 8, height = 4, dpi = 300)
+
+################################################################################
+# Average pulldown coverage across 5kb tiles of hg19
+
+  data_cov = read.table('IDH2mut_1_hmc_avg_coverage_5kb_windows.bed', header=F, sep='\t', quote='', comment.char='', stringsAsFactors=F, col.names=c('chrom','start','end','avg_coverage'))
+
+  avg_cov_plot = ggplot(data_cov, aes(log10(avg_coverage))) + geom_histogram(aes(y=..density..)) + ggtitle('Average Pulldown Coverage Across 5kb Windows') + theme_bw()
+
+  ggsave(filename='IDH2mut_1_hmc_avg_coverage_5kb_windows.png', plot = avg_cov_plot, width = 6, height = 6, dpi = 300)
+
+
+################################################################################
+# Average coverage across annotations (.bdg)
+
+  files = list.files(pattern='IDH2mut_1_hmc_avg_coverage_annot_')
+
+  annotations = gsub('IDH2mut_1_hmc_avg_coverage_annot_','',files)
+  annotations = gsub('.bed','',annotations)
+
+  data = lapply(files, read.table, sep='\t', header=F, quote='', comment.char='', stringsAsFactors=F)
+  names(data) = annotations
+
+  df = Reduce(rbind, lapply(names(data), function(n){data.frame('annotation'=n,'avg_coverage'=log10(data[[n]][,4]),stringsAsFactors=F)}))
+
+  avg_cov_plot = ggplot(df, aes(avg_coverage)) + geom_histogram(aes(y=..density..)) + facet_grid(. ~ annotation) + ggtitle('Average Pulldown Coverage Across Annotations') + theme_bw()
+
+  ggsave(filename='IDH2mut_1_hmc_avg_coverage_annotations.png', plot = avg_cov_plot, width = 8, height = 4, dpi = 300)
