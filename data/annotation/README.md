@@ -41,3 +41,9 @@ And to get the reduced locus definitions:
 ```{bash}
 Rscript reduce_ldef.R --inpath path/to/ldef_5kb_hg19.bed --outpath path/to/ldef_5kb_hg19_reduced.bed
 ```
+
+## windows_5kb_hg19.bed
+The hg19 genome tiled into non-overlapping 5kb windows using the following [bedtools](http://bedtools.readthedocs.org) command:
+```{bash}
+bedtools makewindows -g chromInfo_hg19.txt -w 5000 > windows_5kb_hg19.bed
+```
