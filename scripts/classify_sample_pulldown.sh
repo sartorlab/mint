@@ -95,11 +95,11 @@ bedtools intersect -a $tmpNoPeaks -b $tmpMutuallyZero | awk -v OFS='\t' '{print 
 
 # Append the columns required for the track hub to each of the files listed above
 echo $humanID ': annotating respective files'
-awk -v OFS='\t' '{print $1, $2, $3, "mc:"$1":"$2, "1000", ".", $2, $3, "255,0,0"}' $tmpMcPeaks > $tmpMcAnnot
-awk -v OFS='\t' '{print $1, $2, $3, "hmc:"$1":"$2, "1000", ".", $2, $3, "0,0,255"}' $tmpHmcPeaks > $tmpHmcAnnot
-awk -v OFS='\t' '{print $1, $2, $3, "mc_hmc:"$1":"$2, "1000", ".", $2, $3, "102,0,204"}' $tmpIntersectPeaks > $tmpIntersectAnnot
-awk -v OFS='\t' '{print $1, $2, $3, "no_peak:"$1":"$2, "1000", ".", $2, $3, "0,0,0"}' $tmpNoPeaksSignal > $tmpNoPSAnnot
-awk -v OFS='\t' '{print $1, $2, $3, "unclassifiable:"$1":"$2, "1000", ".", $2, $3, "192,192,192"}' $tmpNoPeaksNoSignal > $tmpNoPNoSAnnot
+awk -v OFS='\t' '{print $1, $2, $3, "mc", "1000", ".", $2, $3, "255,0,0"}' $tmpMcPeaks > $tmpMcAnnot
+awk -v OFS='\t' '{print $1, $2, $3, "hmc", "1000", ".", $2, $3, "0,0,255"}' $tmpHmcPeaks > $tmpHmcAnnot
+awk -v OFS='\t' '{print $1, $2, $3, "mc_hmc", "1000", ".", $2, $3, "102,0,204"}' $tmpIntersectPeaks > $tmpIntersectAnnot
+awk -v OFS='\t' '{print $1, $2, $3, "no_peaks", "1000", ".", $2, $3, "0,0,0"}' $tmpNoPeaksSignal > $tmpNoPSAnnot
+awk -v OFS='\t' '{print $1, $2, $3, "unclassifiable", "1000", ".", $2, $3, "192,192,192"}' $tmpNoPeaksNoSignal > $tmpNoPNoSAnnot
 
 # Combine, sort, and convert to bigBed
 echo $humanID ': combining annotated pieces'
