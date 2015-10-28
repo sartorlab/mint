@@ -50,10 +50,10 @@ bedtools intersect -a cpg_shelves_hg19_ucsc.bed -b cpg_shores_hg19_ucsc.bed -wa 
 
 ## cpg_inter_hg19_ucsc.bed
 
-These are regions that are not CpG islands, shores, nor shelves. **NOTE**: `bedtools complement` seems to complain about the third column of the chromosome sizes from UCSC which other bedtools subroutines don't complain about. The sort order of the chromosomes also seems to matter in this case, but not others. Datestamp 10-28-2015.
+These are regions that are not CpG islands, shores, nor shelves. **NOTE**: `bedtools complement` seems to complain about the third column of the chromosome sizes from UCSC which other bedtools subroutines don't complain about. The sort order of the chromosomes also seems to matter in this case, but not others. **NOTE**: Some lines in the result have start 0 and end 0 which prevents the proper use of the file downstream. Hence the last awk pipe. Datestamp 10-28-2015.
 
 ```{bash}
-bedtools complement -i <(cat cpg_islands_hg19_ucsc.bed cpg_shores_hg19_ucsc.bed cpg_shelves_hg19_ucsc.bed | sort -T . -k1,1 -k2,2n) -g <(awk '{print $1 "\t" $2}' chromInfo_hg19.txt | sort -T . -k1,1 -k2,2n) > cpg_inter_hg19_ucsc.bed
+bedtools complement -i <(cat cpg_islands_hg19_ucsc.bed cpg_shores_hg19_ucsc.bed cpg_shelves_hg19_ucsc.bed | sort -T . -k1,1 -k2,2n | bedtools merge) -g <(awk '{print $1 "\t" $2}' chromInfo_hg19.txt | sort -T . -k1,1 -k2,2n) | awk '$2 != $3 {print $0}'> cpg_inter_hg19_ucsc.bed
 ```
 
 CpG islands, shores, and shelves should be disjoint with the Inter CpG file.
