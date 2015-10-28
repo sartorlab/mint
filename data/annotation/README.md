@@ -22,10 +22,46 @@ awk -v OFS='\t' '{print $2, $3, $4}' cpg_islands_hg19_ucsc.txt | sort -T . -k1,1
 ```
 
 ## cpg_shores_hg19_ucsc.bed
-These are the CpG shores, where a shore is defined as 1kb up and downstream of the CpG island start and end. The following one-liner was used to generate the shores. Datestamp 10-24-2015.
+These are the CpG shores, where a shore is defined as 2kb up and downstream of the CpG island start and end. The following one-liner was used to generate the shores. Datestamp 10-28-2015.
 
 ```{bash}
-awk -v OFS='\t' 'NR > 1 {print $2, $3, $4}' ~/latte/mint/data/annotation/cpg_islands_hg19_ucsc.txt | bedtools flank -b 1000 -g ~/latte/mint/data/annotation/chromInfo_hg19.txt | sort -T . -k1,1 -k2,2n | bedtools merge > cpg_shores_hg19_ucsc.bed
+bedtools subtract -a <(bedtools flank -b 2000 -i cpg_islands_hg19_ucsc.bed -g chromInfo_hg19.txt | sort -T . -k1,1 -k2,2n | bedtools merge) -b cpg_islands_hg19_ucsc.bed > cpg_shores_hg19_ucsc.bed
+```
+
+CpG islands and CpG shores are disjoint. The following intersection returns no lines:
+
+```{bash}
+bedtools intersect -a cpg_islands_hg19_ucsc.bed -b cpg_shores_hg19_ucsc.bed -wa -wb | head -10
+```
+
+## cpg_shelves_hg19_ucsc.bed
+These are the CpG shelves, where a shelf is defined as the region between 2kb and 4kb away from a CpG island boundary. Datestamp 10-28-2015.
+
+```{bash}
+bedtools subtract -a <(bedtools flank -b 2000 -i cpg_shores_hg19_ucsc.bed -g chromInfo_hg19.txt | sort -T . -k1,1 -k2,2n | bedtools merge) -b <(cat cpg_islands_hg19_ucsc.bed cpg_shores_hg19_ucsc.bed | sort -T . -k1,1 -k2,2n) > cpg_shelves_hg19_ucsc.bed
+```
+
+CpG islands and CpG shores are disjoint from CpG shelves. The following intersections returns no lines:
+
+```{bash}
+bedtools intersect -a cpg_islands_hg19_ucsc.bed -b cpg_shelves_hg19_ucsc.bed -wa -wb | head -10
+bedtools intersect -a cpg_shelves_hg19_ucsc.bed -b cpg_shores_hg19_ucsc.bed -wa -wb | head -10
+```
+
+## cpg_inter_hg19_ucsc.bed
+
+These are regions that are not CpG islands, shores, nor shelves. **NOTE**: `bedtools complement` seems to complain about the third column of the chromosome sizes from UCSC which other bedtools subroutines don't complain about. The sort order of the chromosomes also seems to matter in this case, but not others. Datestamp 10-28-2015.
+
+```{bash}
+bedtools complement -i <(cat cpg_islands_hg19_ucsc.bed cpg_shores_hg19_ucsc.bed cpg_shelves_hg19_ucsc.bed | sort -T . -k1,1 -k2,2n) -g <(awk '{print $1 "\t" $2}' chromInfo_hg19.txt | sort -T . -k1,1 -k2,2n) > cpg_inter_hg19_ucsc.bed
+```
+
+CpG islands, shores, and shelves should be disjoint with the Inter CpG file.
+
+```{bash}
+bedtools intersect -a cpg_inter_hg19_ucsc.bed -b cpg_islands_hg19_ucsc.bed | head -10
+bedtools intersect -a cpg_inter_hg19_ucsc.bed -b cpg_shores_hg19_ucsc.bed | head -10
+bedtools intersect -a cpg_inter_hg19_ucsc.bed -b cpg_shelves_hg19_ucsc.bed | head -10
 ```
 
 ## ldef_5kb_hg19_reduced.bed
