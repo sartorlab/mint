@@ -35,7 +35,7 @@ library(GenomicRanges)
 
 message('Reading data and converting to GRanges...')
 data = read.table(inpath, sep='\t', header=F, comment.char='', quote='', stringsAsFactors=F)
-gr_data = GRanges(seqnames=data$V1, ranges=IRanges(start=data$V2, end=data$V3), strand='*', geneid=data$V4)
+gr_data = GRanges(seqnames=data$V2, ranges=IRanges(start=data$V3, end=data$V4), strand='*', geneid=data$V1)
 
 # Group GRanges by the geneid
 message('Splitting GRanges by geneid...')
