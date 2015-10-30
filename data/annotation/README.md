@@ -83,7 +83,7 @@ write.table(locusdef.hg19.5kb@dframe, file='ldef_5kb_hg19.bed', sep='\t', col.na
 And to get the reduced locus definitions:
 ```{bash}
 Rscript ../scripts/reduce_ldef.R --inpath ldef_5kb_hg19.bed --outpath annot_ldefs_5kb_hg19_tmp.bed
-awk -v OFS='\t' '{print $1, $2, $3, "promoter:"$4}' annot_ldefs_5kb_hg19_tmp.bed > annot_ldefs_5kb_hg19.bed
+awk -v OFS='\t' '{print $1, $2, $3, "promoter:"$4}' annot_ldefs_5kb_hg19_tmp.bed > annot_promoters_hg19.bed
 rm annot_ldefs_5kb_hg19_tmp.bed
 ```
 
