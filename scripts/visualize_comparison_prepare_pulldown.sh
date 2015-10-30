@@ -11,21 +11,28 @@ cd ~/latte/mint/${PROJECT}
 ################################################################################
 # Distribution of PePr peak widths
 
-
+  cat \
+    <(awk -v OFS='\t' '{print $1, $2, $3, "up", $3 - $2 + 1}' ./analysis/pepr_peaks/${COMPARISON}_PePr_up_peaks.bed) \
+    <(awk -v OFS='\t' '{print $1, $2, $3, "down", $3 - $2 + 1}' ./analysis/pepr_peaks/${COMPARISON}_PePr_down_peaks.bed) \
+  | sort -T . -k1,1 -k2,2n \
+  > ./analysis/summary/tables/${COMPARISON}_PePr_peak_widths.bed
 
 ################################################################################
-# Distribution of DMRs in CpG annotation features
+# Intersection of differentially methylation regions from PePr with annotations
+# For barplots showing proportion of DMRs tested in each annotation
+# Can slice by DM in annotations, DM up/down in annotations
 
-  bedtools intersect \
+  bedtools intersect -wa -wb \
   -a <(cat \
       <(awk -v OFS='\t' '{print $1, $2, $3, "up"}' ./analysis/pepr_peaks/${COMPARISON}_PePr_up_peaks.bed) \
       <(awk -v OFS='\t' '{print $1, $2, $3, "down"}' ./analysis/pepr_peaks/${COMPARISON}_PePr_down_peaks.bed) \
-    | sort -k1,1 -k2,2n) \
-  -b <(cat \
-      <(awk -v OFS='\t' '{print $1, $2, $3, "island"}' ../data/annotation/cpg_islands_hg19_ucsc.bed) \
-      <(awk -v OFS='\t' '{print $1, $2, $3, "shore"}' ../data/annotation/cpg_shores_hg19_ucsc.bed) \
-      <(awk -v OFS='\t' '{print $1, $2, $3, "shelf"}' ../data/annotation/cpg_shelves_hg19_ucsc.bed) \
-      <(awk -v OFS='\t' '{print $1, $2, $3, "inter"}' ../data/annotation/cpg_inter_hg19_ucsc.bed) \
     | sort -T . -k1,1 -k2,2n) \
-  -wa -wb \
-  > ${COMPARISON}_PePr_cpg_annot.bed
+  -b <(cat \
+      ../data/annotation/annot_cpg_islands_hg19.bed \
+      ../data/annotation/annot_cpg_shores_hg19.bed \
+      ../data/annotation/annot_cpg_shelves_hg19.bed \
+      ../data/annotation/annot_cpg_inter_hg19.bed \
+      ../data/annotation/annot_promoters_hg19.bed \
+      ../data/annotation/annot_enhancers_hg19.bed \
+    | sort -T . -k1,1 -k2,2n) \
+  > ./analysis/summary/tables/${COMPARISON}_PePr_annot.bed
