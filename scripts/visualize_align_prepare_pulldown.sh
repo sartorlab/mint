@@ -3,8 +3,11 @@ set -e
 set -u
 set -o pipefail
 
-PROJECT=IDH2mut_v_NBM
-humanID=IDH2mut_1_hmc
+# Arguments
+# -project The project name given to init_project.sh
+# -humanID A human readble ID
+PROJECT=$2
+humanID=$4
 
 cd ~/latte/mint/${PROJECT}
 
@@ -16,7 +19,7 @@ cd ~/latte/mint/${PROJECT}
 
   for annot in cpg_islands cpg_shores cpg_shelves cpg_inter promoters enhancers windows_5kb
   do
-    echo "Computing average coverage over ${annot}"
+    echo "Computing average coverage over ${annot} for ${humanID}"
     bedtools intersect -wa -wb \
       -a ../data/annotation/annot_${annot}_hg19.bed \
       -b ./analysis/pulldown_coverages/${humanID}_pulldown_coverage.bdg \

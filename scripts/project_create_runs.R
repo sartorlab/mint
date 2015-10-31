@@ -201,13 +201,23 @@ for(sample in sort(unique(annotation$humanID))) {
 
       bisAlignScript = sprintf('%s/%s_bisulfite_alignment.sh', projectscriptdir, project)
       cat('', file=bisAlignScript)
+      bisAlignVisScript = sprintf('%s/%s_visualize_bisulfite_alignment_prepare.sh', projectscriptdir, project)
+      cat('', file=bisAlignVisScript)
       for(i in 1:nrow(bisulfite)) {
-        command = sprintf('sh %s/process_bisulfite_align.sh -project %s -sampleID %s -humanID %s',
+        command = sprintf('bash %s/process_bisulfite_align.sh -project %s -sampleID %s -humanID %s',
           scriptdir,
           project,
           bisulfite[i,'sampleID'],
           bisulfite[i,'fullHumanID'])
         cat(command, file=bisAlignScript, sep='\n', append=T)
+
+        command = sprintf('bash %s/visualize_align_prepare_bisulfite.sh -project %s -humanID %s',
+          scriptdir,
+          project,
+          bisulfite[i,'fullHumanID'])
+        cat(command, file=bisAlignVisScript, sep='\n', append=T)
+
+        # INSERT RSCRIPT COMMAND FOR ACTUAL VISUALIZATION HERE
 
         # trackDb.txt entry for Bismark methylation calls
         trackEntry = c(
@@ -242,7 +252,7 @@ for(sample in sort(unique(annotation$humanID))) {
 
         bisCompareScript = sprintf('%s/%s_bisulfite_comparison.sh', projectscriptdir, project)
         cat('', file=bisCompareScript)
-        command = sprintf('sh %s/process_bisulfite_comparison.sh -project %s -cyt %s -samples %s -treatment %s -destrand %s -max %s -min %s -filter %s -tile %s -cores %s -comparison %s',
+        command = sprintf('bash %s/process_bisulfite_comparison.sh -project %s -cyt %s -samples %s -treatment %s -destrand %s -max %s -min %s -filter %s -tile %s -cores %s -comparison %s',
           scriptdir,
           project,
           cytfiles,
@@ -256,6 +266,16 @@ for(sample in sort(unique(annotation$humanID))) {
           cores,
           comparison)
         cat(command, file=bisCompareScript, sep='\n', append=T)
+
+        bisCompareVisScript = sprintf('%s/%s_visualize_bisulfite_comparison_prepare.sh', projectscriptdir, project)
+        cat('', file=bisCompareVisScript)
+        command = sprintf('bash %s/visualize_comparison_prepare_bisulfite.sh -project %s -comparison %s',
+          scriptdir,
+          project,
+          comparison)
+        cat(command, file=bisCompareVisScript, sep='\n', append=T)
+
+        # INSERT RSCRIPT COMMAND FOR ACTUAL VISUALIZATION HERE
 
         # trackDb.txt entry for methylSig result
         trackEntry = c(
@@ -279,12 +299,22 @@ for(sample in sort(unique(annotation$humanID))) {
 
         bisSimpClassScript = sprintf('%s/%s_bisulfite_classification_simple.sh', projectscriptdir, project)
         cat('', file=bisSimpClassScript)
+        bisSimpClassVisScript = sprintf('%s/%s_visualize_bisulfite_classification_simple_prepare.sh', projectscriptdir, project)
+        cat('', file=bisSimpClassVisScript)
         for(i in 1:nrow(bisulfite)) {
-          command = sprintf('sh %s/classify_simple_bisulfite.sh -project %s -humanID %s',
+          command = sprintf('bash %s/classify_simple_bisulfite.sh -project %s -humanID %s',
             scriptdir,
             project,
             bisulfite[i,'fullHumanID'])
           cat(command, file=bisSimpClassScript, sep='\n', append=T)
+
+          command = sprintf('bash %s/visualize_classification_prepare.sh -project %s -classBED %s',
+            scriptdir,
+            project,
+            sprintf('./analysis/classification_simple/%s_bisulfite_classification_simple.bed', bisulfite[i,'fullHumanID']))
+          cat(command, file=bisSimpClassVisScript, sep='\n', append=T)
+
+          # INSERT RSCRIPT COMMAND FOR ACTUAL VISUALIZATION HERE
 
           # trackDb.txt entry for bisulfite simple classification results
           trackEntry = c(
@@ -317,14 +347,24 @@ for(sample in sort(unique(annotation$humanID))) {
 
     pullAlignScript = sprintf('%s/%s_pulldown_alignment.sh', projectscriptdir, project)
     cat('', file=pullAlignScript)
+    pullAlignVisScript = sprintf('%s/%s_visualize_pulldown_alignment_prepare.sh', projectscriptdir, project)
+    cat('', file=pullAlignVisScript)
     for(i in 1:nrow(pulldown)) {
 
-      command = sprintf('sh %s/process_pulldown_align.sh -project %s -sampleID %s -humanID %s',
+      command = sprintf('bash %s/process_pulldown_align.sh -project %s -sampleID %s -humanID %s',
         scriptdir,
         project,
         pulldown[i,'sampleID'],
         pulldown[i,'fullHumanID'])
       cat(command, file=pullAlignScript, sep='\n', append=T)
+
+      command = sprintf('bash %s/visualize_align_prepare_pulldown.sh -project %s -humanID %s',
+        scriptdir,
+        project,
+        pulldown[i,'fullHumanID'])
+      cat(command, file=pullAlignVisScript, sep='\n', append=T)
+
+      # INSERT RSCRIPT COMMAND FOR ACTUAL VISUALIZATION HERE
 
       # trackDb.txt entry for chip/input pulldown coverages
       trackEntry = c(
@@ -385,7 +425,7 @@ for(sample in sort(unique(annotation$humanID))) {
         # This is okay in the for loop because it creates a fresh contextual pulldown comparison
         pullCompScript = sprintf('%s/%s_%s_pulldown_comparison.sh', projectscriptdir, project, compContext)
         cat('', file=pullCompScript)
-        command = sprintf('sh %s/process_pulldown_comparison.sh -project %s -input1 %s -input2 %s -chip1 %s -chip2 %s -comparison %s',
+        command = sprintf('bash %s/process_pulldown_comparison.sh -project %s -input1 %s -input2 %s -chip1 %s -chip2 %s -comparison %s',
           scriptdir,
           project,
           input1files,
@@ -394,6 +434,16 @@ for(sample in sort(unique(annotation$humanID))) {
           chip2files,
           pulldownComparison)
         cat(command, file=pullCompScript, sep='\n', append=T)
+
+        pullCompareVisScript = sprintf('%s/%s_visualize_pulldown_comparison_prepare.sh', projectscriptdir, project)
+        cat('', file=pullCompareVisScript)
+        command = sprintf('bash %s/visualize_comparison_prepare_pulldown.sh -project %s -comparison %s',
+          scriptdir,
+          project,
+          pulldownComparison)
+        cat(command, file=pullCompareVisScript, sep='\n', append=T)
+
+        # INSERT RSCRIPT COMMAND FOR ACTUAL VISUALIZATION HERE
 
         # trackDb.txt entry for PePr output
         trackEntry = c(
@@ -428,6 +478,11 @@ for(sample in sort(unique(annotation$humanID))) {
       pullSimpClassScript = sprintf('%s/%s_pulldown_classification_simple.sh', projectscriptdir, project)
       cat('', file=pullSimpClassScript)
 
+      pullSampleVisScript = sprintf('%s/%s_visualize_pulldown_sample_prepare.sh', projectscriptdir, project)
+      cat('', file=pullSampleVisScript)
+      pullSimpClassVisScript = sprintf('%s/%s_visualize_pulldown_classification_simple_prepare.sh', projectscriptdir, project)
+      cat('', file=pullSimpClassVisScript)
+
       for(i in names(sampList)) {
         # i gives the mc/hmc context
         if(i == '0') {
@@ -457,13 +512,25 @@ for(sample in sort(unique(annotation$humanID))) {
           chipFile = chipID
           inputFile = inputID
 
-          command = sprintf('sh %s/process_pulldown_sample.sh -project %s -chip %s -input %s -name %s',
+          command = sprintf('bash %s/process_pulldown_sample.sh -project %s -chip %s -input %s -name %s',
             scriptdir,
             project,
             chipFile,
             inputFile,
             chipID)
           cat(command, file=pullSampleScript, sep='\n', append=T)
+
+          command = sprintf('bash %s/visualize_sample_prepare_pulldown.sh -project %s -humanID %s',
+            scriptdir,
+            project,
+            chipID)
+          cat(command, file=pullSampleVisScript, sep='\n', append=T)
+
+          command = sprintf('bash %s/visualize_classification_prepare.sh -project %s -classBED %s',
+            scriptdir,
+            project,
+            sprintf('./analysis/classification_simple/%s_pulldown_classification_simple.bed', chipID))
+          cat(command, file=pullSimpClassVisScript, sep='\n', append=T)
 
           # trackDb.txt entry for MACS2 output
           trackEntry = c(
@@ -518,6 +585,9 @@ for(sample in sort(unique(annotation$humanID))) {
 
       sampleClassScript = sprintf('%s/%s_classification_sample_hybrid.sh', projectscriptdir, project)
       cat('', file=sampleClassScript)
+      sampleClassVisScript = sprintf('%s/%s_visualize_classification_sample_hybrid_prepare.sh', projectscriptdir, project)
+      cat('', file=sampleClassVisScript)
+
       for(hID in names(sampList)) {
         subSampList = sampList[[hID]]
         bisulfiteID = subset(subSampList, subSampList$bisulfite == 1)$fullHumanID
@@ -534,6 +604,12 @@ for(sample in sort(unique(annotation$humanID))) {
           hID,
           winsize)
         cat(command, file=sampleClassScript, sep='\n', append=T)
+
+        command = sprintf('bash %s/visualize_classification_prepare.sh -project %s -classBED %s',
+          scriptdir,
+          project,
+          sprintf('./analysis/classification_sample/%s_hybrid_classification_sample.bed', hID))
+        cat(command, file=sampleClassVisScript, sep='\n', append=T)
 
         # trackDb.txt entry for hybrid sample classification
         trackEntry = c(
@@ -569,17 +645,17 @@ for(sample in sort(unique(annotation$humanID))) {
 
       compClassScript = sprintf('%s/%s_classification_comparison.sh', projectscriptdir, project)
       cat('', file=compClassScript)
-      command1 = sprintf('sh %s/classify_comparison_prepare_bisulfite.sh -project %s -comparison %s',
+      command1 = sprintf('bash %s/classify_comparison_prepare_bisulfite.sh -project %s -comparison %s',
         scriptdir,
         project,
         comparison)
-      command2 = sprintf('sh %s/classify_comparison_prepare_pulldown.sh -project %s -comparison %s -exp1cov %s -exp2cov %s',
+      command2 = sprintf('bash %s/classify_comparison_prepare_pulldown.sh -project %s -comparison %s -exp1cov %s -exp2cov %s',
         scriptdir,
         project,
         pulldownComparison,
         exp1cov,
         exp2cov)
-      command3 = sprintf('sh %s/classify_comparison.sh -project %s -comparison %s -methylfiles %s -hydroxyfiles %s',
+      command3 = sprintf('bash %s/classify_comparison.sh -project %s -comparison %s -methylfiles %s -hydroxyfiles %s',
         scriptdir,
         project,
         comparison,
@@ -588,6 +664,14 @@ for(sample in sort(unique(annotation$humanID))) {
       cat(command1, file=compClassScript, sep='\n', append=T)
       cat(command2, file=compClassScript, sep='\n', append=T)
       cat(command3, file=compClassScript, sep='\n', append=T)
+
+      compareClassVisScript = sprintf('%s/%s_visualize_classification_comparison_prepare.sh', projectscriptdir, project)
+      cat('', file=compareClassVisScript)
+      command = sprintf('bash %s/visualize_classification_prepare.sh -project %s -classBED %s',
+        scriptdir,
+        project,
+        sprintf('./analysis/classification_comparison/%s_classification_comparison.bed', comparison))
+      cat(command, file=compareClassVisScript, sep='\n', append=T)
 
       # trackDb.txt entry for hybrid comparison classification
       trackEntry = c(
@@ -612,6 +696,8 @@ for(sample in sort(unique(annotation$humanID))) {
 
       sampleClassScript = sprintf('%s/%s_classification_sample_pulldown.sh', projectscriptdir, project)
       cat('', file=sampleClassScript)
+      sampleClassVisScript = sprintf('%s/%s_visualize_classification_sample_pulldown_prepare.sh', projectscriptdir, project)
+      cat('', file=sampleClassVisScript)
       for(hID in names(sampList)) {
         subSampList = sampList[[hID]]
         mcPeaksID = subset(subSampList, subSampList$pulldown == 1 & subSampList$mc == 1)$fullHumanID
@@ -627,7 +713,7 @@ for(sample in sort(unique(annotation$humanID))) {
         }
 
         # Note, the appropriate file paths are established in the classify_sample_pulldown.sh script
-        command = sprintf('sh %s/classify_sample_pulldown.sh -project %s -mcPeaksID %s --mcZeroID %s -hmcPeaksID %s -hmcZeroID %s -humanID %s',
+        command = sprintf('bash %s/classify_sample_pulldown.sh -project %s -mcPeaksID %s --mcZeroID %s -hmcPeaksID %s -hmcZeroID %s -humanID %s',
           scriptdir,
           project,
           mcPeaksID,
@@ -636,6 +722,12 @@ for(sample in sort(unique(annotation$humanID))) {
           hmcZeroID,
           hID)
         cat(command, file=sampleClassScript, sep='\n', append=T)
+
+        command = sprintf('bash %s/visualize_classification_prepare.sh -project %s -classBED %s',
+          scriptdir,
+          project,
+          sprintf('./analysis/classification_sample/%s_pulldown_classification_sample.bed', hID))
+        cat(command, file=sampleClassVisScript, sep='\n', append=T)
 
         # trackDb.txt entry for pulldown sample classification
         trackEntry = c(
@@ -661,8 +753,11 @@ for(sample in sort(unique(annotation$humanID))) {
 
       # Methyl is with respect to hmc
       # The index of compList is with respect to group
-      compClassScript = sprintf('%s/%s_classification_comparison.sh', projectscriptdir, project)
+      compClassScript = sprintf('%s/%s_classification_comparison_pulldown.sh', projectscriptdir, project)
       cat('', file=compClassScript)
+      compClassVisScript = sprintf('%s/%s_visualize_classification_comparison_pulldown_prepare.sh', projectscriptdir, project)
+      cat('', file=compClassVisScript)
+
       for(methyl in c(0,1)) {
 
         subCompList1 = subset(compList[['1']], hmc == methyl)
@@ -678,13 +773,12 @@ for(sample in sort(unique(annotation$humanID))) {
         exp1cov = paste(paste(pulldowncovdir, '/', subCompList1$fullHumanID, '_pulldown_coverage.bdg', sep=''), collapse=',')
         exp2cov = paste(paste(pulldowncovdir, '/', subCompList2$fullHumanID, '_pulldown_coverage.bdg', sep=''), collapse=',')
 
-        command1 = sprintf('sh %s/classify_comparison_prepare_pulldown.sh -project %s -comparison %s -exp1cov %s -exp2cov %s',
+        command1 = sprintf('bash %s/classify_comparison_prepare_pulldown.sh -project %s -comparison %s -exp1cov %s -exp2cov %s',
           scriptdir,
           project,
           pulldownComparison,
           exp1cov,
           exp2cov)
-
         cat(command1, file=compClassScript, sep='\n', append=T)
 
       }
@@ -692,13 +786,19 @@ for(sample in sort(unique(annotation$humanID))) {
       methylfiles = paste(apply(expand.grid(peprdir, '/', comparison, '_mc_PePr_', c('up_peaks','down_peaks','noDM_signal','noDM_nosignal'), '.bed', stringsAsFactors=F),1,paste,collapse=''), collapse=',')
       hydroxyfiles = paste(apply(expand.grid(peprdir, '/', comparison, '_hmc_PePr_', c('up_peaks','down_peaks','noDM_signal','noDM_nosignal'), '.bed', stringsAsFactors=F),1,paste,collapse=''), collapse=',')
 
-      command2 = sprintf('sh %s/classify_comparison.sh -project %s -comparison %s -methylfiles %s -hydroxyfiles %s',
+      command2 = sprintf('bash %s/classify_comparison.sh -project %s -comparison %s -methylfiles %s -hydroxyfiles %s',
         scriptdir,
         project,
         comparison,
         methylfiles,
         hydroxyfiles)
       cat(command2, file=compClassScript, sep='\n', append=T)
+
+      command = sprintf('bash %s/visualize_classification_prepare.sh -project %s -classBED %s',
+        scriptdir,
+        project,
+        sprintf('./analysis/classification_comparison/%s_classification_comparison.bed', comparison))
+      cat(command, file=compClassVisScript, sep='\n', append=T)
 
       # trackDb.txt entry for pulldown comparison classification
       trackEntry = c(

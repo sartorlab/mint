@@ -3,14 +3,18 @@ set -e
 set -u
 set -o pipefail
 
-PROJECT=IDH2mut_v_NBM
-COMPARISON=IDH2mut_v_NBM_hmc
+# Arguments
+# -project The project name given to init_project.sh
+# -comparison The comparison name used in project_create_runs.R
+PROJECT=$2
+COMPARISON=$4
 
 cd ~/latte/mint/${PROJECT}
 
 ################################################################################
 # Distribution of PePr peak widths
 
+  echo "Computing PePr peak widths for ${COMPARISON}"
   cat \
     <(awk -v OFS='\t' '{print $1, $2, $3, "up", $3 - $2 + 1}' ./analysis/pepr_peaks/${COMPARISON}_PePr_up_peaks.bed) \
     <(awk -v OFS='\t' '{print $1, $2, $3, "down", $3 - $2 + 1}' ./analysis/pepr_peaks/${COMPARISON}_PePr_down_peaks.bed) \
@@ -22,6 +26,7 @@ cd ~/latte/mint/${PROJECT}
 # For barplots showing proportion of DMRs tested in each annotation
 # Can slice by DM in annotations, DM up/down in annotations
 
+  echo "Computing intersections of ${COMPARISON} PePr peaks with annotations"
   bedtools intersect -wa -wb \
   -a <(cat \
       <(awk -v OFS='\t' '{print $1, $2, $3, "up"}' ./analysis/pepr_peaks/${COMPARISON}_PePr_up_peaks.bed) \

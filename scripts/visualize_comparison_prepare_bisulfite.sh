@@ -3,8 +3,11 @@ set -e
 set -u
 set -o pipefail
 
-PROJECT=IDH2mut_v_NBM
-COMPARISON=IDH2mut_v_NBM
+# Arguments
+# -project The project name given to init_project.sh
+# -comparison The comparison name used in project_create_runs.R
+PROJECT=$2
+COMPARISON=$4
 
 cd ~/latte/mint/${PROJECT}
 
@@ -19,7 +22,7 @@ cd ~/latte/mint/${PROJECT}
 
   for annot in cpg_islands cpg_shores cpg_shelves cpg_inter promoters enhancers windows_5kb
   do
-    echo "Computing average differential methylation in DMs over ${annot}"
+    echo "Computing average differential methylation in DMs over ${annot} for ${COMPARISON}"
     bedtools intersect -wa -wb \
       -a ../data/annotation/annot_${annot}_hg19.bed \
       -b <(awk -v OFS='\t' 'NR > 1 && $5 < 0.05 { print $1, $2, $3, $5, $6, $7, $11, $12 }' ./analysis/methylsig_calls/${COMPARISON}.txt) \
@@ -33,6 +36,7 @@ cd ~/latte/mint/${PROJECT}
 # Can slice by all_tested in annotations, DM in annotations, DM up/down in annotations
 # NOTE: CpG annotations are a partition of the genome. Promoter/enhancer is not.
 
+  echo "Computing intersections with ${COMPARISON} methylSig results with annotations"
   bedtools intersect -wa -wb \
     -a <(awk -v OFS='\t' 'NR > 1 { print $1, $2, $3, $5, $6, $7, $11, $12 }' ./analysis/methylsig_calls/${COMPARISON}.txt) \
     -b <(cat \
