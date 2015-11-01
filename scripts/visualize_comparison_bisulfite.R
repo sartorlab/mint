@@ -103,7 +103,7 @@ comparison = opt$comparison
           'diff_meth'=data_diff[[n]][,5],
           stringsAsFactors=F)}))
 
-    png_diff = sprintf('analysis/summary/figures/%s_%s_diff_meth_in_DM.png', comparison, annot)
+    png_diff = sprintf('analysis/summary/figures/%s_methylSig_%s_diff_meth_in_DM.png', comparison, annot)
     plot_diff =
       ggplot(df_diff, aes(diff_meth)) +
       geom_histogram(binwidth=5, aes(y=..density..)) +
@@ -160,14 +160,14 @@ comparison = opt$comparison
 
     # scale_fill_manual(values=c('inter'="#00008B", 'shelf'="#0000FF", 'shore'="#F4A460", 'island'="#003300"))
 
-    png_counts = sprintf('analysis/summary/figures/%s_%s_annot_barplot_counts.png', comparison, a)
+    png_counts = sprintf('analysis/summary/figures/%s_methylSig_%s_annot_barplot_counts.png', comparison, a)
     plot_counts =
       ggplot(df_annot, aes(x=type, y=prop, fill=annot)) +
       geom_bar(stat='identity') +
       ggtitle(sprintf('Counts of mSig regions in %s (%s)', a, comparison))
     ggsave(filename = png_counts, plot = plot_counts, width=width, height=height, dpi=300)
 
-    png_props = sprintf('analysis/summary/figures/%s_%s_annot_barplot_props.png', comparison, a)
+    png_props = sprintf('analysis/summary/figures/%s_methylSig_%s_annot_barplot_props.png', comparison, a)
     plot_props =
       ggplot(df_annot, aes(x=type, y=prop, fill=annot)) +
       geom_bar(stat='identity', position='fill') +

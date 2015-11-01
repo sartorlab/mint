@@ -28,9 +28,6 @@ library(optparse)
 # % methylation and coverage across all sites in sample
 # Cannot include this in the next block because we get data from one file instead of two
 
-  png_pm = sprintf('analysis/summary/figures/%s_all_sites_perc_meth.png', humanID)
-  png_cov = sprintf('analysis/summary/figures/%s_all_sites_cov.png', humanID)
-
   message(sprintf('Plotting percent methylation and coverage across all sites in %s', humanID))
   data = read.table(bis_cov,
     header=F, sep='\t', quote='', comment.char='', stringsAsFactors=F,
@@ -38,6 +35,7 @@ library(optparse)
   data$coverage = data$numC + data$numT
 
   # % methylation
+  png_pm = sprintf('analysis/summary/figures/%s_bisulfite_all_sites_perc_meth.png', humanID)
   plot_pm =
     ggplot(data, aes(perc_meth)) +
     geom_histogram(binwidth=5, aes(y=..density..)) +
@@ -46,6 +44,7 @@ library(optparse)
   ggsave(filename = png_pm, plot = plot_pm, width=6, height=6, dpi=300)
 
   # coverage
+  png_cov = sprintf('analysis/summary/figures/%s_bisulfite_all_sites_cov.png', humanID)
   plot_cov =
     ggplot(data, aes(log10(coverage))) +
     geom_histogram(aes(y=..density..)) +
@@ -58,9 +57,6 @@ library(optparse)
 
   lapply(names(files), function(annot){
     message(sprintf('Plotting average percent methylation and average coverage across %s annotations in %s', annot, humanID))
-
-    png_pm = sprintf('analysis/summary/figures/%s_%s_avg_perc_meth.png', humanID, annot)
-    png_cov = sprintf('analysis/summary/figures/%s_%s_avg_cov.png', humanID, annot)
 
     files_pm = grep('avg_methylation', files[[annot]], value=T)
     files_cov = grep('avg_coverage', files[[annot]], value=T)
@@ -99,6 +95,7 @@ library(optparse)
       height = 4
     }
 
+    png_pm = sprintf('analysis/summary/figures/%s_bisulfite_%s_avg_perc_meth.png', humanID, annot)
     plot_pm =
       ggplot(df_pm, aes(avg_meth)) +
       geom_histogram(binwidth=5, aes(y=..density..)) +
@@ -107,6 +104,7 @@ library(optparse)
       theme_bw()
     ggsave(filename = png_pm, plot = plot_pm, width = width, height = height, dpi = 300)
 
+    png_cov = sprintf('analysis/summary/figures/%s_bisulfite_%s_avg_cov.png', humanID, annot)
     plot_cov =
       ggplot(df_cov, aes(avg_coverage)) +
       geom_histogram(aes(y=..density..)) +

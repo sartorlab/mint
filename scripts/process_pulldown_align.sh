@@ -33,8 +33,11 @@ samtools index $bowtie2Bam
 
 # Visualization in UCSC Genome Browser
 
-    # More general version is found in GSE52945_bam_to_bw.q
-    bedtools genomecov -bg -ibam $bowtie2Bam -g ~/latte/Homo_sapiens/chromInfo_hg19.txt > $pulldownBedgraph
+    # iGenomes .fasta has chrM first so samtools sort follows that,
+    # consequently, bedtools genomecov puts chrM in the bedGraph first,
+    # but this creates downstream issues. bedops, sort-bed is pretty quick.
+    bedtools genomecov -bg -ibam $bowtie2Bam -g ~/latte/Homo_sapiens/chromInfo_hg19.txt \
+    | sort-bed --max-mem 16G --tmpdir $PWD > $pulldownBedgraph
     bedGraphToBigWig $pulldownBedgraph ~/latte/Homo_sapiens/chromInfo_hg19.txt $pulldownBigwig
 
     # Add new track to the custom track file

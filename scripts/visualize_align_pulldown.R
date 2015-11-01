@@ -28,8 +28,6 @@ humanID = opt$humanID
   lapply(names(files), function(annot){
     message(sprintf('Plotting average average coverage across %s annotations in %s', annot, humanID))
 
-    png_cov = sprintf('analysis/summary/figures/%s_%s_avg_cov.png', humanID, annot)
-
     files_cov = grep('avg_coverage', files[[annot]], value=T)
 
     annotations = gsub(sprintf('analysis/summary/tables/%s_avg_coverage_',humanID),'',files_cov)
@@ -56,6 +54,7 @@ humanID = opt$humanID
       height = 4
     }
 
+    png_cov = sprintf('analysis/summary/figures/%s_pulldown_%s_avg_cov.png', humanID, annot)
     plot_cov =
       ggplot(df_cov, aes(avg_coverage)) +
       geom_histogram(aes(y=..density..)) +
