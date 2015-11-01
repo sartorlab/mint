@@ -4,7 +4,7 @@ library(optparse)
 # Parse arguments
 option_list = list(
     make_option('--project', type='character'),
-    make_option('--humanID', type='character'),
+    make_option('--humanID', type='character')
 )
 opt = parse_args(OptionParser(option_list=option_list))
 
