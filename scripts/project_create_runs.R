@@ -201,7 +201,7 @@ for(sample in sort(unique(annotation$humanID))) {
 
       bisAlignScript = sprintf('%s/%s_bisulfite_alignment.sh', projectscriptdir, project)
       cat('', file=bisAlignScript)
-      bisAlignVisScript = sprintf('%s/%s_visualize_bisulfite_alignment_prepare.sh', projectscriptdir, project)
+      bisAlignVisScript = sprintf('%s/%s_visualize_bisulfite_alignment.sh', projectscriptdir, project)
       cat('', file=bisAlignVisScript)
       for(i in 1:nrow(bisulfite)) {
         command = sprintf('bash %s/process_bisulfite_align.sh -project %s -sampleID %s -humanID %s',
@@ -212,6 +212,11 @@ for(sample in sort(unique(annotation$humanID))) {
         cat(command, file=bisAlignScript, sep='\n', append=T)
 
         command = sprintf('bash %s/visualize_align_prepare_bisulfite.sh -project %s -humanID %s',
+          scriptdir,
+          project,
+          bisulfite[i,'fullHumanID'])
+        cat(command, file=bisAlignVisScript, sep='\n', append=T)
+        command = sprintf('Rscript %s/visualize_align_bisulfite.R --project %s --humanID %s',
           scriptdir,
           project,
           bisulfite[i,'fullHumanID'])
@@ -267,9 +272,14 @@ for(sample in sort(unique(annotation$humanID))) {
           comparison)
         cat(command, file=bisCompareScript, sep='\n', append=T)
 
-        bisCompareVisScript = sprintf('%s/%s_visualize_bisulfite_comparison_prepare.sh', projectscriptdir, project)
+        bisCompareVisScript = sprintf('%s/%s_visualize_bisulfite_comparison.sh', projectscriptdir, project)
         cat('', file=bisCompareVisScript)
         command = sprintf('bash %s/visualize_comparison_prepare_bisulfite.sh -project %s -comparison %s',
+          scriptdir,
+          project,
+          comparison)
+        cat(command, file=bisCompareVisScript, sep='\n', append=T)
+        command = sprintf('Rscript %s/visualize_comparison_bisulfite.R --project %s --comparison %s',
           scriptdir,
           project,
           comparison)
@@ -299,7 +309,7 @@ for(sample in sort(unique(annotation$humanID))) {
 
         bisSimpClassScript = sprintf('%s/%s_bisulfite_classification_simple.sh', projectscriptdir, project)
         cat('', file=bisSimpClassScript)
-        bisSimpClassVisScript = sprintf('%s/%s_visualize_bisulfite_classification_simple_prepare.sh', projectscriptdir, project)
+        bisSimpClassVisScript = sprintf('%s/%s_visualize_bisulfite_classification_simple.sh', projectscriptdir, project)
         cat('', file=bisSimpClassVisScript)
         for(i in 1:nrow(bisulfite)) {
           command = sprintf('bash %s/classify_simple_bisulfite.sh -project %s -humanID %s',
@@ -312,6 +322,11 @@ for(sample in sort(unique(annotation$humanID))) {
             scriptdir,
             project,
             sprintf('./analysis/classification_simple/%s_bisulfite_classification_simple.bed', bisulfite[i,'fullHumanID']))
+          cat(command, file=bisSimpClassVisScript, sep='\n', append=T)
+          command = sprintf('Rscript %s/visualize_classification.R --project %s --classAnnot %s',
+            scriptdir,
+            project,
+            sprintf('./analysis/summary/tables/%s_bisulfite_classification_simple_annot.bed', bisulfite[i,'fullHumanID']))
           cat(command, file=bisSimpClassVisScript, sep='\n', append=T)
 
           # INSERT RSCRIPT COMMAND FOR ACTUAL VISUALIZATION HERE
@@ -347,7 +362,7 @@ for(sample in sort(unique(annotation$humanID))) {
 
     pullAlignScript = sprintf('%s/%s_pulldown_alignment.sh', projectscriptdir, project)
     cat('', file=pullAlignScript)
-    pullAlignVisScript = sprintf('%s/%s_visualize_pulldown_alignment_prepare.sh', projectscriptdir, project)
+    pullAlignVisScript = sprintf('%s/%s_visualize_pulldown_alignment.sh', projectscriptdir, project)
     cat('', file=pullAlignVisScript)
     for(i in 1:nrow(pulldown)) {
 
@@ -359,6 +374,11 @@ for(sample in sort(unique(annotation$humanID))) {
       cat(command, file=pullAlignScript, sep='\n', append=T)
 
       command = sprintf('bash %s/visualize_align_prepare_pulldown.sh -project %s -humanID %s',
+        scriptdir,
+        project,
+        pulldown[i,'fullHumanID'])
+      cat(command, file=pullAlignVisScript, sep='\n', append=T)
+      command = sprintf('Rscript %s/visualize_align_pulldown.R --project %s --humanID %s',
         scriptdir,
         project,
         pulldown[i,'fullHumanID'])
@@ -435,15 +455,18 @@ for(sample in sort(unique(annotation$humanID))) {
           pulldownComparison)
         cat(command, file=pullCompScript, sep='\n', append=T)
 
-        pullCompareVisScript = sprintf('%s/%s_visualize_pulldown_comparison_prepare.sh', projectscriptdir, project)
+        pullCompareVisScript = sprintf('%s/%s_visualize_pulldown_comparison.sh', projectscriptdir, project)
         cat('', file=pullCompareVisScript)
         command = sprintf('bash %s/visualize_comparison_prepare_pulldown.sh -project %s -comparison %s',
           scriptdir,
           project,
           pulldownComparison)
         cat(command, file=pullCompareVisScript, sep='\n', append=T)
-
-        # INSERT RSCRIPT COMMAND FOR ACTUAL VISUALIZATION HERE
+        command = sprintf('Rscript %s/visualize_comparison_pulldown.R --project %s --comparison %s',
+          scriptdir,
+          project,
+          pulldownComparison)
+        cat(command, file=pullCompareVisScript, sep='\n', append=T)
 
         # trackDb.txt entry for PePr output
         trackEntry = c(
@@ -478,9 +501,9 @@ for(sample in sort(unique(annotation$humanID))) {
       pullSimpClassScript = sprintf('%s/%s_pulldown_classification_simple.sh', projectscriptdir, project)
       cat('', file=pullSimpClassScript)
 
-      pullSampleVisScript = sprintf('%s/%s_visualize_pulldown_sample_prepare.sh', projectscriptdir, project)
+      pullSampleVisScript = sprintf('%s/%s_visualize_pulldown_sample.sh', projectscriptdir, project)
       cat('', file=pullSampleVisScript)
-      pullSimpClassVisScript = sprintf('%s/%s_visualize_pulldown_classification_simple_prepare.sh', projectscriptdir, project)
+      pullSimpClassVisScript = sprintf('%s/%s_visualize_pulldown_classification_simple.sh', projectscriptdir, project)
       cat('', file=pullSimpClassVisScript)
 
       for(i in names(sampList)) {
@@ -525,12 +548,11 @@ for(sample in sort(unique(annotation$humanID))) {
             project,
             chipID)
           cat(command, file=pullSampleVisScript, sep='\n', append=T)
-
-          command = sprintf('bash %s/visualize_classification_prepare.sh -project %s -classBED %s',
+          command = sprintf('Rscript %s/visualize_sample_pulldown.R --project %s --humanID %s',
             scriptdir,
             project,
-            sprintf('./analysis/classification_simple/%s_pulldown_classification_simple.bed', chipID))
-          cat(command, file=pullSimpClassVisScript, sep='\n', append=T)
+            chipID)
+          cat(command, file=pullSampleVisScript, sep='\n', append=T)
 
           # trackDb.txt entry for MACS2 output
           trackEntry = c(
@@ -550,6 +572,17 @@ for(sample in sort(unique(annotation$humanID))) {
             project,
             chipID)
           cat(command, file=pullSimpClassScript, sep='\n', append=T)
+
+          command = sprintf('bash %s/visualize_classification_prepare.sh -project %s -classBED %s',
+            scriptdir,
+            project,
+            sprintf('./analysis/classification_simple/%s_pulldown_classification_simple.bed', chipID))
+          cat(command, file=pullSimpClassVisScript, sep='\n', append=T)
+          command = sprintf('Rscript %s/visualize_classification.R --project %s --classAnnot %s',
+            scriptdir,
+            project,
+            sprintf('./analysis/summary/tables/%s_pulldown_classification_simple_annot.bed', chipID))
+          cat(command, file=pullSimpClassVisScript, sep='\n', append=T)
 
           # trackDb.txt entry for pulldown simple classification output
           trackEntry = c(
@@ -585,7 +618,7 @@ for(sample in sort(unique(annotation$humanID))) {
 
       sampleClassScript = sprintf('%s/%s_classification_sample_hybrid.sh', projectscriptdir, project)
       cat('', file=sampleClassScript)
-      sampleClassVisScript = sprintf('%s/%s_visualize_classification_sample_hybrid_prepare.sh', projectscriptdir, project)
+      sampleClassVisScript = sprintf('%s/%s_visualize_classification_sample_hybrid.sh', projectscriptdir, project)
       cat('', file=sampleClassVisScript)
 
       for(hID in names(sampList)) {
@@ -609,6 +642,11 @@ for(sample in sort(unique(annotation$humanID))) {
           scriptdir,
           project,
           sprintf('./analysis/classification_sample/%s_hybrid_classification_sample.bed', hID))
+        cat(command, file=sampleClassVisScript, sep='\n', append=T)
+        command = sprintf('Rscript %s/visualize_classification.R --project %s --classAnnot %s',
+          scriptdir,
+          project,
+          sprintf('./analysis/summary/tables/%s_hybrid_classification_sample_annot.bed', hID))
         cat(command, file=sampleClassVisScript, sep='\n', append=T)
 
         # trackDb.txt entry for hybrid sample classification
@@ -665,12 +703,17 @@ for(sample in sort(unique(annotation$humanID))) {
       cat(command2, file=compClassScript, sep='\n', append=T)
       cat(command3, file=compClassScript, sep='\n', append=T)
 
-      compareClassVisScript = sprintf('%s/%s_visualize_classification_comparison_prepare.sh', projectscriptdir, project)
+      compareClassVisScript = sprintf('%s/%s_visualize_classification_comparison.sh', projectscriptdir, project)
       cat('', file=compareClassVisScript)
       command = sprintf('bash %s/visualize_classification_prepare.sh -project %s -classBED %s',
         scriptdir,
         project,
         sprintf('./analysis/classification_comparison/%s_classification_comparison.bed', comparison))
+      cat(command, file=compareClassVisScript, sep='\n', append=T)
+      command = sprintf('Rscript %s/visualize_classification.R --project %s --classAnnot %s',
+        scriptdir,
+        project,
+        sprintf('./analysis/summary/tables/%s_classification_comparison_annot.bed', comparison))
       cat(command, file=compareClassVisScript, sep='\n', append=T)
 
       # trackDb.txt entry for hybrid comparison classification
@@ -696,7 +739,7 @@ for(sample in sort(unique(annotation$humanID))) {
 
       sampleClassScript = sprintf('%s/%s_classification_sample_pulldown.sh', projectscriptdir, project)
       cat('', file=sampleClassScript)
-      sampleClassVisScript = sprintf('%s/%s_visualize_classification_sample_pulldown_prepare.sh', projectscriptdir, project)
+      sampleClassVisScript = sprintf('%s/%s_visualize_classification_sample_pulldown.sh', projectscriptdir, project)
       cat('', file=sampleClassVisScript)
       for(hID in names(sampList)) {
         subSampList = sampList[[hID]]
@@ -728,6 +771,11 @@ for(sample in sort(unique(annotation$humanID))) {
           project,
           sprintf('./analysis/classification_sample/%s_pulldown_classification_sample.bed', hID))
         cat(command, file=sampleClassVisScript, sep='\n', append=T)
+        command = sprintf('Rscript %s/visualize_classification.R --project %s --classAnnot %s',
+          scriptdir,
+          project,
+          sprintf('./analysis/summary/tables/%s_pulldown_classification_sample_annot.bed', hID))
+        cat(command, file=sampleClassVisScript, sep='\n', append=T)
 
         # trackDb.txt entry for pulldown sample classification
         trackEntry = c(
@@ -755,7 +803,7 @@ for(sample in sort(unique(annotation$humanID))) {
       # The index of compList is with respect to group
       compClassScript = sprintf('%s/%s_classification_comparison_pulldown.sh', projectscriptdir, project)
       cat('', file=compClassScript)
-      compClassVisScript = sprintf('%s/%s_visualize_classification_comparison_pulldown_prepare.sh', projectscriptdir, project)
+      compClassVisScript = sprintf('%s/%s_visualize_classification_comparison_pulldown.sh', projectscriptdir, project)
       cat('', file=compClassVisScript)
 
       for(methyl in c(0,1)) {
@@ -798,6 +846,11 @@ for(sample in sort(unique(annotation$humanID))) {
         scriptdir,
         project,
         sprintf('./analysis/classification_comparison/%s_classification_comparison.bed', comparison))
+      cat(command, file=compClassVisScript, sep='\n', append=T)
+      command = sprintf('Rscript %s/visualize_classification.R --project %s --classAnnot %s',
+        scriptdir,
+        project,
+        sprintf('./analysis/summary/tables/%s_classification_comparison_annot.bed', comparison))
       cat(command, file=compClassVisScript, sep='\n', append=T)
 
       # trackDb.txt entry for pulldown comparison classification

@@ -12,7 +12,7 @@ library(optparse)
   humanID = opt$humanID
 
 # Set working directory and collect relevant files
-  setwd(sprintf('../%s/', project))
+  setwd(sprintf('~/latte/mint/%s/', project))
 
   summary_files = list.files('analysis/summary/tables', full.names=T)
   summary_files = grep(humanID, summary_files, value=T)

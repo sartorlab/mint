@@ -12,7 +12,7 @@ project = opt$project
 humanID = opt$humanID
 
 # Set working directory and collect relevant files
-  setwd(sprintf('../%s/', project))
+  setwd(sprintf('~/latte/mint/%s/', project))
 
 ################################################################################
 # Distribution of PePr peak widths

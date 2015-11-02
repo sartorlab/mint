@@ -12,7 +12,7 @@ project = opt$project
 classAnnot = opt$classAnnot
 
 # Set working directory and collect relevant files
-  setwd(sprintf('../%s/', project))
+  setwd(sprintf('~/latte/mint/%s/', project))
 
   baseClassAnnot = basename(classAnnot)
   baseClassAnnot = gsub('_annot.bed', '', baseClassAnnot)
