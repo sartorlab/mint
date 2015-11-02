@@ -26,7 +26,7 @@ comparison = opt$comparison
 ################################################################################
 # % methylation change across all DMRs (methylSig)
   message('Plotting methylation change across all sites and all DMs.')
-  data = read.table('analysis/methylsig_calls/IDH2mut_v_NBM.txt',
+  data = read.table(sprintf('analysis/methylsig_calls/%s.txt', comparison),
     header=T, sep='\t', quote='', comment.char='', stringsAsFactors=F)
   sig = subset(data, pvalue < 0.05)
 

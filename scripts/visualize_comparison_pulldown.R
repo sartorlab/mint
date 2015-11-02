@@ -17,7 +17,7 @@ comparison = opt$comparison
 ################################################################################
 # Distribution of PePr peak widths
 
-  data = read.table('analysis/summary/tables/IDH2mut_v_NBM_hmc_PePr_peak_widths.bed',
+  data = read.table(sprintf('analysis/summary/tables/%s_PePr_peak_widths.bed', comparison),
     header=F, sep='\t', comment.char='', quote='', stringsAsFactors=F,
     col.names=c('chr','start','end','direction','width'))
 
@@ -51,7 +51,9 @@ comparison = opt$comparison
     prom_enh = c('promoters','enhancers')
   )
 
-  data = read.table('analysis/summary/tables/IDH2mut_v_NBM_hmc_PePr_annot.bed', header=F, sep='\t', comment.char='', quote='', stringsAsFactors=F,col.names=c('chr','start','end','direction','annot_chr','annot_start','annot_end','annot_type'))
+  data = read.table(sprintf('analysis/summary/tables/%s_PePr_annot.bed', comparison),
+    header=F, sep='\t', comment.char='', quote='', stringsAsFactors=F,
+    col.names=c('chr','start','end','direction','annot_chr','annot_start','annot_end','annot_type'))
   data$annot_type[grepl('promoters',data$annot_type)] = 'promoters'
 
   data_list = list(
