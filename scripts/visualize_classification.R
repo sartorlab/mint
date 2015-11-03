@@ -56,7 +56,7 @@ classAnnot = opt$classAnnot
     plot_all_counts =
       ggplot(df_annot, aes(x=type, y=prop)) +
       geom_bar(stat='identity') +
-      ggtitle('Counts of Overall Classifications') +
+      ggtitle(sprintf('Counts of Overall Classifications in %s', a)) +
       theme(axis.text.x = element_text(angle = 30, hjust = 1))
     ggsave(filename=png_all_counts, plot=plot_all_counts, width=6, height=4, dpi=300)
 
@@ -64,14 +64,15 @@ classAnnot = opt$classAnnot
     plot_annot_counts =
       ggplot(df_annot, aes(x=type, y=prop, fill=annot)) +
       geom_bar(stat='identity') +
-      ggtitle('Counts of Classifications in annot.') +
+      ggtitle(sprintf('Counts of Classifications in %s', a)) +
       theme(axis.text.x = element_text(angle = 30, hjust = 1))
     ggsave(filename=png_annot_counts, plot=plot_annot_counts, width=6, height=4, dpi=300)
 
     png_annot_props = sprintf('analysis/summary/figures/%s_%s_class_annot_props_barplot.png', baseClassAnnot, a)
     plot_annot_props =
       ggplot(df_annot, aes(x=type, y=prop, fill=annot)) +
-      geom_bar(stat='identity', position='fill') + ggtitle('Prop. of Classifications in annot.') +
+      geom_bar(stat='identity', position='fill') +
+      ggtitle(sprintf('Prop. of Classifications in %s', a)) +
       theme(axis.text.x = element_text(angle = 30, hjust = 1))
     ggsave(filename=png_annot_props, plot=plot_annot_props, width=6, height=4, dpi=300)
 
