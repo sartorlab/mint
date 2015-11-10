@@ -20,15 +20,15 @@ cd ~/latte/mint/${PROJECT}
   # methylSig columns
   # $5 = pvalue, $6 = qvalue, $7 = meth diff, $11 = meth in group 1, $12 = meth in group 0 (methylSig)
 
-  for annot in cpg_islands cpg_shores cpg_shelves cpg_inter promoters enhancers windows_5kb
-  do
-    echo "Computing average differential methylation in DMs over ${annot} for ${COMPARISON}"
-    bedtools intersect -wa -wb \
-      -a ../data/annotation/annot_${annot}_hg19.bed \
-      -b <(awk -v OFS='\t' 'NR > 1 && $5 < 0.05 { print $1, $2, $3, $5, $6, $7, $11, $12 }' ./analysis/methylsig_calls/${COMPARISON}.txt) \
-    | bedtools groupby -g 1-4 -c 10 -o mean \
-    > ./analysis/summary/tables/${COMPARISON}_methylSig_avg_diff_meth_in_DM_${annot}.bed
-  done
+  # for annot in cpg_islands cpg_shores cpg_shelves cpg_inter promoters enhancers windows_5kb
+  # do
+  #   echo "Computing average differential methylation in DMs over ${annot} for ${COMPARISON}"
+  #   bedtools intersect -wa -wb \
+  #     -a ../data/annotation/annot_${annot}_hg19.bed \
+  #     -b <(awk -v OFS='\t' 'NR > 1 && $5 < 0.05 { print $1, $2, $3, $5, $6, $7, $11, $12 }' ./analysis/methylsig_calls/${COMPARISON}.txt) \
+  #   | bedtools groupby -g 1-4 -c 10 -o mean \
+  #   > ./analysis/summary/tables/${COMPARISON}_methylSig_avg_diff_meth_in_DM_${annot}.bed
+  # done
 
 ################################################################################
 # Intersection of sites/regions tested in methylSig with annotations

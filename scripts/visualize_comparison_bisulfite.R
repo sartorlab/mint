@@ -33,10 +33,12 @@ comparison = opt$comparison
   DM = data.frame(
     'annotation'='all_tested',
     'meth_diff'=data$meth.diff,
+    'pvalue'=data$pvalue,
     stringsAsFactors=F)
   DM_sig = data.frame(
     'annotation'='DM',
     'meth_diff'=sig$meth.diff,
+    'pvalue'=sig$pvalue,
     stringsAsFactors=F)
 
   DM_groups = data.frame(
@@ -53,66 +55,68 @@ comparison = opt$comparison
   df = rbind(DM, DM_sig)
   df_groups = rbind(DM_groups, DM_groups_sig)
 
-  png_dm = sprintf('analysis/summary/figures/%s_methylSig_diff_meth.png', comparison)
-  png_dm_groups = sprintf('analysis/summary/figures/%s_methylSig_diff_meth_groups_heatmap.png', comparison)
-
-  plot_dm =
-    ggplot(df, aes(meth_diff)) +
-    geom_histogram(binwidth=5, aes(y=..density..)) +
-    facet_grid(. ~ annotation) +
-    ggtitle('% Methylation Difference Between Groups') +
+  png_volcano = sprintf('analysis/summary/figures/%s_methylSig_diff_meth_pval_volcano.png', comparison)
+  plot_volcano =
+    ggplot(DM, aes(meth_diff,-log10(pvalue))) +
+    geom_point(alpha=1/8, size=1) +
+    geom_abline(intercept=-log10(0.05), slope=0, color='red') +
+    ggtitle('% Methylation Difference vs -log10(P-value)') + theme(plot.title = element_text(size=8)) +
     theme_bw()
-  ggsave(filename = png_dm, plot = plot_dm, width = 8, height = 4, dpi = 300)
+  ggsave(filename = png_volcano, plot = plot_volcano, width = 5, height = 5, dpi = 300)
 
+  png_dm_groups = sprintf('analysis/summary/figures/%s_methylSig_diff_meth_groups_heatmap.png', comparison)
   plot_dm_groups =
     ggplot(df_groups, aes(meth1, meth0)) +
-    geom_bin2d(binwidth=c(1,1)) +
+    geom_point(alpha=1/8, size=1) +
+    geom_abline(intercept=0, slope=1, color='red') +
     facet_grid(. ~ annotation) +
     ggtitle('% Methylation of Groups (DMR-Matched)')
   ggsave(filename = png_dm_groups, plot = plot_dm_groups, width = 8, height = 4, dpi = 300)
 
 ################################################################################
 # Average % methylation change across annotations (methylSig)
+# These cannot be changed to volcano plots because we're taking the average
+# over the CpG annotations of the methylation differences.
 
-  lapply(names(files), function(annot) {
-    message(sprintf('Plotting average difference in methylation across %s annotations in %s', annot, comparison))
-
-    files_diff = files[[annot]]
-
-    annotations = gsub(sprintf('analysis/summary/tables/%s_methylSig_avg_diff_meth_in_DM_',comparison),'',files_diff)
-    annotations = gsub('.bed','',annotations)
-
-    data_diff = lapply(files_diff, read.table, sep='\t', header=F, quote='', comment.char='', stringsAsFactors=F)
-    names(data_diff) = annotations
-
-    if (length(data_diff) == 2) {
-      width = 6
-      height = 4
-    } else if (length(data_diff) > 2) {
-      width = 8
-      height = 4
-    } else {
-      width = 4
-      height = 4
-    }
-
-    df_diff = Reduce(rbind,
-      lapply(names(data_diff), function(n){
-        data.frame(
-          'annotation'=n,
-          'diff_meth'=data_diff[[n]][,5],
-          stringsAsFactors=F)}))
-
-    png_diff = sprintf('analysis/summary/figures/%s_methylSig_%s_diff_meth_in_DM.png', comparison, annot)
-    plot_diff =
-      ggplot(df_diff, aes(diff_meth)) +
-      geom_histogram(binwidth=5, aes(y=..density..)) +
-      facet_grid(. ~ annotation) +
-      ggtitle('% Methylation Difference Across Annotations') +
-      theme_bw()
-    ggsave(filename = png_diff, plot = plot_diff, width = width, height = height, dpi = 300)
-
-  })
+  # lapply(names(files), function(annot) {
+  #   message(sprintf('Plotting average difference in methylation across %s annotations in %s', annot, comparison))
+  #
+  #   files_diff = files[[annot]]
+  #
+  #   annotations = gsub(sprintf('analysis/summary/tables/%s_methylSig_avg_diff_meth_in_DM_',comparison),'',files_diff)
+  #   annotations = gsub('.bed','',annotations)
+  #
+  #   data_diff = lapply(files_diff, read.table, sep='\t', header=F, quote='', comment.char='', stringsAsFactors=F)
+  #   names(data_diff) = annotations
+  #
+  #   if (length(data_diff) == 2) {
+  #     width = 6
+  #     height = 4
+  #   } else if (length(data_diff) > 2) {
+  #     width = 8
+  #     height = 4
+  #   } else {
+  #     width = 4
+  #     height = 4
+  #   }
+  #
+  #   df_diff = Reduce(rbind,
+  #     lapply(names(data_diff), function(n){
+  #       data.frame(
+  #         'annotation'=n,
+  #         'diff_meth'=data_diff[[n]][,5],
+  #         stringsAsFactors=F)}))
+  #
+  #   png_diff = sprintf('analysis/summary/figures/%s_methylSig_%s_diff_meth_in_DM.png', comparison, annot)
+  #   plot_diff =
+  #     ggplot(df_diff, aes(diff_meth)) +
+  #     geom_histogram(binwidth=5, aes(y=..density..)) +
+  #     facet_grid(. ~ annotation) +
+  #     ggtitle('% Methylation Difference Across Annotations') +
+  #     theme_bw()
+  #   ggsave(filename = png_diff, plot = plot_diff, width = width, height = height, dpi = 300)
+  #
+  # })
 
 ################################################################################
 # Distribution of methylSig DM regions in annotations
@@ -146,6 +150,7 @@ comparison = opt$comparison
   lapply(names(annots), function(a){
     message(sprintf('Plotting prevalence of methylSig DM regions across %s annotations in %s', a, comparison))
     df_annot = subset(df, annot %in% annots[[a]])
+    data_annot = subset(data, annot_type %in% annots[[a]])
 
     if (length(annots[[a]]) == 2) {
       width = 6
@@ -159,6 +164,17 @@ comparison = opt$comparison
     }
 
     # scale_fill_manual(values=c('inter'="#00008B", 'shelf'="#0000FF", 'shore'="#F4A460", 'island'="#003300"))
+
+    png_volcano = sprintf('analysis/summary/figures/%s_methylSig_%s_annot_volcanos.png', comparison, a)
+    plot_volcano =
+      ggplot(data_annot, aes(diff_meth,-log10(pval))) +
+      geom_point(alpha=1/8, size=1) +
+      geom_abline(intercept=-log10(0.05), slope=0, color='red') +
+      facet_grid(. ~ annot_type) +
+      ggtitle(sprintf('Pct. Methylation Difference vs -log10(P-value) in %s',a)) +
+      theme(plot.title = element_text(size=8)) +
+      theme_bw()
+    ggsave(filename = png_volcano, plot = plot_volcano, width = width, height = height, dpi = 300)
 
     png_counts = sprintf('analysis/summary/figures/%s_methylSig_%s_annot_barplot_counts.png', comparison, a)
     plot_counts =
