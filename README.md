@@ -100,3 +100,6 @@ The mint pipeline can be used for any combination of the following two experimen
     1. `*alignment.sh`
     2. `*comparison.sh` or `*sample.sh`
     3. `*classification*.sh`
+
+# Output
+In addition to the output from all programs in the pipeline, mint outputs a variety of visualizations to help assess data quality and characteristics. More details to come.
