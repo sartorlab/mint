@@ -30,12 +30,6 @@ macsBigbed=./analysis/summary/${PROJECT}_hub/hg19/${humanID}_pulldown_macs2_peak
 # MACS2 to call peaks
 macs2 callpeak -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/macs_peaks -n $macsPrefix
 
-# Remove extraneous MACS2 output to minimize footprint
-# Excel output is truly unnecessary, and summits information can be recovered
-# from the narrowPeak output
-    rm ./analysis/macs_peaks/*peaks.xls
-    rm ./analysis/macs_peaks/*summits.bed
-
 # Determine region of zero input coverage for classification
 bedtools genomecov -bga -ibam $bowtie2InputBam -g ~/latte/Homo_sapiens/chromInfo_hg19.txt | grep -w '0$' > $bowtie2InputBedgraph
 
