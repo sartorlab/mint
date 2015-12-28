@@ -39,6 +39,3 @@ samtools index $bowtie2Bam
     bedtools genomecov -bg -ibam $bowtie2Bam -g ~/latte/Homo_sapiens/chromInfo_hg19.txt \
     | sort-bed --max-mem 16G --tmpdir $PWD > $pulldownBedgraph
     bedGraphToBigWig $pulldownBedgraph ~/latte/Homo_sapiens/chromInfo_hg19.txt $pulldownBigwig
-
-    # Add new track to the custom track file
-    # sed -i "1i\track type=bigWig name=${NAME}_pulldown description=${NAME}_pulldown db=hg19 bigDataUrl=http://www-personal.umich.edu/~rcavalca/GSE52945/$pulldownBigwig" $customTracks
