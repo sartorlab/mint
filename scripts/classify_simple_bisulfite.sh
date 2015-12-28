@@ -30,10 +30,10 @@ high=102,0,102
 
 # Create individual low, med, high files
 # Add in something for less than 3% - 4%
-zcat $coverage | awk -v OFS="\t" '$4 < 5 { print $1, $2 - 1, $3, "5mC_5hmC_none", "1000", ".", $2, $3, "0,0,0"}' > $noCoverage
-zcat $coverage | awk -v OFS="\t" '$4 < 33 && $4 >=5 { print $1, $2 - 1, $3, "5mC_5hmC_low", "1000", ".", $2, $3, "255,153,255"}' > $lowCoverage
-zcat $coverage | awk -v OFS="\t" '$4 >= 33 && $4 < 66 { print $1, $2 - 1, $3, "5mC_5hmC_med", "1000", ".", $2, $3, "255,0,255"}' > $medCoverage
-zcat $coverage | awk -v OFS="\t" '$4 >= 66 { print $1, $2 - 1, $3, "5mC_5hmC_high", "1000", ".", $2, $3, "102,0,102"}' > $highCoverage
+gunzip -c $coverage | awk -v OFS="\t" '$4 < 5 { print $1, $2 - 1, $3, "5mC_5hmC_none", "1000", ".", $2, $3, "0,0,0"}' > $noCoverage
+gunzip -c $coverage | awk -v OFS="\t" '$4 < 33 && $4 >=5 { print $1, $2 - 1, $3, "5mC_5hmC_low", "1000", ".", $2, $3, "255,153,255"}' > $lowCoverage
+gunzip -c $coverage | awk -v OFS="\t" '$4 >= 33 && $4 < 66 { print $1, $2 - 1, $3, "5mC_5hmC_med", "1000", ".", $2, $3, "255,0,255"}' > $medCoverage
+gunzip -c $coverage | awk -v OFS="\t" '$4 >= 66 { print $1, $2 - 1, $3, "5mC_5hmC_high", "1000", ".", $2, $3, "102,0,102"}' > $highCoverage
 
 # Concatenate and sort
 cat $noCoverage $lowCoverage $medCoverage $highCoverage > $simpleTmp
