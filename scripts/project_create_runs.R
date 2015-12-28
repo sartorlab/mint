@@ -253,11 +253,12 @@ for(sample in sort(unique(annotation$humanID))) {
         min = 5
         filter = T
         tile = T
+        group = '2,2'
         cores = 2
 
         bisCompareScript = sprintf('%s/%s_bisulfite_comparison.sh', projectscriptdir, project)
         cat('', file=bisCompareScript)
-        command = sprintf('bash %s/process_bisulfite_comparison.sh -project %s -cyt %s -samples %s -treatment %s -destrand %s -max %s -min %s -filter %s -tile %s -cores %s -comparison %s',
+        command = sprintf('bash %s/process_bisulfite_comparison.sh -project %s -cyt %s -samples %s -treatment %s -destrand %s -max %s -min %s -filter %s -group %s -tile %s -cores %s -comparison %s',
           scriptdir,
           project,
           cytfiles,
@@ -268,6 +269,7 @@ for(sample in sort(unique(annotation$humanID))) {
           min,
           filter,
           tile,
+          group,
           cores,
           comparison)
         cat(command, file=bisCompareScript, sep='\n', append=T)

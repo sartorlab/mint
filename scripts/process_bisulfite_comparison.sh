@@ -23,8 +23,9 @@ MAX=${12}
 MIN=${14}
 FILTER=${16}
 TILE=${18}
-CORES=${20}
-COMPARISON=${22}
+GROUP=${20}
+CORES=${22}
+COMPARISON=${24}
 
 # Go to the project directory
 cd ~/latte/mint/${PROJECT}
@@ -37,8 +38,6 @@ HUBDIR=~/latte/mint/analysis/${PROJECT}/summary/${PROJECT}_hub/hg19
 
 # Files
 mSigResults=./analysis/methylsig_calls/${COMPARISON}.txt
-mSigTmpBedgraph=./analysis/methylsig_calls/${COMPARISON}_tmp.bdg
-mSigTmpSortedBedgraph=./analysis/methylsig_calls/${COMPARISON}_tmp_sorted.bdg
 mSigBigwig=./analysis/summary/${PROJECT}_hub/hg19/${COMPARISON}_methylSig.bw
 
 # Example call
@@ -51,7 +50,7 @@ mSigBigwig=./analysis/summary/${PROJECT}_hub/hg19/${COMPARISON}_methylSig.bw
     # CpG site resolution
     # The cytfiles should be preceded by ./analysis/bismark_extractor_calls/
     # getwd() = ~/latte/mint/${PROJECT} since that's where we are when we call Rscript
-    Rscript ~/latte/mint/scripts/process_bisulfite_comparison_run_methylSig.R --project=$PROJECT --cytfiles=$CYT --sampleids=$SAMPLES --assembly=hg19 --pipeline=bismark --context=CpG --resolution=base --treatment=$TREATMENT --destranded=$DESTRAND --maxcount=$MAX --mincount=$MIN --filterSNPs=$FILTER --ncores=$CORES --quiet=FALSE --tile=$TILE --dispersion=both --minpergroup=2,2 --comparison=$COMPARISON
+    Rscript ~/latte/mint/scripts/process_bisulfite_comparison_run_methylSig.R --project=$PROJECT --cytfiles=$CYT --sampleids=$SAMPLES --assembly=hg19 --pipeline=bismark --context=CpG --resolution=base --treatment=$TREATMENT --destranded=$DESTRAND --maxcount=$MAX --mincount=$MIN --filterSNPs=$FILTER --ncores=$CORES --quiet=FALSE --tile=$TILE --dispersion=both --minpergroup=$GROUP --comparison=$COMPARISON
 
 # Visualize methylSig differential methylation rates in UCSC Genome Browser
 
@@ -63,17 +62,5 @@ mSigBigwig=./analysis/summary/${PROJECT}_hub/hg19/${COMPARISON}_methylSig.bw
     # The fourth column of the bedGraph is the methylation difference
     # treatment (1) - control (0), which is the 7th column in methylSig output
     # NOTE: This filters the pvalue ($5) to be less than 0.05. May want qvalue ($6) later.
-    awk '$5 < 0.05 { print $1 "\t" $2 "\t" $3 "\t" $7 }' $mSigResults > $mSigTmpBedgraph
-    # Sort by first two columns
-    sort -T . -k1,1 -k2,2n $mSigTmpBedgraph > $mSigTmpSortedBedgraph
     # Convert to bigWig
-    bedGraphToBigWig $mSigTmpSortedBedgraph ~/latte/Homo_sapiens/chromInfo_hg19.txt $mSigBigwig
-
-    rm $mSigTmpBedgraph
-    rm $mSigTmpSortedBedgraph
-
-    # Create custom track file and add the relevant track
-    # echo '' > $customTracks
-    # sed -i "1i\track type=bigWig name=${COMPARISON} description=${COMPARISON} db=hg19 bigDataUrl=http://www-personal.umich.edu/~rcavalca/GSE52945/$mSigBigwig" # $customTracks
-
-    # track type=bigWig name=IDH2_v_NBM description=DM sites IDH2_v_NBM db=hg19 bigDataUrl=http://www-personal.umich.edu/~rcavalca/GSE52945/methylSig_IDH2vNBM_sites.bw
+    bedGraphToBigWig <(awk -v OFS='\t' '$5 < 0.05 {print $1, $2, $3, $7 }' $mSigResults | sort -T . -k1,1 -k2,2n) ~/latte/Homo_sapiens/chromInfo_hg19.txt $mSigBigwig
