@@ -1,5 +1,4 @@
 # mint: a pipeline for methylation integration
-v0.10.0
 
 # Overview
 
