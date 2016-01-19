@@ -13,7 +13,7 @@ humanID=$4
 cd ~/latte/mint/${PROJECT}
 
 # Create appropriate file names
-coverage=./analysis/bismark_extractor_calls/${humanID}_trim.fastq.gz_bismark.bismark.cov.gz
+coverage=./analysis/bismark_extractor_calls/${humanID}_trimmed.fq.gz_bismark.bismark.cov.gz
 noCoverage=./analysis/classification_simple/${humanID}_simple_tmp_no.bed
 lowCoverage=./analysis/classification_simple/${humanID}_simple_tmp_low.bed
 medCoverage=./analysis/classification_simple/${humanID}_simple_tmp_med.bed

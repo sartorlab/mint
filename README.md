@@ -1,4 +1,5 @@
-# mint: a pipeline for *m*ethylation *int*egration
+# mint: a pipeline for methylation integration
+v0.10.0
 
 # Overview
 
@@ -15,7 +16,9 @@ For bisulfite-conversion data we use [cutadapt](https://cutadapt.readthedocs.org
 For pulldown data we use [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml) to align the reads to the reference genome, [MACS2](https://github.com/taoliu/MACS/tree/master/MACS2) to determine peaks for individual samples, and [PePr](https://github.com/shawnzhangyx/PePr) to determine regions of differential methylation.
 
 Classification is done by intersecting the resulting regions from the above tools using the [GenomicRanges](http://bioconductor.org/packages/release/bioc/html/GenomicRanges.html) package in R, or by using [bedtools](https://bedtools.readthedocs.org/en/latest/).
+
 # Usage
+
 The mint pipeline can be used for any combination of the following two experimental setups and two analysis workflows. At present, we support only single-end sequencing data.
 
 ## Supported Experimental Setups

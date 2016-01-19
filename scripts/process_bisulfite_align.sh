@@ -16,29 +16,27 @@ cd ~/latte/mint/${PROJECT}
 
 # Files
 rawFastq=./data/raw_fastqs/${sampleID}.fastq.gz
-trimFastq=./analysis/trim_fastqs/${humanID}_trim.fastq.gz
-bismarkBamPrefix=./bismark_bams/${humanID}_trim.fastq.gz_bismark
-bismarkBam=../bismark_bams/${humanID}_trim.fastq.gz_bismark.bam
-bismarkBedgraphgz=${humanID}_trim.fastq.gz_bismark.bedGraph.gz
-bismarkBedgraph=${humanID}_trim.fastq.gz_bismark.bedGraph
-bismarkSortedBedgraph=${humanID}_trim.fastq.gz_bismark_sorted.bedGraph
-bismarkCytReport=${humanID}_trim.fastq.gz_bismark.CpG_report.txt
-methylSigCytReport=${humanID}_trim.fastq.gz_bismark.CpG_report_for_methylSig.txt
-bismarkBigwig=../summary/${PROJECT}_hub/hg19/${humanID}_trim.fastq.gz_bismark.bw
+sampleTrimFastq=./analysis/trim_fastqs/${sampleID}_trimmed.fq.gz
+humanTrimFastq=./analysis/trim_fastqs/${humanID}_trimmed.fq.gz
+bismarkBamPrefix=./bismark_bams/${humanID}_trimmed.fq.gz_bismark
+bismarkBam=../bismark_bams/${humanID}_trimmed.fq.gz_bismark.bam
+bismarkBedgraph=${humanID}_trimmed.fq.gz_bismark.bedGraph.gz
+bismarkCytReport=${humanID}_trimmed.fq.gz_bismark.CpG_report.txt
+methylSigCytReport=${humanID}_trimmed.fq.gz_bismark.CpG_report_for_methylSig.txt
+bismarkBigwig=../summary/${PROJECT}_hub/hg19/${humanID}_trimmed.fq.gz_bismark.bw
 
 # FastQC raw data
 fastqc --format fastq --noextract --outdir ./analysis/raw_fastqcs $rawFastq
 
-# Trim reads of adapter sequence (maybe by quality with trim_galore later)
-# Based on https://cutadapt.readthedocs.org/en/stable/guide.html#bisulfite-sequencing-rrbs
-# it seems reasonable to add the two wildcards NN to the beginning of the adapter
-cutadapt --error-rate=0.2 --adapter=NNTGAGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATCTCGTATGC --minimum-length=21 --overlap=6 --output=$trimFastq $rawFastq
+# Trim adapter sequence and by quality with trim_galore
+trim_galore --fastqc --fastqc_args "--format fastq --noextract --outdir ./analysis/trim_fastqcs" --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 20 --rrbs --output_dir ./analysis/trim_fastqs $rawFastq
 
-# FastQC trimmed reads
-fastqc --format fastq --noextract --outdir ./analysis/trim_fastqcs $trimFastq
+# Make the sampleID to humanID transition
+# Required since trim_galore does not have an output name option
+mv $sampleTrimFastq $humanTrimFastq
 
 # Bismark on trimmed reads
-bismark --bowtie1 --bam --seedlen 50 --output_dir ./analysis/bismark_bams --temp_dir ./analysis/bismark_bams ~/latte/Homo_sapiens/ $trimFastq
+bismark --bowtie2 -L 50 --output_dir ./analysis/bismark_bams --temp_dir ./analysis/bismark_bams ~/latte/Homo_sapiens/ $trimFastq
 
 # Sort and index the .bam from bismark for more efficient storage and downstream use
 samtools sort ${bismarkBamPrefix}.bam $bismarkBamPrefix
@@ -58,18 +56,4 @@ awk -v OFS="\t" '$4 + $5 > 4 { print $1 "." $2, $1, $2, $3, $4 + $5, ($4 / ($4 +
 
 # Visualize methylation rates in UCSC Genome Browser (sample-wise)
 # v0.14.4 of Bismark automatically gz's bedGraph and coverage files
-gunzip $bismarkBedgraphgz
-
-    # Remove first line of bedGraph
-    sed -i "1d" $bismarkBedgraph
-    # Sort bedGraph output from Methylation Extractor
-    sort -T . -k1,1 -k2,2n $bismarkBedgraph > $bismarkSortedBedgraph
-    # Convert to bigWig and replace original bedGraph with sorted version
-    bedGraphToBigWig $bismarkSortedBedgraph ~/latte/Homo_sapiens/chromInfo_hg19.txt $bismarkBigwig
-    mv $bismarkSortedBedgraph $bismarkBedgraph
-
-gzip $bismarkBedgraph
-
-    # Create custom track file and add the relevant track
-    # echo '' > $customTracks
-    # sed -i "1i\track type=bigWig name=${ID}_trim description=${ID}_trim db=hg19 bigDataUrl=http://www-personal.umich.edu/~rcavalca/GSE52945/$bismarkBigwig" $customTracks
+bedGraphToBigWig <(gunzip -c $bismarkBedgraphgz | awk 'NR > 1 {print $0}' | sort -T . -k1,1 -k2,2n) ~/latte/Homo_sapiens/chromInfo_hg19.txt $bismarkBigwig

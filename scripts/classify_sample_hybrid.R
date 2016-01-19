@@ -25,7 +25,7 @@ setwd(sprintf('~/latte/mint/%s', project))
 # Setup file paths
 macs_file = sprintf('./analysis/macs_peaks/%s_pulldown_macs2_peaks.narrowPeak', pulldownID)
 pulldown_zero_file = sprintf('./analysis/pulldown_coverages/%s_pulldown_zero.bdg', pulldownInputID)
-cyt_file = sprintf('./analysis/bismark_extractor_calls/%s_trim.fastq.gz_bismark.CpG_report_for_methylSig.txt', bisulfiteID)
+cyt_file = sprintf('./analysis/bismark_extractor_calls/%s_trimmed.fq.gz_bismark.CpG_report_for_methylSig.txt', bisulfiteID)
 class_bed_file = sprintf('./analysis/classification_sample/%s_hybrid_classification_sample.bed', humanID)
 class_bb_file = sprintf('./analysis/summary/%s_hub/hg19/%s_hybrid_classification_sample.bb', project, humanID)
 
