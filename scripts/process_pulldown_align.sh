@@ -37,5 +37,5 @@ samtools index $bowtie2Bam
     # consequently, bedtools genomecov puts chrM in the bedGraph first,
     # but this creates downstream issues. bedops, sort-bed is pretty quick.
     bedtools genomecov -bg -ibam $bowtie2Bam -g ~/latte/Homo_sapiens/chromInfo_hg19.txt \
-    | sort-bed --max-mem 16G --tmpdir $PWD > $pulldownBedgraph
+    | sort -T . -k1,1 -k2,2n > $pulldownBedgraph
     bedGraphToBigWig $pulldownBedgraph ~/latte/Homo_sapiens/chromInfo_hg19.txt $pulldownBigwig
