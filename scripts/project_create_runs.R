@@ -228,7 +228,7 @@ for(sample in sort(unique(annotation$humanID))) {
         trackEntry = c(
           sprintf('track %s_pct_meth', bisulfite[i,'fullHumanID']),
           sprintf('parent %s_sample', bisulfite[i,'humanID']),
-          sprintf('bigDataUrl %s_trim.fastq.gz_bismark.bw', bisulfite[i,'fullHumanID']),
+          sprintf('bigDataUrl %s_trimmed.fq.gz_bismark_bt2.bw', bisulfite[i,'fullHumanID']),
           sprintf('shortLabel %s_pct_meth', bisulfite[i,'fullHumanID']),
           sprintf('longLabel %s_percent_methylation', bisulfite[i,'fullHumanID']),
           'visibility full',
@@ -245,7 +245,7 @@ for(sample in sort(unique(annotation$humanID))) {
         message('Creating bisulfite comparison scripts.')
 
         # Files are in ./analysis/bismark_extractor_calls/
-        cytfiles = paste(paste(extractordir, '/', bisulfite$fullHumanID, '_trim', '.fastq.gz_bismark.CpG_report_for_methylSig.txt', sep=''), collapse=',')
+        cytfiles = paste(paste(extractordir, '/', bisulfite$fullHumanID, '_trimmed', '.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt', sep=''), collapse=',')
         samples = paste(bisulfite$fullHumanID, collapse=',')
         treatment = paste(bisulfite$group, collapse=',')
         destrand = T

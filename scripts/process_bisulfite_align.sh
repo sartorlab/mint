@@ -20,11 +20,11 @@ sampleTrimFastq=./analysis/trim_fastqs/${sampleID}_trimmed.fq.gz
 humanTrimFastq=./analysis/trim_fastqs/${humanID}_trimmed.fq.gz
 bismarkBamPrefix=./bismark_bams/${humanID}_trimmed.fq.gz_bismark_bt2
 bismarkBam=../bismark_bams/${humanID}_trimmed.fq.gz_bismark_bt2.bam
-bismarkBedgraph=${humanID}_trimmed.fq.gz_bismark.bedGraph.gz
-bismarkCytReport=${humanID}_trimmed.fq.gz_bismark.CpG_report.txt
-methylSigCytReport=${humanID}_trimmed.fq.gz_bismark.CpG_report_for_methylSig.txt
-annotatrReport=${humanID}_trimmed.fq.gz_bismark.CpG_report_for_annotatr.txt
-bismarkBigwig=../summary/${PROJECT}_hub/hg19/${humanID}_trimmed.fq.gz_bismark.bw
+bismarkBedgraph=${humanID}_trimmed.fq.gz_bismark_bt2.bedGraph.gz
+bismarkCytReport=${humanID}_trimmed.fq.gz_bismark_bt2.CpG_report.txt
+methylSigCytReport=${humanID}_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt
+annotatrReport=${humanID}_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt
+bismarkBigwig=../summary/${PROJECT}_hub/hg19/${humanID}_trimmed.fq.gz_bismark_bt2.bw
 
 # FastQC raw data
 fastqc --format fastq --noextract --outdir ./analysis/raw_fastqcs $rawFastq
