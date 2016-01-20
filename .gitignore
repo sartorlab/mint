@@ -1,7 +1,7 @@
 .DS_Store
 meta/
-GSE63743_compare/
-GSE63743_sample/
-IDH2mut_v_NBM/
-IDH2mut_and_NBM/
+test_hybrid_compare/
+test_hybrid_sample/
+test_pulldown_compare/
+test_pulldown_sample/
 hnscc_13/
