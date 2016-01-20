@@ -37,7 +37,7 @@ trim_galore --fastqc --fastqc_args "--format fastq --noextract --outdir ./analys
 mv $sampleTrimFastq $humanTrimFastq
 
 # Bismark on trimmed reads
-bismark --bowtie2 -L 50 --output_dir ./analysis/bismark_bams --temp_dir ./analysis/bismark_bams ~/latte/Homo_sapiens/ $trimFastq
+bismark --bowtie2 -L 50 --output_dir ./analysis/bismark_bams --temp_dir ./analysis/bismark_bams ~/latte/Homo_sapiens/ $humanTrimFastq
 
 # Sort and index the .bam from bismark for more efficient storage and downstream use
 samtools sort ${bismarkBamPrefix}.bam $bismarkBamPrefix
