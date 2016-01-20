@@ -23,6 +23,7 @@ bismarkBam=../bismark_bams/${humanID}_trimmed.fq.gz_bismark.bam
 bismarkBedgraph=${humanID}_trimmed.fq.gz_bismark.bedGraph.gz
 bismarkCytReport=${humanID}_trimmed.fq.gz_bismark.CpG_report.txt
 methylSigCytReport=${humanID}_trimmed.fq.gz_bismark.CpG_report_for_methylSig.txt
+annotatrReport=${humanID}_trimmed.fq.gz_bismark.CpG_report_for_annotatr.txt
 bismarkBigwig=../summary/${PROJECT}_hub/hg19/${humanID}_trimmed.fq.gz_bismark.bw
 
 # FastQC raw data
@@ -51,8 +52,10 @@ cd ./analysis/bismark_extractor_calls
 bismark_methylation_extractor --single-end --gzip --bedGraph --cutoff 5 --cytosine_report --genome_folder ~/latte/Homo_sapiens/ $bismarkBam
 
 # Convert the CpG report into something useful for methylSigReadData
-# We are requiring the coverage to be at least 5 reads
-awk -v OFS="\t" '$4 + $5 > 4 { print $1 "." $2, $1, $2, $3, $4 + $5, ($4 / ($4 + $5))*100, ($5 / ($4 + $5))*100 }' $bismarkCytReport | sort -T . -k2,2 -k3,3n > $methylSigCytReport
+awk -v OFS="\t" '$4 + $5 > 0 { print $1 "." $2, $1, $2, $3, $4 + $5, ($4 / ($4 + $5))*100, ($5 / ($4 + $5))*100 }' $bismarkCytReport | sort -T . -k2,2 -k3,3n > $methylSigCytReport
+
+# Convert the CpG report into something useful for annotatr
+awk -v OFS="\t" '$4 + $5 > 0 { print $1, $2, $2, $1 "." $2, $4 + $5, $3, ($4 / ($4 + $5))*100 }' $bismarkCytReport | sort -T . -k1,1 -k2,2n > $annotatrReport
 
 # Visualize methylation rates in UCSC Genome Browser (sample-wise)
 # v0.14.4 of Bismark automatically gz's bedGraph and coverage files
