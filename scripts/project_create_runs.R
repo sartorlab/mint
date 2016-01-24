@@ -245,7 +245,7 @@ for(sample in sort(unique(annotation$humanID))) {
         message('Creating bisulfite comparison scripts.')
 
         # Files are in ./analysis/bismark_extractor_calls/
-        cytfiles = paste(paste(extractordir, '/', bisulfite$fullHumanID, '_trimmed', '.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt', sep=''), collapse=',')
+        cytfiles = paste(paste(extractordir, '/', bisulfite$fullHumanID, '_trimmed', '.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt.gz', sep=''), collapse=',')
         samples = paste(bisulfite$fullHumanID, collapse=',')
         treatment = paste(bisulfite$group, collapse=',')
         destrand = T

@@ -54,9 +54,11 @@ bismark_methylation_extractor --single-end --gzip --bedGraph --cutoff 5 --cytosi
 
 # Convert the CpG report into something useful for methylSigReadData
 awk -v OFS="\t" '$4 + $5 > 0 { print $1 "." $2, $1, $2, $3, $4 + $5, ($4 / ($4 + $5))*100, ($5 / ($4 + $5))*100 }' $bismarkCytReport | sort -T . -k2,2 -k3,3n > $methylSigCytReport
+gzip $methylSigCytReport
 
 # Convert the CpG report into something useful for annotatr
 awk -v OFS="\t" '$4 + $5 > 0 { print $1, $2, $2, $1 "." $2, $4 + $5, $3, ($4 / ($4 + $5))*100 }' $bismarkCytReport | sort -T . -k1,1 -k2,2n > $annotatrReport
+gzip $annotatrReport
 
 # Visualize methylation rates in UCSC Genome Browser (sample-wise)
 # v0.14.4 of Bismark automatically gz's bedGraph and coverage files
