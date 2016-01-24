@@ -59,4 +59,4 @@ awk -v OFS="\t" '$4 + $5 > 0 { print $1, $2, $2, $1 "." $2, $4 + $5, $3, ($4 / (
 
 # Visualize methylation rates in UCSC Genome Browser (sample-wise)
 # v0.14.4 of Bismark automatically gz's bedGraph and coverage files
-bedGraphToBigWig <(gunzip -c $bismarkBedgraphgz | awk 'NR > 1 {print $0}' | sort -T . -k1,1 -k2,2n) ~/latte/Homo_sapiens/chromInfo_hg19.txt $bismarkBigwig
+bedGraphToBigWig <(gunzip -c $bismarkBedgraph | awk 'NR > 1 {print $0}' | sort -T . -k1,1 -k2,2n) ~/latte/Homo_sapiens/chromInfo_hg19.txt $bismarkBigwig
