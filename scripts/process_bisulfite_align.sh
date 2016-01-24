@@ -21,6 +21,7 @@ humanTrimFastq=./analysis/trim_fastqs/${humanID}_trimmed.fq.gz
 bismarkBamPrefix=./analysis/bismark_bams/${humanID}_trimmed.fq.gz_bismark_bt2
 bismarkBam=../bismark_bams/${humanID}_trimmed.fq.gz_bismark_bt2.bam
 bismarkBedgraph=${humanID}_trimmed.fq.gz_bismark_bt2.bedGraph.gz
+bismarkBdgTmp=${humanID}_trimmed.fq.gz_bismark_bt2.bedGraph
 bismarkCytReport=${humanID}_trimmed.fq.gz_bismark_bt2.CpG_report.txt
 methylSigCytReport=${humanID}_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt
 annotatrReport=${humanID}_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt
@@ -59,4 +60,6 @@ awk -v OFS="\t" '$4 + $5 > 0 { print $1, $2, $2, $1 "." $2, $4 + $5, $3, ($4 / (
 
 # Visualize methylation rates in UCSC Genome Browser (sample-wise)
 # v0.14.4 of Bismark automatically gz's bedGraph and coverage files
-bedGraphToBigWig <(gunzip -c $bismarkBedgraph | awk 'NR > 1 {print $0}' | sort -T . -k1,1 -k2,2n) ~/latte/Homo_sapiens/chromInfo_hg19.txt $bismarkBigwig
+gunzip -c $bismarkBedgraph | awk 'NR > 1 {print $0}' | sort -T . -k1,1 -k2,2n > $bismarkBdgTmp
+bedGraphToBigWig $bismarkBdgTmp ~/latte/Homo_sapiens/chromInfo_hg19.txt $bismarkBigwig
+rm $bismarkBdgTmp
