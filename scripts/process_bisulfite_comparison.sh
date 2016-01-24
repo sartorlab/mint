@@ -38,6 +38,7 @@ HUBDIR=~/latte/mint/analysis/${PROJECT}/summary/${PROJECT}_hub/hg19
 
 # Files
 mSigResults=./analysis/methylsig_calls/${COMPARISON}.txt
+mSigTmpResults=./analysis/methylsig_calls/${COMPARISON}_tmp.txt
 mSigBigwig=./analysis/summary/${PROJECT}_hub/hg19/${COMPARISON}_methylSig.bw
 
 # Example call
@@ -63,4 +64,6 @@ mSigBigwig=./analysis/summary/${PROJECT}_hub/hg19/${COMPARISON}_methylSig.bw
     # treatment (1) - control (0), which is the 7th column in methylSig output
     # NOTE: This filters the pvalue ($5) to be less than 0.05. May want qvalue ($6) later.
     # Convert to bigWig
-    bedGraphToBigWig <(awk -v OFS='\t' '$5 < 0.05 {print $1, $2, $3, $7 }' $mSigResults | sort -T . -k1,1 -k2,2n) ~/latte/Homo_sapiens/chromInfo_hg19.txt $mSigBigwig
+    awk -v OFS='\t' '$5 < 0.05 {print $1, $2, $3, $7 }' $mSigResults | sort -T . -k1,1 -k2,2n > $mSigTmpResults
+    bedGraphToBigWig $mSigTmpResults ~/latte/Homo_sapiens/chromInfo_hg19.txt $mSigBigwig
+    rm $mSigTmpResults
