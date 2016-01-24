@@ -37,6 +37,10 @@ sample_id = unlist(strsplit(opt$sampleids, ','))
 treatment = as.integer(unlist(strsplit(opt$treatment, ',')))
 min_per_group = as.integer(unlist(strsplit(opt$minpergroup, ',')))
 
+if(any(!file.exists(cyt_files))){
+  stop(sprintf('Some input files do not exist: %s', str(file.exists(cyt_files))))
+}
+
 meth = methylSigReadData(
     fileList = cyt_files,
     sample.ids = sample_id,

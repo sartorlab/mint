@@ -60,6 +60,7 @@ gzip $methylSigCytReport
 awk -v OFS="\t" '$4 + $5 > 0 { print $1, $2, $2, $1 "." $2, $4 + $5, $3, ($4 / ($4 + $5))*100 }' $bismarkCytReport | sort -T . -k1,1 -k2,2n > $annotatrReport
 gzip $annotatrReport
 
+# gzip the cytosine report because it's huge and we don't use it again
 gzip $bismarkCytReport
 
 # Visualize methylation rates in UCSC Genome Browser (sample-wise)
