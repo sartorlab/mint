@@ -18,7 +18,7 @@ cd ~/latte/mint/${PROJECT}
 rawFastq=./data/raw_fastqs/${sampleID}.fastq.gz
 sampleTrimFastq=./analysis/trim_fastqs/${sampleID}_trimmed.fq.gz
 humanTrimFastq=./analysis/trim_fastqs/${humanID}_trimmed.fq.gz
-bismarkBamPrefix=./bismark_bams/${humanID}_trimmed.fq.gz_bismark_bt2
+bismarkBamPrefix=./analysis/bismark_bams/${humanID}_trimmed.fq.gz_bismark_bt2
 bismarkBam=../bismark_bams/${humanID}_trimmed.fq.gz_bismark_bt2.bam
 bismarkBedgraph=${humanID}_trimmed.fq.gz_bismark_bt2.bedGraph.gz
 bismarkCytReport=${humanID}_trimmed.fq.gz_bismark_bt2.CpG_report.txt
