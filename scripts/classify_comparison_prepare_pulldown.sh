@@ -84,14 +84,14 @@ noSignal=./analysis/pepr_peaks/${COMPARISON}_nosignal_pulldown.bed
     mv $allSorted $allPeaks
 
     # No DM needs to subsequently be split into signal and no signal
-    bedtools complement -i $allPeaks -g ~/latte/Homo_sapiens/chromInfo_hg19.txt > $allPeaksNoDM
+    bedtools complement -i $allPeaks -g ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz > $allPeaksNoDM
 
     # Determine regions of signal and no signal
         # Merge all affinity signals into a single signal bed
         bedops --merge $exp1 $exp2 > $signal
 
         # No signal comprises the complement of the signal
-        bedtools complement -i $signal -g ~/latte/Homo_sapiens/chromInfo_hg19.txt > $noSignal
+        bedtools complement -i $signal -g ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz > $noSignal
 
     # No DM and signal
     bedtools intersect -a $signal -b $allPeaksNoDM > $noDMSignalPeaks

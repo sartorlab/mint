@@ -48,7 +48,7 @@ sortedFinalClassFile=./analysis/classification_comparison/${COMPARISON}_classifi
 classBB=./analysis/summary/${PROJECT}_hub/hg19/${COMPARISON}_classification_comparison.bb
 
     # This accomplishes the same partition and determines which file is responsible for the intersection!
-    bedtools multiinter -header -names mDMup mDMdown mnDMs mnDMns hDMup hDMdown hnDMs hnDMns -empty -i  $methylFiles $hydroxyFiles -g ~/latte/Homo_sapiens/chromInfo_hg19.txt > $multiInterFile
+    bedtools multiinter -header -names mDMup mDMdown mnDMs mnDMns hDMup hDMdown hnDMs hnDMns -empty -i  $methylFiles $hydroxyFiles -g ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz > $multiInterFile
 
     # Checks that all rows have one classification per 5mC + 5hmC and 5hmC each
         # Check that the number of intersections is always two. In other words, every region is always
@@ -75,7 +75,7 @@ classBB=./analysis/summary/${PROJECT}_hub/hg19/${COMPARISON}_classification_comp
     mv $sortedFinalClassFile $finalClassFile
 
     # Create bigBed
-    bedToBigBed $finalClassFile ~/latte/Homo_sapiens/chromInfo_hg19.txt $classBB
+    bedToBigBed $finalClassFile ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz $classBB
 
     # scp $classBB rcavalca@sftp.itd.umich.edu:/afs/umich.edu/user/r/c/rcavalca/Public/html/GSE52945
     # Create customtrack

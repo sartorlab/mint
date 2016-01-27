@@ -39,4 +39,4 @@ python2.7 /home/rcavalca/.local/lib/python2.7/site-packages/PePr-1.0.8-py2.7.egg
     # This is BED format with the following \t separated columns
     # chrom, start, end, name, score, strand, thickStart, thickEnd, color
     cat <(awk -v OFS="\t" '{ print $1, $2, $3, "hyper", "1000", ".", $2, $3, "0,0,255" }' $peprUp) <(awk -v OFS="\t" '{ print $1, $2, $3, "hypo", "1000", ".", $2, $3, "102,102,255" }' $peprDown) | sort -T . -k1,1 -k2,2n > $peprCombined
-    bedToBigBed $peprCombined ~/latte/Homo_sapiens/chromInfo_hg19.txt $peprBigbed
+    bedToBigBed $peprCombined ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz $peprBigbed

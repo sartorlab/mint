@@ -66,5 +66,5 @@ gzip $bismarkCytReport
 # Visualize methylation rates in UCSC Genome Browser (sample-wise)
 # v0.14.4 of Bismark automatically gz's bedGraph and coverage files
 gunzip -c $bismarkBedgraph | awk 'NR > 1 {print $0}' | sort -T . -k1,1 -k2,2n > $bismarkBdgTmp
-bedGraphToBigWig $bismarkBdgTmp ~/latte/Homo_sapiens/chromInfo_hg19.txt $bismarkBigwig
+bedGraphToBigWig $bismarkBdgTmp ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz $bismarkBigwig
 rm $bismarkBdgTmp

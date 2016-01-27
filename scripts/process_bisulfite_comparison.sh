@@ -65,5 +65,5 @@ mSigBigwig=./analysis/summary/${PROJECT}_hub/hg19/${COMPARISON}_methylSig.bw
     # NOTE: This filters the pvalue ($5) to be less than 0.05. May want qvalue ($6) later.
     # Convert to bigWig
     awk -v OFS='\t' '$5 < 0.05 {print $1, $2, $3, $7 }' $mSigResults | sort -T . -k1,1 -k2,2n > $mSigTmpResults
-    bedGraphToBigWig $mSigTmpResults ~/latte/Homo_sapiens/chromInfo_hg19.txt $mSigBigwig
+    bedGraphToBigWig $mSigTmpResults ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz $mSigBigwig
     rm $mSigTmpResults
