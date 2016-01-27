@@ -29,10 +29,10 @@ macsBigbed=./analysis/summary/${PROJECT}_hub/hg19/${humanID}_pulldown_macs2_peak
 macs2 callpeak -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/macs_peaks -n $macsPrefix
 
 # Determine region of zero input coverage for classification
-bedtools genomecov -bga -ibam $bowtie2InputBam -g ~/latte/Homo_sapiens/chromInfo_hg19.txt | grep -w '0$' > $bowtie2InputBedgraph
+bedtools genomecov -bga -ibam $bowtie2InputBam -g ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz | grep -w '0$' > $bowtie2InputBedgraph
 
 # Visualization in UCSC Genome Browser
 
     # Convert to bigBed
     # The *.as file apparently needs to be in the same folder as the files being converted
-    bedToBigBed -type=bed6+4 -as=narrowPeak.as <(sort -T . -k1,1 -k2,2n $macsNarrowpeak | awk -v OFS="\t" '$5 > 1000 { print $1, $2, $3, $4, "1000", $6, $7, $8, $9, $10 } $5 <= 1000 { print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10 }') ~/latte/Homo_sapiens/chromInfo_hg19.txt $macsBigbed
+    bedToBigBed -type=bed6+4 -as=narrowPeak.as <(sort -T . -k1,1 -k2,2n $macsNarrowpeak | awk -v OFS="\t" '$5 > 1000 { print $1, $2, $3, $4, "1000", $6, $7, $8, $9, $10 } $5 <= 1000 { print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10 }') ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz $macsBigbed
