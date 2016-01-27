@@ -1,3 +1,4 @@
+library(readr)
 library(optparse)
 
 option_list = list(
@@ -16,8 +17,7 @@ outbed=opt$outbed
 # Set working directory
 setwd(sprintf('~/latte/mint/%s', project))
 
-classification = read.table(inbed, header=F, sep='\t', comment.char='', quote='', stringsAsFactors=F)
-colnames(classification) = c('chr','start','end','ms_class','p_class','code')
+classification = read_tsv(file = inbed, col_names = c('chr','start','end','ms_class','p_class','code'))
 scheme = data.frame(
     name = c(
         'hyper5mC_5hmC', 'hyper5mC_hypo5hmC', 'hyper5mC', 'hyper5mC',
