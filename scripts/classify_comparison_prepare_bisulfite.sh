@@ -61,7 +61,7 @@ noDMNoSignalSorted=./analysis/methylsig_calls/${COMPARISON}_methylSig_noDM_nosig
     # We make the assumption that everything not in the methylSig output is
     # not DM and has no signal.
     echo "Computing methylSig_noDM_nosignal.bed"
-    bedtools complement -i $methylSigSmall -g ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz > $noDMNoSignal
+    bedtools complement -i $methylSigSmall -g ~/latte/Homo_sapiens/chromInfo_hg19.txt > $noDMNoSignal
     sort -T . -k1,1 -k2,2n $noDMNoSignal > $noDMNoSignalSorted
     mv $noDMNoSignalSorted $noDMNoSignal
 

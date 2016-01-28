@@ -36,6 +36,6 @@ samtools index $bowtie2Bam
     # iGenomes .fasta has chrM first so samtools sort follows that,
     # consequently, bedtools genomecov puts chrM in the bedGraph first,
     # but this creates downstream issues. bedops, sort-bed is pretty quick.
-    bedtools genomecov -bg -ibam $bowtie2Bam -g ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz \
+    bedtools genomecov -bg -ibam $bowtie2Bam -g ~/latte/Homo_sapiens/chromInfo_hg19.txt \
     | sort -T . -k1,1 -k2,2n > $pulldownBedgraph
-    bedGraphToBigWig $pulldownBedgraph ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz $pulldownBigwig
+    bedGraphToBigWig $pulldownBedgraph ~/latte/Homo_sapiens/chromInfo_hg19.txt $pulldownBigwig

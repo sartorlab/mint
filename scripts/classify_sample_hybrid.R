@@ -29,7 +29,7 @@ cyt_file = sprintf('./analysis/bismark_extractor_calls/%s_trimmed.fq.gz_bismark.
 class_bed_file = sprintf('./analysis/classification_sample/%s_hybrid_classification_sample.bed', humanID)
 class_bb_file = sprintf('./analysis/summary/%s_hub/hg19/%s_hybrid_classification_sample.bb', project, humanID)
 
-chr_lengths = read.table('~/latte/Homo_sapiens/chromInfo_hg19.txt.gz', header=F, sep='\t', stringsAsFactors=F)
+chr_lengths = read.table('~/latte/Homo_sapiens/chromInfo_hg19.txt', header=F, sep='\t', stringsAsFactors=F)
 
 classification = data.frame(
     code = c(0, 12, 14, 18, 21, 24, 28, 30, 35),
@@ -172,7 +172,7 @@ message(sprintf('Processing sample: %s',humanID))
 
 # Convert to bigBed
     message('Converting BED to bigBED...')
-    command = sprintf('bedToBigBed %s ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz %s', class_bed_file, class_bb_file)
+    command = sprintf('bedToBigBed %s ~/latte/Homo_sapiens/chromInfo_hg19.txt %s', class_bed_file, class_bb_file)
     system(command)
 
     # Add new track to the custom track file

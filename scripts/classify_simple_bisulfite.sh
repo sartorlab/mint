@@ -47,4 +47,4 @@ rm $highCoverage
 rm $simpleTmp
 
 # Create bigBed
-bedToBigBed $simpleSorted ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz $simpleBigbed
+bedToBigBed $simpleSorted ~/latte/Homo_sapiens/chromInfo_hg19.txt $simpleBigbed

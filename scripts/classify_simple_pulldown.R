@@ -81,5 +81,5 @@ write.table(merged_final, file=class_bed_file, sep='\t', row.names=F, col.names=
 
 # Convert to bigBed
 message('Converting BED to bigBED...')
-command = sprintf('bedToBigBed %s ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz %s', class_bed_file, class_bb_file)
+command = sprintf('bedToBigBed %s ~/latte/Homo_sapiens/chromInfo_hg19.txt %s', class_bed_file, class_bb_file)
 system(command)

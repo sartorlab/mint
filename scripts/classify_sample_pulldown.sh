@@ -65,7 +65,7 @@ bedtools subtract -a ${hmcNarrowpeak} -b $tmpIntersectPeaks | awk -v OFS='\t' '{
 
 # Find regions where there were no peaks
 echo $humanID ': determining no peak regions'
-bedtools complement -i $tmpCombinedPeaksMerged -g ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz > $tmpNoPeaks
+bedtools complement -i $tmpCombinedPeaksMerged -g ~/latte/Homo_sapiens/chromInfo_hg19.txt > $tmpNoPeaks
 
 # Determine, among non-peak regions, where there is simply no peak, and where there is no signal
 # If inputs are matched to pulldown, then require no signal to be intersection of both zero regions
@@ -105,7 +105,7 @@ awk -v OFS='\t' '{print $1, $2, $3, "unclassifiable", "1000", ".", $2, $3, "192,
 echo $humanID ': combining annotated pieces'
 cat $tmpMcAnnot $tmpHmcAnnot $tmpIntersectAnnot $tmpNoPSAnnot $tmpNoPNoSAnnot | sort -T . -k1,1 -k2,2n > ${classBed}
 echo $humanID ': creating bigBed file'
-bedToBigBed ${classBed} ~/latte/Homo_sapiens/chromInfo_hg19.txt.gz ${classBB}
+bedToBigBed ${classBed} ~/latte/Homo_sapiens/chromInfo_hg19.txt ${classBB}
 
 # Remove tmp files created for the ${humanID}
 echo $humanID ': removing temporary files'
