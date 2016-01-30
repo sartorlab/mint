@@ -1,4 +1,5 @@
 library(dplyr)
+library(readr)
 library(optparse)
 
 option_list = list(
@@ -39,13 +40,8 @@ classification = data.frame(
     color = colors,
     stringsAsFactors=F)
 
-peaks = read.table(pulldown_file,
-    header=F,
-    sep='\t',
-    quote='',
-    comment.char='',
-    col.names=c('chrom','start','end','name','score','strand','fold','pval','qval','summit'),
-    stringsAsFactors=F)
+peaks = readr::read_tsv(pulldown_file,
+    col_names = c('chrom','start','end','name','score','strand','fold','pval','qval','summit'))
 
 peaks[which(peaks$score > 1000),'score'] = 1000
 
@@ -55,7 +51,7 @@ peaks$fold = ceiling(peaks$fold * 10)
 
 # Determine the 1%-tile and use the smallest fold change in the top 1%-tile
 # as the maximum of the range of the fold changes.
-fold_percentiles = ntile(peaks$fold, 100)
+fold_percentiles = dplyr::ntile(peaks$fold, 100)
 minimum_fold = min(peaks$fold)
 maximum_fold = min(peaks$fold[which(fold_percentiles==100)])
 fold_range = c(minimum_fold, maximum_fold)
@@ -77,7 +73,7 @@ merged$thickEnd = merged$end
 merged_final = merged[,c('chrom','start','end','class','fold','strand','thickStart','thickEnd','color')]
 merged_final = merged_final[order(merged_final$chrom, merged_final$start),]
 
-write.table(merged_final, file=class_bed_file, sep='\t', row.names=F, col.names=F, quote=F)
+readr::write_tsv(merged_final, path=class_bed_file, col_names=F)
 
 # Convert to bigBed
 message('Converting BED to bigBED...')

@@ -1,6 +1,7 @@
 library(optparse)
 library(GenomicRanges)
 library(methylSig)
+library(readr)
 
 option_list = list(
     make_option('--project', type='character'),
@@ -54,8 +55,8 @@ message(sprintf('Processing sample: %s',humanID))
 # Peaks from MACS2
 # Presumably 0-based because they are narrowPeaks which are a kind of BED
     message('Reading pulldown narrowPeak...')
-    pulldown = read.table(macs_file, sep='\t', header=F, quote='', comment.char='', stringsAsFactors=F)
-    colnames(pulldown) = c('chrom','start','end','name','score','strand','fold','log10p','log10q','summit')
+    pulldown = readr::read_tsv(macs_file,
+      col_names = c('chrom','start','end','name','score','strand','fold','log10p','log10q','summit'))
 
     pulldown_gr = GRanges(
         seqnames=pulldown$chrom,
@@ -72,8 +73,7 @@ message(sprintf('Processing sample: %s',humanID))
 # 0-based
 # bedtools genomecov -bga -ibam $bamFile -g ~/latte/Methylation/Data/chromInfo_hg19.txt | grep -w '0$' > $bedFile
     message('Reading pulldown zero input regions...')
-    pulldown_input = read.table(pulldown_zero_file, sep='\t', header=F, quote='', comment.char='', stringsAsFactors=F)
-    colnames(pulldown_input) = c('chrom','start','end','coverage')
+    pulldown_input = readr::read_tsv(pulldown_zero_file, col_names = c('chrom','start','end','coverage'))
 
     pulldown_input_gr = GRanges(
         seqnames=pulldown_input$chrom,
@@ -168,7 +168,7 @@ message(sprintf('Processing sample: %s',humanID))
     cpgs_df$strand = '.'
 
     message('Writing BED file...')
-    write.table(cpgs_df, file=class_bed_file, row.names=F, col.names=F, quote=F, sep='\t')
+    readr::write_tsv(cpgs_df, path=class_bed_file, col_names = FALSE)
 
 # Convert to bigBed
     message('Converting BED to bigBED...')

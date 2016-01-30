@@ -17,7 +17,8 @@ outbed=opt$outbed
 # Set working directory
 setwd(sprintf('~/latte/mint/%s', project))
 
-classification = read_tsv(file = inbed, col_names = c('chr','start','end','ms_class','p_class','code'))
+classification = readr::read_tsv(file = inbed,
+  col_names = c('chr','start','end','ms_class','p_class','code'))
 scheme = data.frame(
     name = c(
         'hyper5mC_5hmC', 'hyper5mC_hypo5hmC', 'hyper5mC', 'hyper5mC',
@@ -50,4 +51,4 @@ classification$score = 1000
 
 prelim_classification = merge(classification, merge_scheme, by='code', sort=F)
 final_classification = prelim_classification[, c('chr','start','end','name','score','strand','thickStart','thickEnd','rgb')]
-write.table(final_classification, file=outbed, sep='\t', col.names=F, row.names=F, quote=F)
+readr::write_tsv(final_classification, path=outbed, col_names=FALSE)
