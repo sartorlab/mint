@@ -14,7 +14,7 @@ $(PROJECT)/bis_mc_hmc/trim_fastqs/%_trimmed.fq.gz : $(PROJECT)/bis_mc_hmc/raw_fa
 	trim_galore $(OPTS_TRIMGALORE) --output_dir $(@D) $^
 
 # Rule for FastQC on trimmed
-$(PROJECT)/bis_mc_hmc/trim_fastqcs/%_trimmed_fastqc.zip : $(PROJECT)/bis_mc_hmc/trim_fastqs/%_trimmed.fq.gz
+$(PROJECT)/bis_mc_hmc/trim_fastqcs/%_trimmed.fq_fastqc.zip : $(PROJECT)/bis_mc_hmc/trim_fastqs/%_trimmed.fq.gz
 	fastqc $(OPTS_FASTQC) --outdir $(@D) $^
 
 # Rule for bismark alignment
