@@ -20,7 +20,7 @@ $(PROJECT)/bis_mc_hmc/trim_fastqcs/%_trimmed.fq_fastqc.zip : $(PROJECT)/bis_mc_h
 # Rule for bismark alignment
 $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bam : $(PROJECT)/bis_mc_hmc/trim_fastqs/%_trimmed.fq.gz
 	bismark $(OPTS_BISMARK) --output_dir $(@D) --temp_dir $(@D) $^
-	samtools sort $@ $(patsubst bismark_bt2.bam,bismark_bt2,$@)
+	samtools sort $@ $(patsubst .bam,,$@)
 	samtools index $@
 
 # Rule for bismark methylation extractor
