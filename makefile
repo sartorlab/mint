@@ -27,6 +27,7 @@ $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bam : $(PROJECT)/bis_m
 $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bam
 	cd $(PROJECT)/bis_mc_hmc/bismark;\
 	bismark_methylation_extractor $(OPTS_EXTRACTOR) $(^F)
+$(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
 
 # Rule for methylSig input
 $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
@@ -35,6 +36,14 @@ $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylS
 # Rule for annotatr input
 $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
 	awk -f scripts/to_annotatr.awk $^ | sort -T . -k1,1 -k2,2n > $@
+
+# Rules for UCSC bigWig track
+.INTERMEDIATE : %_trimmed.fq.gz_bismark_bt2.bedGraph
+$(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz
+	gunzip -c $^ | awk 'NR > 1 {print $$0}' | sort -T . -k1,1 -k2,2n > $@
+
+$(PROJECT)/$(PROJECT)_hub/$(GENOME)/${humanID}_trimmed.fq.gz_bismark_bt2.bw : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph
+	bedGraphToBigWig $^ $(CHROM_PATH) $@
 
 ################################################################################
 
