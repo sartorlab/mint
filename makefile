@@ -25,7 +25,8 @@ $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bam : $(PROJECT)/bis_m
 
 # Rule for bismark methylation extractor
 $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bam
-	bismark_methylation_extractor $(OPTS_EXTRACTOR) --output $(@D) $^
+	cd $(PROJECT)/bis_mc_hmc/bismark;\
+	bismark_methylation_extractor $(OPTS_EXTRACTOR) $(^F)
 
 # Rule for methylSig input
 $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
