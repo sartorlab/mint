@@ -25,8 +25,10 @@ BIS_MC_HMC_FILES := $(shell echo \
 	$(PROJECT)/bis_mc_hmc/trim_fastqcs/{$(SAMPLES)}_trimmed.fq_fastqc.zip \
 	$(PROJECT)/bis_mc_hmc/bismark/{$(SAMPLES)}_trimmed.fq.gz_bismark_bt2.bam \
 	$(PROJECT)/bis_mc_hmc/bismark/{$(SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report.txt \
+	$(PROJECT)/bis_mc_hmc/bismark/{$(SAMPLES)}_trimmed.fq.gz_bismark_bt2.bedGraph.gz \
 	$(PROJECT)/bis_mc_hmc/bismark/{$(SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt \
-	$(PROJECT)/bis_mc_hmc/bismark/{$(SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt)
+	$(PROJECT)/bis_mc_hmc/bismark/{$(SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt \
+	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/{$(SAMPLES)}_trimmed.fq.gz_bismark_bt2.bw)
 
 ################################################################################
 # Command configuration

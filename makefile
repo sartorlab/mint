@@ -42,7 +42,7 @@ $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotat
 $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz
 	gunzip -c $^ | awk 'NR > 1 {print $$0}' | sort -T . -k1,1 -k2,2n > $@
 
-$(PROJECT)/$(PROJECT)_hub/$(GENOME)/${humanID}_trimmed.fq.gz_bismark_bt2.bw : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph
+$(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_trimmed.fq.gz_bismark_bt2.bw : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph
 	bedGraphToBigWig $^ $(CHROM_PATH) $@
 
 ################################################################################
