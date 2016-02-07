@@ -22,7 +22,7 @@ SAMPLES=IDH2mut_1_mc_hmc_bisulfite,IDH2mut_2_mc_hmc_bisulfite,NBM_1_mc_hmc_bisul
 BIS_MC_HMC_FILES := $(shell echo \
 	$(PROJECT)/bis_mc_hmc/raw_fastqcs/{$(SAMPLES)}_fastqc.zip \
 	$(PROJECT)/bis_mc_hmc/trim_fastqs/{$(SAMPLES)}_trimmed.fq.gz \
-	$(PROJECT)/bis_mc_hmc/trim_fastqcs/{$(SAMPLES)}_trimmed_fastqc.zip \
+	$(PROJECT)/bis_mc_hmc/trim_fastqcs/{$(SAMPLES)}_trimmed.fq_fastqc.zip \
 	$(PROJECT)/bis_mc_hmc/bismark/{$(SAMPLES)}_trimmed.fq.gz_bismark_bt2.bam \
 	$(PROJECT)/bis_mc_hmc/bismark/{$(SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report.txt \
 	$(PROJECT)/bis_mc_hmc/bismark/{$(SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt \
