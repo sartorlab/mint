@@ -27,11 +27,11 @@ $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt : $(PRO
 
 # Rule for methylSig input
 $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	$(shell awk -v OFS="\t" '$$4 + $$5 > 0 { print $$1 "." $$2, $$1, $$2, $$3, $$4 + $$5, ($$4 / ($$4 + $$5))*100, ($$5 / ($$4 + $$5))*100 }' $^ | sort -T . -k2,2 -k3,3n > $@)
+	awk -v OFS="\t" '$$4 + $$5 > 0 { print $$1 "." $$2, $$1, $$2, $$3, $$4 + $$5, ($$4 / ($$4 + $$5))*100, ($$5 / ($$4 + $$5))*100 }' $^ | sort -T . -k2,2 -k3,3n > $@
 
 # Rule for annotatr input
 $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	$(shell awk -v OFS="\t" '$$4 + $$5 > 0 { print $$1, $$2, $$2, $$1 "." $$2, $$4 + $$5, $$3, ($$4 / ($$4 + $$5))*100 }' $^ | sort -T . -k1,1 -k2,2n > $@)
+	awk -v OFS="\t" '$$4 + $$5 > 0 { print $$1, $$2, $$2, $$1 "." $$2, $$4 + $$5, $$3, ($$4 / ($$4 + $$5))*100 }' $^ | sort -T . -k1,1 -k2,2n > $@
 
 ################################################################################
 
