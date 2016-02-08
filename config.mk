@@ -15,6 +15,7 @@ GENOME=hg19
 ################################################################################
 # File information
 GENOME_PATH=~/latte/Homo_sapiens/
+BOWTIE2_GENOME_PATH=~/latte/Homo_sapiens/genome
 CHROM_PATH=~/latte/Homo_sapiens/chromInfo_hg19.txt
 
 BIS_SAMPLES=IDH2mut_1_mc_hmc_bisulfite,IDH2mut_2_mc_hmc_bisulfite,NBM_1_mc_hmc_bisulfite,NBM_2_mc_hmc_bisulfite
@@ -51,4 +52,4 @@ OPTS_BISMARK=--bowtie2 $(GENOME_PATH)
 # bismark_methylation_extractor
 OPTS_EXTRACTOR=--single-end --gzip --bedGraph --cutoff 5 --cytosine_report --genome_folder $(GENOME_PATH) --multicore 5
 # bowtie2
-OPTS_BOWTIE2=-q -x $(GENOME_PATH) -U
+OPTS_BOWTIE2=-q -x $(BOWTIE2_GENOME_PATH) -U
