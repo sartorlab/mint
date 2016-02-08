@@ -46,6 +46,36 @@ $(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_trimmed.fq.gz_bismark_bt2.bw : $(PROJECT)/
 	bedGraphToBigWig $^ $(CHROM_PATH) $@
 
 ################################################################################
+# Pulldown alignment
+pulldown_align : $(PULL_HMC_FILES)
+
+# Rule for FastQC on raw
+$(PROJECT)/pull_hmc/raw_fastqcs/%_fastqc.zip : $(PROJECT)/pull_hmc/raw_fastqs/%.fastq.gz
+	fastqc $(OPTS_FASTQC) --outdir $(@D) $^
+
+# Rule for trim_galore
+$(PROJECT)/pull_hmc/trim_fastqs/%_trimmed.fq.gz : $(PROJECT)/pull_hmc/raw_fastqs/%.fastq.gz
+	trim_galore $(OPTS_TRIMGALORE) --output_dir $(@D) $^
+
+# Rule for FastQC on trimmed
+$(PROJECT)/pull_hmc/trim_fastqcs/%_trimmed.fq_fastqc.zip : $(PROJECT)/pull_hmc/trim_fastqs/%_trimmed.fq.gz
+	fastqc $(OPTS_FASTQC) --outdir $(@D) $^
+
+# Rule for bowtie2 alignment
+$(PROJECT)/pull_hmc/bowtie2_bams/%_trimmed.fq.gz_aligned.bam : $(PROJECT)/pull_hmc/trim_fastqs/%_trimmed.fq.gz
+	bowtie2 $(OPTS_BOWTIE2) $^ | samtools view -bS > $@
+	samtools sort $@ $(patsubst %.bam,%,$@)
+	samtools index $@
+
+# Rule for coverage bedGraph
+$(PROJECT)/pull_hmc/pulldown_coverages/%_coverage.bdg : $(PROJECT)/pull_hmc/bowtie2_bams/%_trimmed.fq.gz_aligned.bam
+	bedtools genomecov -bg -g $(CHROM_PATH) -ibam $^ | sort -T . -k1,1 -k2,2n > $@
+
+# Rule for UCSC bigWig track
+$(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_coverage.bw : $(PROJECT)/pull_hmc/pulldown_coverages/%_coverage.bdg
+	bedGraphToBigWig $^ $(CHROM_PATH) $@
+
+################################################################################
 
 # Initialize a project
 # $(PROJECT) comes from config.mk
