@@ -63,7 +63,7 @@ $(PROJECT)/pull_hmc/trim_fastqcs/%_trimmed.fq_fastqc.zip : $(PROJECT)/pull_hmc/t
 
 # Rule for bowtie2 alignment
 $(PROJECT)/pull_hmc/bowtie2_bams/%_trimmed.fq.gz_aligned.bam : $(PROJECT)/pull_hmc/trim_fastqs/%_trimmed.fq.gz
-	bowtie2 $(OPTS_BOWTIE2) $^ | samtools view -bS > $@
+	bowtie2 $(OPTS_BOWTIE2) $^ | samtools view -bS - > $@
 	samtools sort $@ $(patsubst %.bam,%,$@)
 	samtools index $@
 
