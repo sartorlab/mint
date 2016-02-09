@@ -66,7 +66,6 @@ PULL_COMPARE_GROUP2_INPUT := $(shell echo $(PROJECT)/pull_hmc/bowtie2_bams/{$(GR
 
 PULL_COMPARE_FILES := $(shell echo \
 	$(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_up_peaks.bed \
-	$(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_combined.bed \
 	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/$(COMPARISON)_PePr_peaks.bb)
 
 ################################################################################
