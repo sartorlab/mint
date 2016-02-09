@@ -46,9 +46,9 @@ PULL_HMC_FILES := $(shell echo \
 	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/{$(PULL_SAMPLES)}_coverage.bw)
 
 PULL_SAMPLE_FILES := $(shell echo \
-	$(PROJECT)/pull_hmc/macs_peaks/{$(SAMPLES)}_macs2_peaks.narrowPeak \
-	$(PROJECT)/pull_hmc/pulldown_coverages/{$(SAMPLES)}_zero.bdg \
-	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/{$(SAMPLES)}_macs2_peaks.bb)
+	$(PROJECT)/pull_hmc/macs_peaks/{$(SAMPLES)}_pulldown_macs2_peaks.narrowPeak \
+	$(PROJECT)/pull_hmc/pulldown_coverages/{$(SAMPLES)}_pulldown_zero.bdg \
+	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/{$(SAMPLES)}_pulldown_macs2_peaks.bb)
 
 ################################################################################
 # Path to tools
