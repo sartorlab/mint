@@ -59,10 +59,10 @@ PULL_SAMPLE_FILES := $(shell echo \
 	$(PROJECT)/pull_hmc/pulldown_coverages/{$(PULL_SAMPLES_MACS)}_pulldown_zero.bdg \
 	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/{$(PULL_SAMPLES_MACS)}_pulldown_macs2_peaks.bb)
 
-PULL_COMPARE_GROUP1_CHIP := $(shell echo $(PROJECT)/pull_hmc/bowtie2_bams/{$(GROUP1)}hmc_pulldown_trimmed.fq.gz_aligned.bam)
-PULL_COMPARE_GROUP1_INPUT := $(shell echo $(PROJECT)/pull_hmc/bowtie2_bams/{$(GROUP1)}hmc_input_pulldown_trimmed.fq.gz_aligned.bam)
-PULL_COMPARE_GROUP2_CHIP := $(shell echo $(PROJECT)/pull_hmc/bowtie2_bams/{$(GROUP2)}hmc_pulldown_trimmed.fq.gz_aligned.bam)
-PULL_COMPARE_GROUP2_INPUT := $(shell echo $(PROJECT)/pull_hmc/bowtie2_bams/{$(GROUP2)}hmc_input_pulldown_trimmed.fq.gz_aligned.bam)
+PULL_COMPARE_GROUP1_CHIP := $(shell echo $(PROJECT)/pull_hmc/bowtie2_bams/{$(GROUP1)}_hmc_pulldown_trimmed.fq.gz_aligned.bam)
+PULL_COMPARE_GROUP1_INPUT := $(shell echo $(PROJECT)/pull_hmc/bowtie2_bams/{$(GROUP1)}_hmc_input_pulldown_trimmed.fq.gz_aligned.bam)
+PULL_COMPARE_GROUP2_CHIP := $(shell echo $(PROJECT)/pull_hmc/bowtie2_bams/{$(GROUP2)}_hmc_pulldown_trimmed.fq.gz_aligned.bam)
+PULL_COMPARE_GROUP2_INPUT := $(shell echo $(PROJECT)/pull_hmc/bowtie2_bams/{$(GROUP2)}_hmc_input_pulldown_trimmed.fq.gz_aligned.bam)
 
 PULL_COMPARE_FILES := $(shell echo \
 	$(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_up_peaks.bed \
