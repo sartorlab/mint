@@ -81,7 +81,7 @@ pulldown_sample : pulldown_align $(PULL_SAMPLE_FILES)
 
 # Rule for macs2 peaks
 $(PROJECT)/pull_hmc/macs_peaks/%_pulldown_macs2_peaks.narrowPeak : $(PROJECT)/pull_hmc/bowtie2_bams/%_pulldown_trimmed.fq.gz_aligned.bam $(PROJECT)/pull_hmc/bowtie2_bams/%_input_pulldown_trimmed.fq.gz_aligned.bam
-	macs2 callpeak -t $(word 1, $^) -c $(word 2, $^) -f BAM -g hs --name $(patsubst %_peaks.narrowPeak,%,$(@F)) --outdir $(@D) 
+	macs2 callpeak -t $(word 1, $^) -c $(word 2, $^) -f BAM -g hs --name $(patsubst %_peaks.narrowPeak,%,$(@F)) --outdir $(@D)
 
 # Rule for no pulldown input coverage
 $(PROJECT)/pull_hmc/pulldown_coverages/%_pulldown_zero.bdg : $(PROJECT)/pull_hmc/bowtie2_bams/%_input_pulldown_trimmed.fq.gz_aligned.bam
@@ -90,7 +90,7 @@ $(PROJECT)/pull_hmc/pulldown_coverages/%_pulldown_zero.bdg : $(PROJECT)/pull_hmc
 # Rule for macs2 peak fix
 .INTERMEDIATE : $(PROJECT)/pull_hmc/macs_peaks/%_pulldown_macs2_peaks_tmp.narrowPeak
 $(PROJECT)/pull_hmc/macs_peaks/%_pulldown_macs2_peaks_tmp.narrowPeak : $(PROJECT)/pull_hmc/macs_peaks/%_pulldown_macs2_peaks.narrowPeak
-	awk -f fix_narrowPeak.awk $^ | sort -T . -k1,1 -k2,2n > $@
+	awk -f scripts/fix_narrowPeak.awk $^ | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for UCSC bigBed track
 $(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_pulldown_macs2_peaks.bb : $(PROJECT)/pull_hmc/macs_peaks/%_pulldown_macs2_peaks_tmp.narrowPeak
