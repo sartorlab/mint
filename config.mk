@@ -45,10 +45,12 @@ PULL_HMC_FILES := $(shell echo \
 	$(PROJECT)/pull_hmc/pulldown_coverages/{$(PULL_SAMPLES)}_coverage.bdg \
 	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/{$(PULL_SAMPLES)}_coverage.bw)
 
+PULL_SAMPLES_MACS=IDH2mut_1_hmc,IDH2mut_2_hmc,NBM_1_hmc,NBM_2_hmc
+
 PULL_SAMPLE_FILES := $(shell echo \
-	$(PROJECT)/pull_hmc/macs_peaks/{$(SAMPLES)}_pulldown_macs2_peaks.narrowPeak \
-	$(PROJECT)/pull_hmc/pulldown_coverages/{$(SAMPLES)}_pulldown_zero.bdg \
-	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/{$(SAMPLES)}_pulldown_macs2_peaks.bb)
+	$(PROJECT)/pull_hmc/macs_peaks/{$(PULL_SAMPLES_MACS)}_pulldown_macs2_peaks.narrowPeak \
+	$(PROJECT)/pull_hmc/pulldown_coverages/{$(PULL_SAMPLES_MACS)}_pulldown_zero.bdg \
+	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/{$(PULL_SAMPLES_MACS)}_pulldown_macs2_peaks.bb)
 
 ################################################################################
 # Path to tools
