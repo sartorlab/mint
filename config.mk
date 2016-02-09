@@ -2,18 +2,22 @@
 
 ################################################################################
 # Project and experimental information
+
 PROJECT=test_hybrid_compare_make
 # Sequencing setup
-# hybrid, pulldown, or conversion (only support first two now)
+# hybrid, pulldown, or bisulfite (only support first two now)
 SEQ_SETUP=hybrid
 # Experimental design
 # comparison name or 'none'
 COMPARISON=IDH2mut_v_NBM
 # Genome
 GENOME=hg19
+# Samples (comma-separated, no spaces)
+SAMPLES=IDH2mut_1,IDH2mut_2,NBM_1,NBM_2
 
 ################################################################################
 # File information
+
 GENOME_PATH=~/latte/Homo_sapiens/
 BOWTIE2_GENOME_PATH=~/latte/Homo_sapiens/genome
 CHROM_PATH=~/latte/Homo_sapiens/chromInfo_hg19.txt
@@ -41,8 +45,21 @@ PULL_HMC_FILES := $(shell echo \
 	$(PROJECT)/pull_hmc/pulldown_coverages/{$(PULL_SAMPLES)}_coverage.bdg \
 	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/{$(PULL_SAMPLES)}_coverage.bw)
 
+PULL_SAMPLE_FILES := $(shell echo \
+	$(PROJECT)/pull_hmc/macs_peaks/{$(SAMPLES)}_macs2_peaks.narrowPeak \
+	$(PROJECT)/pull_hmc/pulldown_coverages/{$(SAMPLES)}_zero.bdg \
+	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/{$(SAMPLES)}_macs2_peaks.bb)
+
 ################################################################################
-# Command configuration
+# Path to tools
+
+PATH_TO_FASTQC := $(shell which fastqc)
+PATH_TO_TRIMGALORE := $(shell which trim_galore)
+PATH_TO_BISMARK := $(shell which bismark)
+
+################################################################################
+# Command line options for tools
+
 # FastQC
 OPTS_FASTQC=--format fastq --noextract
 # trim_galore
@@ -53,3 +70,5 @@ OPTS_BISMARK=--bowtie2 $(GENOME_PATH)
 OPTS_EXTRACTOR=--single-end --gzip --bedGraph --cutoff 5 --cytosine_report --genome_folder $(GENOME_PATH) --multicore 5
 # bowtie2
 OPTS_BOWTIE2=-q -x $(BOWTIE2_GENOME_PATH) -U
+# macs2
+OPTS_MACS=-t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/macs_peaks -n $macsPrefix

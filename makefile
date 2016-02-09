@@ -76,6 +76,27 @@ $(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_coverage.bw : $(PROJECT)/pull_hmc/pulldown
 	bedGraphToBigWig $^ $(CHROM_PATH) $@
 
 ################################################################################
+# Pulldown sample peak calling
+pulldown_sample : pulldown_align $(PULL_SAMPLE_FILES)
+
+# Rule for macs2 peaks
+$(PROJECT)/pull_hmc/macs_peaks/%_pulldown_macs2_peaks.narrowPeak : $(PROJECT)/pull_hmc/bowtie2_bams/%_pulldown_trimmed.fq.gz_aligned.bam $(PROJECT)/pull_hmc/bowtie2_bams/%_input_pulldown_trimmed.fq.gz_aligned.bam
+	macs2 callpeak -t $(word 1, $^) -c $(word 2, $^) -f BAM -g hs --outdir $(@D) -n $(patsubst %.narrowpeak,%,$(@F))
+
+# Rule for no pulldown input coverage
+$(PROJECT)/pull_hmc/pulldown_coverages/%_pulldown_zero.bdg : $(PROJECT)/pull_hmc/bowtie2_bams/%_input_pulldown_trimmed.fq.gz_aligned.bam
+	bedtools genomecov -bga -ibam $^ -g $(CHROM_PATH) | grep -w '0$$' > $@
+
+# Rule for macs2 peak fix
+.INTERMEDIATE : $(PROJECT)/pull_hmc/macs_peaks/%_pulldown_macs2_peaks_tmp.narrowPeak
+$(PROJECT)/pull_hmc/macs_peaks/%_pulldown_macs2_peaks_tmp.narrowPeak : $(PROJECT)/pull_hmc/macs_peaks/%_pulldown_macs2_peaks.narrowPeak
+	awk -f fix_narrowPeak.awk $^ | sort -T . -k1,1 -k2,2n > $@
+
+# Rule for UCSC bigBed track
+$(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_pulldown_macs2_peaks.bb : $(PROJECT)/pull_hmc/macs_peaks/%_pulldown_macs2_peaks_tmp.narrowPeak
+	bedToBigBed -type=bed6+4 -as=narrowPeak.as $^ $(CHROM_PATH) $@
+
+################################################################################
 
 # Initialize a project
 # $(PROJECT) comes from config.mk
