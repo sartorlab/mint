@@ -103,9 +103,15 @@ pulldown_compare : pulldown_align $(PULL_COMPARE_FILES)
 # Rule for PePr peaks
 $(PROJECT)/pull_hmc/pepr_peaks/%__PePr_up_peaks.bed : $(PULL_COMPARE_GROUP1_CHIP) $(PULL_COMPARE_GROUP1_INPUT) $(PULL_COMPARE_GROUP2_CHIP) $(PULL_COMPARE_GROUP2_INPUT)
 	$(PATH_TO_PEPR) --input1=$(subst $(space),$(comma),$(PULL_COMPARE_GROUP1_INPUT)) --input2=$(subst $(space),$(comma),$(PULL_COMPARE_GROUP2_INPUT)) --chip1=$(subst $(space),$(comma),$(PULL_COMPARE_GROUP1_CHIP)) --chip2=$(subst $(space),$(comma),$(PULL_COMPARE_GROUP2_CHIP)) --name=$(COMPARISON) $(OPTS_PEPR)
+$(PROJECT)/pull_hmc/pepr_peaks/%__PePr_down_peaks.bed : $(PROJECT)/pull_hmc/pepr_peaks/%__PePr_up_peaks.bed
+	noop
 
-# Rule to combine PePr
+# Rule for combining PePr
+$(PROJECT)/pull_hmc/pepr_peaks/%_PePr_combined.bed : $(PROJECT)/pull_hmc/pepr_peaks/%__PePr_up_peaks.bed $(PROJECT)/pull_hmc/pepr_peaks/%__PePr_down_peaks.bed
+	cat <(awk -v OFS="\t" '{ print $$1, $$2, $$3, "hyper", "1000", ".", $$2, $$3, "0,0,255" }' $(word 1, $^)) <(awk -v OFS="\t" '{ print $$1, $$2, $$3, "hypo", "1000", ".", $$2, $$3, "102,102,255" }' $(word 2, $^)) | sort -T . -k1,1 -k2,2n > $@
 
+$(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_PePr_peaks.bb : $(PROJECT)/pull_hmc/pepr_peaks/%_PePr_combined.bed
+	bedToBigBed $^ $(CHROM_PATH) $@
 
 ################################################################################
 
