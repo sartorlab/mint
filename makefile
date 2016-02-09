@@ -81,7 +81,7 @@ pulldown_sample : pulldown_align $(PULL_SAMPLE_FILES)
 
 # Rule for macs2 peaks
 $(PROJECT)/pull_hmc/macs_peaks/%_pulldown_macs2_peaks.narrowPeak : $(PROJECT)/pull_hmc/bowtie2_bams/%_pulldown_trimmed.fq.gz_aligned.bam $(PROJECT)/pull_hmc/bowtie2_bams/%_input_pulldown_trimmed.fq.gz_aligned.bam
-	macs2 callpeak -t $(word 1, $^) -c $(word 2, $^) -f BAM -g hs --outdir $(@D) -n $(patsubst %.narrowpeak,%,$(@F))
+	macs2 callpeak -t $(word 1, $^) -c $(word 2, $^) -f BAM -g hs --name $(patsubst %.narrowPeak,%,$(@F)) --outdir $(@D) 
 
 # Rule for no pulldown input coverage
 $(PROJECT)/pull_hmc/pulldown_coverages/%_pulldown_zero.bdg : $(PROJECT)/pull_hmc/bowtie2_bams/%_input_pulldown_trimmed.fq.gz_aligned.bam
