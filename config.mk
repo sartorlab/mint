@@ -20,6 +20,11 @@ GROUP2=NBM_1,NBM_2
 ################################################################################
 # File information
 
+# Special variables for PePr pattern substitution
+comma:= ,
+empty:=
+space:= $(empty) $(empty)
+
 GENOME_PATH=~/latte/Homo_sapiens/
 BOWTIE2_GENOME_PATH=~/latte/Homo_sapiens/genome
 CHROM_PATH=~/latte/Homo_sapiens/chromInfo_hg19.txt
