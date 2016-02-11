@@ -108,6 +108,7 @@ $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_down_peaks.bed : $(PROJECT)/p
 
 # Rule for combining PePr
 $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_combined.bed : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_up_peaks.bed $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_down_peaks.bed
+	cd ../../../; \
 	bash scripts/combine_pepr.sh $(word 1,$^) $(word 2,$^) $@
 
 $(PROJECT)/$(PROJECT)_hub/$(GENOME)/$(COMPARISON)_PePr_peaks.bb : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_combined.bed
