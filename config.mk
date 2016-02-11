@@ -64,10 +64,10 @@ PULL_COMPARE_GROUP1_INPUT := $(shell echo $(PROJECT)/pull_hmc/bowtie2_bams/{$(GR
 PULL_COMPARE_GROUP2_CHIP := $(shell echo $(PROJECT)/pull_hmc/bowtie2_bams/{$(GROUP2)}_hmc_pulldown_trimmed.fq.gz_aligned.bam)
 PULL_COMPARE_GROUP2_INPUT := $(shell echo $(PROJECT)/pull_hmc/bowtie2_bams/{$(GROUP2)}_hmc_input_pulldown_trimmed.fq.gz_aligned.bam)
 
-PULL_COMPARE_PEPR_GROUP1_CHIP := $(subst $(PROJECT)/pull_hmc,'..',$(PULL_COMPARE_GROUP1_CHIP))
-PULL_COMPARE_PEPR_GROUP1_INPUT := $(subst $(PROJECT)/pull_hmc,'..',$(PULL_COMPARE_GROUP1_INPUT))
-PULL_COMPARE_PEPR_GROUP2_CHIP := $(subst $(PROJECT)/pull_hmc,'..',$(PULL_COMPARE_GROUP2_CHIP))
-PULL_COMPARE_PEPR_GROUP2_INPUT := $(subst $(PROJECT)/pull_hmc,'..',$(PULL_COMPARE_GROUP2_INPUT))
+PULL_COMPARE_PEPR_GROUP1_CHIP := $(subst $(PROJECT)/pull_hmc,..,$(PULL_COMPARE_GROUP1_CHIP))
+PULL_COMPARE_PEPR_GROUP1_INPUT := $(subst $(PROJECT)/pull_hmc,..,$(PULL_COMPARE_GROUP1_INPUT))
+PULL_COMPARE_PEPR_GROUP2_CHIP := $(subst $(PROJECT)/pull_hmc,..,$(PULL_COMPARE_GROUP2_CHIP))
+PULL_COMPARE_PEPR_GROUP2_INPUT := $(subst $(PROJECT)/pull_hmc,..,$(PULL_COMPARE_GROUP2_INPUT))
 
 PULL_COMPARE_FILES := $(shell echo \
 	$(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_up_peaks.bed \
