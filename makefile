@@ -103,7 +103,7 @@ pulldown_compare : pulldown_align $(PULL_COMPARE_FILES)
 # Rule for PePr peaks
 $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_up_peaks.bed : $(PULL_COMPARE_GROUP1_CHIP) $(PULL_COMPARE_GROUP1_INPUT) $(PULL_COMPARE_GROUP2_CHIP) $(PULL_COMPARE_GROUP2_INPUT)
 	cd $(PROJECT)/pull_hmc/pepr_peaks; \
-	$(PATH_TO_PEPR) --input1=$(subst $(space),$(comma),$(PULL_COMPARE_GROUP1_INPUT)) --input2=$(subst $(space),$(comma),$(PULL_COMPARE_GROUP2_INPUT)) --chip1=$(subst $(space),$(comma),$(PULL_COMPARE_GROUP1_CHIP)) --chip2=$(subst $(space),$(comma),$(PULL_COMPARE_GROUP2_CHIP)) --name=$(COMPARISON) $(OPTS_PEPR)
+	$(PATH_TO_PEPR) --input1=$(PULL_COMPARE_PEPR_GROUP1_INPUT) --input2=$(PULL_COMPARE_PEPR_GROUP2_INPUT) --chip1=$(PULL_COMPARE_PEPR_GROUP1_CHIP) --chip2=$(PULL_COMPARE_PEPR_GROUP2_CHIP) --name=$(COMPARISON) $(OPTS_PEPR)
 $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_down_peaks.bed : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_up_peaks.bed
 
 # Rule for combining PePr
