@@ -109,7 +109,7 @@ OPTS_BISMARK = --bowtie2 $(GENOME_PATH)
 # bismark_methylation_extractor
 OPTS_EXTRACTOR = --single-end --gzip --bedGraph --cutoff 5 --cytosine_report --genome_folder $(GENOME_PATH) --multicore 5
 # methylSig
-OPTS_METHYLSIG = --context CpG --resolution base --treatment 1,1,0,0 --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --ncores 4 --quiet FALSE --tile TRUE --dispersion both --minpergroup 2,2
+OPTS_METHYLSIG = --context CpG --resolution base --treatment 1,1,0,0 --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --ncores 4 --quiet FALSE --tile TRUE --dispersion both --minpergroup 2,2 --comparison $(COMPARISON)
 # bowtie2
 OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
 # macs2
