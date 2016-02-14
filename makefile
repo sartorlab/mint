@@ -50,7 +50,7 @@ $(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_trimmed.fq.gz_bismark_bt2.bw : $(PROJECT)/
 bisulfite_compare : bisulfite_align $(BIS_COMPARE_FILES)
 
 $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).txt : $(BIS_COMPARE_PREREQS)
-	Rscript scripts/process_bisulfite_comparison_run_methylSig.R --project $(PROJECT) --cytfiles $(subst $(space),$(comma),$^) --sampleids $(BIS_SAMPLES) --assembly $(GENOME) --pipeline mint $(OPTS_METHYLSIG)
+	Rscript scripts/process_bisulfite_comparison_run_methylSig.R --project $(PROJECT) --cytfiles $(subst $(space),$(comma),$^) --sampleids $(BIS_SAMPLES) --assembly $(GENOME) --pipeline mint --comparison $(COMPARISON) $(OPTS_METHYLSIG)
 
 .INTERMEDIATE : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_tmp.txt
 $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_tmp.txt : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).txt
