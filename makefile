@@ -46,6 +46,20 @@ $(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_trimmed.fq.gz_bismark_bt2.bw : $(PROJECT)/
 	bedGraphToBigWig $^ $(CHROM_PATH) $@
 
 ################################################################################
+# Bisulfite comparison
+bisulfite_compare : bisulfite_align $(BIS_COMPARE_FILES)
+
+$(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).txt : $(BIS_COMPARE_PREREQS)
+	Rscript scripts/process_bisulfite_comparison_run_methylSig.R --project $(PROJECT) --cytfiles $(subst $(space),$(comma),$^) --sampleids $(BIS_SAMPLES) --assembly $(GENOME) --pipeline mint $(OPTS_METHYLSIG)
+
+.INTERMEDIATE : $(PROJECT)/bis_mc_hmc/methylsig_calls/%_tmp.txt
+$(PROJECT)/bis_mc_hmc/methylsig_calls/%_tmp.txt : $(PROJECT)/bis_mc_hmc/methylsig_calls/%.txt
+	awk -v OFS='\t' '$5 < 0.05 {print $1, $2, $3, $7 }' $^ | sort -T . -k1,1 -k2,2n > $@
+
+$(PROJECT)/$(PROJECT)_hub/$(GENOME)/$(COMAPRISON)_methylSig.bw : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_tmp.txt
+	bedGraphToBigWig $^ $(CHROM_PATH) $@
+
+################################################################################
 # Pulldown alignment
 pulldown_align : $(PULL_HMC_FILES)
 

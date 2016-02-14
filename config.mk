@@ -29,6 +29,9 @@ GENOME_PATH=~/latte/Homo_sapiens/
 BOWTIE2_GENOME_PATH=~/latte/Homo_sapiens/genome
 CHROM_PATH=~/latte/Homo_sapiens/chromInfo_hg19.txt
 
+################################################################################
+# Bisulfite files
+
 BIS_SAMPLES=IDH2mut_1_mc_hmc_bisulfite,IDH2mut_2_mc_hmc_bisulfite,NBM_1_mc_hmc_bisulfite,NBM_2_mc_hmc_bisulfite
 
 BIS_MC_HMC_FILES := $(shell echo \
@@ -41,6 +44,14 @@ BIS_MC_HMC_FILES := $(shell echo \
 	$(PROJECT)/bis_mc_hmc/bismark/{$(BIS_SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt \
 	$(PROJECT)/bis_mc_hmc/bismark/{$(BIS_SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt \
 	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/{$(BIS_SAMPLES)}_trimmed.fq.gz_bismark_bt2.bw)
+
+BIS_COMPARE_FILES := $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).txt $(PROJECT)/$(PROJECT)_hub/$(GENOME)/$(COMAPRISON)_methylSig.bw
+
+BIS_COMPARE_PREREQS := $(shell echo $(PROJECT)/bis_mc_hmc/bismark/{$(BIS_SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt)
+BIS_COMPARE_CYTFILES := $(subst $(space),$(comma),$(BIS_COMPARE_PREREQS))
+
+################################################################################
+# Pulldown files
 
 PULL_SAMPLES=IDH2mut_1_hmc_pulldown,IDH2mut_2_hmc_pulldown,NBM_1_hmc_pulldown,NBM_2_hmc_pulldown,IDH2mut_1_hmc_input_pulldown,IDH2mut_2_hmc_input_pulldown,NBM_1_hmc_input_pulldown,NBM_2_hmc_input_pulldown
 
@@ -97,6 +108,8 @@ OPTS_TRIMGALORE = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 
 OPTS_BISMARK = --bowtie2 $(GENOME_PATH)
 # bismark_methylation_extractor
 OPTS_EXTRACTOR = --single-end --gzip --bedGraph --cutoff 5 --cytosine_report --genome_folder $(GENOME_PATH) --multicore 5
+# methylSig
+OPTS_METHYLSIG = --context CpG --resolution base --treatment 1,1,0,0 --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --ncores 4 --quiet FALSE --tile TRUE --dispersion both --minpergroup 2,2
 # bowtie2
 OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
 # macs2

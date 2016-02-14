@@ -2,7 +2,7 @@ library(optparse)
 library(methylSig)
 
 # Example call
-#    Rscript ~/latte/Methylation/Methylation_Code/process_errbs_comparison-wise_run_methylSig.R  --cytfiles=./analysis/bismark_extractor_calls/IDH2mut_1_errbs.fastq.gz_bismark.CpG_report.txt,./analysis/bismark_extractor_calls/IDH2mut_2_errbs.fastq.gz_bismark.CpG_report.txt,./analysis/bismark_extractor_calls/IDH2mut_3_errbs.fastq.gz_bismark.CpG_report.txt,./analysis/bismark_extractor_calls/NBM_1_errbs.fastq.gz_bismark.CpG_report.txt,./analysis/bismark_extractor_calls/NBM_2_errbs.fastq.gz_bismark.CpG_report.txt,./analysis/bismark_extractor_calls/NBM_3_errbs.fastq.gz_bismark.CpG_report.txt --sampleids=IDH2mut_1,IDH2mut_2,IDH2mut_3,NBM_1,NBM_2,NBM_3 --assembly=hg19 --pipeline=bismark --context=CpG --resolution=base --treatment=1,1,1,0,0,0 --destranded=TRUE --maxcount=500 --mincount=5 --filterSNPs=TRUE --ncores=6 --quiet=FALSE --tile=FALSE --dispersion=both --minpergroup=2,2
+#    Rscript ~/latte/Methylation/Methylation_Code/process_errbs_comparison-wise_run_methylSig.R  --cytfiles   --sampleids   --assembly   --pipeline  --context  --resolution  --treatment  --destranded  --maxcount  --mincount  --filterSNPs  --ncores  --quiet  --tile  --dispersion  --minpergroup 
 
 option_list = list(
     make_option('--project', type='character'),
