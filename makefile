@@ -54,7 +54,7 @@ $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).txt : $(BIS_COMPARE_PREREQS)
 
 .INTERMEDIATE : $(PROJECT)/bis_mc_hmc/methylsig_calls/%_tmp.txt
 $(PROJECT)/bis_mc_hmc/methylsig_calls/%_tmp.txt : $(PROJECT)/bis_mc_hmc/methylsig_calls/%.txt
-	awk -v OFS='\t' '$5 < 0.05 {print $1, $2, $3, $7 }' $^ | sort -T . -k1,1 -k2,2n > $@
+	awk -v OFS='\t' '$$5 < 0.05 {print $$1, $$2, $$3, $$7 }' $^ | sort -T . -k1,1 -k2,2n > $@
 
 $(PROJECT)/$(PROJECT)_hub/$(GENOME)/$(COMAPRISON)_methylSig.bw : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_tmp.txt
 	bedGraphToBigWig $^ $(CHROM_PATH) $@
