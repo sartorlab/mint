@@ -47,7 +47,7 @@ BIS_MC_HMC_FILES := $(shell echo \
 
 BIS_COMPARE_FILES := $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).txt $(PROJECT)/$(PROJECT)_hub/$(GENOME)/$(COMAPRISON)_methylSig.bw
 
-BIS_COMPARE_PREREQS := $(shell echo $(PROJECT)/bis_mc_hmc/bismark/{$(BIS_SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt)
+BIS_COMPARE_PREREQS := $(shell echo $(PROJECT)/bis_mc_hmc/bismark/{$(BIS_SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt.gz)
 BIS_COMPARE_CYTFILES := $(subst $(space),$(comma),$(BIS_COMPARE_PREREQS))
 
 ################################################################################
