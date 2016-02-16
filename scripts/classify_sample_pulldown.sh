@@ -65,7 +65,7 @@ bedtools subtract -a ${hmcNarrowpeak} -b $tmpIntersectPeaks | awk -v OFS='\t' '{
 
 # Find regions where there were no peaks
 echo $humanID ': determining no peak regions'
-bedtools complement -i $tmpCombinedPeaksMerged -g ~/latte/Homo_sapiens/chromInfo_hg19.txt > $tmpNoPeaks
+bedtools complement -i $tmpCombinedPeaksMerged -g <(sort -T . -k1,1 ~/latte/Homo_sapiens/chromInfo_hg19.txt) > $tmpNoPeaks
 
 # Determine, among non-peak regions, where there is simply no peak, and where there is no signal
 # If inputs are matched to pulldown, then require no signal to be intersection of both zero regions

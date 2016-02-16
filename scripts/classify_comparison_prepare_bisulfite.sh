@@ -22,48 +22,36 @@ dmUp=./analysis/methylsig_calls/${COMPARISON}_methylSig_DM_up.bed
 dmDown=./analysis/methylsig_calls/${COMPARISON}_methylSig_DM_down.bed
 
 dmAll=./analysis/methylsig_calls/${COMPARISON}_methylSig_DM.bed
-dmAllSorted=./analysis/methylsig_calls/${COMPARISON}_methylSig_DM_sorted.bed
 
 noDMSignal=./analysis/methylsig_calls/${COMPARISON}_methylSig_noDM_signal.bed
 noDMNoSignal=./analysis/methylsig_calls/${COMPARISON}_methylSig_noDM_nosignal.bed
 
-noDMSignalSorted=./analysis/methylsig_calls/${COMPARISON}_methylSig_noDM_signal_sorted.bed
-noDMNoSignalSorted=./analysis/methylsig_calls/${COMPARISON}_methylSig_noDM_nosignal_sorted.bed
-
     # NOTE: For DM up and down, it may be desirable to require a minimum methylation differential
     # DM up
     echo "Computing methylSig_DM_up.bed"
-    awk '$5 < 0.05 && $7 > 0 { print $1 "\t" $2 "\t" $3 }' $methylSigFile > $dmUp
+    awk -v OFS='\t' 'NR > 1 && $5 < 0.05 && $7 > 0 { print $1, $2, $3 }' $methylSigFile > $dmUp
 
     # DM down
     echo "Computing methylSig_DM_down.bed"
-    awk '$5 < 0.05 && $7 < 0 { print $1 "\t" $2 "\t" $3 }' $methylSigFile > $dmDown
+    awk -v OFS='\t' 'NR > 1 && $5 < 0.05 && $7 < 0 { print $1, $2, $3 }' $methylSigFile > $dmDown
 
     # DM all needed for no DM and no signal
     echo "Computing methylSig_DM.bed"
-    cat $dmUp $dmDown > $dmAll
-    sort -T . -k1,1 -k2,2n $dmAll > $dmAllSorted
-    mv $dmAllSorted $dmAll
+    cat $dmUp $dmDown | sort -T . -k1,1 -k2,2n > $dmAll
 
     # No DM but signal
     echo "Computing methylSig_noDM_signal.bed"
-    awk '$5 > 0.05 { print $1 "\t" $2 "\t" $3 }' $methylSigFile > $noDMSignal
-    sed -i '1d' $noDMSignal
-    sort -T . -k1,1 -k2,2n $noDMSignal > $noDMSignalSorted
-    mv $noDMSignalSorted $noDMSignal
+    awk -v OFS='\t' 'NR > 1 && $5 > 0.05 { print $1, $2, $3 }' $methylSigFile | sort -T . -k1,1 -k2,2n > $noDMSignal
 
     # No DM and no signal
     # The inverse regions of $methylSigFile
     echo "Computing methylSig BED3"
-    awk '{ print $1 "\t" $2 "\t" $3 }' $methylSigFile > $methylSigSmall
-    sed -i '1d' $methylSigSmall
+    awk -v OFS='\t' 'NR > 1 { print $1, $2, $3 }' $methylSigFile > $methylSigSmall
 
     # We make the assumption that everything not in the methylSig output is
     # not DM and has no signal.
     echo "Computing methylSig_noDM_nosignal.bed"
-    bedtools complement -i $methylSigSmall -g ~/latte/Homo_sapiens/chromInfo_hg19.txt > $noDMNoSignal
-    sort -T . -k1,1 -k2,2n $noDMNoSignal > $noDMNoSignalSorted
-    mv $noDMNoSignalSorted $noDMNoSignal
+    bedtools complement -i $methylSigSmall -g <(sort -T . -k1,1 ~/latte/Homo_sapiens/chromInfo_hg19.txt) | sort -T . -k1,1 -k2,2n > $noDMNoSignal
 
         rm $methylSigSmall
         rm $dmAll
