@@ -21,8 +21,6 @@ methylSigSmall=./analysis/methylsig_calls/${COMPARISON}.bed
 dmUp=./analysis/methylsig_calls/${COMPARISON}_methylSig_DM_up.bed
 dmDown=./analysis/methylsig_calls/${COMPARISON}_methylSig_DM_down.bed
 
-dmAll=./analysis/methylsig_calls/${COMPARISON}_methylSig_DM.bed
-
 noDMSignal=./analysis/methylsig_calls/${COMPARISON}_methylSig_noDM_signal.bed
 noDMNoSignal=./analysis/methylsig_calls/${COMPARISON}_methylSig_noDM_nosignal.bed
 
@@ -34,10 +32,6 @@ noDMNoSignal=./analysis/methylsig_calls/${COMPARISON}_methylSig_noDM_nosignal.be
     # DM down
     echo "Computing methylSig_DM_down.bed"
     awk -v OFS='\t' 'NR > 1 && $5 < 0.05 && $7 < 0 { print $1, $2, $3 }' $methylSigFile > $dmDown
-
-    # DM all needed for no DM and no signal
-    echo "Computing methylSig_DM.bed"
-    cat $dmUp $dmDown | sort -T . -k1,1 -k2,2n > $dmAll
 
     # No DM but signal
     echo "Computing methylSig_noDM_signal.bed"
@@ -54,7 +48,6 @@ noDMNoSignal=./analysis/methylsig_calls/${COMPARISON}_methylSig_noDM_nosignal.be
     bedtools complement -i $methylSigSmall -g <(sort -T . -k1,1 ~/latte/Homo_sapiens/chromInfo_hg19.txt) | sort -T . -k1,1 -k2,2n > $noDMNoSignal
 
         rm $methylSigSmall
-        rm $dmAll
 
     # These four files are mutually disjoint
         # $dmUp
