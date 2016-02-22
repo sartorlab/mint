@@ -9,7 +9,7 @@ bisulfite_align : $(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_trimmed.fq.gz_bismark_bt
 $(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_trimmed.fq.gz_bismark_bt2.bw : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph
 	bedGraphToBigWig $^ $(CHROM_PATH) $@
 
-.INTERMEDIATE : %_trimmed.fq.gz_bismark_bt2.bedGraph
+.INTERMEDIATE : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph
 $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz
 	gunzip -c $< | awk 'NR > 1 {print $$0}' | sort -T . -k1,1 -k2,2n > $@
 
