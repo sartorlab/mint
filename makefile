@@ -9,7 +9,6 @@ bisulfite_align : $(BIS_MC_HMC_FILES)
 $(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_trimmed.fq.gz_bismark_bt2.bw : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph
 	bedGraphToBigWig $^ $(CHROM_PATH) $@
 
-.INTERMEDIATE : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph
 $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz
 	gunzip -c $< | awk 'NR > 1 {print $$0}' | sort -T . -k1,1 -k2,2n > $@
 
@@ -34,13 +33,13 @@ $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bam : $(PROJECT)/bis_m
 	samtools sort $@ $(patsubst %.bam,%,$@)
 	samtools index $@
 
-# Rule for trim_galore
-$(PROJECT)/bis_mc_hmc/trim_fastqs/%_trimmed.fq.gz : $(PROJECT)/bis_mc_hmc/raw_fastqs/%.fastq.gz $(PROJECT)/bis_mc_hmc/raw_fastqcs/%_fastqc.zip
-	trim_galore $(OPTS_TRIMGALORE) --output_dir $(@D) $<
-
 # Rule for FastQC on trimmed
 $(PROJECT)/bis_mc_hmc/trim_fastqcs/%_trimmed.fq_fastqc.zip : $(PROJECT)/bis_mc_hmc/trim_fastqs/%_trimmed.fq.gz
 	fastqc $(OPTS_FASTQC) --outdir $(@D) $<
+
+# Rule for trim_galore
+$(PROJECT)/bis_mc_hmc/trim_fastqs/%_trimmed.fq.gz : $(PROJECT)/bis_mc_hmc/raw_fastqs/%.fastq.gz $(PROJECT)/bis_mc_hmc/raw_fastqcs/%_fastqc.zip
+	trim_galore $(OPTS_TRIMGALORE) --output_dir $(@D) $<
 
 # Rule for FastQC on raw
 $(PROJECT)/bis_mc_hmc/raw_fastqcs/%_fastqc.zip : $(PROJECT)/bis_mc_hmc/raw_fastqs/%.fastq.gz
