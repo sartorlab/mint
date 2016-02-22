@@ -3,7 +3,7 @@ include config.mk
 
 ################################################################################
 # Bisulfite alignment
-bisulfite_align : $(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_trimmed.fq.gz_bismark_bt2.bw
+bisulfite_align : $(BIS_MC_HMC_FILES)
 
 # Rules for UCSC bigWig track
 $(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_trimmed.fq.gz_bismark_bt2.bw : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph
