@@ -3,55 +3,58 @@ include config.mk
 
 ################################################################################
 # Bisulfite alignment
-bisulfite_align : $(BIS_MC_HMC_FILES)
+bisulfite_align : $(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_trimmed.fq.gz_bismark_bt2.bw
 
-# Rule for FastQC on raw
-$(PROJECT)/bis_mc_hmc/raw_fastqcs/%_fastqc.zip : $(PROJECT)/bis_mc_hmc/raw_fastqs/%.fastq.gz
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $^
+# Rules for UCSC bigWig track
+$(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_trimmed.fq.gz_bismark_bt2.bw : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph
+	bedGraphToBigWig $^ $(CHROM_PATH) $@
 
-# Rule for trim_galore
-$(PROJECT)/bis_mc_hmc/trim_fastqs/%_trimmed.fq.gz : $(PROJECT)/bis_mc_hmc/raw_fastqs/%.fastq.gz
-	trim_galore $(OPTS_TRIMGALORE) --output_dir $(@D) $^
+.INTERMEDIATE : %_trimmed.fq.gz_bismark_bt2.bedGraph
+$(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz
+	gunzip -c $< | awk 'NR > 1 {print $$0}' | sort -T . -k1,1 -k2,2n > $@
 
-# Rule for FastQC on trimmed
-$(PROJECT)/bis_mc_hmc/trim_fastqcs/%_trimmed.fq_fastqc.zip : $(PROJECT)/bis_mc_hmc/trim_fastqs/%_trimmed.fq.gz
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $^
+$(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt
 
-# Rule for bismark alignment
-$(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bam : $(PROJECT)/bis_mc_hmc/trim_fastqs/%_trimmed.fq.gz
-	bismark $(OPTS_BISMARK) --output_dir $(@D) --temp_dir $(@D) $^
-	samtools sort $@ $(patsubst %.bam,%,$@)
-	samtools index $@
+# Rule for methylSig input
+$(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
+	awk -f scripts/to_methylSig.awk $< | sort -T . -k2,2 -k3,3n > $@
+
+# Rule for annotatr input
+$(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
+	awk -f scripts/to_annotatr.awk $< | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for bismark methylation extractor
 $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bam
 	cd $(PROJECT)/bis_mc_hmc/bismark;\
-	bismark_methylation_extractor $(OPTS_EXTRACTOR) $(^F)
-$(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
+	bismark_methylation_extractor $(OPTS_EXTRACTOR) $(<F)
 
-# Rule for methylSig input
-$(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	awk -f scripts/to_methylSig.awk $^ | sort -T . -k2,2 -k3,3n > $@
+# Rule for bismark alignment
+$(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bam : $(PROJECT)/bis_mc_hmc/trim_fastqs/%_trimmed.fq.gz $(PROJECT)/bis_mc_hmc/trim_fastqcs/%_trimmed.fq_fastqc.zip
+	bismark $(OPTS_BISMARK) --output_dir $(@D) --temp_dir $(@D) $<
+	samtools sort $@ $(patsubst %.bam,%,$@)
+	samtools index $@
 
-# Rule for annotatr input
-$(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	awk -f scripts/to_annotatr.awk $^ | sort -T . -k1,1 -k2,2n > $@
+# Rule for trim_galore
+$(PROJECT)/bis_mc_hmc/trim_fastqs/%_trimmed.fq.gz : $(PROJECT)/bis_mc_hmc/raw_fastqs/%.fastq.gz $(PROJECT)/bis_mc_hmc/raw_fastqcs/%_fastqc.zip
+	trim_galore $(OPTS_TRIMGALORE) --output_dir $(@D) $<
 
-# Rules for UCSC bigWig track
-.INTERMEDIATE : %_trimmed.fq.gz_bismark_bt2.bedGraph
-$(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz
-	gunzip -c $^ | awk 'NR > 1 {print $$0}' | sort -T . -k1,1 -k2,2n > $@
+# Rule for FastQC on trimmed
+$(PROJECT)/bis_mc_hmc/trim_fastqcs/%_trimmed.fq_fastqc.zip : $(PROJECT)/bis_mc_hmc/trim_fastqs/%_trimmed.fq.gz
+	fastqc $(OPTS_FASTQC) --outdir $(@D) $<
 
-$(PROJECT)/$(PROJECT)_hub/$(GENOME)/%_trimmed.fq.gz_bismark_bt2.bw : $(PROJECT)/bis_mc_hmc/bismark/%_trimmed.fq.gz_bismark_bt2.bedGraph
-	bedGraphToBigWig $^ $(CHROM_PATH) $@
+# Rule for FastQC on raw
+$(PROJECT)/bis_mc_hmc/raw_fastqcs/%_fastqc.zip : $(PROJECT)/bis_mc_hmc/raw_fastqs/%.fastq.gz
+	fastqc $(OPTS_FASTQC) --outdir $(@D) $<
 
 ################################################################################
 # Bisulfite comparison
 bisulfite_compare : bisulfite_align $(BIS_COMPARE_FILES)
 
+# Run methylSig
 $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).txt : $(BIS_COMPARE_PREREQS)
 	Rscript scripts/process_bisulfite_comparison_run_methylSig.R --project $(PROJECT) --cytfiles $(subst $(space),$(comma),$^) --sampleids $(BIS_SAMPLES) --assembly $(GENOME) --pipeline mint --comparison $(COMPARISON) $(OPTS_METHYLSIG)
 
+# Make the bigWig track
 .INTERMEDIATE : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_tmp.txt
 $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_tmp.txt : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).txt
 	awk -v OFS='\t' '$$5 < 0.05 {print $$1, $$2, $$3, $$7 }' $^ | sort -T . -k1,1 -k2,2n > $@
@@ -124,8 +127,76 @@ $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_down_peaks.bed : $(PROJECT)/p
 $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_combined.bed : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_up_peaks.bed $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_down_peaks.bed
 	bash scripts/combine_pepr.sh $(word 1,$^) $(word 2,$^) $@
 
+# Rule for UCSC bigBed track
 $(PROJECT)/$(PROJECT)_hub/$(GENOME)/$(COMPARISON)_PePr_peaks.bb : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_combined.bed
 	bedToBigBed $^ $(CHROM_PATH) $@
+
+################################################################################
+# Intermediate files from methylSig results used in classification
+
+# DM up
+.INTERMEDIATE : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_methylSig_DM_up.bed
+$(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_methylSig_DM_up.bed : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).txt
+	awk -v OFS='\t' 'NR > 1 && $$5 < 0.05 && $$7 > 0 { print $$1, $$2, $$3 }' $^ > $@
+
+# DM down
+.INTERMEDIATE : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_methylSig_DM_down.bed
+$(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_methylSig_DM_down.bed : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).txt
+	awk -v OFS='\t' 'NR > 1 && $$5 < 0.05 && $$7 < 0 { print $$1, $$2, $$3 }' $^ > $@
+
+# noDM signal
+.INTERMEDIATE : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_methylSig_noDM_signal.bed
+$(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_methylSig_noDM_signal.bed : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).txt
+	awk -v OFS='\t' 'NR > 1 && $$5 > 0.05 { print $$1, $$2, $$3 }' $^ | sort -T . -k1,1 -k2,2n > $@
+
+# signal
+.INTERMEDIATE : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).bed
+$(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).bed : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).txt
+	awk -v OFS='\t' 'NR > 1 { print $$1, $$2, $$3 }' $^ > $@
+
+# noDM no signal
+.INTERMEDIATE : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_methylSig_noDM_nosignal.bed
+$(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON)_methylSig_noDM_nosignal.bed : $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).bed
+	bedtools complement -i $^ -g <(sort -T . -k1,1 $(CHROM_PATH)) | sort -T . -k1,1 -k2,2n > $@
+
+################################################################################
+# Intermediate files from PePr results used in classification
+
+# Used to build the disjoint peak lists
+.INTERMEDIATE : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_up_peaks_tmp.bed
+$(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_up_peaks_tmp.bed : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_up_peaks.bed
+	awk -v OFS='\t' '{ print $$1, $$2, $$3 }' $^ | sort -T . -k1,1 -k2,2n > $@
+
+.INTERMEDIATE : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_down_peaks_tmp.bed
+$(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_down_peaks_tmp.bed : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_down_peaks.bed
+	awk -v OFS='\t' '{ print $$1, $$2, $$3 }' $^ | sort -T . -k1,1 -k2,2n > $@
+
+# The disjoint peak lists
+.INTERMEDIATE : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_up_peaks_disjoint.bed
+$(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_up_peaks_disjoint.bed : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_up_peaks_tmp.bed $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_down_peaks_tmp.bed
+	bedops --difference $^ > $@
+
+.INTERMEDIATE : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_down_peaks_disjoint.bed
+$(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_down_peaks_disjoint.bed : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_down_peaks_tmp.bed $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_up_peaks_tmp.bed
+	bedops --difference $^ > $@
+
+# The combined disjoint peak list
+.INTERMEDIATE : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_peaks.bed
+$(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_peaks.bed : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_up_peaks_disjoint.bed $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_down_peaks_disjoint.bed
+	cat $^ | sort -T . -k1,1 -k2,2n > $@
+
+# The no DM track
+.INTERMEDIATE : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_noDM.bed
+$(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_noDM.bed : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_PePr_peaks.bed
+	bedtools complement -i $^ -g <(sort -T . -k1,1 $(CHROM_PATH)) > $@
+
+# The signal track
+.INTERMEDIATE : $(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_signal.bed
+$(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)_signal.bed : $(PULL_CHIP_COVERAGES)
+
+# The no signal track
+
+
 
 ################################################################################
 
