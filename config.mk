@@ -21,29 +21,56 @@ GROUP2=NBM_1,NBM_2
 # File information
 
 # Special variables for PePr pattern substitution
-comma:= ,
-empty:=
-space:= $(empty) $(empty)
+comma := ,
+empty :=
+space := $(empty) $(empty)
 
-GENOME_PATH=~/latte/Homo_sapiens/
-BOWTIE2_GENOME_PATH=~/latte/Homo_sapiens/genome
-CHROM_PATH=~/latte/Homo_sapiens/chromInfo_hg19.txt
+# Genome paths
+GENOME_PATH := ~/latte/Homo_sapiens/
+BOWTIE2_GENOME_PATH := ~/latte/Homo_sapiens/genome
+CHROM_PATH := ~/latte/Homo_sapiens/chromInfo_hg19.txt
+
+################################################################################
+# Path to tools
+
+PATH_TO_FASTQC := $(shell which fastqc)
+PATH_TO_TRIMGALORE := $(shell which trim_galore)
+PATH_TO_BISMARK := $(shell which bismark)
+PATH_TO_EXTRACTOR := $(shell which bismark_methylation_extractor)
+PATH_TO_R := $(shell which Rscript)
+PATH_TO_MACS := $(shell which macs2)
+PATH_TO_PEPR := python2.7 /home/rcavalca/.local/lib/python2.7/site-packages/PePr-1.0.8-py2.7.egg/PePr/PePr.py
+PATH_TO_SAMTOOLS := $(shell which samtools)
+PATH_TO_AWK := $(shell which awk)
+PATH_TO_BDG2BW := $(shell which bedGraphToBigWig)
+PATH_TO_BDG2BB := $(shell which bedToBigBed)
+
+################################################################################
+# Command line options for tools
+
+# FastQC
+OPTS_FASTQC = --format fastq --noextract
+# trim_galore
+OPTS_TRIMGALORE = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 20 --rrbs
+# bismark
+OPTS_BISMARK = --bowtie2 $(GENOME_PATH)
+# bismark_methylation_extractor
+OPTS_EXTRACTOR = --single-end --gzip --bedGraph --cutoff 5 --cytosine_report --genome_folder $(GENOME_PATH) --multicore 5
+# methylSig
+OPTS_METHYLSIG = --context CpG --resolution base --treatment 1,1,0,0 --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --ncores 4 --quiet FALSE --tile TRUE --dispersion both --minpergroup 2,2
+# bowtie2
+OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
+# macs2
+OPTS_MACS = -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/macs_peaks -n $macsPrefix
+# PePr
+OPTS_PEPR = --file-format=bam --peaktype=sharp --diff --threshold 1e-03 --remove_artefacts
 
 ################################################################################
 # Bisulfite files
 
 BIS_SAMPLES=IDH2mut_1_mc_hmc_bisulfite,IDH2mut_2_mc_hmc_bisulfite,NBM_1_mc_hmc_bisulfite,NBM_2_mc_hmc_bisulfite
 
-BIS_MC_HMC_FILES := $(shell echo \
-	$(PROJECT)/bis_mc_hmc/raw_fastqcs/{$(BIS_SAMPLES)}_fastqc.zip \
-	$(PROJECT)/bis_mc_hmc/trim_fastqs/{$(BIS_SAMPLES)}_trimmed.fq.gz \
-	$(PROJECT)/bis_mc_hmc/trim_fastqcs/{$(BIS_SAMPLES)}_trimmed.fq_fastqc.zip \
-	$(PROJECT)/bis_mc_hmc/bismark/{$(BIS_SAMPLES)}_trimmed.fq.gz_bismark_bt2.bam \
-	$(PROJECT)/bis_mc_hmc/bismark/{$(BIS_SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report.txt \
-	$(PROJECT)/bis_mc_hmc/bismark/{$(BIS_SAMPLES)}_trimmed.fq.gz_bismark_bt2.bedGraph.gz \
-	$(PROJECT)/bis_mc_hmc/bismark/{$(BIS_SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt \
-	$(PROJECT)/bis_mc_hmc/bismark/{$(BIS_SAMPLES)}_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt \
-	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/{$(BIS_SAMPLES)}_trimmed.fq.gz_bismark_bt2.bw)
+BIS_MC_HMC_FILES := $(shell echo $(PROJECT)/$(PROJECT)_hub/$(GENOME)/{$(BIS_SAMPLES)}_trimmed.fq.gz_bismark_bt2.bw)
 
 BIS_COMPARE_FILES := $(PROJECT)/bis_mc_hmc/methylsig_calls/$(COMPARISON).txt $(PROJECT)/$(PROJECT)_hub/$(GENOME)/$(COMPARISON)_methylSig.bw
 
@@ -88,31 +115,3 @@ PULL_COMPARE_PEPR_GROUP2_INPUT := $(subst $(space),$(comma),$(PULL_COMPARE_PEPR_
 PULL_COMPARE_FILES := $(shell echo \
 	$(PROJECT)/pull_hmc/pepr_peaks/$(COMPARISON)__PePr_up_peaks.bed \
 	$(PROJECT)/$(PROJECT)_hub/$(GENOME)/$(COMPARISON)_PePr_peaks.bb)
-
-################################################################################
-# Path to tools
-
-PATH_TO_FASTQC :=$(shell which fastqc)
-PATH_TO_TRIMGALORE :=$(shell which trim_galore)
-PATH_TO_BISMARK :=$(shell which bismark)
-PATH_TO_PEPR :=python2.7 /home/rcavalca/.local/lib/python2.7/site-packages/PePr-1.0.8-py2.7.egg/PePr/PePr.py
-
-################################################################################
-# Command line options for tools
-
-# FastQC
-OPTS_FASTQC = --format fastq --noextract
-# trim_galore
-OPTS_TRIMGALORE = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 20 --rrbs
-# bismark
-OPTS_BISMARK = --bowtie2 $(GENOME_PATH)
-# bismark_methylation_extractor
-OPTS_EXTRACTOR = --single-end --gzip --bedGraph --cutoff 5 --cytosine_report --genome_folder $(GENOME_PATH) --multicore 5
-# methylSig
-OPTS_METHYLSIG = --context CpG --resolution base --treatment 1,1,0,0 --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --ncores 4 --quiet FALSE --tile TRUE --dispersion both --minpergroup 2,2
-# bowtie2
-OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
-# macs2
-OPTS_MACS = -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/macs_peaks -n $macsPrefix
-# PePr
-OPTS_PEPR = --file-format=bam --peaktype=sharp --diff --threshold 1e-03 --remove_artefacts
