@@ -56,7 +56,7 @@ OPTS_PEPR = --file-format=bam --peaktype=sharp --diff --threshold 1e-03 --remove
 # For shorthand
 
 # bisulfite_align files
-DIR_TRACK := bisulfite/$(PROJECT)_hub/$(GENOME)
+DIR_TRACK := $(PROJECT)_hub/$(GENOME)
 DIR_BISULFITE_BISMARK := bisulfite/bismark
 DIR_BISULFITE_TRIM_FASTQS := bisulfite/trim_fastqs
 DIR_BISULFITE_TRIM_FASTQCS := bisulfite/trim_fastqcs
