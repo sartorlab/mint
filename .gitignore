@@ -6,3 +6,4 @@ test_hybrid_sample/
 test_pulldown_compare/
 test_pulldown_sample/
 hnscc_13/
+*_annotation.txt
