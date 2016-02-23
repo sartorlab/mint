@@ -52,20 +52,15 @@ OPTS_MACS = -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/
 OPTS_PEPR = --file-format=bam --peaktype=sharp --diff --threshold 1e-03 --remove_artefacts
 
 ################################################################################
-# vpath directives for clearer rules
-# NOTE: Assumption is execution from project root
+# Directory variables
+# For shorthand
 
 # bisulfite_align files
-vpath %_bisulfite_trimmed.fq.gz_bismark_bt2.bw 														bisulfite/$(PROJECT)_hub/$(GENOME)
-vpath %_bisulfite_trimmed.fq.gz_bismark_bt2.bedGraph		 									bisulfite/bismark
-vpath %_bisulfite_trimmed.fq.gz_bismark_bt2.bedGraph.gz 									bisulfite/bismark
-vpath %_bisulfite_trimmed.fq.gz_bismark_bt2.CpG_report.txt 								bisulfite/bismark
-vpath %_bisulfite_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt 	bisulfite/bismark
-vpath %_bisulfite_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt 	bisulfite/bismark
-vpath %_bisulfite_trimmed.fq.gz_bismark_bt2.bam 													bisulfite/bismark
-vpath %_bisulfite_trimmed.fq.gz																						bisulfite/trim_fastqs
-vpath %_bisulfite_trimmed.fq_fastqc.zip																		bisulfite/trim_fastqcs
-vpath %_bisulfite.fastq.gz																								bisulfite/raw_fastqs
+DIR_TRACK := bisulfite/$(PROJECT)_hub/$(GENOME)
+DIR_BISULFITE_BISMARK := bisulfite/bismark
+DIR_BISULFITE_TRIM_FASTQS := bisulfite/trim_fastqs
+DIR_BISULFITE_TRIM_FASTQCS := bisulfite/trim_fastqcs
+DIR_BISULFITE_RAW_FASTQs := bisulfite/raw_fastqs
 
 ################################################################################
 # Special variables for substitutions
