@@ -50,11 +50,11 @@ $(DIR_BISULFITE_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip : $(DIR_BISULFITE_TRIM_FAS
 
 # Rule for trim_galore
 $(DIR_BISULFITE_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_BISULFITE_RAW_FASTQCS)/%_fastqc.zip
-	trim_galore $(OPTS_TRIMGALORE_BISULFITE) --output_dir $(@D) $(DIR_BISULFITE_RAW_FASTQS)/%.fastq.gz
+	trim_galore $(OPTS_TRIMGALORE_BISULFITE) --output_dir $(@D) $(DIR_BISULFITE_RAW_FASTQS)/$*.fastq.gz
 
 # Rule for FastQC on raw
 $(DIR_BISULFITE_RAW_FASTQCS)/%_fastqc.zip :
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $(DIR_BISULFITE_RAW_FASTQS)/%.fastq.gz
+	fastqc $(OPTS_FASTQC) --outdir $(@D) $(DIR_BISULFITE_RAW_FASTQS)/$*.fastq.gz
 
 ################################################################################
 
