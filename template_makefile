@@ -2,15 +2,15 @@ SHELL=/bin/bash
 include config.mk
 include variables.mk
 
-BISULFITE_ALIGN_FILES := 	$(patsubst %.fastq.gz,%_trimmed.fq.gz_bismark_bt2.bw,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,%_trimmed.fq.gz_bismark_bt2.bedGraph.gz,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,%_trimmed.fq.gz_bismark_bt2.CpG_report.txt,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,%_trimmed.fq.gz_bismark_bt2.bam,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,%_trimmed.fq_fastqc.zip,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,%_trimmed.fq.gz,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,%_fastqc.zip,$(BISULFITE_FASTQ_FILES))
+BISULFITE_ALIGN_FILES := 	$(patsubst %.fastq.gz,$(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BISULFITE_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BISULFITE_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BISULFITE_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_FASTQ_FILES))
 
 ################################################################################
 # Bisulfite alignment
