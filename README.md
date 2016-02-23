@@ -87,21 +87,3 @@ The mint pipeline can be used for any combination of the following two experimen
     GSE52945        SRR1638726      NBM_2   0       1       1       1       0       0
     GSE52945        SRR1638727      NBM_1   0       1       1       1       0       0
     ```
-
-  3. Navigate to `mint/scripts/` and do the following:
-    ```{bash}
-    Rscript project_create_runs.R --project project_name --comparison comparison_name
-    ```
-    This will generate all the scripts required to run the pipeline in the `mint/project_name/scripts/` directory.
-
-    Note: If there is no comparison for the project, use `--comparison none`.
-
-  4. Copy (or create symlinks to) `.fastq.gz` files bearing filenames corresponding to the `sampleID` column of `project_name_annotation.txt` into the `mint/project_name/data/raw_fastqs/` directory.
-
-  5. Project specific scripts in the `mint/project_name/scripts/` directory should be run in the following order:
-    1. `*alignment.sh`
-    2. `*comparison.sh` or `*sample.sh`
-    3. `*classification*.sh`
-
-# Output
-In addition to the output from all programs in the pipeline, mint outputs a variety of visualizations to help assess data quality and characteristics. More details to come.

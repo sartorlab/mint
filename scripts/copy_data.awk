@@ -37,20 +37,15 @@ BEGIN {
       mark = "hmc"
     }
 
-    # Add to the appropriate file group variable
-    if ( pulldown == 1 ) {
-      if ( input == 1 ) {
-        pulldownFiles = pulldownFiles" "sprintf("%s_%s_input_%s.fastq.gz", humanID, mark, platform)
-      } else {
-        pulldownFiles = pulldownFiles" "sprintf("%s_%s_%s.fastq.gz", humanID, mark, platform)
-      }
-    } else if ( bisulfite == 1 ) {
-      bisulfiteFiles = bisulfiteFiles" "sprintf("%s_%s_%s.fastq.gz", humanID, mark, platform)
+    # Make symlink on the basis of input
+    if ( input == 1 ) {
+      readableFile = sprintf("%s/%s/raw_fastqs/%s_%s_input_%s.fastq.gz", pwd, platform, humanID, mark, platform)
+    } else {
+      readableFile = sprintf("%s/%s/raw_fastqs/%s_%s_%s.fastq.gz", pwd, platform, humanID, mark, platform)
     }
 
+    # Create the symlinks
+    system("ln -s "sampleFile" "readableFile)
+
   }
-}
-END {
-  print "BISULFITE_FASTQ_FILES :="bisulfiteFiles
-  print "PULLDOWN_FASTQ_FILES :="pulldownFiles
 }

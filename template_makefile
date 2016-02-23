@@ -1,0 +1,67 @@
+SHELL=/bin/bash
+include config.mk
+include variables.mk
+
+BISULFITE_ALIGN_FILES := 	$(patsubst %.fastq.gz,%_trimmed.fq.gz_bismark_bt2.bw,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,%_trimmed.fq.gz_bismark_bt2.bedGraph.gz,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,%_trimmed.fq.gz_bismark_bt2.CpG_report.txt,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,%_trimmed.fq.gz_bismark_bt2.bam,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,%_trimmed.fq_fastqc.zip,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,%_trimmed.fq.gz,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,%_fastqc.zip,$(BISULFITE_FASTQ_FILES))
+
+################################################################################
+# Bisulfite alignment
+.PHONY : bisulfite_align
+bisulfite_align : $(BISULFITE_ALIGN_FILES)
+
+# Rules for UCSC bigWig track
+%_trimmed.fq.gz_bismark_bt2.bw : %_trimmed.fq.gz_bismark_bt2.bedGraph
+	bedGraphToBigWig $< $(CHROM_PATH) $@
+
+.INTERMEDIATE : %_trimmed.fq.gz_bismark_bt2.bedGraph
+%_trimmed.fq.gz_bismark_bt2.bedGraph : %_trimmed.fq.gz_bismark_bt2.bedGraph.gz
+	gunzip -c $< | awk 'NR > 1 {print $$0}' | sort -T . -k1,1 -k2,2n > $@
+
+# Rule for methylSig input
+%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt : %_trimmed.fq.gz_bismark_bt2.CpG_report.txt
+	awk -f ../scripts/to_methylSig.awk $< | sort -T . -k2,2 -k3,3n > $@
+
+# Rule for annotatr input
+%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt : %_trimmed.fq.gz_bismark_bt2.CpG_report.txt
+	awk -f ../scripts/to_annotatr.awk $< | sort -T . -k1,1 -k2,2n > $@
+
+# Rule for bismark methylation extractor
+%_trimmed.fq.gz_bismark_bt2.bedGraph.gz %_trimmed.fq.gz_bismark_bt2.CpG_report.txt : %_trimmed.fq.gz_bismark_bt2.bam
+	cd bismark;\
+	bismark_methylation_extractor $(OPTS_EXTRACTOR) $(<F)
+
+# Rule for bismark alignment
+%_trimmed.fq.gz_bismark_bt2.bam : %_trimmed.fq.gz %_trimmed.fq_fastqc.zip
+	bismark $(OPTS_BISMARK) --output_dir $(@D) --temp_dir $(@D) $<
+	samtools sort $@ $(patsubst %.bam,%,$@)
+	samtools index $@
+
+# Rule for FastQC on trimmed
+%_trimmed.fq_fastqc.zip : %_trimmed.fq.gz
+	fastqc $(OPTS_FASTQC) --outdir $(@D) $<
+
+# Rule for trim_galore
+%_trimmed.fq.gz : %.fastq.gz %_fastqc.zip
+	trim_galore $(OPTS_TRIMGALORE) --output_dir $(@D) $<
+
+# Rule for FastQC on raw
+%_fastqc.zip : %.fastq.gz
+	fastqc $(OPTS_FASTQC) --outdir $(@D) $<
+
+################################################################################
+
+.PHONY : copy_fastqs
+copy_fastqs :
+	awk -f ../scripts/copy_data.awk data/$(PROJECT)_annotation.txt
+
+.PHONY : clean
+clean :
+	rm -f $(BISULFITE_ALIGN_FILES)
