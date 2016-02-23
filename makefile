@@ -23,3 +23,7 @@ init :
 	cp $(PROJECT)_annotation.txt $(PROJECT)/data/
 	@echo Populating file lists
 	awk -f scripts/parse_data.awk $(PROJECT)/data/$(PROJECT)_annotation.txt > $(PROJECT)/variables.mk
+	# Remove this eventually
+	@echo Copying data
+	ln -s ~/latte/mint/meta/data/IDH2* ~/latte/mint/$(PROJECT)/data/raw_fastqs
+	ln -s ~/latte/mint/meta/data/NBM* ~/latte/mint/$(PROJECT)/data/raw_fastqs

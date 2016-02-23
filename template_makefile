@@ -27,11 +27,11 @@ $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph : $(DIR_BISULFITE_
 
 # Rule for methylSig input
 $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	awk -f scripts/to_methylSig.awk $< | sort -T . -k2,2 -k3,3n > $@
+	awk -f ../scripts/to_methylSig.awk $< | sort -T . -k2,2 -k3,3n > $@
 
 # Rule for annotatr input
 $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt : $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	awk -f scripts/to_annotatr.awk $< | sort -T . -k1,1 -k2,2n > $@
+	awk -f ../scripts/to_annotatr.awk $< | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for bismark methylation extractor
 $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt : $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam
@@ -49,12 +49,12 @@ $(DIR_BISULFITE_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip : $(DIR_BISULFITE_TRIM_FAS
 	fastqc $(OPTS_FASTQC) --outdir $(@D) $<
 
 # Rule for trim_galore
-$(DIR_BISULFITE_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_BISULFITE_RAW_FASTQS)/%.fastq.gz $(DIR_BISULFITE_RAW_FASTQCS)/%_fastqc.zip
-	trim_galore $(OPTS_TRIMGALORE) --output_dir $(@D) $<
+$(DIR_BISULFITE_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_BISULFITE_RAW_FASTQCS)/%_fastqc.zip
+	trim_galore $(OPTS_TRIMGALORE_BISULFITE) --output_dir $(@D) $(DIR_BISULFITE_RAW_FASTQS)/%.fastq.gz
 
 # Rule for FastQC on raw
-$(DIR_BISULFITE_RAW_FASTQCS)/%_fastqc.zip : $(DIR_BISULFITE_RAW_FASTQS)/%.fastq.gz
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $<
+$(DIR_BISULFITE_RAW_FASTQCS)/%_fastqc.zip :
+	fastqc $(OPTS_FASTQC) --outdir $(@D) $(DIR_BISULFITE_RAW_FASTQS)/%.fastq.gz
 
 ################################################################################
 
