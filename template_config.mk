@@ -60,6 +60,7 @@ DIR_TRACK := $(PROJECT)_hub/$(GENOME)
 DIR_BISULFITE_BISMARK := bisulfite/bismark
 DIR_BISULFITE_TRIM_FASTQS := bisulfite/trim_fastqs
 DIR_BISULFITE_TRIM_FASTQCS := bisulfite/trim_fastqcs
+DIR_BISULFITE_RAW_FASTQCS := bisulfite/raw_fastqcs
 DIR_BISULFITE_RAW_FASTQS := bisulfite/raw_fastqs
 
 ################################################################################
