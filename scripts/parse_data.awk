@@ -19,8 +19,6 @@ BEGIN {
     input=$8
     group=$9
 
-    sampleFile = sprintf("%s/data/raw_fastqs/%s.fastq.gz", pwd, sampleID)
-
     # Establish platform for row
     if( pulldown == 1 ) {
       platform = "pulldown"
