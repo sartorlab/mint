@@ -1,9 +1,3 @@
 .DS_Store
 meta/
-test_hybrid_compare/
-test_hybrid_compare_make/
-test_hybrid_sample/
-test_pulldown_compare/
-test_pulldown_sample/
-hnscc_13/
 *_annotation.txt
