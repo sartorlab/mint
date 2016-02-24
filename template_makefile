@@ -5,22 +5,23 @@ include variables.mk
 ################################################################################
 # Special variables
 
-# bisulfite_align directories
+# track hub directory
 DIR_TRACK := $(PROJECT)_hub/$(GENOME)
-DIR_BISULFITE_BISMARK := bisulfite/bismark
-DIR_BISULFITE_TRIM_FASTQS := bisulfite/trim_fastqs
-DIR_BISULFITE_TRIM_FASTQCS := bisulfite/trim_fastqcs
-DIR_BISULFITE_RAW_FASTQCS := bisulfite/raw_fastqcs
-DIR_BISULFITE_RAW_FASTQS := bisulfite/raw_fastqs
+
+# bisulfite_align directories
+DIR_BIS_BISMARK := bisulfite/bismark
+DIR_BIS_TRIM_FASTQS := bisulfite/trim_fastqs
+DIR_BIS_TRIM_FASTQCS := bisulfite/trim_fastqcs
+DIR_BIS_RAW_FASTQCS := bisulfite/raw_fastqcs
+DIR_BIS_RAW_FASTQS := bisulfite/raw_fastqs
 
 # pulldown_align directories
-DIR_TRACK := $(PROJECT)_hub/$(GENOME)
-DIR_PULLDOWN_COVERAGES := pulldown/pulldown_coverages
-DIR_PULLDOWN_BOWTIE2 := pulldown/bowtie2_bams
-DIR_PULLDOWN_TRIM_FASTQS := pulldown/trim_fastqs
-DIR_PULLDOWN_TRIM_FASTQCS := pulldown/trim_fastqcs
-DIR_PULLDOWN_RAW_FASTQCS := pulldown/raw_fastqcs
-DIR_PULLDOWN_RAW_FASTQS := pulldown/raw_fastqs
+DIR_PULL_COVERAGES := pulldown/pulldown_coverages
+DIR_PULL_BOWTIE2 := pulldown/bowtie2_bams
+DIR_PULL_TRIM_FASTQS := pulldown/trim_fastqs
+DIR_PULL_TRIM_FASTQCS := pulldown/trim_fastqcs
+DIR_PULL_RAW_FASTQCS := pulldown/raw_fastqcs
+DIR_PULL_RAW_FASTQS := pulldown/raw_fastqs
 
 # Special variables for PePr rules
 comma := ,
@@ -31,101 +32,101 @@ space := $(empty) $(empty)
 # Bisulfite alignment workflow
 
 BISULFITE_ALIGN_FILES := 	$(patsubst %.fastq.gz,$(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,$(DIR_BISULFITE_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,$(DIR_BISULFITE_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,$(DIR_BISULFITE_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_FASTQ_FILES))
+													$(patsubst %.fastq.gz,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_FASTQ_FILES))
 
 .PHONY : bisulfite_align
 bisulfite_align : $(BISULFITE_ALIGN_FILES)
 
 # Rules for UCSC bigWig track
-$(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw : $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph
+$(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph
 	bedGraphToBigWig $< $(CHROM_PATH) $@
 
-.INTERMEDIATE : $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph
-$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph : $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz
+.INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph
+$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz
 	gunzip -c $< | awk 'NR > 1 {print $$0}' | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for methylSig input
-$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
+$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
 	awk -f ../scripts/to_methylSig.awk $< | sort -T . -k2,2 -k3,3n > $@
 
 # Rule for annotatr input
-$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt : $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
+$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
 	awk -f ../scripts/to_annotatr.awk $< | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for bismark methylation extractor
-$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt : $(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam
-	cd $(DIR_BISULFITE_BISMARK);\
+$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam
+	cd $(DIR_BIS_BISMARK);\
 	bismark_methylation_extractor $(OPTS_EXTRACTOR) $(<F)
 
 # Rule for bismark alignment
-$(DIR_BISULFITE_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam : $(DIR_BISULFITE_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_BISULFITE_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip
+$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_BIS_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip
 	bismark $(OPTS_BISMARK) --output_dir $(@D) --temp_dir $(@D) $<
 	samtools sort $@ $(patsubst %.bam,%,$@)
 	samtools index $@
 
 # Rule for FastQC on trimmed
-$(DIR_BISULFITE_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip : $(DIR_BISULFITE_TRIM_FASTQS)/%_trimmed.fq.gz
+$(DIR_BIS_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz
 	fastqc $(OPTS_FASTQC) --outdir $(@D) $<
 
 # Rule for trim_galore
-$(DIR_BISULFITE_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_BISULFITE_RAW_FASTQCS)/%_fastqc.zip
-	trim_galore $(OPTS_TRIMGALORE_BISULFITE) --output_dir $(@D) $(DIR_BISULFITE_RAW_FASTQS)/$*.fastq.gz
+$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip
+	trim_galore $(OPTS_TRIMGALORE_BISULFITE) --output_dir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
 
 # Rule for FastQC on raw
-$(DIR_BISULFITE_RAW_FASTQCS)/%_fastqc.zip :
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $(DIR_BISULFITE_RAW_FASTQS)/$*.fastq.gz
+$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip :
+	fastqc $(OPTS_FASTQC) --outdir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
 
 ################################################################################
 # Pulldown alignment workflow
 
 PULLDOWN_ALIGN_FILES := 	$(patsubst %.fastq.gz,$(DIR_TRACK)/%_coverage.bw,$(PULLDOWN_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,$(DIR_PULLDOWN_COVERAGES)/%_coverage.bdg,$(PULLDOWN_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,$(DIR_PULLDOWN_BOWTIE2)/%_trimmed.fq.gz_aligned.bam,$(PULLDOWN_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,$(DIR_PULLDOWN_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip,$(PULLDOWN_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,$(DIR_PULLDOWN_TRIM_FASTQS)/%_trimmed.fq.gz,$(PULLDOWN_FASTQ_FILES)) \
-													$(patsubst %.fastq.gz,$(DIR_PULLDOWN_RAW_FASTQCS)/%_fastqc.zip,$(PULLDOWN_FASTQ_FILES))
+													$(patsubst %.fastq.gz,$(DIR_PULL_COVERAGES)/%_coverage.bdg,$(PULLDOWN_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam,$(PULLDOWN_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip,$(PULLDOWN_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz,$(PULLDOWN_FASTQ_FILES)) \
+													$(patsubst %.fastq.gz,$(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip,$(PULLDOWN_FASTQ_FILES))
 
 .PHONY : pulldown_align
 pulldown_align : $(PULLDOWN_ALIGN_FILES)
 
 # Rule for UCSC bigWig track
-$(DIR_TRACK)/%_coverage.bw : $(DIR_PULLDOWN_COVERAGES)/%_coverage.bdg
+$(DIR_TRACK)/%_coverage.bw : $(DIR_PULL_COVERAGES)/%_coverage.bdg
 	bedGraphToBigWig $< $(CHROM_PATH) $@
 
 # Rule for coverage bedGraph
-$(DIR_PULLDOWN_COVERAGES)/%_coverage.bdg : $(DIR_PULLDOWN_BOWTIE2)/%_trimmed.fq.gz_aligned.bam
+$(DIR_PULL_COVERAGES)/%_coverage.bdg : $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam
 	bedtools genomecov -bg -g $(CHROM_PATH) -ibam $< | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for bowtie2 alignment
-$(DIR_PULLDOWN_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULLDOWN_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_PULLDOWN_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip
+$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip
 	bowtie2 $(OPTS_BOWTIE2) $< | samtools view -bS - > $@
 	samtools sort $@ $(patsubst %.bam,%,$@)
 	samtools index $@
 
 # Rule for FastQC on trimmed
-$(DIR_PULLDOWN_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip : $(DIR_PULLDOWN_TRIM_FASTQS)/%_trimmed.fq.gz
+$(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz
 	fastqc $(OPTS_FASTQC) --outdir $(@D) $<
 
 # Rule for trim_galore
-$(DIR_PULLDOWN_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_PULLDOWN_RAW_FASTQCS)/%_fastqc.zip
-	trim_galore $(OPTS_TRIMGALORE) --output_dir $(@D) $(DIR_PULLDOWN_RAW_FASTQS)/$*.fastq.gz
+$(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip
+	trim_galore $(OPTS_TRIMGALORE_PULLDOWN) --output_dir $(@D) $(DIR_PULL_RAW_FASTQS)/$*.fastq.gz
 
 # Rule for FastQC on raw
-$(DIR_PULLDOWN_RAW_FASTQCS)/%_fastqc.zip :
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $(DIR_PULLDOWN_RAW_FASTQS)/$*.fastq.gz
+$(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip :
+	fastqc $(OPTS_FASTQC) --outdir $(@D) $(DIR_PULL_RAW_FASTQS)/$*.fastq.gz
 
 ################################################################################
 
 .PHONY : copy_fastqs
 copy_fastqs :
-	awk -f ../scripts/copy_data.awk data/$(PROJECT)_annotation.txt
+	awk -f ../../scripts/copy_data.awk data/$(PROJECT)_annotation.txt
 
 .PHONY : clean
 clean :

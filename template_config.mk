@@ -4,9 +4,9 @@
 # Project and experimental information
 
 # Project name
-PROJECT=test_hybrid_compare_make
+PROJECT = project_name
 # Genome
-GENOME=hg19
+GENOME = genome
 
 ################################################################################
 # Genome paths
