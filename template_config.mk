@@ -50,21 +50,3 @@ OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
 OPTS_MACS = -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/macs_peaks -n $macsPrefix
 # PePr
 OPTS_PEPR = --file-format=bam --peaktype=sharp --diff --threshold 1e-03 --remove_artefacts
-
-################################################################################
-# Directory variables
-# For shorthand
-
-# bisulfite_align files
-DIR_TRACK := $(PROJECT)_hub/$(GENOME)
-DIR_BISULFITE_BISMARK := bisulfite/bismark
-DIR_BISULFITE_TRIM_FASTQS := bisulfite/trim_fastqs
-DIR_BISULFITE_TRIM_FASTQCS := bisulfite/trim_fastqcs
-DIR_BISULFITE_RAW_FASTQCS := bisulfite/raw_fastqcs
-DIR_BISULFITE_RAW_FASTQS := bisulfite/raw_fastqs
-
-################################################################################
-# Special variables for substitutions
-comma := ,
-empty :=
-space := $(empty) $(empty)
