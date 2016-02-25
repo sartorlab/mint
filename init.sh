@@ -16,9 +16,10 @@ mkdir projects/${PROJECT}/summary/{figures,tables,reports}
 mkdir projects/${PROJECT}/${PROJECT}_hub
 mkdir projects/${PROJECT}/${PROJECT}_hub/${GENOME}
 
-echo Copying makefile and config.mk, and making empty variables.mk...
+echo Copying makefile, config.mk, and narrowPeak.as
 cp template_makefile projects/${PROJECT}/makefile
 cp template_config.mk projects/${PROJECT}/config.mk
+cp narrowPeak.as projects/${PROJECT}/
 
 echo Copying data annotation file to project data folder...
 cp projects/${PROJECT}_annotation.txt projects/${PROJECT}/data/
