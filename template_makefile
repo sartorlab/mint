@@ -186,6 +186,20 @@ pbs :
 	echo '# Put your job commands after this line' >> pulldown_align.q
 	echo 'cd ~/latte/mint/projects/$(PROJECT)/' >> pulldown_align.q
 	echo 'make -j 4 pulldown_align' >> pulldown_align.q
+	echo '#!/bin/bash' > pulldown_sample.q
+	echo '#### Begin PBS preamble' >> pulldown_sample.q
+	echo '#PBS -N hcm_pull_sample' >> pulldown_sample.q
+	echo '#PBS -l procs=4,mem=32gb,walltime=6:00:00' >> pulldown_sample.q
+	echo '#PBS -A sartor_lab' >> pulldown_sample.q
+	echo '#PBS -q first' >> pulldown_sample.q
+	echo '#PBS -M rcavalca@umich.edu' >> pulldown_sample.q
+	echo '#PBS -m abe' >> pulldown_sample.q
+	echo '#PBS -j oe' >> pulldown_sample.q
+	echo '#PBS -V' >> pulldown_sample.q
+	echo '#### End PBS preamble' >> pulldown_sample.q
+	echo '# Put your job commands after this line' >> pulldown_sample.q
+	echo 'cd ~/latte/mint/projects/$(PROJECT)/' >> pulldown_sample.q
+	echo 'make -j 4 pulldown_sample' >> pulldown_sample.q
 
 .PHONY : clean
 clean :
