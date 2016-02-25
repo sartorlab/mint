@@ -135,7 +135,7 @@ pbs :
 	echo '#!/bin/bash' > bisulfite_align.q
 	echo '#### Begin PBS preamble' >> bisulfite_align.q
 	echo '#PBS -N hcm_bis_align' >> bisulfite_align.q
-	echo '#PBS -l procs=20,mem=120gb,walltime=6:00:00' >> bisulfite_align.q
+	echo '#PBS -l procs=10,mem=80gb,walltime=6:00:00' >> bisulfite_align.q
 	echo '#PBS -A sartor_lab' >> bisulfite_align.q
 	echo '#PBS -q first' >> bisulfite_align.q
 	echo '#PBS -M rcavalca@umich.edu' >> bisulfite_align.q
@@ -145,7 +145,7 @@ pbs :
 	echo '#### End PBS preamble' >> bisulfite_align.q
 	echo '# Put your job commands after this line' >> bisulfite_align.q
 	echo 'cd ~/latte/mint/projects/$(PROJECT)/' >> bisulfite_align.q
-	echo 'make -j 4 bisulfite_align' >> bisulfite_align.q
+	echo 'make -j 2 bisulfite_align' >> bisulfite_align.q
 	echo '#!/bin/bash' > pulldown_align.q
 	echo '#### Begin PBS preamble' >> pulldown_align.q
 	echo '#PBS -N hcm_pull_align' >> pulldown_align.q
