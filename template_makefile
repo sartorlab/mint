@@ -23,6 +23,9 @@ DIR_PULL_TRIM_FASTQCS := pulldown/trim_fastqcs
 DIR_PULL_RAW_FASTQCS := pulldown/raw_fastqcs
 DIR_PULL_RAW_FASTQS := pulldown/raw_fastqs
 
+# pulldown_sample directories
+DIR_PULL_MACS := pulldown/macs2_peaks
+
 # Special variables for PePr rules
 comma := ,
 empty :=
@@ -121,6 +124,29 @@ $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip
 # Rule for FastQC on raw
 $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip :
 	fastqc $(OPTS_FASTQC) --outdir $(@D) $(DIR_PULL_RAW_FASTQS)/$*.fastq.gz
+
+################################################################################
+# Pulldown sample workflow
+
+PULLDOWN_MACS_FILES :=	$(patsubst %.fastq.gz,$(DIR_TRACK)/%_macs2_peaks.bb,$(PULLDOWN_SAMPLE_FILES)) \
+						$(patsubst %.fastq.gz,$(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak,$(PULLDOWN_SAMPLE_FILES))
+
+.PHONY : pulldown_sample
+pulldown_sample : pulldown_align $(PULLDOWN_MACS_FILES)
+
+# Rule for UCSC bigBed track
+$(DIR_TRACK)/%_macs2_peaks.bb : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
+	bedToBigBed -type=bed6+4 -as=narrowPeak.as $^ $(CHROM_PATH) $@
+
+# Rule for macs2 peak fix
+.INTERMEDIATE : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
+$(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak : $(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak
+	awk -f ../../scripts/fix_narrowPeak.awk $^ | sort -T . -k1,1 -k2,2n > $@
+
+# Rule for macs2 peaks
+$(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak : 	$(DIR_PULL_BOWTIE2)/%_pulldown_trimmed.fq.gz_aligned.bam \
+														$(DIR_PULL_BOWTIE2)/%_input_pulldown_trimmed.fq.gz_aligned.bam
+	macs2 callpeak -t $(word 1, $^) -c $(word 2, $^) -f BAM -g hs --name $(patsubst %_peaks.narrowPeak,%,$(@F)) --outdir $(@D)
 
 ################################################################################
 

@@ -1,10 +1,11 @@
 #!/usr/bin/awk -f
 # The pwd should be the mint root folder
 BEGIN {
-  OFS="\t"
-  pwd=ENVIRON["PWD"]
-  pulldownFiles = ""
-  bisulfiteFiles = ""
+	OFS="\t"
+	pwd=ENVIRON["PWD"]
+	bisAlignFiles = ""
+	pullAlignFiles = ""
+	pullSampleFiles = ""
 }
 {
   if( NR > 1 ) {
@@ -38,17 +39,19 @@ BEGIN {
     # Add to the appropriate file group variable
     if ( pulldown == 1 ) {
       if ( input == 1 ) {
-        pulldownFiles = pulldownFiles" "sprintf("%s_%s_input_%s.fastq.gz", humanID, mark, platform)
+        pullAlignFiles = pullAlignFiles" "sprintf("%s_%s_input_%s.fastq.gz", humanID, mark, platform)
       } else {
-        pulldownFiles = pulldownFiles" "sprintf("%s_%s_%s.fastq.gz", humanID, mark, platform)
+        pullAlignFiles = pullAlignFiles" "sprintf("%s_%s_%s.fastq.gz", humanID, mark, platform)
+		pullSampleFiles = pullSampleFiles" "sprintf("%s_%s_%s.fastq.gz", humanID, mark, platform)
       }
     } else if ( bisulfite == 1 ) {
-      bisulfiteFiles = bisulfiteFiles" "sprintf("%s_%s_%s.fastq.gz", humanID, mark, platform)
+      bisAlignFiles = bisAlignFiles" "sprintf("%s_%s_%s.fastq.gz", humanID, mark, platform)
     }
 
   }
 }
 END {
-  print "BISULFITE_FASTQ_FILES :="bisulfiteFiles
-  print "PULLDOWN_FASTQ_FILES :="pulldownFiles
+	print "BISULFITE_FASTQ_FILES :="bisAlignFiles
+	print "PULLDOWN_FASTQ_FILES :="pullAlignFiles
+	print "PULLDOWN_SAMPLE_FILES :="pullSampleFiles
 }
