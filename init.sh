@@ -27,4 +27,7 @@ echo Populating file lists...
 awk -f scripts/parse_data.awk projects/${PROJECT}/data/${PROJECT}_annotation.txt > projects/${PROJECT}/variables.mk
 
 echo Symlinking data...
-ln -s "${DATAPATH}" projects/${PROJECT}/data/raw_fastqs/
+for file in `ls "${DATAPATH}"`
+do
+	ln -s "${DATAPATH}/${file}" projects/${PROJECT}/data/raw_fastqs/
+done
