@@ -144,6 +144,7 @@ pbs :
 	echo '#PBS -V' >> bisulfite_align.q
 	echo '#### End PBS preamble' >> bisulfite_align.q
 	echo '# Put your job commands after this line' >> bisulfite_align.q
+	echo 'cd ~/latte/mint/projects/$(PROJECT)/' >> bisulfite_align.q
 	echo 'make -j 4 bisulfite_align' >> bisulfite_align.q
 	echo '#!/bin/bash' > pulldown_align.q
 	echo '#### Begin PBS preamble' >> pulldown_align.q
@@ -157,6 +158,7 @@ pbs :
 	echo '#PBS -V' >> pulldown_align.q
 	echo '#### End PBS preamble' >> pulldown_align.q
 	echo '# Put your job commands after this line' >> pulldown_align.q
+	echo 'cd ~/latte/mint/projects/$(PROJECT)/' >> pulldown_align.q
 	echo 'make -j 4 pulldown_align' >> pulldown_align.q
 
 .PHONY : clean
