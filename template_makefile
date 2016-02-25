@@ -54,11 +54,11 @@ $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph : $(DIR_BIS_BISMARK)/%_t
 
 # Rule for methylSig input
 $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	awk -f ../scripts/to_methylSig.awk $< | sort -T . -k2,2 -k3,3n > $@
+	awk -f ../../scripts/to_methylSig.awk $< | sort -T . -k2,2 -k3,3n > $@
 
 # Rule for annotatr input
 $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	awk -f ../scripts/to_annotatr.awk $< | sort -T . -k1,1 -k2,2n > $@
+	awk -f ../../scripts/to_annotatr.awk $< | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for bismark methylation extractor
 $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam
