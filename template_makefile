@@ -124,9 +124,40 @@ $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip :
 
 ################################################################################
 
-.PHONY : copy_fastqs
-copy_fastqs :
+.PHONY : copy
+copy :
+	@echo Organizing data...
 	awk -f ../../scripts/copy_data.awk data/$(PROJECT)_annotation.txt
+
+.PHONY : pbs
+pbs :
+	@echo Building PBS scripts...
+	echo '#!/bin/bash' > bisulfite_align.q
+	echo '#### Begin PBS preamble' >> bisulfite_align.q
+	echo '#PBS -N hcm_bis_align' >> bisulfite_align.q
+	echo '#PBS -l procs=20,mem=120gb,walltime=6:00:00' >> bisulfite_align.q
+	echo '#PBS -A sartor_lab' >> bisulfite_align.q
+	echo '#PBS -q first' >> bisulfite_align.q
+	echo '#PBS -M rcavalca@umich.edu' >> bisulfite_align.q
+	echo '#PBS -m abe' >> bisulfite_align.q
+	echo '#PBS -j oe' >> bisulfite_align.q
+	echo '#PBS -V' >> bisulfite_align.q
+	echo '#### End PBS preamble' >> bisulfite_align.q
+	echo '# Put your job commands after this line' >> bisulfite_align.q
+	echo 'make -j 4 bisulfite_align' >> bisulfite_align.q
+	echo '#!/bin/bash' > pulldown_align.q
+	echo '#### Begin PBS preamble' >> pulldown_align.q
+	echo '#PBS -N hcm_pull_align' >> pulldown_align.q
+	echo '#PBS -l procs=4,mem=32gb,walltime=6:00:00' >> pulldown_align.q
+	echo '#PBS -A sartor_lab' >> pulldown_align.q
+	echo '#PBS -q first' >> pulldown_align.q
+	echo '#PBS -M rcavalca@umich.edu' >> pulldown_align.q
+	echo '#PBS -m abe' >> pulldown_align.q
+	echo '#PBS -j oe' >> pulldown_align.q
+	echo '#PBS -V' >> pulldown_align.q
+	echo '#### End PBS preamble' >> pulldown_align.q
+	echo '# Put your job commands after this line' >> pulldown_align.q
+	echo 'make -j 4 pulldown_align' >> pulldown_align.q
 
 .PHONY : clean
 clean :
