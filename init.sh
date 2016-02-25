@@ -1,5 +1,6 @@
 PROJECT=$1
 GENOME=$2
+DATAPATH=$3
 
 echo Making directories...
 mkdir projects/${PROJECT}
@@ -24,3 +25,6 @@ cp projects/${PROJECT}_annotation.txt projects/${PROJECT}/data/
 
 echo Populating file lists...
 awk -f scripts/parse_data.awk projects/${PROJECT}/data/${PROJECT}_annotation.txt > projects/${PROJECT}/variables.mk
+
+echo Symlinking data...
+ln -s "${DATAPATH}" projects/${PROJECT}/data/raw_fastqs/
