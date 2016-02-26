@@ -150,11 +150,6 @@ $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak : 	$(DIR_PULL_BOWTIE2)/%_pull
 
 ################################################################################
 
-.PHONY : copy
-copy :
-	@echo Organizing data...
-	awk -f ../../scripts/copy_data.awk data/$(PROJECT)_annotation.txt
-
 .PHONY : pbs
 pbs :
 	@echo Building PBS scripts...
