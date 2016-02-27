@@ -1,6 +1,6 @@
 library(optparse)
 library(methylSig)
-
+print(getwd())
 # Example call
 #    Rscript ~/latte/Methylation/Methylation_Code/process_errbs_comparison-wise_run_methylSig.R  --cytfiles   --sampleids   --assembly   --pipeline  --context  --resolution  --treatment  --destranded  --maxcount  --mincount  --filterSNPs  --ncores  --quiet  --tile  --dispersion  --minpergroup
 
