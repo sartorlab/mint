@@ -71,7 +71,7 @@ if(opt$tile) {
         num.cores= opt$ncores
         )
 
-    write.methylSigDiff(diff_meth, file=sprintf('bisulfite/methylsig_calls/%s.txt', comparison), row.names=F,quote=F,sep='\t')
+    write.methylSigDiff(diff_meth, file=sprintf('bisulfite/methylsig_calls/%s_methylSig.txt', comparison), row.names=F,quote=F,sep='\t')
 } else {
     message('Doing CpG analysis')
     diff_meth = methylSigCalc(
@@ -82,6 +82,6 @@ if(opt$tile) {
         num.cores = opt$ncores
         )
 
-    write.methylSigDiff(diff_meth, file=sprintf('bisulfite/methylsig_calls/%s.txt', comparison), row.names=F,quote=F,sep='\t')
+    write.methylSigDiff(diff_meth, file=sprintf('bisulfite/methylsig_calls/%s_methylSig.txt', comparison), row.names=F,quote=F,sep='\t')
 
 }
