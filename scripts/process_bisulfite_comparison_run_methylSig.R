@@ -57,7 +57,7 @@ meth = methylSigReadData(
     num.cores = opt$ncores,
     quiet= opt$quiet)
 
-save(meth, file=sprintf('%s/bis_mc_hmc/methylsig_calls/%s_raw_data.RData', project, comparison))
+save(meth, file=sprintf('projects/%s/methylsig_calls/%s_raw_data.RData', project, comparison))
 
 if(opt$tile) {
     message('Doing tiled analysis')
@@ -71,7 +71,7 @@ if(opt$tile) {
         num.cores= opt$ncores
         )
 
-    write.methylSigDiff(diff_meth, file=sprintf('%s/bis_mc_hmc/methylsig_calls/%s.txt', project, comparison), row.names=F,quote=F,sep='\t')
+    write.methylSigDiff(diff_meth, file=sprintf('project/%s/methylsig_calls/%s.txt', project, comparison), row.names=F,quote=F,sep='\t')
 } else {
     message('Doing CpG analysis')
     diff_meth = methylSigCalc(
@@ -82,6 +82,6 @@ if(opt$tile) {
         num.cores = opt$ncores
         )
 
-    write.methylSigDiff(diff_meth, file=sprintf('%s/bis_mc_hmc/methylsig_calls/%s.txt', project, comparison), row.names=F,quote=F,sep='\t')
+    write.methylSigDiff(diff_meth, file=sprintf('projects/%s/methylsig_calls/%s.txt', project, comparison), row.names=F,quote=F,sep='\t')
 
 }
