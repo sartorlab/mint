@@ -211,7 +211,7 @@ if(nrow(comparison_annots) > 0) {
 				sprintf('pulldown_compare_%s : $(PULLDOWN_COMPARE_%s_PREREQS)', i, i),
 				'',
 				sprintf('%s : %s %s %s %s', up_bed, input1_pre, input2_pre, chip1_pre, chip2_pre),
-				'	cd projects/$(PROJECT)/pepr_peaks; \\',
+				'	cd pulldown/pepr_peaks; \\',
 				sprintf('	$(PATH_TO_PEPR) --input1=$(PULLDOWN_COMPARE_%s_INPUT1) --input2=$(PULLDOWN_COMPARE_%s_INPUT2) --chip1=$(PULLDOWN_COMPARE_%s_CHIP1) --chip2=$(PULLDOWN_COMPARE_%s_CHIP2) --name=$(PULLDOWN_COMPARE_%s_NAME) $(OPTS_PEPR)', i, i, i, i, i),
 				sprintf('%s : %s', down_bed, up_bed),
 				'',
