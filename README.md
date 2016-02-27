@@ -89,3 +89,48 @@ The mint pipeline can be used for any combination of the following two experimen
 	GSE52945	comparison	IDH2mut_v_NBM	1	0	0	1	0	0,1
 	GSE52945	comparison	IDH2mut_v_NBM	0	1	1	1	0	0,1
     ```
+	A more complicated example with multiple comparisons to be made.
+	```{bash}
+	projectID	sampleID	humanID	pulldown	bisulfite	mc	hmc	input	group
+	hnscc_13	Sample_42741	HPV+2	0	1	1	1	0	1,2
+	hnscc_13	Sample_42742	HPV+5	0	1	1	1	0	1,2
+	hnscc_13	Sample_45194	HPV-1	0	1	1	1	0	0
+	hnscc_13	Sample_45195	HPV+1	0	1	1	1	0	1,2
+	hnscc_13	Sample_45196	HPV+3	0	1	1	1	0	1,3
+	hnscc_13	Sample_45197	HPV+4	0	1	1	1	0	1,3
+	hnscc_13	Sample_45199	HPV+8	0	1	1	1	0	1,3
+	hnscc_13	Sample_45200	HPV-2	0	1	1	1	0	0
+	hnscc_13	Sample_45201	HPV-4	0	1	1	1	0	0
+	hnscc_13	Sample_45202	HPV+7	0	1	1	1	0	1,3
+	hnscc_13	Sample_45203	HPV-7	0	1	1	1	0	0
+	hnscc_13	Sample_45204	HPV-8	0	1	1	1	0	0
+	hnscc_13	Sample_51324	HPV-8	1	0	0	1	1	0
+	hnscc_13	Sample_51327	HPV+8	1	0	0	1	0	1,3
+	hnscc_13	Sample_51325	HPV-8	1	0	0	1	0	0
+	hnscc_13	Sample_51326	HPV+8	1	0	0	1	1	1,3
+	hnscc_13	Sample_49651	HPV-1	1	0	0	1	1	0
+	hnscc_13	Sample_49654	HPV+1	1	0	0	1	0	1,2
+	hnscc_13	Sample_49652	HPV-1	1	0	0	1	0	0
+	hnscc_13	Sample_49653	HPV+1	1	0	0	1	1	1,2
+	hnscc_13	Sample_49655	HPV+2	1	0	0	1	1	1
+	hnscc_13	Sample_49658	HPV-2	1	0	0	1	0	0
+	hnscc_13	Sample_49656	HPV+2	1	0	0	1	0	1,2
+	hnscc_13	Sample_49657	HPV-2	1	0	0	1	1	0
+	hnscc_13	Sample_49659	HPV+3	1	0	0	1	1	1,3
+	hnscc_13	Sample_49662	HPV+4	1	0	0	1	0	1,3
+	hnscc_13	Sample_49660	HPV+3	1	0	0	1	0	1,3
+	hnscc_13	Sample_49661	HPV+4	1	0	0	1	1	1,3
+	hnscc_13	Sample_49663	HPV+5	1	0	0	1	1	1,2
+	hnscc_13	Sample_49664	HPV+5	1	0	0	1	0	1,2
+	hnscc_13	Sample_51316	HPV-4	1	0	0	1	1	0
+	hnscc_13	Sample_51317	HPV-4	1	0	0	1	0	0
+	hnscc_13	Sample_51320	HPV+7	1	0	0	1	1	1,3
+	hnscc_13	Sample_51323	HPV-7	1	0	0	1	0	0
+	hnscc_13	Sample_51321	HPV+7	1	0	0	1	0	1,3
+	hnscc_13	Sample_51322	HPV-7	1	0	0	1	1	0
+	hnscc_13	comparison1	HPV+_v_HPV-	1	0	0	1	0	0,1
+	hnscc_13	comparison1	HPV+_v_HPV-	0	1	1	1	0	0,1
+	hnscc_13	comparison2	int+_v_int-	1	0	0	1	0	2,3
+	hnscc_13	comparison2	int+_v_int-	0	1	1	1	0	2,3
+
+	```
