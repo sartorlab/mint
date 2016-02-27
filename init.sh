@@ -31,4 +31,4 @@ do
 done
 
 echo Making variables and symlinking bisulfite and pulldown files...
-Rscript scripts/parse_data.R --project ${PROJECT}
+Rscript scripts/parse_data.R --project ${PROJECT} --genome ${GENOME}

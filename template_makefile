@@ -3,35 +3,6 @@ include config.mk
 include variables.mk
 
 ################################################################################
-# Special variables
-
-# track hub directory
-DIR_TRACK := $(PROJECT)_hub/$(GENOME)
-
-# bisulfite_align directories
-DIR_BIS_BISMARK := bisulfite/bismark
-DIR_BIS_TRIM_FASTQS := bisulfite/trim_fastqs
-DIR_BIS_TRIM_FASTQCS := bisulfite/trim_fastqcs
-DIR_BIS_RAW_FASTQCS := bisulfite/raw_fastqcs
-DIR_BIS_RAW_FASTQS := bisulfite/raw_fastqs
-
-# pulldown_align directories
-DIR_PULL_COVERAGES := pulldown/pulldown_coverages
-DIR_PULL_BOWTIE2 := pulldown/bowtie2_bams
-DIR_PULL_TRIM_FASTQS := pulldown/trim_fastqs
-DIR_PULL_TRIM_FASTQCS := pulldown/trim_fastqcs
-DIR_PULL_RAW_FASTQCS := pulldown/raw_fastqcs
-DIR_PULL_RAW_FASTQS := pulldown/raw_fastqs
-
-# pulldown_sample directories
-DIR_PULL_MACS := pulldown/macs2_peaks
-
-# Special variables for PePr rules
-comma := ,
-empty :=
-space := $(empty) $(empty)
-
-################################################################################
 # Bisulfite alignment workflow
 
 BISULFITE_ALIGN_FILES := 	$(patsubst %.fastq.gz,$(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw,$(BISULFITE_FASTQ_FILES)) \
@@ -150,53 +121,10 @@ $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak : 	$(DIR_PULL_BOWTIE2)/%_pull
 
 ################################################################################
 
-.PHONY : pbs
-pbs :
-	@echo Building PBS scripts...
-	echo '#!/bin/bash' > bisulfite_align.q
-	echo '#### Begin PBS preamble' >> bisulfite_align.q
-	echo '#PBS -N hcm_bis_align' >> bisulfite_align.q
-	echo '#PBS -l procs=10,mem=80gb,walltime=6:00:00' >> bisulfite_align.q
-	echo '#PBS -A sartor_lab' >> bisulfite_align.q
-	echo '#PBS -q first' >> bisulfite_align.q
-	echo '#PBS -M rcavalca@umich.edu' >> bisulfite_align.q
-	echo '#PBS -m abe' >> bisulfite_align.q
-	echo '#PBS -j oe' >> bisulfite_align.q
-	echo '#PBS -V' >> bisulfite_align.q
-	echo '#### End PBS preamble' >> bisulfite_align.q
-	echo '# Put your job commands after this line' >> bisulfite_align.q
-	echo 'cd ~/latte/mint/projects/$(PROJECT)/' >> bisulfite_align.q
-	echo 'make -j 2 bisulfite_align' >> bisulfite_align.q
-	echo '#!/bin/bash' > pulldown_align.q
-	echo '#### Begin PBS preamble' >> pulldown_align.q
-	echo '#PBS -N hcm_pull_align' >> pulldown_align.q
-	echo '#PBS -l procs=4,mem=32gb,walltime=6:00:00' >> pulldown_align.q
-	echo '#PBS -A sartor_lab' >> pulldown_align.q
-	echo '#PBS -q first' >> pulldown_align.q
-	echo '#PBS -M rcavalca@umich.edu' >> pulldown_align.q
-	echo '#PBS -m abe' >> pulldown_align.q
-	echo '#PBS -j oe' >> pulldown_align.q
-	echo '#PBS -V' >> pulldown_align.q
-	echo '#### End PBS preamble' >> pulldown_align.q
-	echo '# Put your job commands after this line' >> pulldown_align.q
-	echo 'cd ~/latte/mint/projects/$(PROJECT)/' >> pulldown_align.q
-	echo 'make -j 4 pulldown_align' >> pulldown_align.q
-	echo '#!/bin/bash' > pulldown_sample.q
-	echo '#### Begin PBS preamble' >> pulldown_sample.q
-	echo '#PBS -N hcm_pull_sample' >> pulldown_sample.q
-	echo '#PBS -l procs=4,mem=32gb,walltime=6:00:00' >> pulldown_sample.q
-	echo '#PBS -A sartor_lab' >> pulldown_sample.q
-	echo '#PBS -q first' >> pulldown_sample.q
-	echo '#PBS -M rcavalca@umich.edu' >> pulldown_sample.q
-	echo '#PBS -m abe' >> pulldown_sample.q
-	echo '#PBS -j oe' >> pulldown_sample.q
-	echo '#PBS -V' >> pulldown_sample.q
-	echo '#### End PBS preamble' >> pulldown_sample.q
-	echo '# Put your job commands after this line' >> pulldown_sample.q
-	echo 'cd ~/latte/mint/projects/$(PROJECT)/' >> pulldown_sample.q
-	echo 'make -j 4 pulldown_sample' >> pulldown_sample.q
-
 .PHONY : clean
 clean :
 	rm -f $(BISULFITE_ALIGN_FILES)
 	rm -f $(PULLDOWN_ALIGN_FILES)
+
+################################################################################
+# Begin rules generated from scripts/parse_data.R

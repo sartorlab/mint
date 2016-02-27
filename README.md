@@ -71,19 +71,21 @@ The mint pipeline can be used for any combination of the following two experimen
     GSE63743        SRR1686709      normal_1        1       0       0       0       1       0
     GSE63743        SRR1686710      normal_2        1       0       0       0       1       0
     ```
-    An example of a hybrid experimental setup with comparison-wise analysis is:
+    An example of a hybrid experimental setup with comparison-wise analysis is below. Note the added lines for comparisons indicating that pulldown and bisulfite experiments should be compared according to groups 0 and 1.
     ```{bash}
-    projectID       sampleID        humanID pulldown        bisulfite       mc      hmc     input   group
-    GSE52945        SRR1041959      IDH2mut_1       1       0       0       1       0       1
-    GSE52945        SRR1041960      IDH2mut_2       1       0       0       1       0       1
-    GSE52945        SRR1041977      IDH2mut_1       1       0       0       1       1       1
-    GSE52945        SRR1041978      IDH2mut_2       1       0       0       1       1       1
-    GSE52945        SRR1041992      IDH2mut_1       0       1       1       1       0       1
-    GSE52945        SRR1041993      IDH2mut_2       0       1       1       1       0       1
-    GSE52945        SRR1638715      NBM_1   1       0       0       1       0       0
-    GSE52945        SRR1638716      NBM_2   1       0       0       1       0       0
-    GSE52945        SRR1638720      NBM_1   1       0       0       1       1       0
-    GSE52945        SRR1638721      NBM_2   1       0       0       1       1       0
-    GSE52945        SRR1638726      NBM_2   0       1       1       1       0       0
-    GSE52945        SRR1638727      NBM_1   0       1       1       1       0       0
+	projectID	sampleID	humanID	pulldown	bisulfite	mc	hmc	input	group
+	GSE52945	SRR1041959	IDH2mut_1	1	0	0	1	0	1
+	GSE52945	SRR1041960	IDH2mut_2	1	0	0	1	0	1
+	GSE52945	SRR1041977	IDH2mut_1	1	0	0	1	1	1
+	GSE52945	SRR1041978	IDH2mut_2	1	0	0	1	1	1
+	GSE52945	SRR1041992	IDH2mut_1	0	1	1	1	0	1
+	GSE52945	SRR1041993	IDH2mut_2	0	1	1	1	0	1
+	GSE52945	SRR1638715	NBM_1	1	0	0	1	0	0
+	GSE52945	SRR1638716	NBM_2	1	0	0	1	0	0
+	GSE52945	SRR1638720	NBM_1	1	0	0	1	1	0
+	GSE52945	SRR1638721	NBM_2	1	0	0	1	1	0
+	GSE52945	SRR1638726	NBM_2	0	1	1	1	0	0
+	GSE52945	SRR1638727	NBM_1	0	1	1	1	0	0
+	GSE52945	comparison	IDH2mut_v_NBM	1	0	0	1	0	0,1
+	GSE52945	comparison	IDH2mut_v_NBM	0	1	1	1	0	0,1
     ```
