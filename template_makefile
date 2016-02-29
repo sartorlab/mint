@@ -5,7 +5,9 @@ include variables.mk
 ################################################################################
 # Bisulfite alignment workflow
 
-BISULFITE_ALIGN_FILES := 	$(patsubst %.fastq.gz,$(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw,$(BISULFITE_FASTQ_FILES)) \
+BISULFITE_ALIGN_FILES := 	$(patsubst %.fastq.gz,$(DIR_TRACK)/%_simple_classification.bb,$(BISULFITE_FASTQ_FILES)) \
+							$(patsubst %.fastq.gz,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(BISULFITE_FASTQ_FILES)) \
+							$(patsubst %.fastq.gz,$(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw,$(BISULFITE_FASTQ_FILES)) \
 							$(patsubst %.fastq.gz,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt,$(BISULFITE_FASTQ_FILES)) \
 							$(patsubst %.fastq.gz,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt,$(BISULFITE_FASTQ_FILES)) \
 							$(patsubst %.fastq.gz,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz,$(BISULFITE_FASTQ_FILES)) \
@@ -17,6 +19,14 @@ BISULFITE_ALIGN_FILES := 	$(patsubst %.fastq.gz,$(DIR_TRACK)/%_trimmed.fq.gz_bis
 
 .PHONY : bisulfite_align
 bisulfite_align : $(BISULFITE_ALIGN_FILES)
+
+# Rule for UCSC bigBed track of simple classifiation
+$(DIR_TRACK)/%_bisulfite_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed
+	bedToBigBed $< $(CHROM_PATH) $@
+
+# Simple classification for percent methylation
+$(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed.fq.gz_bismark_bt2.bedGraph.gz
+	Rscript ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
 
 # Rules for UCSC bigWig track
 $(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph
@@ -99,11 +109,21 @@ $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip :
 ################################################################################
 # Pulldown sample workflow
 
-PULLDOWN_MACS_FILES :=	$(patsubst %.fastq.gz,$(DIR_TRACK)/%_macs2_peaks.bb,$(PULLDOWN_SAMPLE_FILES)) \
+PULLDOWN_MACS_FILES :=	$(patsubst %.fastq.gz,$(DIR_TRACK)/%_simple_classification.bb,$(PULLDOWN_SAMPLE_FILES)) \
+						$(patsubst %.fastq.gz,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(PULLDOWN_SAMPLE_FILES)) \
+						$(patsubst %.fastq.gz,$(DIR_TRACK)/%_macs2_peaks.bb,$(PULLDOWN_SAMPLE_FILES)) \
 						$(patsubst %.fastq.gz,$(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak,$(PULLDOWN_SAMPLE_FILES))
 
 .PHONY : pulldown_sample
 pulldown_sample : pulldown_align $(PULLDOWN_MACS_FILES)
+
+# Rule for UCSC bigBed track of simple classifiation
+$(DIR_TRACK)/%_pulldown_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_pulldown_simple_classification.bed
+	bedToBigBed $< $(CHROM_PATH) $@
+
+# Simple classification
+$(DIR_CLASS_SIMPLE)/%_pulldown_simple_classification.bed : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
+	Rscript ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
 
 # Rule for UCSC bigBed track
 $(DIR_TRACK)/%_macs2_peaks.bb : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak

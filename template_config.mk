@@ -80,3 +80,8 @@ DIR_PULL_MACS := pulldown/macs2_peaks
 
 # pulldown_compare directories
 DIR_PULL_PEPR := pulldown/pepr_peaks
+
+# classification directories
+DIR_CLASS_SIMPLE := classifications/simple
+DIR_CLASS_SAMPLE := classifications/sample
+DIR_CLASS_COMPARE := classifications/comparison

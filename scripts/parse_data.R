@@ -98,25 +98,11 @@ for(i in 1:nrow(sample_annots)) {
 # Deal with comparisons if there are any
 
 if(nrow(comparison_annots) > 0) {
-	# Add parameter columns to comparison_annots for PePr and methylSig
-	comparison_annots$pepr_input1 = NA
-	comparison_annots$pepr_input2 = NA
-	comparison_annots$pepr_chip1 = NA
-	comparison_annots$pepr_chip2 = NA
-	comparison_annots$pepr_name = NA
-	comparison_annots$msig_project = NA
-	comparison_annots$msig_cytfiles = NA
-	comparison_annots$msig_sampleids = NA
-	comparison_annots$msig_treatment = NA
-	comparison_annots$msig_assembly = NA
-	comparison_annots$msig_comparison = NA
 
 	pulldown_compares = c()
 	bisulfite_compares = c()
 
 	for(i in 1:nrow(comparison_annots)) {
-		# The order of the groups is important for biological interpretation
-
 		# Establish row variables
 		projectID = comparison_annots[i,'projectID']
 		sampleID = comparison_annots[i,'sampleID']
@@ -175,6 +161,7 @@ if(nrow(comparison_annots) > 0) {
 			sample_annots$hmc == hmc &
 			sample_annots$input == 1)
 
+		# Deal with pulldown comparisons
 		if(platform == 'pulldown') {
 
 			# For the PePr call from projects/project/pepr_peaks/
@@ -226,6 +213,7 @@ if(nrow(comparison_annots) > 0) {
 			# Track the number of pulldown compares
 			pulldown_compares = c(pulldown_compares, sprintf('pulldown_compare_%s', i))
 
+		# Deal with bisulfite comparisons
 		} else if (platform == 'bisulfite') {
 
 			cytfiles = paste(c(
@@ -268,7 +256,7 @@ if(nrow(comparison_annots) > 0) {
 				sprintf('	Rscript ../../scripts/process_bisulfite_comparison_run_methylSig.R --project $(PROJECT) --cytfiles $(BISULFITE_COMPARE_%s_CYTFILES) --sampleids $(BISULFITE_COMPARE_%s_SAMPLEIDS) --treatment $(BISULFITE_COMPARE_%s_TREATMENT) --assembly $(GENOME) --pipeline mint --comparison $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_METHYLSIG)', i, i, i, i),
 				'',
 				sprintf('.INTERMEDIATE : %s', msig_tmp_results),
-				sprintf('%s : %s', msig_tmp_results, msig_results),
+				sprintf('%s : %s', msig_tmp_results, msig_results), # THIS IS CUSTOMIZABLE to p-value or FDR and the threshold
 				"	awk -v OFS='\\t' '$$5 < 0.05 {print $$1, $$2, $$3, $$7 }' $^ | sort -T . -k1,1 -k2,2n > $@",
 				'',
 				sprintf('%s : %s', msig_bigwig, msig_tmp_results),
