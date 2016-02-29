@@ -8,7 +8,7 @@ mkdir projects/${PROJECT}/data
 mkdir projects/${PROJECT}/data/raw_fastqs
 mkdir projects/${PROJECT}/{bisulfite,pulldown}
 mkdir projects/${PROJECT}/bisulfite/{raw_fastqs,raw_fastqcs,trim_fastqs,trim_fastqcs,bismark,methylsig_calls}
-mkdir projects/${PROJECT}/pulldown/{raw_fastqs,raw_fastqcs,trim_fastqs,trim_fastqcs,bowtie2_bams,pulldown_coverages,macs_peaks,pepr_peaks}
+mkdir projects/${PROJECT}/pulldown/{raw_fastqs,raw_fastqcs,trim_fastqs,trim_fastqcs,bowtie2_bams,pulldown_coverages,macs2_peaks,pepr_peaks}
 mkdir projects/${PROJECT}/classifications
 mkdir projects/${PROJECT}/classifications/{simple,sample,comparison}
 mkdir projects/${PROJECT}/summary
