@@ -123,7 +123,7 @@ merged = dplyr::inner_join(x = peaks, y = classification, by='code')
 merged$thickStart = merged$start
 merged$thickEnd = merged$end
 merged$score = 1000
-merged$strand = '*'
+merged$strand = '.'
 
 merged_final = merged[,c('chrom','start','end','class','score','strand','thickStart','thickEnd','color')]
 merged_final = merged_final[order(merged_final$chrom, merged_final$start),]
