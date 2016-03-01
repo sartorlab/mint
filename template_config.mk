@@ -50,38 +50,3 @@ OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
 OPTS_MACS = -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/macs_peaks -n $macsPrefix
 # PePr
 OPTS_PEPR = --file-format=bam --peaktype=sharp --diff --threshold 1e-03 --remove_artefacts
-
-################################################################################
-# Directories
-
-# track hub directory
-DIR_TRACK := $(PROJECT)_hub/$(GENOME)
-
-# bisulfite_align directories
-DIR_BIS_BISMARK := bisulfite/bismark
-DIR_BIS_TRIM_FASTQS := bisulfite/trim_fastqs
-DIR_BIS_TRIM_FASTQCS := bisulfite/trim_fastqcs
-DIR_BIS_RAW_FASTQCS := bisulfite/raw_fastqcs
-DIR_BIS_RAW_FASTQS := bisulfite/raw_fastqs
-
-# bisulfite_compare directories
-DIR_BIS_MSIG := bisulfite/methylsig_calls
-
-# pulldown_align directories
-DIR_PULL_COVERAGES := pulldown/pulldown_coverages
-DIR_PULL_BOWTIE2 := pulldown/bowtie2_bams
-DIR_PULL_TRIM_FASTQS := pulldown/trim_fastqs
-DIR_PULL_TRIM_FASTQCS := pulldown/trim_fastqcs
-DIR_PULL_RAW_FASTQCS := pulldown/raw_fastqcs
-DIR_PULL_RAW_FASTQS := pulldown/raw_fastqs
-
-# pulldown_sample directories
-DIR_PULL_MACS := pulldown/macs2_peaks
-
-# pulldown_compare directories
-DIR_PULL_PEPR := pulldown/pepr_peaks
-
-# classification directories
-DIR_CLASS_SIMPLE := classifications/simple
-DIR_CLASS_SAMPLE := classifications/sample
-DIR_CLASS_COMPARE := classifications/comparison

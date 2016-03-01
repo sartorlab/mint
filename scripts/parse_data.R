@@ -46,6 +46,8 @@ for(i in 1:nrow(sample_annots)) {
 	  platform = "pulldown"
 	} else if ( bis == 1 ) {
 	  platform = "bisulfite"
+	} else {
+		stop('Error: For each row, either the pulldown or the bisulfite must be 1.')
 	}
 
 	if( mc == 1 && hmc == 1 ) {
@@ -54,14 +56,16 @@ for(i in 1:nrow(sample_annots)) {
 	  mark = "mc"
 	} else if ( mc == 0 && hmc == 1 ) {
 	  mark = "hmc"
+	} else {
+		stop('Error: For each row, mc and/or hmc must be 1.')
 	}
 
 	if ( input == 1 ) {
-	  humanPath = c(humanPath, sprintf("projects/%s/%s/raw_fastqs/%s_%s_input_%s.fastq.gz", project, platform, humanID, mark, platform))
-	  humanFile = c(humanFile, sprintf("%s_%s_input_%s.fastq.gz", humanID, mark, platform))
+		humanPath = c(humanPath, sprintf("projects/%s/%s/raw_fastqs/%s_%s_input_%s.fastq.gz", project, platform, humanID, mark, platform))
+		humanFile = c(humanFile, sprintf("%s_%s_input_%s.fastq.gz", humanID, mark, platform))
 	} else {
-	  humanPath = c(humanPath, sprintf("projects/%s/%s/raw_fastqs/%s_%s_%s.fastq.gz", project, platform, humanID, mark, platform))
-	  humanFile = c(humanFile, sprintf("%s_%s_%s.fastq.gz", humanID, mark, platform))
+		humanPath = c(humanPath, sprintf("projects/%s/%s/raw_fastqs/%s_%s_%s.fastq.gz", project, platform, humanID, mark, platform))
+		humanFile = c(humanFile, sprintf("%s_%s_%s.fastq.gz", humanID, mark, platform))
 	}
 }
 
@@ -99,6 +103,7 @@ for(i in 1:nrow(sample_annots)) {
 
 if(nrow(comparison_annots) > 0) {
 
+	# Keep track of the compares for the master make rules
 	pulldown_compares = c()
 	bisulfite_compares = c()
 

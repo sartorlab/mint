@@ -1,150 +1,43 @@
 SHELL=/bin/bash
+
+################################################################################
+# Directories
+
+# track hub directory
+DIR_TRACK := $(PROJECT)_hub/$(GENOME)
+
+# bisulfite_align directories
+DIR_BIS_BISMARK := bisulfite/bismark
+DIR_BIS_TRIM_FASTQS := bisulfite/trim_fastqs
+DIR_BIS_TRIM_FASTQCS := bisulfite/trim_fastqcs
+DIR_BIS_RAW_FASTQCS := bisulfite/raw_fastqcs
+DIR_BIS_RAW_FASTQS := bisulfite/raw_fastqs
+
+# bisulfite_compare directories
+DIR_BIS_MSIG := bisulfite/methylsig_calls
+
+# pulldown_align directories
+DIR_PULL_COVERAGES := pulldown/pulldown_coverages
+DIR_PULL_BOWTIE2 := pulldown/bowtie2_bams
+DIR_PULL_TRIM_FASTQS := pulldown/trim_fastqs
+DIR_PULL_TRIM_FASTQCS := pulldown/trim_fastqcs
+DIR_PULL_RAW_FASTQCS := pulldown/raw_fastqcs
+DIR_PULL_RAW_FASTQS := pulldown/raw_fastqs
+
+# pulldown_sample directories
+DIR_PULL_MACS := pulldown/macs2_peaks
+
+# pulldown_compare directories
+DIR_PULL_PEPR := pulldown/pepr_peaks
+
+# classification directories
+DIR_CLASS_SIMPLE := classifications/simple
+DIR_CLASS_SAMPLE := classifications/sample
+DIR_CLASS_COMPARE := classifications/comparison
+
+################################################################################
+# Includes
 include config.mk
-include variables.mk
 
 ################################################################################
-# Bisulfite alignment workflow
-
-BISULFITE_ALIGN_FILES := 	$(patsubst %.fastq.gz,$(DIR_TRACK)/%_simple_classification.bb,$(BISULFITE_FASTQ_FILES)) \
-							$(patsubst %.fastq.gz,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(BISULFITE_FASTQ_FILES)) \
-							$(patsubst %.fastq.gz,$(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw,$(BISULFITE_FASTQ_FILES)) \
-							$(patsubst %.fastq.gz,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt,$(BISULFITE_FASTQ_FILES)) \
-							$(patsubst %.fastq.gz,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt,$(BISULFITE_FASTQ_FILES)) \
-							$(patsubst %.fastq.gz,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz,$(BISULFITE_FASTQ_FILES)) \
-							$(patsubst %.fastq.gz,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt,$(BISULFITE_FASTQ_FILES)) \
-							$(patsubst %.fastq.gz,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam,$(BISULFITE_FASTQ_FILES)) \
-							$(patsubst %.fastq.gz,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip,$(BISULFITE_FASTQ_FILES)) \
-							$(patsubst %.fastq.gz,$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE_FASTQ_FILES)) \
-							$(patsubst %.fastq.gz,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_FASTQ_FILES))
-
-.PHONY : bisulfite_align
-bisulfite_align : $(BISULFITE_ALIGN_FILES)
-
-# Rule for UCSC bigBed track of simple classifiation
-$(DIR_TRACK)/%_bisulfite_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed
-	bedToBigBed $< $(CHROM_PATH) $@
-
-# Simple classification for percent methylation
-$(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed.fq.gz_bismark_bt2.bedGraph.gz
-	Rscript ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
-
-# Rules for UCSC bigWig track
-$(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph
-	bedGraphToBigWig $< $(CHROM_PATH) $@
-
-.INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph
-$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz
-	gunzip -c $< | awk 'NR > 1 {print $$0}' | sort -T . -k1,1 -k2,2n > $@
-
-# Rule for methylSig input
-$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	awk -f ../../scripts/to_methylSig.awk $< | sort -T . -k2,2 -k3,3n > $@
-
-# Rule for annotatr input
-$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	awk -f ../../scripts/to_annotatr.awk $< | sort -T . -k1,1 -k2,2n > $@
-
-# Rule for bismark methylation extractor
-$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam
-	cd $(DIR_BIS_BISMARK);\
-	bismark_methylation_extractor $(OPTS_EXTRACTOR) $(<F)
-
-# Rule for bismark alignment
-$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_BIS_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip
-	bismark $(OPTS_BISMARK) --output_dir $(@D) --temp_dir $(@D) $<
-	samtools sort $@ $(patsubst %.bam,%,$@)
-	samtools index $@
-
-# Rule for FastQC on trimmed
-$(DIR_BIS_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $<
-
-# Rule for trim_galore
-$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip
-	trim_galore $(OPTS_TRIMGALORE_BISULFITE) --output_dir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
-
-# Rule for FastQC on raw
-$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip :
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
-
-################################################################################
-# Pulldown alignment workflow
-
-PULLDOWN_ALIGN_FILES := $(patsubst %.fastq.gz,$(DIR_TRACK)/%_coverage.bw,$(PULLDOWN_FASTQ_FILES)) \
-						$(patsubst %.fastq.gz,$(DIR_PULL_COVERAGES)/%_coverage.bdg,$(PULLDOWN_FASTQ_FILES)) \
-						$(patsubst %.fastq.gz,$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam,$(PULLDOWN_FASTQ_FILES)) \
-						$(patsubst %.fastq.gz,$(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip,$(PULLDOWN_FASTQ_FILES)) \
-						$(patsubst %.fastq.gz,$(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz,$(PULLDOWN_FASTQ_FILES)) \
-						$(patsubst %.fastq.gz,$(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip,$(PULLDOWN_FASTQ_FILES))
-
-.PHONY : pulldown_align
-pulldown_align : $(PULLDOWN_ALIGN_FILES)
-
-# Rule for UCSC bigWig track
-$(DIR_TRACK)/%_coverage.bw : $(DIR_PULL_COVERAGES)/%_coverage.bdg
-	bedGraphToBigWig $< $(CHROM_PATH) $@
-
-# Rule for coverage bedGraph
-$(DIR_PULL_COVERAGES)/%_coverage.bdg : $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam
-	bedtools genomecov -bg -g $(CHROM_PATH) -ibam $< | sort -T . -k1,1 -k2,2n > $@
-
-# Rule for bowtie2 alignment
-$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip
-	bowtie2 $(OPTS_BOWTIE2) $< | samtools view -bS - > $@
-	samtools sort $@ $(patsubst %.bam,%,$@)
-	samtools index $@
-
-# Rule for FastQC on trimmed
-$(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $<
-
-# Rule for trim_galore
-$(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip
-	trim_galore $(OPTS_TRIMGALORE_PULLDOWN) --output_dir $(@D) $(DIR_PULL_RAW_FASTQS)/$*.fastq.gz
-
-# Rule for FastQC on raw
-$(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip :
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $(DIR_PULL_RAW_FASTQS)/$*.fastq.gz
-
-################################################################################
-# Pulldown sample workflow
-
-PULLDOWN_MACS_FILES :=	$(patsubst %.fastq.gz,$(DIR_TRACK)/%_simple_classification.bb,$(PULLDOWN_SAMPLE_FILES)) \
-						$(patsubst %.fastq.gz,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(PULLDOWN_SAMPLE_FILES)) \
-						$(patsubst %.fastq.gz,$(DIR_TRACK)/%_macs2_peaks.bb,$(PULLDOWN_SAMPLE_FILES)) \
-						$(patsubst %.fastq.gz,$(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak,$(PULLDOWN_SAMPLE_FILES))
-
-.PHONY : pulldown_sample
-pulldown_sample : pulldown_align $(PULLDOWN_MACS_FILES)
-
-# Rule for UCSC bigBed track of simple classifiation
-$(DIR_TRACK)/%_pulldown_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_pulldown_simple_classification.bed
-	bedToBigBed $< $(CHROM_PATH) $@
-
-# Simple classification
-$(DIR_CLASS_SIMPLE)/%_pulldown_simple_classification.bed : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
-	Rscript ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
-
-# Rule for UCSC bigBed track
-$(DIR_TRACK)/%_macs2_peaks.bb : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
-	bedToBigBed -type=bed6+4 -as=narrowPeak.as $^ $(CHROM_PATH) $@
-
-# Rule for macs2 peak fix
-.INTERMEDIATE : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
-$(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak : $(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak
-	awk -f ../../scripts/fix_narrowPeak.awk $^ | sort -T . -k1,1 -k2,2n > $@
-
-# Rule for macs2 peaks
-$(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak : 	$(DIR_PULL_BOWTIE2)/%_pulldown_trimmed.fq.gz_aligned.bam \
-														$(DIR_PULL_BOWTIE2)/%_input_pulldown_trimmed.fq.gz_aligned.bam
-	macs2 callpeak -t $(word 1, $^) -c $(word 2, $^) -f BAM -g hs --name $(patsubst %_peaks.narrowPeak,%,$(@F)) --outdir $(@D)
-
-################################################################################
-
-.PHONY : clean
-clean :
-	rm -f $(BISULFITE_ALIGN_FILES)
-	rm -f $(PULLDOWN_ALIGN_FILES)
-
-################################################################################
-# Begin rules generated from scripts/parse_data.R
+# Begin rules generated from init.R
