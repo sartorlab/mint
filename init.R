@@ -254,7 +254,7 @@ $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt : $(D
 
 # Rule for bismark methylation extractor
 $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam
-	cd $(DIR_BIS_BISMARK);\
+	cd $(DIR_BIS_BISMARK); \\
 	bismark_methylation_extractor $(OPTS_EXTRACTOR) $(<F)
 
 # Rule for bismark alignment
