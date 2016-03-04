@@ -451,35 +451,35 @@ cat(pulldown_sample_q, file=sprintf('projects/%s/pulldown_sample.q', project), s
 
 make_rule_class_bis_module = '
 # Intermediates for the bisulfite piece
-.PRECIOUS : $(DIR_CLASS_SAMPLE)/%_bisulfite_highmeth.txt $(DIR_CLASS_SAMPLE)/%_bisulfite_lowmeth.txt $(DIR_CLASS_SAMPLE)/%_bisulfite_nometh_signal.txt $(DIR_CLASS_SAMPLE)/%_bisulfite_nometh_nosignal.txt
-$(DIR_CLASS_SAMPLE)/%_bisulfite_highmeth.txt $(DIR_CLASS_SAMPLE)/%_bisulfite_lowmeth.txt $(DIR_CLASS_SAMPLE)/%_bisulfite_nometh_signal.txt $(DIR_CLASS_SAMPLE)/%_bisulfite_nometh_nosignal.txt : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed.fq.gz_bismark_bt2.CpG_report.txt
+.PRECIOUS : $(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal.txt
+$(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal.txt : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed.fq.gz_bismark_bt2.CpG_report.txt
 	awk -f ../../scripts/bisulfite_sample_module.awk $<
 '
 
 make_rule_class_pull_module = '
 # Intermediates for the pulldown piece
-.PRECIOUS : $(DIR_CLASS_SAMPLE)/%_pulldown_peak.txt $(DIR_CLASS_SAMPLE)/%_pulldown_nopeak_signal.txt $(DIR_CLASS_SAMPLE)/%_pulldown_nopeak_nosignal.txt $(DIR_CLASS_SAMPLE)/%_pulldown_nopeak.txt $(DIR_CLASS_SAMPLE)/%_pulldown_signal.txt $(DIR_CLASS_SAMPLE)/%_pulldown_nosignal.txt
-$(DIR_CLASS_SAMPLE)/%_pulldown_peak.txt : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
+.PRECIOUS : $(DIR_PULL_MACS)/%_pulldown_peak.txt $(DIR_PULL_MACS)/%_pulldown_nopeak_signal.txt $(DIR_PULL_MACS)/%_pulldown_nopeak_nosignal.txt $(DIR_PULL_MACS)/%_pulldown_nopeak.txt $(DIR_PULL_MACS)/%_pulldown_signal.txt $(DIR_PULL_MACS)/%_pulldown_nosignal.txt
+$(DIR_PULL_MACS)/%_pulldown_peak.txt : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
 	awk -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
-$(DIR_CLASS_SAMPLE)/%_pulldown_nopeak_signal.txt : $(DIR_CLASS_SAMPLE)/%_pulldown_nopeak.txt $(DIR_CLASS_SAMPLE)/%_pulldown_signal.txt
+$(DIR_PULL_MACS)/%_pulldown_nopeak_signal.txt : $(DIR_PULL_MACS)/%_pulldown_nopeak.txt $(DIR_PULL_MACS)/%_pulldown_signal.txt
 	bedtools intersect -a $(word 1, $^) -b $(word 2, $^) \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
-$(DIR_CLASS_SAMPLE)/%_pulldown_nopeak_nosignal.txt : $(DIR_CLASS_SAMPLE)/%_pulldown_nopeak.txt $(DIR_CLASS_SAMPLE)/%_pulldown_nosignal.txt
+$(DIR_PULL_MACS)/%_pulldown_nopeak_nosignal.txt : $(DIR_PULL_MACS)/%_pulldown_nopeak.txt $(DIR_PULL_MACS)/%_pulldown_nosignal.txt
 	bedtools intersect -a $(word 1, $^) -b $(word 2, $^) \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
-$(DIR_CLASS_SAMPLE)/%_pulldown_nopeak.txt : $(DIR_CLASS_SAMPLE)/%_pulldown_peak.txt
+$(DIR_PULL_MACS)/%_pulldown_nopeak.txt : $(DIR_PULL_MACS)/%_pulldown_peak.txt
 	bedtools complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
-$(DIR_CLASS_SAMPLE)/%_pulldown_signal.txt : $(DIR_PULL_COVERAGES)/%_input_pulldown_coverage.bdg
+$(DIR_PULL_MACS)/%_pulldown_signal.txt : $(DIR_PULL_COVERAGES)/%_input_pulldown_coverage.bdg
 	bedtools merge -d 20 -i $< \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
-$(DIR_CLASS_SAMPLE)/%_pulldown_nosignal.txt : $(DIR_CLASS_SAMPLE)/%_pulldown_signal.txt
+$(DIR_PULL_MACS)/%_pulldown_nosignal.txt : $(DIR_PULL_MACS)/%_pulldown_signal.txt
 	bedtools complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
@@ -494,37 +494,37 @@ cat(make_var_sample_class_prefix, file = file_make, sep = '\n', append = TRUE)
 # The sample class type depends on the type of samples present
 if(bool_bis_samp && bool_pull_samp) {
 	sample_class_type = 'hybrid_sample_classification'
-	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_CLASS_SAMPLE)/%_mc_hmc_bisulfite_highmeth.txt \\
-														$(DIR_CLASS_SAMPLE)/%_mc_hmc_bisulfite_lowmeth.txt \\
-														$(DIR_CLASS_SAMPLE)/%_mc_hmc_bisulfite_nometh_signal.txt \\
-														$(DIR_CLASS_SAMPLE)/%_mc_hmc_bisulfite_nometh_nosignal.txt \\
-														$(DIR_CLASS_SAMPLE)/%_hmc_pulldown_peak.txt \\
-														$(DIR_CLASS_SAMPLE)/%_hmc_pulldown_nopeak_signal.txt \\
-														$(DIR_CLASS_SAMPLE)/%_hmc_pulldown_nopeak_nosignal.txt'
+	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_highmeth.txt \\
+														$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_lowmeth.txt \\
+														$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_signal.txt \\
+														$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_nosignal.txt \\
+														$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt \\
+														$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_signal.txt \\
+														$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt'
 	rule1 = make_rule_class_bis_module
 	rule2 = make_rule_class_pull_module
 	class_script = '../../scripts/classify_hybrid_sample.sh'
 } else if (bool_bis_samp && !bool_pull_samp) {
 	sample_class_type = 'bisulfite_sample_classification'
-	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_CLASS_SAMPLE)/%_mc_bisulfite_highmeth.txt \\
-														$(DIR_CLASS_SAMPLE)/%_mc_bisulfite_lowmeth.txt \\
-														$(DIR_CLASS_SAMPLE)/%_mc_bisulfite_nometh_signal.txt \\
-														$(DIR_CLASS_SAMPLE)/%_mc_bisulfite_nometh_nosignal.txt \\
-														$(DIR_CLASS_SAMPLE)/%_hmc_bisulfite_highmeth.txt \\
-														$(DIR_CLASS_SAMPLE)/%_hmc_bisulfite_lowmeth.txt \\
-														$(DIR_CLASS_SAMPLE)/%_hmc_bisulfite_nometh_signal.txt \\
-														$(DIR_CLASS_SAMPLE)/%_hmc_bisulfite_nometh_nosignal.txt'
+	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_BIS_BISMARK)/%_mc_bisulfite_highmeth.txt \\
+														$(DIR_BIS_BISMARK)/%_mc_bisulfite_lowmeth.txt \\
+														$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_signal.txt \\
+														$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_nosignal.txt \\
+														$(DIR_BIS_BISMARK)/%_hmc_bisulfite_highmeth.txt \\
+														$(DIR_BIS_BISMARK)/%_hmc_bisulfite_lowmeth.txt \\
+														$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_signal.txt \\
+														$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_nosignal.txt'
 	rule1 = make_rule_class_bis_module
 	rule2 = ''
 	class_script = '../../scripts/classify_bisulfite_sample.sh'
 } else {
 	sample_class_type = 'pulldown_sample_classification'
-	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_CLASS_SAMPLE)/%_mc_pulldown_peak.txt \\
-														$(DIR_CLASS_SAMPLE)/%_mc_pulldown_nopeak_signal.txt \\
-														$(DIR_CLASS_SAMPLE)/%_mc_pulldown_nopeak_nosignal.txt \\
-														$(DIR_CLASS_SAMPLE)/%_hmc_pulldown_peak.txt \\
-														$(DIR_CLASS_SAMPLE)/%_hmc_pulldown_nopeak_signal.txt \\
-														$(DIR_CLASS_SAMPLE)/%_hmc_pulldown_nopeak_nosignal.txt'
+	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_PULL_MACS)/%_mc_pulldown_peak.txt \\
+														$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_signal.txt \\
+														$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_nosignal.txt \\
+														$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt \\
+														$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_signal.txt \\
+														$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt'
 	rule1 = make_rule_class_pull_module
 	rule2 = ''
 	class_script = '../../scripts/classify_pulldown_sample.sh'
