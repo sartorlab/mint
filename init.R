@@ -242,7 +242,7 @@ $(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz
 
 .INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph
 $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz
-	gunzip -c $< | awk "NR > 1 {print $$0}" | sort -T . -k1,1 -k2,2n > $@
+	gunzip -c $< | awk \'NR > 1 {print $$0}\' | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for methylSig input
 $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
