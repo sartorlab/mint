@@ -14,10 +14,12 @@ hmcHighMeth=$3
 hmcLowMeth=$4
 hmcNoMethSig=$5
 hmcNoMethNoSig=$6
+ID=`basename $outFile _sample_classification.bed`
 
 # tmp files
-intTmp=classifications/sample/tmpIntersect.txt
-classTmp=classifications/sample/tmpSampleClass.txt
+intTmp=classifications/sample/${ID}_tmpIntersect.txt
+classTmp=classifications/sample/${ID}_tmpSampleClass.txt
+joinTmp=classifications/sample/${ID}_tmpSampleJoin.txt
 
 # Initial intersection
 bedtools multiinter \
