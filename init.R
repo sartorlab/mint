@@ -16,6 +16,8 @@ genome = opt$genome
 datapath = opt$datapath
 
 file_make = sprintf('projects/%s/makefile', project)
+dir_hub = sprintf('projects/%s/%s_hub', project, project)
+dir_track = sprintf('%s/%s', dir_hub, genome)
 
 ################################################################################
 ################################################################################
@@ -208,6 +210,71 @@ if(bool_pull_samp) {
 ################################################################################
 
 ################################################################################
+# Track hub files
+# project_hub/genomes.txt
+# project_hub/hub.txt
+# project_hub/project_name_hub.html
+
+# The trackDb.txt file is used no matter the situation
+# Make sure we start fresh each time
+hubtrackdbfile = sprintf('%s/trackDb.txt', dir_track, genome)
+cat('', file=hubtrackdbfile)
+
+# genomes.txt
+  genomes = c(
+    sprintf('genome %s', genome),
+    sprintf('trackDb %s/trackDb.txt', genome))
+  cat(genomes, file=sprintf('%s/genomes.txt', dir_hub), sep='\n')
+# hub.txt
+  hub = c(
+    sprintf('hub %s_hub', project),
+    sprintf('shortLabel %s', project),
+    sprintf('longLabel %s', project),
+    'genomesFile genomes.txt',
+    'email rcavalca@umich.edu',
+    sprintf('descriptionUrl %s_hub.html', project))
+  cat(hub, file=sprintf('%s/hub.txt', dir_hub), sep='\n')
+# project_name_hub.html
+# TODO: Document what's in the hub!
+  cat(' ', file=sprintf('%s/%s_hub.html',dir_hub, project))
+
+priority = 1
+# superTracks
+if(bool_bis_comp || bool_pull_comp) {
+	for(comparison in unique(comparisons$humanID)) {
+		trackEntry = c(
+			sprintf('track %s_group_comparison', comparison),
+			'superTrack on show',
+			sprintf('group %s_group_comparison', comparison),
+			sprintf('shortLabel %s comparison', comparison),
+			sprintf('longLabel %s comparison', comparison),
+			sprintf('priority %s', priority),
+			' ')
+		cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+		priority = priority + 1
+	}
+}
+
+if(bool_bis_samp || bool_pull_samp) {
+	for(sample in sort(unique(samples$humanID))) {
+		trackEntry = c(
+			sprintf('track %s_sample', sample),
+			'superTrack on show',
+			sprintf('group %s_sample', sample),
+			sprintf('shortLabel %s_sample', sample),
+			sprintf('longLabel Sample-level tracks for %s', sample),
+			sprintf('priority %s', priority),
+			' ')
+		cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+		priority = priority + 1
+	}
+}
+
+################################################################################
+################################################################################
+################################################################################
+
+################################################################################
 # MAKEFILE: bisulfite_align rules
 
 if(bool_bis_samp) {
@@ -305,6 +372,36 @@ bisulfite_align_q = c(
 	'make -j 2 bisulfite_align')
 cat(bisulfite_align_q, file=sprintf('projects/%s/bisulfite_align.q', project), sep='\n')
 
+for(i in 1:nrow(bisulfite_samples)) {
+	# trackDb.txt entry for Bismark methylation calls
+	trackEntry = c(
+	  sprintf('track %s_pct_meth', bisulfite_samples[i,'fullHumanID']),
+	  sprintf('parent %s_sample', bisulfite_samples[i,'humanID']),
+	  sprintf('bigDataUrl %s_trimmed.fq.gz_bismark_bt2.bw', bisulfite_samples[i,'fullHumanID']),
+	  sprintf('shortLabel %s_pct_meth', bisulfite_samples[i,'fullHumanID']),
+	  sprintf('longLabel %s_percent_methylation', bisulfite_samples[i,'fullHumanID']),
+	  'visibility full',
+	  'viewLimits 0:100',
+	  'type bigWig',
+	  'priority 1.4',
+	  ' ')
+	cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+
+	# trackDb.txt entry for bisulfite simple classification results
+	trackEntry = c(
+	  sprintf('track %s_simple_class', bisulfite_samples[i,'fullHumanID']),
+	  sprintf('parent %s_sample', bisulfite_samples[i,'humanID']),
+	  sprintf('bigDataUrl %s_simple_classification.bb', bisulfite_samples[i,'fullHumanID']),
+	  sprintf('shortLabel %s_simp_class', bisulfite_samples[i,'fullHumanID']),
+	  sprintf('longLabel %s_simple_classification', bisulfite_samples[i,'fullHumanID']),
+	  'visibility pack',
+	  'itemRgb on',
+	  'type bigBed 9 .',
+	  'priority 1.2',
+	  ' ')
+	cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+}
+
 }
 
 ################################################################################
@@ -387,6 +484,23 @@ pulldown_align_q = c(
 	'make -j 4 pulldown_align')
 cat(pulldown_align_q, file=sprintf('projects/%s/pulldown_align.q', project), sep='\n')
 
+for(i in 1:nrow(pulldown_samples)) {
+	# trackDb.txt entry for chip/input pulldown coverages
+	trackEntry = c(
+	  sprintf('track %s_cov', pulldown_samples[i,'fullHumanID']),
+	  sprintf('parent %s_sample', pulldown_samples[i,'humanID']),
+	  sprintf('bigDataUrl %s_coverage.bw', pulldown_samples[i,'fullHumanID']),
+	  sprintf('shortLabel %s_cov', pulldown_samples[i,'fullHumanID']),
+	  sprintf('longLabel %s_coverage', pulldown_samples[i,'fullHumanID']),
+	  'visibility full',
+	  'autoScale on',
+	  'type bigWig',
+	  'priority 1.6',
+	  ' ')
+	cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+
+}
+
 ################################################################################
 
 ################################################################################
@@ -453,6 +567,37 @@ pulldown_sample_q = c(
 	sprintf('cd ~/latte/mint/projects/%s/',project),
 	'make -j 4 pulldown_sample')
 cat(pulldown_sample_q, file=sprintf('projects/%s/pulldown_sample.q', project), sep='\n')
+
+for(i in 1:nrow(pulldown_samples_noinput)) {
+	# trackDb.txt entry for MACS2 output
+	trackEntry = c(
+	  sprintf('track %s_peaks', pulldown_samples_noinput[i,'fullHumanID']),
+	  sprintf('parent %s_sample', pulldown_samples_noinput[i,'humanID']),
+	  sprintf('bigDataUrl %s_macs2_peaks.bb', pulldown_samples_noinput[i,'fullHumanID']),
+	  sprintf('shortLabel %s_peaks', pulldown_samples_noinput[i,'fullHumanID']),
+	  sprintf('longLabel %s_macs2_peaks', pulldown_samples_noinput[i,'fullHumanID']),
+	  'visibility dense',
+	  'type bigBed',
+	  'priority 1.5',
+	  ' ')
+	cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+
+	# trackDb.txt entry for pulldown simple classification output
+	trackEntry = c(
+	  sprintf('track %s_simple_class', pulldown_samples_noinput[i,'fullHumanID']),
+	  sprintf('parent %s_sample', pulldown_samples_noinput[i,'humanID']),
+	  sprintf('bigDataUrl %s_simple_classification.bb', pulldown_samples_noinput[i,'fullHumanID']),
+	  sprintf('shortLabel %s_simp_class', pulldown_samples_noinput[i,'fullHumanID']),
+	  sprintf('longLabel %s_simple_classification', pulldown_samples_noinput[i,'fullHumanID']),
+	  'visibility pack',
+	  'itemRgb on',
+	  'type bigBed 9 .',
+	  'priority 1.2',
+	  ' ')
+	cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+}
+
+
 
 }
 
@@ -601,6 +746,21 @@ pulldown_sample_q = c(
 	'make -j 4 sample_classification')
 cat(pulldown_sample_q, file=sprintf('projects/%s/classify_sample.q', project), sep='\n')
 
+for(sample in unique(samples$humanID))
+# trackDb.txt entry for hybrid sample classification
+trackEntry = c(
+  sprintf('track %s_sample_classification', sample),
+  sprintf('parent %s_sample', sample),
+  sprintf('bigDataUrl %s_sample_classification.bb', sample),
+  sprintf('shortLabel %s_sample_class', sample),
+  sprintf('longLabel %s_sample_classification', sample),
+  'visibility pack',
+  'itemRgb on',
+  'type bigBed 9 .',
+  'priority 1.1',
+  ' ')
+cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+
 }
 
 ################################################################################
@@ -713,6 +873,22 @@ if(bool_bis_comp) {
 
 		# Track the number of bisulfite compares
 		bisulfite_compares = c(bisulfite_compares, sprintf('bisulfite_compare_%s', i))
+
+		# trackDb.txt entry for methylSig result
+		trackEntry = c(
+		  sprintf('track %s_DM', fullHumanID),
+		  sprintf('parent %s_group_comparison', humanID),
+		  sprintf('bigDataUrl %s_methylSig.bw', fullHumanID),
+		  sprintf('shortLabel %s_DM', fullHumanID),
+		  sprintf('longLabel %s_DM_methylSig', fullHumanID),
+		  'visibility full',
+		  'autoScale on',
+		  'alwaysZero on',
+		  'at y=0.0 on',
+		  'type bigWig',
+		  'priority 1.2',
+		  ' ')
+		cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 	}
 
 	############################################################################
@@ -874,6 +1050,20 @@ if(bool_pull_comp) {
 
 		# Track the number of pulldown compares
 		pulldown_compares = c(pulldown_compares, sprintf('pulldown_compare_%s', i))
+
+		# trackDb.txt entry for PePr output
+		trackEntry = c(
+		  sprintf('track %s_DM', fullHumanID),
+		  sprintf('parent %s_group_comparison', humanID),
+		  sprintf('bigDataUrl %s_PePr_peaks.bb', fullHumanID),
+		  sprintf('shortLabel %s_DM', fullHumanID),
+		  sprintf('longLabel %s_DM_PePr_peaks', fullHumanID),
+		  'visibility pack',
+		  'itemRgb on',
+		  'type bigBed 9 .',
+		  'priority 1.3',
+		  ' ')
+		cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 	}
 
 	############################################################################
@@ -1002,7 +1192,7 @@ if(bool_bis_comp && bool_pull_comp) {
 	# NOTE: THIS IS NOT EXPLICITLY SUPPORTED RIGHT NOW
 	############################################################
 	compare_class_type = 'bisulfite_compare_classification'
-	compare_class_target = '$(DIR_CLASS_compare)/%_compare_classification.bed : 	$(DIR_BIS_MSIG)/%_mc_bisulfite_DMup.txt \\
+	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed : 	$(DIR_BIS_MSIG)/%_mc_bisulfite_DMup.txt \\
 														$(DIR_BIS_MSIG)/%_mc_bisulfite_DMdown.txt \\
 														$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_signal.txt \\
 														$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_nosignal.txt \\
@@ -1015,7 +1205,7 @@ if(bool_bis_comp && bool_pull_comp) {
 	class_script = '../../scripts/classify_compare.sh'
 } else if (!bool_bis_comp && bool_pull_comp) {
 	compare_class_type = 'pulldown_compare_classification'
-	compare_class_target = '$(DIR_CLASS_compare)/%_compare_classification.bed : 	$(DIR_PULL_PEPR)/%_mc_pulldown_DMup.txt \\
+	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed : 	$(DIR_PULL_PEPR)/%_mc_pulldown_DMup.txt \\
 														$(DIR_PULL_PEPR)/%_mc_pulldown_DMdown.txt \\
 														$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_signal.txt \\
 														$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_nosignal.txt \\
@@ -1076,5 +1266,21 @@ bisulfite_compare_q = c(
 	sprintf('cd ~/latte/mint/projects/%s/',project),
 	'make -j 4 compare_classification')
 cat(bisulfite_compare_q, file=sprintf('projects/%s/compare_classification.q', project), sep='\n')
+
+for(comparison in unique(comparisons$humanID)) {
+	# trackDb.txt entry for comparison classification
+	trackEntry = c(
+	  sprintf('track %s_compare_classification', comparison),
+	  sprintf('parent %s_group_comparison', comparison),
+	  sprintf('bigDataUrl %s_compare_classification.bb', comparison),
+	  sprintf('shortLabel %s_comp_class', comparison),
+	  sprintf('longLabel %s_compare_classification', comparison),
+	  'visibility pack',
+	  'itemRgb on',
+	  'type bigBed 9 .',
+	  'priority 1.1',
+	  ' ')
+	cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+}
 
 }
