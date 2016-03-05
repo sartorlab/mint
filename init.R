@@ -562,7 +562,7 @@ $(DIR_TRACK)/%%_sample_classification.bb : $(DIR_CLASS_SAMPLE)/%%_sample_classif
 # Classification BED
 .PRECIOUS : $(DIR_CLASS_SAMPLE)/%%_sample_classification.bed
 %s
-	bash %s $^ $@
+	bash %s $(CHROM_PATH) $@ $^
 	rm -f $^
 
 %s
