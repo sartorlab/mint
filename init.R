@@ -472,7 +472,8 @@ $(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowme
 
 make_rule_sample_class_pull_module = '
 # Intermediates for the pulldown piece
-.PRECIOUS : $(DIR_PULL_MACS)/%_pulldown_peak.txt $(DIR_PULL_MACS)/%_pulldown_nopeak_signal.txt $(DIR_PULL_MACS)/%_pulldown_nopeak_nosignal.txt $(DIR_PULL_MACS)/%_pulldown_nopeak.txt $(DIR_PULL_MACS)/%_pulldown_signal.txt $(DIR_PULL_MACS)/%_pulldown_nosignal.txt
+.PRECIOUS : $(DIR_PULL_MACS)/%_pulldown_peak.txt $(DIR_PULL_MACS)/%_pulldown_nopeak_signal.txt $(DIR_PULL_MACS)/%_pulldown_nopeak_nosignal.txt
+
 $(DIR_PULL_MACS)/%_pulldown_peak.txt : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
 	awk -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
 	| sort -T . -k1,1 -k2,2n \\
@@ -485,12 +486,18 @@ $(DIR_PULL_MACS)/%_pulldown_nopeak_nosignal.txt : $(DIR_PULL_MACS)/%_pulldown_no
 	bedtools intersect -a $(word 1, $^) -b $(word 2, $^) \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
+
+.INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nopeak.txt
 $(DIR_PULL_MACS)/%_pulldown_nopeak.txt : $(DIR_PULL_MACS)/%_pulldown_peak.txt
 	bedtools complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
+
+.INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_signal.txt
 $(DIR_PULL_MACS)/%_pulldown_signal.txt : $(DIR_PULL_COVERAGES)/%_input_pulldown_merged_coverage.bdg
 	cp $< $@
+
+.INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nosignal.txt
 $(DIR_PULL_MACS)/%_pulldown_nosignal.txt : $(DIR_PULL_MACS)/%_pulldown_signal.txt
 	bedtools complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
 	| sort -T . -k1,1 -k2,2n \\
