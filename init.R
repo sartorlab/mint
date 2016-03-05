@@ -924,7 +924,7 @@ $(DIR_BIS_MSIG)/%_bisulfite_noDM_signal.txt : $(DIR_BIS_MSIG)/%_bisulfite_methyl
 	awk -v OFS="\\t" \'NR > 1 && $$5 > 0.05 { print $$1, $$2, $$3 }\' $< | sort -T . -k1,1 -k2,2n > $@
 
 $(DIR_BIS_MSIG)/%_bisulfite_noDM_nosignal.txt : $(DIR_BIS_MSIG)/%_bisulfite_methylSig.txt
-	bedtools complement -i <(awk -v OFS="\\t" \'NR > 1 { print $1, $2, $3 } $<) -g <(sort -T . -k1,1 $(CHROM_PATH)) | sort -T . -k1,1 -k2,2n > $@
+	bedtools complement -i <(awk -v OFS="\\t" \'NR > 1 { print $$1, $$2, $$3 } $<) -g <(sort -T . -k1,1 $(CHROM_PATH)) | sort -T . -k1,1 -k2,2n > $@
 '
 
 make_rule_compare_class_pull_module = '
