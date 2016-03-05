@@ -6,13 +6,12 @@ set -o pipefail
 # Paths from parameters
 CHROM_PATH=$1
 outFile=$2
-highMeth=$3
-lowMeth=$4
-noMethSig=$5
-noMethNoSig=$6
-peak=$7
-noPeakSig=$8
-noPeakNoSig=$9
+mcPeak=$3
+mcNoPeakSig=$4
+mcNoPeakNoSig=$5
+hmcPeak=$6
+hmcNoPeakSig=$7
+hmcNoPeakNoSig=$8
 
 # tmp files
 intTmp=classifications/sample/tmpIntersect.txt
@@ -22,17 +21,17 @@ joinTmp=classifications/sample/tmpSampleJoin.txt
 # Initial intersection
 bedtools multiinter \
 	-header \
-	-names highMeth lowMeth noMethSig noMethNoSig peak noPeakSig noPeakNoSig \
+	-names mcPeak mcNoPeakSig mcNoPeakNoSig hmcPeak hmcNoPeakSig hmcNoPeakNoSig \
 	-empty \
-	-i ${highMeth} ${lowMeth} ${noMethSig} ${noMethNoSig} ${peak} ${noPeakSig} ${noPeakNoSig} \
+	-i ${mcPeak} ${mcNoPeakSig} ${mcNoPeakNoSig} ${hmcPeak} ${hmcNoPeakSig} ${hmcNoPeakNoSig} \
 	-g ${CHROM_PATH} \
 > ${intTmp}
 
 # Encode each region with the appropriate classification
-# Columns 6-12 are the binary columns that should be operated on
+# Columns 6-11 are the binary columns that should be operated on
 awk -v OFS="\t" 'NR > 1 { \
-	group1 = ($6 * 3) + ($7 * 5) + ($8 * 7) + ($9 * 11); \
-	group2 = ($10 * 2) + ($11 * 4) + ($12 * 6); \
+	group1 = ($6 * 3) + ($7 * 5) + ($8 * 7); \
+	group2 = ($9 * 2) + ($10 * 4) + ($11 * 6); \
 	if (group1 * group2 > 0) print $1, $2, $3, group1, group2, group1 * group2; \
 }' ${intTmp} > ${classTmp}
 
@@ -41,7 +40,7 @@ awk -v OFS="\t" 'NR > 1 { \
 join \
 	-1 2 \
 	-2 6 \
-	<(sort -T . -k2,2n ../../scripts/class_table_hybrid_sample.txt) \
+	<(sort -T . -k2,2n ../../scripts/class_table_pulldown_sample.txt) \
 	<(sort -T . -k6,6n ${classTmp}) \
 > ${joinTmp}
 

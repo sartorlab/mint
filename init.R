@@ -81,6 +81,11 @@ bool_pull_samp = nrow(pulldown_samples) > 0
 bool_bis_comp = nrow(bisulfite_comparisons) > 0
 bool_pull_comp = nrow(pulldown_comparisons) > 0
 
+# XXX: Error for pure bisulfite setup. Will eventually support this.
+if (bool_bis_samp && !bool_pull_samp) {
+	stop('Error: Pure bisulfite experimental setups are not currently supported.')
+}
+
 # NOTE: ADD ERROR CHECKING
 # 1. Are there input samples for pulldowns?
 # 2. If there are comparisons, do the group numbers correspond to the groups assigned to the samples?
@@ -449,6 +454,8 @@ cat(pulldown_sample_q, file=sprintf('projects/%s/pulldown_sample.q', project), s
 ################################################################################
 # MAKEFILE: sample_classification rules
 
+if(bool_bis_samp || bool_pull_samp) {
+
 make_rule_class_bis_module = '
 # Intermediates for the bisulfite piece
 .PRECIOUS : $(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal.txt
@@ -505,6 +512,9 @@ if(bool_bis_samp && bool_pull_samp) {
 	rule2 = make_rule_class_pull_module
 	class_script = '../../scripts/classify_hybrid_sample.sh'
 } else if (bool_bis_samp && !bool_pull_samp) {
+	############################################################
+	# NOTE: THIS IS NOT EXPLICITLY SUPPORTED RIGHT NOW
+	############################################################
 	sample_class_type = 'bisulfite_sample_classification'
 	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_BIS_BISMARK)/%_mc_bisulfite_highmeth.txt \\
 														$(DIR_BIS_BISMARK)/%_mc_bisulfite_lowmeth.txt \\
@@ -559,6 +569,8 @@ $(DIR_TRACK)/%%_sample_classification.bb : $(DIR_CLASS_SAMPLE)/%%_sample_classif
 %s',
 	sample_class_type, sample_class_type, sample_class_type, sample_class_target, class_script, rule1, rule2)
 cat(make_rule_class_sample, file = file_make, sep = '\n', append = TRUE)
+
+}
 
 ################################################################################
 
@@ -855,4 +867,18 @@ if(bool_pull_comp) {
 		'make -j pulldown_compare')
 	cat(pulldown_compare_q, file=sprintf('projects/%s/pulldown_compare.q', project), sep='\n')
 
+}
+
+################################################################################
+
+################################################################################
+# MAKEFILE: compare_classification rules
+
+if(bool_bis_comp && bool_pull_comp) {
+	# Hybrid comparison classification
+} else if (!bool_bis_comp && bool_pull_comp) {
+	# Pulldown comparison classification
+} else if (bool_bis_comp && !bool_pull_comp) {
+	# Bisulfite comparison classification
+	# NOTE: NOT CURRENTLY SUPPORTED
 }
