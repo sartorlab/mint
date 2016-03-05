@@ -1,0 +1,16 @@
+hyper_mc_hyper_hmc	6	102,0,204
+hypo_mc_hyper_hmc	10	255,255,0
+hyper_hmc	14	0,0,255
+hyper_hmc	22	0,0,255
+hyper_mc_hypo_hmc	12	0,255,0
+hypo_mc_hypo_hmc	20	204,153,255
+hypo_hmc	28	102,102,255
+hypo_hmc	44	102,102,255
+hyper_mc	18	255,0,0
+hypo_mc	30	255,102,102
+no_DM	42	0,0,0
+no_DM	66	0,0,0
+hyper_mc	24	255,0,0
+hypo_mc	40	255,102,102
+no_DM	56	0,0,0
+unclassifiable	88	192,192,192

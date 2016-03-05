@@ -66,6 +66,7 @@ pulldown = subset(annots, pulldown == 1)
 
 # Determine the sample
 samples = subset(annots, !grepl('comparison', sampleID))
+comparisons = subset(annots, grepl('comparison', sampleID))
 
 # Split by sample and comparisons
 bisulfite_samples = subset(bisulfite, !grepl('comparison', sampleID))
@@ -320,6 +321,7 @@ PULLDOWN_ALIGN_PREFIXES := %s', paste(pulldown_samples$fullHumanID, collapse=' '
 
 make_var_pull_align = 'PULLDOWN_ALIGN_PREREQS :=  $(patsubst %,$(DIR_TRACK)/%_coverage.bw,$(PULLDOWN_ALIGN_PREFIXES)) \\
 												$(patsubst %,$(DIR_PULL_COVERAGES)/%_coverage.bdg,$(PULLDOWN_ALIGN_PREFIXES)) \\
+												$(patsubst %,$(DIR_PULL_COVERAGES)/%_merged_coverage.bdg,$(PULLDOWN_ALIGN_PREFIXES)) \\
 												$(patsubst %,$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam,$(PULLDOWN_ALIGN_PREFIXES)) \\
 												$(patsubst %,$(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES)) \\
 												$(patsubst %,$(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz,$(PULLDOWN_ALIGN_PREFIXES)) \\
@@ -337,6 +339,11 @@ $(DIR_TRACK)/%_coverage.bw : $(DIR_PULL_COVERAGES)/%_coverage.bdg
 # Rule for coverage bedGraph
 $(DIR_PULL_COVERAGES)/%_coverage.bdg : $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam
 	bedtools genomecov -bg -g $(CHROM_PATH) -ibam $< | sort -T . -k1,1 -k2,2n > $@
+
+# Rule for merged coverage BED
+# For use in signal BEDs downstream
+$(DIR_PULL_COVERAGES)/%_merged_coverage.bdg : $(DIR_PULL_COVERAGES)/%_coverage.bdg
+	bedtools merge -d 20 $< | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for bowtie2 alignment
 $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip
@@ -456,14 +463,14 @@ cat(pulldown_sample_q, file=sprintf('projects/%s/pulldown_sample.q', project), s
 
 if(bool_bis_samp || bool_pull_samp) {
 
-make_rule_class_bis_module = '
+make_rule_sample_class_bis_module = '
 # Intermediates for the bisulfite piece
 .PRECIOUS : $(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal.txt
 $(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal.txt : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed.fq.gz_bismark_bt2.CpG_report.txt
 	awk -f ../../scripts/bisulfite_sample_module.awk $<
 '
 
-make_rule_class_pull_module = '
+make_rule_sample_class_pull_module = '
 # Intermediates for the pulldown piece
 .PRECIOUS : $(DIR_PULL_MACS)/%_pulldown_peak.txt $(DIR_PULL_MACS)/%_pulldown_nopeak_signal.txt $(DIR_PULL_MACS)/%_pulldown_nopeak_nosignal.txt $(DIR_PULL_MACS)/%_pulldown_nopeak.txt $(DIR_PULL_MACS)/%_pulldown_signal.txt $(DIR_PULL_MACS)/%_pulldown_nosignal.txt
 $(DIR_PULL_MACS)/%_pulldown_peak.txt : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
@@ -482,10 +489,8 @@ $(DIR_PULL_MACS)/%_pulldown_nopeak.txt : $(DIR_PULL_MACS)/%_pulldown_peak.txt
 	bedtools complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
-$(DIR_PULL_MACS)/%_pulldown_signal.txt : $(DIR_PULL_COVERAGES)/%_input_pulldown_coverage.bdg
-	bedtools merge -d 20 -i $< \\
-	| sort -T . -k1,1 -k2,2n \\
-	> $@
+$(DIR_PULL_MACS)/%_pulldown_signal.txt : $(DIR_PULL_COVERAGES)/%_input_pulldown_merged_coverage.bdg
+	cp $< $@
 $(DIR_PULL_MACS)/%_pulldown_nosignal.txt : $(DIR_PULL_MACS)/%_pulldown_signal.txt
 	bedtools complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
 	| sort -T . -k1,1 -k2,2n \\
@@ -508,8 +513,8 @@ if(bool_bis_samp && bool_pull_samp) {
 														$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt \\
 														$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_signal.txt \\
 														$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt'
-	rule1 = make_rule_class_bis_module
-	rule2 = make_rule_class_pull_module
+	rule1 = make_rule_sample_class_bis_module
+	rule2 = make_rule_sample_class_pull_module
 	class_script = '../../scripts/classify_hybrid_sample.sh'
 } else if (bool_bis_samp && !bool_pull_samp) {
 	############################################################
@@ -524,7 +529,7 @@ if(bool_bis_samp && bool_pull_samp) {
 														$(DIR_BIS_BISMARK)/%_hmc_bisulfite_lowmeth.txt \\
 														$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_signal.txt \\
 														$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_nosignal.txt'
-	rule1 = make_rule_class_bis_module
+	rule1 = make_rule_sample_class_bis_module
 	rule2 = ''
 	class_script = '../../scripts/classify_bisulfite_sample.sh'
 } else {
@@ -535,7 +540,7 @@ if(bool_bis_samp && bool_pull_samp) {
 														$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt \\
 														$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_signal.txt \\
 														$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt'
-	rule1 = make_rule_class_pull_module
+	rule1 = make_rule_sample_class_pull_module
 	rule2 = ''
 	class_script = '../../scripts/classify_pulldown_sample.sh'
 }
@@ -810,6 +815,8 @@ if(bool_pull_comp) {
 		var_chip2 = paste(sprintf('../bowtie2_bams/%s_trimmed.fq.gz_aligned.bam', groupB$fullHumanID), sep='', collapse=',')
 
 		# For the prerequisites in the make rule
+		var_merged_input1_pre = paste(sprintf('$(DIR_PULL_COVERAGES)/%s_merged_coverage.bdg', inputGroupA$fullHumanID), sep='', collapse=' ')
+		var_merged_input2_pre = paste(sprintf('$(DIR_PULL_COVERAGES)/%s_merged_coverage.bdg', inputGroupB$fullHumanID), sep='', collapse=' ')
 		var_input1_pre = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', inputGroupA$fullHumanID), sep='', collapse=' ')
 		var_input2_pre = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', inputGroupB$fullHumanID), sep='', collapse=' ')
 		var_chip1_pre = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', groupA$fullHumanID), sep='', collapse=' ')
@@ -817,6 +824,7 @@ if(bool_pull_comp) {
 		var_name = fullHumanID
 
 		# Targets
+		input_signal = sprintf('$(DIR_PULL_PEPR)/%s_merged_signal.bed', var_name)
 		up_bed = sprintf('$(DIR_PULL_PEPR)/%s__PePr_up_peaks.bed', var_name)
 		down_bed = sprintf('$(DIR_PULL_PEPR)/%s__PePr_down_peaks.bed', var_name)
 		combined_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_combined.bed', var_name)
@@ -829,7 +837,7 @@ if(bool_pull_comp) {
 		make_var_pull_compare = c(
 			'################################################################################',
 			'# Workflow for pulldown_compare',
-			sprintf('PULLDOWN_COMPARE_%s_PREREQS := %s %s', i, up_bed, bigbed),
+			sprintf('PULLDOWN_COMPARE_%s_PREREQS := %s %s %s', i, up_bed, bigbed, input_signal),
 			sprintf('PULLDOWN_COMPARE_%s_INPUT1 := %s', i, var_input1),
 			sprintf('PULLDOWN_COMPARE_%s_INPUT2 := %s', i, var_input2),
 			sprintf('PULLDOWN_COMPARE_%s_CHIP1 := %s', i, var_chip1),
@@ -850,6 +858,8 @@ if(bool_pull_comp) {
 			sprintf('%s : %s %s', combined_bed, up_bed, down_bed),
 			'	bash ../../scripts/combine_pepr.sh $(word 1,$^) $(word 2,$^) $@',
 			'',
+			sprintf('%s : %s %s', input_signal, var_merged_input1_pre, var_merged_input2_pre),
+			'	cat $^ | sort -T . -k1,1 -k2,2n | bedtools merge -d 20 | sort -T . -k1,1 -k2,2n > $@',
 			sprintf('%s : %s', bigbed, combined_bed),
 			'	bedToBigBed $^ $(CHROM_PATH) $@',
 			'')
@@ -893,11 +903,152 @@ if(bool_pull_comp) {
 ################################################################################
 # MAKEFILE: compare_classification rules
 
+make_rule_compare_class_bis_module = '
+# Intermediates for the bisulfite piece
+.PRECIOUS : $(DIR_BIS_MSIG)/%_bisulfite_DMup.txt $(DIR_BIS_MSIG)/%_bisulfite_DMdown.txt $(DIR_BIS_MSIG)/%_bisulfite_noDM_signal.txt $(DIR_BIS_MSIG)/%_bisulfite_noDM_nosignal.txt
+
+$(DIR_BIS_MSIG)/%_bisulfite_DMup.txt : $(DIR_BIS_MSIG)/%_bisulfite_methylSig.txt
+	awk -v OFS="\\t" \'NR > 1 && $$5 < 0.05 && $$7 > 0 { print $$1, $$2, $$3 }\' $< | sort -T . -k1,1 -k2,2n > $@
+
+$(DIR_BIS_MSIG)/%_bisulfite_DMdown.txt : $(DIR_BIS_MSIG)/%_bisulfite_methylSig.txt
+	awk -v OFS="\\t" \'NR > 1 && $$5 < 0.05 && $$7 < 0 { print $$1, $$2, $$3 }\' $< | sort -T . -k1,1 -k2,2n > $@
+
+$(DIR_BIS_MSIG)/%_bisulfite_noDM_signal.txt : $(DIR_BIS_MSIG)/%_bisulfite_methylSig.txt
+	awk -v OFS="\\t" \'NR > 1 && $$5 > 0.05 { print $$1, $$2, $$3 }\' $< | sort -T . -k1,1 -k2,2n > $@
+
+.INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_methylSig_tmp.txt
+$(DIR_BIS_MSIG)/%_bisulfite_methylSig_tmp.txt : $(DIR_BIS_MSIG)/%_bisulfite_methylSig.txt
+	awk -v OFS="\\t" \'{ print $1, $2, $3 }\' $< | sort -T . -k1,1 -k2,2n > $@
+
+$(DIR_BIS_MSIG)/%_bisulfite_noDM_nosignal.txt : $(DIR_BIS_MSIG)/%_bisulfite_methylSig_tmp.txt
+	bedtools complement -i $< -g <(sort -T . -k1,1 $(CHROM_PATH)) | sort -T . -k1,1 -k2,2n > $@
+'
+
+make_rule_compare_class_pull_module = '
+# Intermediates for the pulldown piece
+.PRECIOUS : $(DIR_PULL_PEPR)/%_pulldown_DMup.txt $(DIR_PULL_PEPR)/%_pulldown_DMdown.txt $(DIR_PULL_PEPR)/%_pulldown_noDM_signal.txt $(DIR_PULL_PEPR)/%_pulldown_noDM_nosignal.txt
+
+.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt
+$(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt : $(DIR_PULL_PEPR)/%_pulldown__PePr_up_peaks.bed
+	awk -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
+	| sort -T . -k1,1 -k2,2n \\
+	> $@
+
+.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt
+$(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt : $(DIR_PULL_PEPR)/%_pulldown__PePr_down_peaks.bed
+	awk -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
+	| sort -T . -k1,1 -k2,2n \\
+	> $@
+
+$(DIR_PULL_PEPR)/%_pulldown_DMup.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt
+	bedops --difference $^ > $@
+
+$(DIR_PULL_PEPR)/%_pulldown_DMdown.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt
+	bedops --difference $^ > $@
+
+.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt
+$(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt : $(DIR_PULL_PEPR)/%_pulldown_DMup.txt $(DIR_PULL_PEPR)/%_pulldown_DMdown.txt
+	cat $^ | sort -T . -k1,1 -k2,2n > $@
+
+.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt
+$(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt: $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt
+	bedtools complement -i $< -g <(sort -T . -k1,1 $(CHROM_PATH)) > $@
+
+.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
+$(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt : $(DIR_PULL_PEPR)/%_pulldown_merged_signal.bed
+	cp $< $@
+
+.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt
+$(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
+	bedtools complement -i $< -g <(sort -T . -k1,1 $(CHROM_PATH)) > $@
+
+$(DIR_PULL_PEPR)/%_pulldown_noDM_signal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
+	bedtools intersect -a $(word 1, $^) -b $(word 2, $^) | sort -T . -k1,1 -k2,2n > $@
+
+$(DIR_PULL_PEPR)/%_pulldown_noDM_nosignal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt
+	bedtools intersect -a $(word 1, $^) -b $(word 2, $^) | sort -T . -k1,1 -k2,2n > $@
+'
+
+# Collect
+
+make_var_compare_class_prefix = sprintf('
+################################################################################
+# Workflow for compare_classification
+COMPARE_CLASS_PREFIXES := %s',
+	paste(unique(comparisons$humanID), collapse=' '))
+cat(make_var_compare_class_prefix, file = file_make, sep = '\n', append = TRUE)
+
+# The compare class type depends on the type of compares present
 if(bool_bis_comp && bool_pull_comp) {
-	# Hybrid comparison classification
-} else if (!bool_bis_comp && bool_pull_comp) {
-	# Pulldown comparison classification
+	compare_class_type = 'hybrid_compare_classification'
+	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed : 	$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMup.txt \\
+														$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMdown.txt \\
+														$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_signal.txt \\
+														$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_nosignal.txt \\
+														$(DIR_PULL_PEPR)/%_hmc_pulldown_DMup.txt \\
+														$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt \\
+														$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt \\
+														$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt'
+	rule1 = make_rule_compare_class_bis_module
+	rule2 = make_rule_compare_class_pull_module
+	class_script = '../../scripts/classify_compare.sh'
 } else if (bool_bis_comp && !bool_pull_comp) {
-	# Bisulfite comparison classification
-	# NOTE: NOT CURRENTLY SUPPORTED
+	############################################################
+	# NOTE: THIS IS NOT EXPLICITLY SUPPORTED RIGHT NOW
+	############################################################
+	compare_class_type = 'bisulfite_compare_classification'
+	compare_class_target = '$(DIR_CLASS_compare)/%_compare_classification.bed : 	$(DIR_BIS_MSIG)/%_mc_bisulfite_DMup.txt \\
+														$(DIR_BIS_MSIG)/%_mc_bisulfite_DMdown.txt \\
+														$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_signal.txt \\
+														$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_nosignal.txt \\
+														$(DIR_BIS_MSIG)/%_hmc_bisulfite_DMup.txt \\
+														$(DIR_BIS_MSIG)/%_hmc_bisulfite_DMdown.txt \\
+														$(DIR_BIS_MSIG)/%_hmc_bisulfite_noDM_signal.txt \\
+														$(DIR_BIS_MSIG)/%_hmc_bisulfite_noDM_nosignal.txt'
+	rule1 = make_rule_compare_class_bis_module
+	rule2 = ''
+	class_script = '../../scripts/classify_compare.sh'
+} else if (!bool_bis_comp && bool_pull_comp) {
+	compare_class_type = 'pulldown_compare_classification'
+	compare_class_target = '$(DIR_CLASS_compare)/%_compare_classification.bed : 	$(DIR_PULL_PEPR)/%_mc_pulldown_DMup.txt \\
+														$(DIR_PULL_PEPR)/%_mc_pulldown_DMdown.txt \\
+														$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_signal.txt \\
+														$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_nosignal.txt \\
+														$(DIR_PULL_PEPR)/%_hmc_pulldown_DMup.txt \\
+														$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt \\
+														$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt \\
+														$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt'
+	rule1 = make_rule_compare_class_pull_module
+	rule2 = ''
+	class_script = '../../scripts/classify_compare.sh'
 }
+
+make_rule_class_compare = sprintf('
+# Master rule
+.PHONY : compare_classification
+compare_classification : %s
+
+# Generated based on the experiment setup
+.PHONY : %s
+%s : 	$(patsubst %%,$(DIR_TRACK)/%%_compare_classification.bb,$(COMPARE_CLASS_PREFIXES)) \\
+		$(patsubst %%,$(DIR_CLASS_COMPARE)/%%_compare_classification.bed,$(COMPARE_CLASS_PREFIXES))
+
+# Rule for compare classification bigBed
+$(DIR_TRACK)/%%_compare_classification.bb : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
+	bedToBigBed $^ $(CHROM_PATH) $@
+
+# NOTE: There is a known bug in make that incorrectly determines implicit intermediate
+# files when they occur in a list of multiple targets and prerequisites.
+# https://savannah.gnu.org/bugs/index.php?32042
+# The easiest workaround is to make them precious and remove them
+
+# Classification BED
+.PRECIOUS : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
+%s
+	bash %s $(CHROM_PATH) $@ $^
+	rm -f $^
+
+%s
+%s',
+	compare_class_type, compare_class_type, compare_class_type, compare_class_target, class_script, rule1, rule2)
+cat(make_rule_class_compare, file = file_make, sep = '\n', append = TRUE)
