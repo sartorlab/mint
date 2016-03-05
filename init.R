@@ -925,7 +925,7 @@ $(DIR_BIS_MSIG)/%_bisulfite_noDM_signal.txt : $(DIR_BIS_MSIG)/%_bisulfite_methyl
 
 .INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_methylSig_tmp.txt
 $(DIR_BIS_MSIG)/%_bisulfite_methylSig_tmp.txt : $(DIR_BIS_MSIG)/%_bisulfite_methylSig.txt
-	awk -v OFS="\\t" \'{ print $1, $2, $3 }\' $< | sort -T . -k1,1 -k2,2n > $@
+	awk -v OFS="\\t" \'NR > 1 { print $1, $2, $3 }\' $< | sort -T . -k1,1 -k2,2n > $@
 
 $(DIR_BIS_MSIG)/%_bisulfite_noDM_nosignal.txt : $(DIR_BIS_MSIG)/%_bisulfite_methylSig_tmp.txt
 	bedtools complement -i $< -g <(sort -T . -k1,1 $(CHROM_PATH)) | sort -T . -k1,1 -k2,2n > $@
