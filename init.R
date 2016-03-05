@@ -570,6 +570,25 @@ $(DIR_TRACK)/%%_sample_classification.bb : $(DIR_CLASS_SAMPLE)/%%_sample_classif
 	sample_class_type, sample_class_type, sample_class_type, sample_class_target, class_script, rule1, rule2)
 cat(make_rule_class_sample, file = file_make, sep = '\n', append = TRUE)
 
+#######################################
+# PBS script
+pulldown_sample_q = c(
+	'#!/bin/bash',
+	'#### Begin PBS preamble',
+	'#PBS -N class_sample',
+	'#PBS -l procs=4,mem=48gb,walltime=6:00:00',
+	'#PBS -A sartor_lab',
+	'#PBS -q first',
+	'#PBS -M rcavalca@umich.edu',
+	'#PBS -m abe',
+	'#PBS -j oe',
+	'#PBS -V',
+	'#### End PBS preamble',
+	'# Put your job commands after this line',
+	sprintf('cd ~/latte/mint/projects/%s/',project),
+	'make -j 4 sample_classification')
+cat(pulldown_sample_q, file=sprintf('projects/%s/classify_sample.q', project), sep='\n')
+
 }
 
 ################################################################################
