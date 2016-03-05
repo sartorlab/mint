@@ -14,12 +14,12 @@ hDMup=$7
 hDMdown=$8
 hNoDMSignal=$9
 hNoDMNoSignal=${10}
-ID=`basename $outFile _comparison_classification.bed`
+ID=`basename $outFile _compare_classification.bed`
 
 # tmp files
-intTmp=classifications/sample/${ID}_tmpIntersect.txt
-classTmp=classifications/sample/${ID}_tmpSampleClass.txt
-joinTmp=classifications/sample/${ID}_tmpSampleJoin.txt
+intTmp=classifications/comparison/${ID}_tmpIntersect.txt
+classTmp=classifications/comparison/${ID}_tmpSampleClass.txt
+joinTmp=classifications/comparison/${ID}_tmpSampleJoin.txt
 
 # Initial intersection
 bedtools multiinter \
@@ -43,7 +43,7 @@ awk -v OFS="\t" 'NR > 1 { \
 join \
 	-1 2 \
 	-2 6 \
-	<(sort -T . -k2,2n ../../scripts/class_table_hybrid_sample.txt) \
+	<(sort -T . -k2,2n ../../scripts/class_table_compare.txt) \
 	<(sort -T . -k6,6n ${classTmp}) \
 > ${joinTmp}
 
