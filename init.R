@@ -89,6 +89,17 @@ if (bool_bis_samp && !bool_pull_samp) {
 	stop('Error: Pure bisulfite experimental setups are not currently supported.')
 }
 
+config_header = sprintf('# Configuration for mint pipeline analyses
+
+################################################################################
+# Project and experimental information
+
+# Project name
+PROJECT = %s
+# Genome
+GENOME = %s', project, genome)
+cat(config_header, file = 'config_header.mk', sep='\n')
+
 # NOTE: ADD ERROR CHECKING
 # 1. Are there input samples for pulldowns?
 # 2. If there are comparisons, do the group numbers correspond to the groups assigned to the samples?
@@ -161,7 +172,8 @@ if(bool_bis_comp || bool_pull_comp) {
 setup_commands = c(
 	setup_commands,
 	sprintf('cp template_makefile projects/%s/makefile', project),
-	sprintf('cp template_config.mk projects/%s/config.mk', project),
+	sprintf('cat config_header.mk template_config.mk > projects/%s/config.mk', project, project),
+	sprintf('rm config_header.mk', project),
 	sprintf('cp narrowPeak.as projects/%s/', project),
 	sprintf('cp projects/%s_annotation.txt projects/%s/data', project, project)
 )

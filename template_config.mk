@@ -1,12 +1,3 @@
-# Configuration for mint pipeline analyses
-
-################################################################################
-# Project and experimental information
-
-# Project name
-PROJECT = project_name
-# Genome
-GENOME = genome
 
 ################################################################################
 # Genome paths
