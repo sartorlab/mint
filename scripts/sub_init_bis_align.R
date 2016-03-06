@@ -12,6 +12,7 @@ make_var_bis_align = 'BISULFITE_ALIGN_PREREQS := 	$(patsubst %,$(DIR_TRACK)/%_si
 												$(patsubst %,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
 												$(patsubst %,$(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw,$(BISULFITE_ALIGN_PREFIXES)) \\
 												$(patsubst %,$(DIR_SUM_FIGURES)/%_bismark_counts.png,$(BISULFITE_ALIGN_PREFIXES))\\
+												$(patsubst %,$(DIR_SUM_FIGURES)/%_simple_class_counts.png,$(BISULFITE_ALIGN_PREFIXES))\\
 												$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
 												$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
 												$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
@@ -29,6 +30,14 @@ bisulfite_align : $(BISULFITE_ALIGN_PREREQS)
 # Rule for UCSC bigBed track of simple classifiation
 $(DIR_TRACK)/%_bisulfite_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed
 	bedToBigBed $< $(CHROM_PATH) $@
+
+# Rule for annotatr of simple classification
+$(DIR_SUM_FIGURES)/%_simple_class_counts.png : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification_for_annotatr.txt
+	Rscript ../../scripts/annotatr_bis_simple.R --file $< --genome $(GENOME)
+
+.INTERMEDIATE : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification_for_annotatr.txt
+$(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification_for_annotatr.txt : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed
+	awk -v OFS="\\t" \'{ print $1, $2, $3, $4 }\' $< > $@
 
 # Simple classification for percent methylation
 $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed.fq.gz_bismark_bt2.bedGraph.gz
