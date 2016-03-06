@@ -123,7 +123,7 @@ plot_coverage = visualize_numerical(
 	facet_order = a_all_order,
 	bin_width = 10,
 	plot_title = sprintf('%s coverage over annotations', sample),
-	x_label = 'Coverage'))
+	x_label = 'Coverage')
 ggplot2::ggsave(filename = coverage_png, plot = plot_coverage, width = 8, height = 8)
 
 percmeth_png = sprintf('summary/figures/%s_%s_percmeth.png', sample, suffix)
@@ -134,5 +134,5 @@ plot_percmeth = visualize_numerical(
 	facet_order = a_all_order,
 	bin_width = 5,
 	plot_title = sprintf('%s percent meth. over annotations', sample),
-	x_label = 'Percent Methylation'))
+	x_label = 'Percent Methylation')
 ggplot2::ggsave(filename = percmeth_png, plot = plot_percmeth, width = 8, height = 8)
