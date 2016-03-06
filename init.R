@@ -746,8 +746,8 @@ pulldown_sample_q = c(
 	'make -j 4 sample_classification')
 cat(pulldown_sample_q, file=sprintf('projects/%s/classify_sample.q', project), sep='\n')
 
-for(sample in unique(samples$humanID))
-# trackDb.txt entry for hybrid sample classification
+for(sample in unique(samples$humanID)) {
+# trackDb.txt entry for sample classification
 trackEntry = c(
   sprintf('track %s_sample_classification', sample),
   sprintf('parent %s_sample', sample),
@@ -760,6 +760,7 @@ trackEntry = c(
   'priority 1.1',
   ' ')
 cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+}
 
 }
 
