@@ -10,7 +10,7 @@ PULLDOWN_SAMPLE_PREFIXES := %s', paste(pulldown_samples_noinput$fullHumanID, col
 
 
 make_var_pull_samp = 'PULLDOWN_SAMPLE_PREREQS :=	$(patsubst %,$(DIR_TRACK)/%_simple_classification.bb,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-												$(patsubst %,$(DIR_SUM_FIGURES)/%_simple_class_counts.png,$(PULLDOWN_SAMPLE_PREFIXES))
+												$(patsubst %,$(DIR_SUM_FIGURES)/%_simple_class_counts.png,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 												$(patsubst %,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 												$(patsubst %,$(DIR_TRACK)/%_macs2_peaks.bb,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 												$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES))'
