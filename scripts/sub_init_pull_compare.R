@@ -167,7 +167,7 @@ if(bool_pull_comp) {
 		'#### End PBS preamble',
 		'# Put your job commands after this line',
 		sprintf('cd ~/latte/mint/projects/%s/',project),
-		'make -j pulldown_compare')
+		'make pulldown_compare')
 	cat(pulldown_compare_q, file=sprintf('projects/%s/pulldown_compare.q', project), sep='\n')
 
 }
