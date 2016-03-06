@@ -124,11 +124,20 @@ make_rule_class_compare = sprintf('
 # Master rule
 .PHONY : compare_classification
 compare_classification : 	$(patsubst %%,$(DIR_TRACK)/%%_compare_classification.bb,$(COMPARE_CLASS_PREFIXES)) \\
+		$(patsubst %%,$(DIR_SUM_FIGURES)/%%_compare_class_counts.png,$(COMPARE_CLASS_PREFIXES)) \\
 		$(patsubst %%,$(DIR_CLASS_COMPARE)/%%_compare_classification.bed,$(COMPARE_CLASS_PREFIXES))
 
 # Rule for compare classification bigBed
 $(DIR_TRACK)/%%_compare_classification.bb : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
 	bedToBigBed $^ $(CHROM_PATH) $@
+
+# Rule for annotatr of compare classification
+$(DIR_SUM_FIGURES)/%%_compare_class_counts.png : $(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt
+	Rscript ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
+
+.INTERMEDIATE : $(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt
+$(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
+	awk -v OFS="\\t" \'{ print $$1, $$2, $$3, $$4 }\' $< > $@
 
 # NOTE: There is a known bug in make that incorrectly determines implicit intermediate
 # files when they occur in a list of multiple targets and prerequisites.

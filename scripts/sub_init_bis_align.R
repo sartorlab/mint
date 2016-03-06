@@ -32,11 +32,11 @@ $(DIR_TRACK)/%_bisulfite_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulf
 	bedToBigBed $< $(CHROM_PATH) $@
 
 # Rule for annotatr of simple classification
-$(DIR_SUM_FIGURES)/%_bisulfite_simple_class_counts.png : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification_for_annotatr.txt
-	Rscript ../../scripts/annotatr_bis_simple.R --file $< --genome $(GENOME)
+$(DIR_SUM_FIGURES)/%_bisulfite_simple_class_counts.png : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt
+	Rscript ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
 
-.INTERMEDIATE : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification_for_annotatr.txt
-$(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification_for_annotatr.txt : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed
+.INTERMEDIATE : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt
+$(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed
 	awk -v OFS="\\t" \'{ print $$1, $$2, $$3, $$4 }\' $< > $@
 
 # Simple classification for percent methylation

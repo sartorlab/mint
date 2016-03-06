@@ -98,11 +98,20 @@ make_rule_class_sample = sprintf('
 # Master rule
 .PHONY : sample_classification
 sample_classification : 	$(patsubst %%,$(DIR_TRACK)/%%_sample_classification.bb,$(SAMPLE_CLASS_PREFIXES)) \\
+		$(patsubst %%,$(DIR_SUM_FIGURES)/%%_sample_class_counts.png,$(SAMPLE_CLASS_PREFIXES)) \\
 		$(patsubst %%,$(DIR_CLASS_SAMPLE)/%%_sample_classification.bed,$(SAMPLE_CLASS_PREFIXES))
 
 # Rule for sample classification bigBed
 $(DIR_TRACK)/%%_sample_classification.bb : $(DIR_CLASS_SAMPLE)/%%_sample_classification.bed
 	bedToBigBed $^ $(CHROM_PATH) $@
+
+# Rule for annotatr of sample classification
+$(DIR_SUM_FIGURES)/%%_sample_class_counts.png : $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt
+	Rscript ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
+
+.INTERMEDIATE : $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt
+$(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt : $(DIR_CLASS_SAMPLE)/%%_sample_classification.bed
+	awk -v OFS="\\t" \'{ print $$1, $$2, $$3, $$4 }\' $< > $@
 
 # NOTE: There is a known bug in make that incorrectly determines implicit intermediate
 # files when they occur in a list of multiple targets and prerequisites.
