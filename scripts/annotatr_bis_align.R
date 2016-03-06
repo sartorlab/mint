@@ -93,7 +93,7 @@ readr::write_tsv(x = ar, path = sprintf('summary/tables/%s_%s_annotations.txt', 
 count_annots = summarize_annotations(ar)
 
 # Write it
-readr::write_tsv(x = count, path = sprintf('summary/tables/%s_%s_annotation_counts.txt', sample, suffix))
+readr::write_tsv(x = count_annots, path = sprintf('summary/tables/%s_%s_annotation_counts.txt', sample, suffix))
 
 ###############################################################
 # Visualizations
