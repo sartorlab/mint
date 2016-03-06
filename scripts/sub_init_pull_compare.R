@@ -12,8 +12,8 @@ if(bool_pull_comp) {
 		humanID = pulldown_comparisons[i,'humanID']
 		pull = pulldown_comparisons[i,'pulldown']
 		bis = pulldown_comparisons[i,'bisulfite']
-		mc = pulldown_comparisons[i,'mc']
-		hmc = pulldown_comparisons[i,'hmc']
+		mc_stat = pulldown_comparisons[i,'mc']
+		hmc_stat = pulldown_comparisons[i,'hmc']
 		input = pulldown_comparisons[i,'input']
 		group = pulldown_comparisons[i,'group']
 		fullHumanID = pulldown_comparisons[i,'fullHumanID']
@@ -24,11 +24,11 @@ if(bool_pull_comp) {
 		  platform = "bisulfite"
 		}
 
-		if( mc == 1 && hmc == 1 ) {
+		if( mc_stat == 1 && hmc_stat == 1 ) {
 		  mark = "mc_hmc"
-		} else if ( mc == 1 && hmc == 0 ) {
+		} else if ( mc_stat == 1 && hmc_stat == 0 ) {
 		  mark = "mc"
-		} else if ( mc == 0 && hmc == 1 ) {
+		} else if ( mc_stat == 0 && hmc_stat == 1 ) {
 		  mark = "hmc"
 		}
 
@@ -39,30 +39,30 @@ if(bool_pull_comp) {
 			grepl(groups[1], pulldown_samples$group) &
 			pulldown_samples$pulldown == pull &
 			pulldown_samples$bisulfite == bis &
-			pulldown_samples$mc == mc &
-			pulldown_samples$hmc == hmc &
+			pulldown_samples$mc == mc_stat &
+			pulldown_samples$hmc == hmc_stat &
 			pulldown_samples$input == 0)
 		groupB = subset(pulldown_samples,
 			grepl(groups[2], pulldown_samples$group) &
 			pulldown_samples$pulldown == pull &
 			pulldown_samples$bisulfite == bis &
-			pulldown_samples$mc == mc &
-			pulldown_samples$hmc == hmc &
+			pulldown_samples$mc == mc_stat &
+			pulldown_samples$hmc == hmc_stat &
 			pulldown_samples$input == 0)
 
 		inputGroupA = subset(pulldown_samples,
 			grepl(groups[1], pulldown_samples$group) &
 			pulldown_samples$pulldown == pull &
 			pulldown_samples$bisulfite == bis &
-			pulldown_samples$mc == mc &
-			pulldown_samples$hmc == hmc &
+			pulldown_samples$mc == mc_stat &
+			pulldown_samples$hmc == hmc_stat &
 			pulldown_samples$input == 1)
 		inputGroupB = subset(pulldown_samples,
 			grepl(groups[2], pulldown_samples$group) &
 			pulldown_samples$pulldown == pull &
 			pulldown_samples$bisulfite == bis &
-			pulldown_samples$mc == mc &
-			pulldown_samples$hmc == hmc &
+			pulldown_samples$mc == mc_stat &
+			pulldown_samples$hmc == hmc_stat &
 			pulldown_samples$input == 1)
 
 		########################################################################

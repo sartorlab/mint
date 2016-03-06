@@ -10,8 +10,8 @@ if(bool_bis_comp) {
 		humanID = bisulfite_comparisons[i,'humanID']
 		pull = bisulfite_comparisons[i,'pulldown']
 		bis = bisulfite_comparisons[i,'bisulfite']
-		mc = bisulfite_comparisons[i,'mc']
-		hmc = bisulfite_comparisons[i,'hmc']
+		mc_stat = bisulfite_comparisons[i,'mc']
+		hmc_stat = bisulfite_comparisons[i,'hmc']
 		group = bisulfite_comparisons[i,'group']
 		fullHumanID = bisulfite_comparisons[i,'fullHumanID']
 
@@ -21,11 +21,11 @@ if(bool_bis_comp) {
 		  platform = "bisulfite"
 		}
 
-		if( mc == 1 && hmc == 1 ) {
+		if( mc_stat == 1 && hmc_stat == 1 ) {
 		  mark = "mc_hmc"
-		} else if ( mc == 1 && hmc == 0 ) {
+		} else if ( mc_stat == 1 && hmc_stat == 0 ) {
 		  mark = "mc"
-		} else if ( mc == 0 && hmc == 1 ) {
+		} else if ( mc_stat == 0 && hmc_stat == 1 ) {
 		  mark = "hmc"
 		}
 
@@ -36,15 +36,15 @@ if(bool_bis_comp) {
 			grepl(groups[1], bisulfite_samples$group) &
 			bisulfite_samples$pulldown == pull &
 			bisulfite_samples$bisulfite == bis &
-			bisulfite_samples$mc == mc &
-			bisulfite_samples$hmc == hmc &
+			bisulfite_samples$mc == mc_stat &
+			bisulfite_samples$hmc == hmc_stat &
 			bisulfite_samples$input == 0)
 		groupB = subset(bisulfite_samples,
 			grepl(groups[2], bisulfite_samples$group) &
 			bisulfite_samples$pulldown == pull &
 			bisulfite_samples$bisulfite == bis &
-			bisulfite_samples$mc == mc &
-			bisulfite_samples$hmc == hmc &
+			bisulfite_samples$mc == mc_stat &
+			bisulfite_samples$hmc == hmc_stat &
 			bisulfite_samples$input == 0)
 
 		########################################################################
