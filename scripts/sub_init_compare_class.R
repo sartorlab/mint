@@ -162,7 +162,7 @@ bisulfite_compare_q = c(
 	'# Put your job commands after this line',
 	sprintf('cd ~/latte/mint/projects/%s/',project),
 	'make -j 4 compare_classification')
-cat(bisulfite_compare_q, file=sprintf('projects/%s/compare_classification.q', project), sep='\n')
+cat(bisulfite_compare_q, file=sprintf('projects/%s/classify_compare.q', project), sep='\n')
 
 for(comparison in unique(comparisons$humanID)) {
 	# trackDb.txt entry for comparison classification
