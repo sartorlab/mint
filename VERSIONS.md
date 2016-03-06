@@ -3,6 +3,7 @@
 This file gives the current version of software used in the pipeline as of Jan. 24, 2016.
 
 * bedtools v2.25.0
+* bedops v2.4.14
 * bismark v0.14.4
 * bowtie2 v2.2.1
 * cutadapt v1.7.1
