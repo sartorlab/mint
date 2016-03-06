@@ -11,7 +11,7 @@ opt = parse_args(OptionParser(option_list=option_list))
 
 file = opt$file
 genome = opt$genome
-sample = gsub('_bisulfite_simple_classification_for_annotatr.txt','', basename(file))
+sample = gsub('_simple_classification_for_annotatr.txt','', basename(file))
 suffix = 'simple_class'
 
 ###############################################################
