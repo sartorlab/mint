@@ -37,7 +37,7 @@ $(DIR_SUM_FIGURES)/%_simple_class_counts.png : $(DIR_CLASS_SIMPLE)/%_bisulfite_s
 
 .INTERMEDIATE : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification_for_annotatr.txt
 $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification_for_annotatr.txt : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed
-	awk -v OFS="\\t" \'{ print $1, $2, $3, $4 }\' $< > $@
+	awk -v OFS="\\t" \'{ print $$1, $$2, $$3, $$4 }\' $< > $@
 
 # Simple classification for percent methylation
 $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed.fq.gz_bismark_bt2.bedGraph.gz
