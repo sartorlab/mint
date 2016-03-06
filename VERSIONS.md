@@ -1,6 +1,6 @@
 ### Versions
 
-This file gives the current version of software used in the pipeline as of Jan. 24, 2016.
+This file gives the current version of software used in the pipeline as of March 6, 2016.
 
 * bedtools v2.25.0
 * bedops v2.4.14
