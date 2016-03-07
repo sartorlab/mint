@@ -32,9 +32,6 @@ exp2=$(echo $EXP2COV | tr "," " ")
 ogUpPeaks=./analysis/pepr_peaks/${COMPARISON}__PePr_up_peaks.bed
 ogDownPeaks=./analysis/pepr_peaks/${COMPARISON}__PePr_down_peaks.bed
 
-upSorted=./analysis/pepr_peaks/${COMPARISON}_PePr_up_peaks_sorted.bed
-downSorted=./analysis/pepr_peaks/${COMPARISON}_PePr_down_peaks_sorted.bed
-
 upDisjoint=./analysis/pepr_peaks/${COMPARISON}_PePr_up_peaks_disjoint.bed
 downDisjoint=./analysis/pepr_peaks/${COMPARISON}_PePr_down_peaks_disjoint.bed
 
@@ -42,15 +39,11 @@ upPeaks=./analysis/pepr_peaks/${COMPARISON}_PePr_up_peaks.bed
 downPeaks=./analysis/pepr_peaks/${COMPARISON}_PePr_down_peaks.bed
 
 allPeaks=./analysis/pepr_peaks/${COMPARISON}_PePr_peaks.bed
-allSorted=./analysis/pepr_peaks/${COMPARISON}_PePr_peaks_sorted.bed
 
 allPeaksNoDM=./analysis/pepr_peaks/${COMPARISON}_PePr_noDM.bed
 
 noDMSignalPeaks=./analysis/pepr_peaks/${COMPARISON}_PePr_noDM_signal.bed
 noDMNoSignalPeaks=./analysis/pepr_peaks/${COMPARISON}_PePr_noDM_nosignal.bed
-
-noDMSignalPeaksSorted=./analysis/pepr_peaks/${COMPARISON}_PePr_noDM_signal_sorted.bed
-noDMNoSignalPeaksSorted=./analysis/pepr_peaks/${COMPARISON}_PePr_noDM_nosignal_sorted.bed
 
 signal=./analysis/pepr_peaks/${COMPARISON}_signal_pulldown.bed
 noSignal=./analysis/pepr_peaks/${COMPARISON}_nosignal_pulldown.bed
@@ -59,14 +52,10 @@ noSignal=./analysis/pepr_peaks/${COMPARISON}_nosignal_pulldown.bed
 # These 5hmC files are the corresponding rows of the classification table
 
     # DM up
-    awk '{ print $1 "\t" $2 "\t" $3 }' $ogUpPeaks > $upPeaks
-    sort -T . -k1,1 -k2,2n $upPeaks > $upSorted
-    mv $upSorted $upPeaks
+    awk -v OFS='\t' '{ print $1, $2, $3 }' $ogUpPeaks | sort -T . -k1,1 -k2,2n > $upPeaks
 
     # DM down
-    awk '{ print $1 "\t" $2 "\t" $3 }' $ogDownPeaks > $downPeaks
-    sort -T . -k1,1 -k2,2n $downPeaks > $downSorted
-    mv $downSorted $downPeaks
+    awk -v OFS='\t' '{ print $1, $2, $3 }' $ogDownPeaks | sort -T . -k1,1 -k2,2n > $downPeaks
 
     # Make PePr up and down peaks disjoint
     bedops --difference $upPeaks $downPeaks > $upDisjoint
@@ -79,29 +68,23 @@ noSignal=./analysis/pepr_peaks/${COMPARISON}_nosignal_pulldown.bed
     mv $downDisjoint $downPeaks
 
     # Combined DM are needed for the complement (noDM)
-    cat $upPeaks $downPeaks > $allPeaks
-    sort -T . -k1,1 -k2,2n $allPeaks > $allSorted
-    mv $allSorted $allPeaks
+    cat $upPeaks $downPeaks | sort -T . -k1,1 -k2,2n > $allPeaks
 
     # No DM needs to subsequently be split into signal and no signal
-    bedtools complement -i $allPeaks -g ~/latte/Homo_sapiens/chromInfo_hg19.txt > $allPeaksNoDM
+    bedtools complement -i $allPeaks -g <(sort -T . -k1,1 ~/latte/Homo_sapiens/chromInfo_hg19.txt) > $allPeaksNoDM
 
     # Determine regions of signal and no signal
         # Merge all affinity signals into a single signal bed
         bedops --merge $exp1 $exp2 > $signal
 
         # No signal comprises the complement of the signal
-        bedtools complement -i $signal -g ~/latte/Homo_sapiens/chromInfo_hg19.txt > $noSignal
+        bedtools complement -i $signal -g <(sort -T . -k1,1 ~/latte/Homo_sapiens/chromInfo_hg19.txt) > $noSignal
 
     # No DM and signal
-    bedtools intersect -a $signal -b $allPeaksNoDM > $noDMSignalPeaks
-    sort -T . -k1,1 -k2,2n $noDMSignalPeaks > $noDMSignalPeaksSorted
-    mv $noDMSignalPeaksSorted $noDMSignalPeaks
+    bedtools intersect -a $signal -b $allPeaksNoDM | sort -T . -k1,1 -k2,2n > $noDMSignalPeaks
 
     # No DM and no signal
-    bedtools intersect -a $noSignal -b $allPeaksNoDM > $noDMNoSignalPeaks
-    sort -T . -k1,1 -k2,2n $noDMNoSignalPeaks > $noDMNoSignalPeaksSorted
-    mv $noDMNoSignalPeaksSorted $noDMNoSignalPeaks
+    bedtools intersect -a $noSignal -b $allPeaksNoDM | sort -T . -k1,1 -k2,2n > $noDMNoSignalPeaks
 
         rm $signal
         rm $noSignal

@@ -1,0 +1,12 @@
+hmc	6	0,0,255
+hmc	10	0,0,255
+hmc	14	0,0,255
+hmc	22	0,0,255
+mc	12	255,0,0
+mc_low	20	255,165,0
+no_meth	28	0,0,0
+no_meth	44	0,0,0
+mc_or_hmc	18	0,255,0
+mc_or_hmc_low	30	255,255,0
+no_meth	42	0,0,0
+unclassifiable	66	192,192,192
