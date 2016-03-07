@@ -35,6 +35,9 @@ r = read_bed(
 	stranded = FALSE,
 	use.score = FALSE)
 
+# Remove unclassifiable regions
+r = r[r$name != 'unclassifiable']
+
 ###############################################################
 # Pick annotations
 if(genome %in% c('hg19','hg38','mm9','mm10')) {
