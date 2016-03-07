@@ -46,115 +46,120 @@ The mint pipeline can be used for any combination of the following experimental 
 
 ## Starting a project
 
-	0. Install prerequisites found in [VERSIONS](https://github.com/sartorlab/mint/blob/make-refactor/VERSIONS.md).
-	1. `git clone https://github.com/sartorlab/mint` in the desired install directory.
-	2. In `mint/` do `mkdir projects`.
-	3. Put a tab-delimited annotation file `project_name_annotation.txt` in the `mint/projects` directory. It **must** have 9 columns:
-		1. `projectID`: The name of the project.
-		2. `sampleID`: An alphanumeric ID (perhaps from SRA, GEO, a sequencing core, etc.). Typically these will be the names of the `.fastq` files.
-		3. `humanID`: The human readable ID for the sample.
-		4. `pulldown`: A binary value indicating whether the sample is the result of a pulldown experiment (1) or not (0).
-		5. `bisulfite`: A binary value indicating whether the sample is the result of a bisulfite-conversion experiment (1) or not (0).
-		6. `mc`: A binary value indicating whether the sample represents 5mc methylation.
-		7. `hmc`: A binary value indicating whether the sample represents 5hmc methylation.
-		8. `input`: A binary value indicating whether the sample represents an input.
-		9. `group`: A binary value indicating which samples belong to one of two groups.
+0. Install prerequisites found in [VERSIONS](https://github.com/sartorlab/mint/blob/make-refactor/VERSIONS.md).
+1. `git clone https://github.com/sartorlab/mint` in the desired install directory.
+2. In `mint/` do `mkdir projects`.
+3. Put a tab-delimited annotation file `project_name_annotation.txt` in the `mint/projects` directory. It **must** have 9 columns:
+	1. `projectID`: The name of the project.
+	2. `sampleID`: An alphanumeric ID (perhaps from SRA, GEO, a sequencing core, etc.). Typically these will be the names of the `.fastq` files.
+	3. `humanID`: The human readable ID for the sample.
+	4. `pulldown`: A binary value indicating whether the sample is the result of a pulldown experiment (1) or not (0).
+	5. `bisulfite`: A binary value indicating whether the sample is the result of a bisulfite-conversion experiment (1) or not (0).
+	6. `mc`: A binary value indicating whether the sample represents 5mc methylation.
+	7. `hmc`: A binary value indicating whether the sample represents 5hmc methylation.
+	8. `input`: A binary value indicating whether the sample represents an input.
+	9. `group`: A binary value indicating which samples belong to one of two groups.
 
-    Note that bisulfite-conversion experiments that represent both mc and hmc should have a 1 in each column. Input pulldowns can be matched to the pulldown (e.g. `mc=1` and `hmc=0` and `input=1`) or shared among pulldowns. In the case of sharing between antibodies, the entry should be doubled, as in the first example.
+Note that bisulfite-conversion experiments that represent both mc and hmc should have a 1 in each column. Input pulldowns can be matched to the pulldown (e.g. `mc=1` and `hmc=0` and `input=1`) or shared among pulldowns. In the case of sharing between antibodies, the entry should be doubled, as in the first example.
 
-    An example of a pulldown experimental setup with sample-wise analysis. NOTE: The inputs are shared between the mc and hmc pulldown. To represent that, the input block is duplicated, within one `mc=1` and `hmc=0` and within the other `mc=0` and `hmc=1`.
-    ```{bash}
-    projectID       sampleID        humanID pulldown        bisulfite       mc      hmc     input   group
-    GSE63743        SRR1686689      preeclamptic_1  1       0       0       1       0       0
-    GSE63743        SRR1686690      preeclamptic_2  1       0       0       1       0       0
-    GSE63743        SRR1686693      normal_1        1       0       0       1       0       0
-    GSE63743        SRR1686694      normal_2        1       0       0       1       0       0
-    GSE63743        SRR1686697      preeclamptic_1  1       0       1       0       0       0
-    GSE63743        SRR1686698      preeclamptic_2  1       0       1       0       0       0
-    GSE63743        SRR1686701      normal_1        1       0       1       0       0       0
-    GSE63743        SRR1686702      normal_2        1       0       1       0       0       0
-    GSE63743        SRR1686705      preeclamptic_1  1       0       1       0       1       0
-    GSE63743        SRR1686706      preeclamptic_2  1       0       1       0       1       0
-    GSE63743        SRR1686709      normal_1        1       0       1       0       1       0
-    GSE63743        SRR1686710      normal_2        1       0       1       0       1       0
-	GSE63743        SRR1686705      preeclamptic_1  1       0       0       1       1       0
-	GSE63743        SRR1686706      preeclamptic_2  1       0       0       1       1       0
-	GSE63743        SRR1686709      normal_1        1       0       0       1       1       0
-	GSE63743        SRR1686710      normal_2        1       0       0       1       1       0
-    ```
-    An example of a hybrid experimental setup with comparison-wise analysis. Note the added lines for comparisons indicate that pulldown and bisulfite experiments should be compared according to groups 0 and 1.
-    ```{bash}
-	projectID	sampleID	humanID	pulldown	bisulfite	mc	hmc	input	group
-	GSE52945	SRR1041959	IDH2mut_1	1	0	0	1	0	1
-	GSE52945	SRR1041960	IDH2mut_2	1	0	0	1	0	1
-	GSE52945	SRR1041977	IDH2mut_1	1	0	0	1	1	1
-	GSE52945	SRR1041978	IDH2mut_2	1	0	0	1	1	1
-	GSE52945	SRR1041992	IDH2mut_1	0	1	1	1	0	1
-	GSE52945	SRR1041993	IDH2mut_2	0	1	1	1	0	1
-	GSE52945	SRR1638715	NBM_1	1	0	0	1	0	0
-	GSE52945	SRR1638716	NBM_2	1	0	0	1	0	0
-	GSE52945	SRR1638720	NBM_1	1	0	0	1	1	0
-	GSE52945	SRR1638721	NBM_2	1	0	0	1	1	0
-	GSE52945	SRR1638726	NBM_2	0	1	1	1	0	0
-	GSE52945	SRR1638727	NBM_1	0	1	1	1	0	0
-	GSE52945	comparison	IDH2mut_v_NBM	1	0	0	1	0	0,1
-	GSE52945	comparison	IDH2mut_v_NBM	0	1	1	1	0	0,1
-    ```
-	A more complicated hybrid experimental setup where multiple groups are to be compared in the same analysis. In the first comparisons the groups 0 and 1 are used, whereas in the second comparisons use groups 2 and 3. An arbitrary number of comparisons are supported.
-	```{bash}
-	projectID	sampleID	humanID	pulldown	bisulfite	mc	hmc	input	group
-	hnscc_13	Sample_42741	HPV+2	0	1	1	1	0	1,2
-	hnscc_13	Sample_42742	HPV+5	0	1	1	1	0	1,2
-	hnscc_13	Sample_45194	HPV-1	0	1	1	1	0	0
-	hnscc_13	Sample_45195	HPV+1	0	1	1	1	0	1,2
-	hnscc_13	Sample_45196	HPV+3	0	1	1	1	0	1,3
-	hnscc_13	Sample_45197	HPV+4	0	1	1	1	0	1,3
-	hnscc_13	Sample_45199	HPV+8	0	1	1	1	0	1,3
-	hnscc_13	Sample_45200	HPV-2	0	1	1	1	0	0
-	hnscc_13	Sample_45201	HPV-4	0	1	1	1	0	0
-	hnscc_13	Sample_45202	HPV+7	0	1	1	1	0	1,3
-	hnscc_13	Sample_45203	HPV-7	0	1	1	1	0	0
-	hnscc_13	Sample_45204	HPV-8	0	1	1	1	0	0
-	hnscc_13	Sample_51324	HPV-8	1	0	0	1	1	0
-	hnscc_13	Sample_51327	HPV+8	1	0	0	1	0	1,3
-	hnscc_13	Sample_51325	HPV-8	1	0	0	1	0	0
-	hnscc_13	Sample_51326	HPV+8	1	0	0	1	1	1,3
-	hnscc_13	Sample_49651	HPV-1	1	0	0	1	1	0
-	hnscc_13	Sample_49654	HPV+1	1	0	0	1	0	1,2
-	hnscc_13	Sample_49652	HPV-1	1	0	0	1	0	0
-	hnscc_13	Sample_49653	HPV+1	1	0	0	1	1	1,2
-	hnscc_13	Sample_49655	HPV+2	1	0	0	1	1	1
-	hnscc_13	Sample_49658	HPV-2	1	0	0	1	0	0
-	hnscc_13	Sample_49656	HPV+2	1	0	0	1	0	1,2
-	hnscc_13	Sample_49657	HPV-2	1	0	0	1	1	0
-	hnscc_13	Sample_49659	HPV+3	1	0	0	1	1	1,3
-	hnscc_13	Sample_49662	HPV+4	1	0	0	1	0	1,3
-	hnscc_13	Sample_49660	HPV+3	1	0	0	1	0	1,3
-	hnscc_13	Sample_49661	HPV+4	1	0	0	1	1	1,3
-	hnscc_13	Sample_49663	HPV+5	1	0	0	1	1	1,2
-	hnscc_13	Sample_49664	HPV+5	1	0	0	1	0	1,2
-	hnscc_13	Sample_51316	HPV-4	1	0	0	1	1	0
-	hnscc_13	Sample_51317	HPV-4	1	0	0	1	0	0
-	hnscc_13	Sample_51320	HPV+7	1	0	0	1	1	1,3
-	hnscc_13	Sample_51323	HPV-7	1	0	0	1	0	0
-	hnscc_13	Sample_51321	HPV+7	1	0	0	1	0	1,3
-	hnscc_13	Sample_51322	HPV-7	1	0	0	1	1	0
-	hnscc_13	comparison1	HPV+_v_HPV-	1	0	0	1	0	0,1
-	hnscc_13	comparison1	HPV+_v_HPV-	0	1	1	1	0	0,1
-	hnscc_13	comparison2	int+_v_int-	1	0	0	1	0	2,3
-	hnscc_13	comparison2	int+_v_int-	0	1	1	1	0	2,3
-	```
+An example of a pulldown experimental setup with sample-wise analysis. NOTE: The inputs are shared between the mc and hmc pulldown. To represent that, the input block is duplicated, within one `mc=1` and `hmc=0` and within the other `mc=0` and `hmc=1`.
 
-	4. Know where your base data is matching the `sampleID` column in the annotation file.
-	5. In `mint/` do `Rscript init.R --project name --genome g --datapath path/to/data/matching/sampleID.fastq.gz`
-	6. In `mint/projects/name` modify the `config.mk` file to reflect the location of tools, and the desired parameters for analysis.
-	7. Run the analyses. `mint` automatically generates PBS scripts (which need to be customized) for computing clusters in `mint/projects/name/pbs_jobs`, or you can use the following make commands from `mint/projects/name`. NOTE: Depending on your experimental and workflow setup encoded in the project annotation file, some of the `make` commands might not be available for the project.
-		* `make bisulfite_align`
-		* `make pulldown_align`
-		* `make pulldown_sample`
-		* `make bisulfite_compare`
-		* `make pulldown_compare`
-		* `make sample_classification`
-		* `make compare_classification`
-		* You can add the `-n` flag to `make` to see what commands will be run.
-		* You can add the `-j` flag followed by a number to run commands in parallel depending on the computing architecture used.
+```{bash}
+projectID       sampleID        humanID pulldown        bisulfite       mc      hmc     input   group
+GSE63743        SRR1686689      preeclamptic_1  1       0       0       1       0       0
+GSE63743        SRR1686690      preeclamptic_2  1       0       0       1       0       0
+GSE63743        SRR1686693      normal_1        1       0       0       1       0       0
+GSE63743        SRR1686694      normal_2        1       0       0       1       0       0
+GSE63743        SRR1686697      preeclamptic_1  1       0       1       0       0       0
+GSE63743        SRR1686698      preeclamptic_2  1       0       1       0       0       0
+GSE63743        SRR1686701      normal_1        1       0       1       0       0       0
+GSE63743        SRR1686702      normal_2        1       0       1       0       0       0
+GSE63743        SRR1686705      preeclamptic_1  1       0       1       0       1       0
+GSE63743        SRR1686706      preeclamptic_2  1       0       1       0       1       0
+GSE63743        SRR1686709      normal_1        1       0       1       0       1       0
+GSE63743        SRR1686710      normal_2        1       0       1       0       1       0
+GSE63743        SRR1686705      preeclamptic_1  1       0       0       1       1       0
+GSE63743        SRR1686706      preeclamptic_2  1       0       0       1       1       0
+GSE63743        SRR1686709      normal_1        1       0       0       1       1       0
+GSE63743        SRR1686710      normal_2        1       0       0       1       1       0
+```
+
+An example of a hybrid experimental setup with comparison-wise analysis. Note the added lines for comparisons indicate that pulldown and bisulfite experiments should be compared according to groups 0 and 1.
+
+```{bash}
+projectID	sampleID	humanID	pulldown	bisulfite	mc	hmc	input	group
+GSE52945	SRR1041959	IDH2mut_1	1	0	0	1	0	1
+GSE52945	SRR1041960	IDH2mut_2	1	0	0	1	0	1
+GSE52945	SRR1041977	IDH2mut_1	1	0	0	1	1	1
+GSE52945	SRR1041978	IDH2mut_2	1	0	0	1	1	1
+GSE52945	SRR1041992	IDH2mut_1	0	1	1	1	0	1
+GSE52945	SRR1041993	IDH2mut_2	0	1	1	1	0	1
+GSE52945	SRR1638715	NBM_1	1	0	0	1	0	0
+GSE52945	SRR1638716	NBM_2	1	0	0	1	0	0
+GSE52945	SRR1638720	NBM_1	1	0	0	1	1	0
+GSE52945	SRR1638721	NBM_2	1	0	0	1	1	0
+GSE52945	SRR1638726	NBM_2	0	1	1	1	0	0
+GSE52945	SRR1638727	NBM_1	0	1	1	1	0	0
+GSE52945	comparison	IDH2mut_v_NBM	1	0	0	1	0	0,1
+GSE52945	comparison	IDH2mut_v_NBM	0	1	1	1	0	0,1
+```
+
+A more complicated hybrid experimental setup where multiple groups are to be compared in the same analysis. In the first comparisons the groups 0 and 1 are used, whereas in the second comparisons use groups 2 and 3. An arbitrary number of comparisons are supported.
+
+```{bash}
+projectID	sampleID	humanID	pulldown	bisulfite	mc	hmc	input	group
+hnscc_13	Sample_42741	HPV+2	0	1	1	1	0	1,2
+hnscc_13	Sample_42742	HPV+5	0	1	1	1	0	1,2
+hnscc_13	Sample_45194	HPV-1	0	1	1	1	0	0
+hnscc_13	Sample_45195	HPV+1	0	1	1	1	0	1,2
+hnscc_13	Sample_45196	HPV+3	0	1	1	1	0	1,3
+hnscc_13	Sample_45197	HPV+4	0	1	1	1	0	1,3
+hnscc_13	Sample_45199	HPV+8	0	1	1	1	0	1,3
+hnscc_13	Sample_45200	HPV-2	0	1	1	1	0	0
+hnscc_13	Sample_45201	HPV-4	0	1	1	1	0	0
+hnscc_13	Sample_45202	HPV+7	0	1	1	1	0	1,3
+hnscc_13	Sample_45203	HPV-7	0	1	1	1	0	0
+hnscc_13	Sample_45204	HPV-8	0	1	1	1	0	0
+hnscc_13	Sample_51324	HPV-8	1	0	0	1	1	0
+hnscc_13	Sample_51327	HPV+8	1	0	0	1	0	1,3
+hnscc_13	Sample_51325	HPV-8	1	0	0	1	0	0
+hnscc_13	Sample_51326	HPV+8	1	0	0	1	1	1,3
+hnscc_13	Sample_49651	HPV-1	1	0	0	1	1	0
+hnscc_13	Sample_49654	HPV+1	1	0	0	1	0	1,2
+hnscc_13	Sample_49652	HPV-1	1	0	0	1	0	0
+hnscc_13	Sample_49653	HPV+1	1	0	0	1	1	1,2
+hnscc_13	Sample_49655	HPV+2	1	0	0	1	1	1
+hnscc_13	Sample_49658	HPV-2	1	0	0	1	0	0
+hnscc_13	Sample_49656	HPV+2	1	0	0	1	0	1,2
+hnscc_13	Sample_49657	HPV-2	1	0	0	1	1	0
+hnscc_13	Sample_49659	HPV+3	1	0	0	1	1	1,3
+hnscc_13	Sample_49662	HPV+4	1	0	0	1	0	1,3
+hnscc_13	Sample_49660	HPV+3	1	0	0	1	0	1,3
+hnscc_13	Sample_49661	HPV+4	1	0	0	1	1	1,3
+hnscc_13	Sample_49663	HPV+5	1	0	0	1	1	1,2
+hnscc_13	Sample_49664	HPV+5	1	0	0	1	0	1,2
+hnscc_13	Sample_51316	HPV-4	1	0	0	1	1	0
+hnscc_13	Sample_51317	HPV-4	1	0	0	1	0	0
+hnscc_13	Sample_51320	HPV+7	1	0	0	1	1	1,3
+hnscc_13	Sample_51323	HPV-7	1	0	0	1	0	0
+hnscc_13	Sample_51321	HPV+7	1	0	0	1	0	1,3
+hnscc_13	Sample_51322	HPV-7	1	0	0	1	1	0
+hnscc_13	comparison1	HPV+_v_HPV-	1	0	0	1	0	0,1
+hnscc_13	comparison1	HPV+_v_HPV-	0	1	1	1	0	0,1
+hnscc_13	comparison2	int+_v_int-	1	0	0	1	0	2,3
+hnscc_13	comparison2	int+_v_int-	0	1	1	1	0	2,3
+```
+
+4. Know where your base data is matching the `sampleID` column in the annotation file.
+5. In `mint/` do `Rscript init.R --project name --genome g --datapath path/to/data/matching/sampleID.fastq.gz`
+6. In `mint/projects/name` modify the `config.mk` file to reflect the location of tools, and the desired parameters for analysis.
+7. Run the analyses. `mint` automatically generates PBS scripts (which need to be customized) for computing clusters in `mint/projects/name/pbs_jobs`, or you can use the following make commands from `mint/projects/name`. NOTE: Depending on your experimental and workflow setup encoded in the project annotation file, some of the `make` commands might not be available for the project.
+	* `make bisulfite_align`
+	* `make pulldown_align`
+	* `make pulldown_sample`
+	* `make bisulfite_compare`
+	* `make pulldown_compare`
+	* `make sample_classification`
+	* `make compare_classification`
+	* You can add the `-n` flag to `make` to see what commands will be run.
+	* You can add the `-j` flag followed by a number to run commands in parallel depending on the computing architecture used.
