@@ -60,14 +60,13 @@ The mint pipeline can be used for any combination of the following experimental 
 	8. `input`: A binary value indicating whether the sample represents an input.
 	9. `group`: A binary value indicating which samples belong to one of two groups.
 4. Know where the data matching the `sampleID` column in the annotation file is located.
-5. In `mint/` do `Rscript init.R --project name --genome g --datapath path/to/data/matching/sampleID.fastq.gz`
-	* This script does the following:
-		* Creates the directory structure for the project based on the project annotation file.
-		* Copies the project annotation file to `mint/projects/name/name_annotation.txt`.
-		* Copies `template_config.mk` and `template_makefile` into `mint/projects/name`.
-		* Dynamically generates adds the appropriate rules to the `makefile` based on the project annotation file.
-		* Generates UCSC Genome Browser track hub structure and files based on the project annotation file.
-		* Generates PBS job scripts in `mint/projects/name/pbs_jobs` for use on computing clusters.
+5. In `mint/` do `Rscript init.R --project name --genome g --datapath path/to/data/matching/sampleID.fastq.gz`. The script does the following:
+	* Creates the directory structure for the project based on the project annotation file.
+	* Copies the project annotation file to `mint/projects/name/name_annotation.txt`.
+	* Copies `template_config.mk` and `template_makefile` into `mint/projects/name`.
+	* Dynamically generates adds the appropriate rules to the `makefile` based on the project annotation file.
+	* Generates UCSC Genome Browser track hub structure and files based on the project annotation file.
+	* Generates PBS job scripts in `mint/projects/name/pbs_jobs` for use on computing clusters.
 6. In `mint/projects/name` modify the `config.mk` file to reflect the location of tools, and the desired parameters for analysis.
 7. Run the analyses. `mint` automatically generates PBS scripts (which need to be customized) for computing clusters in `mint/projects/name/pbs_jobs`, or the following make commands from `mint/projects/name` can be used. NOTE: Depending on the experimental and workflow setup encoded in the project annotation file, some of the `make` commands might not be available for the project.
 	* `make bisulfite_align`
