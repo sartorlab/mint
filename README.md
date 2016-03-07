@@ -74,7 +74,7 @@ The mint pipeline can be used for any combination of the following experimental 
 	* `make sample_classification`
 	* `make compare_classification`
 	* Add the `-n` flag to `make` to see what commands will be run before committing resources.
-	* Add the `-j` flag followed by a number to run commands in parallel depending on the computing architecture used.
+	* Add the `-j` flag followed by a number to run commands in parallel depending on computing architecture.
 
 ### Project annotation file examples
 
