@@ -73,9 +73,9 @@ The mint pipeline can be used for any combination of the following experimental 
 	* You can add the `-n` flag to `make` to see what commands will be run.
 	* You can add the `-j` flag followed by a number to run commands in parallel depending on the computing architecture used.
 
-## Details on the project annotation file
+### Project annotation file examples
 
-Note that bisulfite-conversion experiments that represent both mc and hmc should have a 1 in each column. Input pulldowns can be matched to the pulldown (e.g. `mc=1` and `hmc=0` and `input=1`) or shared among pulldowns. In the case of sharing between antibodies, the entry should be doubled, as in the first example.
+Bisulfite-conversion experiments that represent both mc and hmc should have a 1 in each column. Input pulldowns can be matched to the pulldown (e.g. `mc=1` and `hmc=0` and `input=1`) or shared among pulldowns. In the case of sharing between antibodies, the entry should be doubled, as in the first example.
 
 An example of a pulldown experimental setup with sample-wise analysis. NOTE: The inputs are shared between the mc and hmc pulldown. To represent that, the input block is duplicated, within one `mc=1` and `hmc=0` and within the other `mc=0` and `hmc=1`.
 
