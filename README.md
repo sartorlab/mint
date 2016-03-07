@@ -46,7 +46,7 @@ The mint pipeline can be used for any combination of the following experimental 
 0. Install prerequisites found in [VERSIONS](https://github.com/sartorlab/mint/blob/make-refactor/VERSIONS.md).
 1. `git clone https://github.com/sartorlab/mint` in the desired install directory.
 2. In `mint/` do `mkdir projects`.
-3. Put a tab-delimited annotation file `project_name_annotation.txt` in the `mint/projects` directory. It **must** have 9 columns:
+3. Put a tab-delimited annotation file `project_name_annotation.txt` in the `mint/projects` directory. It **must** have the following 9 columns. See below for examples.
 	1. `projectID`: The name of the project.
 	2. `sampleID`: An alphanumeric ID (perhaps from SRA, GEO, a sequencing core, etc.). Typically these will be the names of the `.fastq` files.
 	3. `humanID`: The human readable ID for the sample.
