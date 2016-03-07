@@ -32,8 +32,8 @@ The mint pipeline can be used for any combination of the following experimental 
 
 ## Supported Experimental Setups
 
-* **Hybrid** experimental setups include data from both bisulfite-conversion experiments (BS-seq, WGBS, RRBS, etc.) and pulldown experiments (hMeDIP-seq, hMeSeal, etc.).
-* **Pulldown** experimental setups include only data from pulldowns with an antibody such as MeDIP-seq, hMeDIP-seq, etc.
+* **Hybrid** experimental setups use data from both bisulfite-conversion experiments (BS-seq, WGBS, RRBS, etc.) and pulldown experiments (hMeDIP-seq, hMeSeal, etc.).
+* **Pulldown** experimental setups use data from pulldowns with an antibody such as MeDIP-seq, hMeDIP-seq, etc.
 * *NOTE*: Purely bisulfite setups (e.g. RRBS + oxBS-seq, RRBS + TAB-seq, etc.) are not currently supported.
 
 ## Supported Analysis Workflows
