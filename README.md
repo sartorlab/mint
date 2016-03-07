@@ -19,12 +19,12 @@ Classification is done by intersecting the resulting regions from the above tool
 Sites and regions of methylation, differential methylation, and methylation classifications are annotated to genomic regions using the [annotatr](https://www.github.com/rcavalcante/annotatr) R package. A variety of summary graphs are automatically generated at the sample and comparison level.
 
 A track hub is created for the [UCSC Genome Browser](https://genome.ucsc.edu) that includes the following tracks:
-	* Percent methylation tracks from the bismark methylation extractor.
-	* Pileup tracks of pulldown coverage for pulldowns and inputs.
-	* Peak tracks of methylated regions from pulldowns.
-	* Percent methylation difference between groups from methylSig.
-	* Peak tracks of differentially methylated regions from PePr.
-	* Classification tracks.
+* Percent methylation tracks from the bismark methylation extractor.
+* Pileup tracks of pulldown coverage for pulldowns and inputs.
+* Peak tracks of methylated regions from pulldowns.
+* Percent methylation difference between groups from methylSig.
+* Peak tracks of differentially methylated regions from PePr.
+* Classification tracks.
 
 # Usage
 
@@ -33,15 +33,12 @@ The mint pipeline can be used for any combination of the following experimental 
 ## Supported Experimental Setups
 
 * **Hybrid** experimental setups include data from both bisulfite-conversion experiments (BS-seq, WGBS, RRBS, etc.) and pulldown experiments (hMeDIP-seq, hMeSeal, etc.).
-
 * **Pulldown** experimental setups include only data from pulldowns with an antibody such as MeDIP-seq, hMeDIP-seq, etc.
-
 * *NOTE*: Purely bisulfite setups (e.g. RRBS + oxBS-seq, RRBS + TAB-seq, etc.) are not currently supported.
 
 ## Supported Analysis Workflows
 
 * **Sample-wise** analysis workflows combine information from experiments at the sample level only.
-
 * **Comparison-wise** analysis workflows combine information from experiments at the level of groups to be compared for differential methylation.
 
 ## Starting a project
