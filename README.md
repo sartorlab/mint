@@ -61,7 +61,7 @@ The mint pipeline can be used for any combination of the following experimental 
 ```{bash}
 	Rscript init.R --project name --genome g --datapath path/to/data/matching/sampleID.fastq.gz
 ```
-	The script does the following:
+The script does the following:
 	* Creates the directory structure for the project based on the project annotation file.
 	* Copies the project annotation file to `mint/projects/name/name_annotation.txt`.
 	* Copies `template_config.mk` and `template_makefile` into `mint/projects/name`.
