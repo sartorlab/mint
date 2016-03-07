@@ -162,14 +162,17 @@ plot_counts = visualize_annotation(
 	y_label = '# Regions')
 ggplot2::ggsave(filename = counts_png, plot = plot_counts, width = 8, height = 8)
 
-# Heatmap of regions in pairs of annotations
-cocounts_png = sprintf('summary/figures/%s_cocounts.png', prefix)
-plot_cocounts = visualize_coannotations(
-	annotated_regions = ar,
-	annotation_order = a_all_order,
-	plot_title = sprintf('%s regions in pairs of annotations', prefix),
-	axes_label = 'Annotations')
-ggplot2::ggsave(filename = cocounts_png, plot = plot_cocounts, width = 8, height = 8)
+# Other classifications are too big for this
+if(class_type == 'simple') {
+	# Heatmap of regions in pairs of annotations
+	cocounts_png = sprintf('summary/figures/%s_cocounts.png', prefix)
+	plot_cocounts = visualize_coannotations(
+		annotated_regions = ar,
+		annotation_order = a_all_order,
+		plot_title = sprintf('%s regions in pairs of annotations', prefix),
+		axes_label = 'Annotations')
+	ggplot2::ggsave(filename = cocounts_png, plot = plot_cocounts, width = 8, height = 8)
+}
 
 # Regions split by category and stacked by CpG annotations (count)
 cat_count_cpgs_png = sprintf('summary/figures/%s_cat_count_cpgs.png', prefix)
