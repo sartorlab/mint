@@ -59,6 +59,21 @@ The mint pipeline can be used for any combination of the following experimental 
 	7. `hmc`: A binary value indicating whether the sample represents 5hmc methylation.
 	8. `input`: A binary value indicating whether the sample represents an input.
 	9. `group`: A binary value indicating which samples belong to one of two groups.
+4. Know where your data matching the `sampleID` column in the annotation file is located.
+5. In `mint/` do `Rscript init.R --project name --genome g --datapath path/to/data/matching/sampleID.fastq.gz`
+6. In `mint/projects/name` modify the `config.mk` file to reflect the location of tools, and the desired parameters for analysis.
+7. Run the analyses. `mint` automatically generates PBS scripts (which need to be customized) for computing clusters in `mint/projects/name/pbs_jobs`, or you can use the following make commands from `mint/projects/name`. NOTE: Depending on your experimental and workflow setup encoded in the project annotation file, some of the `make` commands might not be available for the project.
+	* `make bisulfite_align`
+	* `make pulldown_align`
+	* `make pulldown_sample`
+	* `make bisulfite_compare`
+	* `make pulldown_compare`
+	* `make sample_classification`
+	* `make compare_classification`
+	* You can add the `-n` flag to `make` to see what commands will be run.
+	* You can add the `-j` flag followed by a number to run commands in parallel depending on the computing architecture used.
+
+## Details on the project annotation file
 
 Note that bisulfite-conversion experiments that represent both mc and hmc should have a 1 in each column. Input pulldowns can be matched to the pulldown (e.g. `mc=1` and `hmc=0` and `input=1`) or shared among pulldowns. In the case of sharing between antibodies, the entry should be doubled, as in the first example.
 
@@ -149,17 +164,3 @@ hnscc_13	comparison1	HPV+_v_HPV-	0	1	1	1	0	0,1
 hnscc_13	comparison2	int+_v_int-	1	0	0	1	0	2,3
 hnscc_13	comparison2	int+_v_int-	0	1	1	1	0	2,3
 ```
-
-4. Know where your base data is matching the `sampleID` column in the annotation file.
-5. In `mint/` do `Rscript init.R --project name --genome g --datapath path/to/data/matching/sampleID.fastq.gz`
-6. In `mint/projects/name` modify the `config.mk` file to reflect the location of tools, and the desired parameters for analysis.
-7. Run the analyses. `mint` automatically generates PBS scripts (which need to be customized) for computing clusters in `mint/projects/name/pbs_jobs`, or you can use the following make commands from `mint/projects/name`. NOTE: Depending on your experimental and workflow setup encoded in the project annotation file, some of the `make` commands might not be available for the project.
-	* `make bisulfite_align`
-	* `make pulldown_align`
-	* `make pulldown_sample`
-	* `make bisulfite_compare`
-	* `make pulldown_compare`
-	* `make sample_classification`
-	* `make compare_classification`
-	* You can add the `-n` flag to `make` to see what commands will be run.
-	* You can add the `-j` flag followed by a number to run commands in parallel depending on the computing architecture used.
