@@ -72,7 +72,7 @@ pulldown_sample_q = c(
 	'# Put your job commands after this line',
 	sprintf('cd ~/latte/mint/projects/%s/',project),
 	'make -j 4 pulldown_sample')
-cat(pulldown_sample_q, file=sprintf('projects/%s/pulldown_sample.q', project), sep='\n')
+cat(pulldown_sample_q, file=sprintf('projects/%s/pbs_jobs/pulldown_sample.q', project), sep='\n')
 
 for(i in 1:nrow(pulldown_samples_noinput)) {
 	# trackDb.txt entry for MACS2 output

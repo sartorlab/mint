@@ -108,7 +108,7 @@ bisulfite_align_q = c(
 	'# Put your job commands after this line',
 	sprintf('cd ~/latte/mint/projects/%s/',project),
 	'make -j 2 bisulfite_align')
-cat(bisulfite_align_q, file=sprintf('projects/%s/bisulfite_align.q', project), sep='\n')
+cat(bisulfite_align_q, file=sprintf('projects/%s/pbs_jobs/bisulfite_align.q', project), sep='\n')
 
 for(i in 1:nrow(bisulfite_samples)) {
 	# trackDb.txt entry for Bismark methylation calls

@@ -74,7 +74,7 @@ pulldown_align_q = c(
 	'# Put your job commands after this line',
 	sprintf('cd ~/latte/mint/projects/%s/',project),
 	'make -j 4 pulldown_align')
-cat(pulldown_align_q, file=sprintf('projects/%s/pulldown_align.q', project), sep='\n')
+cat(pulldown_align_q, file=sprintf('projects/%s/pbs_jobs/pulldown_align.q', project), sep='\n')
 
 for(i in 1:nrow(pulldown_samples)) {
 	# trackDb.txt entry for chip/input pulldown coverages

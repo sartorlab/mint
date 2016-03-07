@@ -149,5 +149,5 @@ if(bool_bis_comp) {
 		'# Put your job commands after this line',
 		sprintf('cd ~/latte/mint/projects/%s/',project),
 		'make -j 4 bisulfite_compare')
-	cat(bisulfite_compare_q, file=sprintf('projects/%s/bisulfite_compare.q', project), sep='\n')
+	cat(bisulfite_compare_q, file=sprintf('projects/%s/pbs_jobs/bisulfite_compare.q', project), sep='\n')
 }

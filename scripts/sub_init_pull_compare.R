@@ -168,6 +168,6 @@ if(bool_pull_comp) {
 		'# Put your job commands after this line',
 		sprintf('cd ~/latte/mint/projects/%s/',project),
 		'make pulldown_compare')
-	cat(pulldown_compare_q, file=sprintf('projects/%s/pulldown_compare.q', project), sep='\n')
+	cat(pulldown_compare_q, file=sprintf('projects/%s/pbs_jobs/pulldown_compare.q', project), sep='\n')
 
 }

@@ -144,7 +144,7 @@ pulldown_sample_q = c(
 	'# Put your job commands after this line',
 	sprintf('cd ~/latte/mint/projects/%s/',project),
 	'make -j 4 sample_classification')
-cat(pulldown_sample_q, file=sprintf('projects/%s/classify_sample.q', project), sep='\n')
+cat(pulldown_sample_q, file=sprintf('projects/%s/pbs_jobs/classify_sample.q', project), sep='\n')
 
 for(sample in unique(samples$humanID)) {
 	# trackDb.txt entry for sample classification
