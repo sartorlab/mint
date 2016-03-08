@@ -14,7 +14,7 @@ genome = opt$genome
 if(grepl('_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt', file)) {
 	sample = gsub('_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt','', basename(file))
 	suffix = 'bismark'
-} else if (grepl('_methylSig_for_annotatr.txt')) {
+} else if (grepl('_methylSig_for_annotatr.txt', file)) {
 	sample = gsub('_methylSig_for_annotatr.txt','', basename(file))
 	suffix = 'methylSig'
 }
