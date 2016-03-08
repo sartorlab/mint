@@ -68,6 +68,8 @@ if(bool_bis_comp) {
 		# Targets
 		msig_results = sprintf('$(DIR_BIS_MSIG)/%s_methylSig.txt', var_comparison)
 		msig_tmp_results = sprintf('$(DIR_BIS_MSIG)/%s_methylSig_tmp.txt', var_comparison)
+		annotatr_bed = sprintf('$(DIR_BIS_MSIG)/%s_methylSig_for_annotatr.txt', var_name)
+		annotatr_png = sprintf('$(DIR_SUM_FIGURES)/%s_methylSig_counts.png', var_name)
 		msig_bigwig = sprintf('$(DIR_TRACK)/%s_methylSig.bw', var_comparison)
 
 		########################################################################
@@ -77,7 +79,7 @@ if(bool_bis_comp) {
 		make_vars_bis_compare = c(
 			'################################################################################',
 			'# Workflow for bisulfite_compare',
-			sprintf('BISULFITE_COMPARE_%s_PREREQS := %s %s', i, msig_results, msig_bigwig),
+			sprintf('BISULFITE_COMPARE_%s_PREREQS := %s %s %s', i, msig_results, msig_bigwig, annotatr_png),
 			sprintf('BISULFITE_COMPARE_%s_CYTFILES := %s', i, var_cytfiles),
 			sprintf('BISULFITE_COMPARE_%s_SAMPLEIDS := %s', i, var_sampleids),
 			sprintf('BISULFITE_COMPARE_%s_TREATMENT := %s', i, var_treatment),
@@ -98,6 +100,13 @@ if(bool_bis_comp) {
 			sprintf('.INTERMEDIATE : %s', msig_tmp_results),
 			sprintf('%s : %s', msig_tmp_results, msig_results), # THIS IS CUSTOMIZABLE to p-value or FDR and the threshold
 			"	awk -v OFS='\\t' '$$5 < 0.05 {print $$1, $$2, $$3, $$7 }' $^ | sort -T . -k1,1 -k2,2n > $@",
+			'',
+			sprintf('.INTERMEDIATE : %s', annotatr_bed),
+			sprintf('%s : %s', annotatr_bed, msig_results),
+			'	awk -f ../../scripts/methylSig_to_annotatr.awk $< > $@',
+			'',
+			sprintf('%s : %s', annotatr_png, annotatr_bed),
+			'	Rscript ../../scripts/annotatr_bis_align.R --file $< --genome $(GENOME)',
 			'',
 			sprintf('%s : %s', msig_bigwig, msig_tmp_results),
 			'	bedGraphToBigWig $^ $(CHROM_PATH) $@',
