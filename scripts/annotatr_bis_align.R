@@ -24,15 +24,17 @@ if(grepl('_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt', file)) {
 # Read
 if(suffix == 'bismark') {
 	column_names = c('chr','start','end','name','coverage','strand','perc_meth')
+	strand = TRUE
 } else if (suffix == 'methylSig') {
 	column_names = c('chr','start','end','DM_status','pvalue','strand','meth_diff','mu1','mu0')
+	strand = FALSE
 }
 
 r = read_bed(
 	file = file,
 	col.names = column_names,
 	genome = genome,
-	stranded = TRUE,
+	stranded = strand,
 	use.score = TRUE)
 
 # sign-log the p-values for volcano plots
