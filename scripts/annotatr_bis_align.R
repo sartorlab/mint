@@ -168,8 +168,8 @@ if(suffix == 'methylSig') {
 		facet = 'annot_type',
 		facet_order = a_all_order,
 		bin_width = 5,
-		plot_title = sprintf('%s percent meth. over annotations', sample),
-		x_label = 'Percent Methylation')
+		plot_title = sprintf('%s methylation difference over annotations', sample),
+		x_label = 'Methylation Difference (Group1 - Group0)')
 	ggplot2::ggsave(filename = methdiff_png, plot = plot_methdiff, width = 8, height = 8)
 
 	volcano_png = sprintf('summary/figures/%s_%s_volcano.png', sample, suffix)
@@ -180,7 +180,7 @@ if(suffix == 'methylSig') {
 		facet = 'annot_type',
 		facet_order = a_all_order,
 		plot_title = sprintf('%s meth. diff. vs -log10(pval)', sample),
-		x_label = 'Methylation Difference',
+		x_label = 'Methylation Difference (Group1 - Group0)',
 		y_label = '-log10(pvalue)')
 	ggplot2::ggsave(filename = volcano_png, plot = plot_volcano, width = 8, height = 8)
 
@@ -191,7 +191,7 @@ if(suffix == 'methylSig') {
 	  x_order = cats_order, fill_order = a_cpg_order, position='stack',
 	  plot_title = sprintf('%s DM status by Annotation', display_type),
 	  legend_title = 'Annotations',
-	  x_label = sprintf('%s DM status', display_type),
+	  x_label = sprintf('%s DM status', sample),
 	  y_label = 'Count')
 	ggplot2::ggsave(filename = cat_count_cpgs_png, plot = plot_cat_count_cpgs, width = 8, height = 8)
 
@@ -200,7 +200,7 @@ if(suffix == 'methylSig') {
 	plot_cat_count_genes = visualize_categorical(
 	  annotated_regions = ar, x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_gene_order, position='stack',
-	  plot_title = sprintf('%s DM status by Annotation', display_type),
+	  plot_title = sprintf('%s DM status by Annotation', sample),
 	  legend_title = 'Annotations',
 	  x_label = sprintf('%s DM status', display_type),
 	  y_label = 'Count')
