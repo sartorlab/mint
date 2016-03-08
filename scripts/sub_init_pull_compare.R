@@ -88,7 +88,7 @@ if(bool_pull_comp) {
 		up_bed = sprintf('$(DIR_PULL_PEPR)/%s__PePr_up_peaks.bed', var_name)
 		down_bed = sprintf('$(DIR_PULL_PEPR)/%s__PePr_down_peaks.bed', var_name)
 		combined_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_combined.bed', var_name)
-		annotatr_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_for_annotatr.bed', var_name)
+		annotatr_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_for_annotatr.txt', var_name)
 		annotatr_png = sprintf('$(DIR_SUM_FIGURES)/%s_PePr_counts.png', var_name)
 		bigbed = sprintf('$(DIR_TRACK)/%s_PePr_peaks.bb', var_name)
 
