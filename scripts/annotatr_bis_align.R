@@ -183,7 +183,7 @@ if(suffix == 'methylSig') {
 	ggplot2::ggsave(filename = volcano_png, plot = plot_volcano, width = 8, height = 8)
 
 	# Regions split by category and stacked by CpG annotations (count)
-	cat_count_cpgs_png = sprintf('summary/figures/%s_%s_DMstatus_count_cpgs.png', prefix, suffix)
+	cat_count_cpgs_png = sprintf('summary/figures/%s_%s_DMstatus_count_cpgs.png', sample, suffix)
 	plot_cat_count_cpgs = visualize_categorical(
 	  annotated_regions = ar, x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_cpg_order, position='stack',
@@ -194,7 +194,7 @@ if(suffix == 'methylSig') {
 	ggplot2::ggsave(filename = cat_count_cpgs_png, plot = plot_cat_count_cpgs, width = 8, height = 8)
 
 	# Regions split by category and stacked by knownGene annotations (count)
-	cat_count_genes_png = sprintf('summary/figures/%s_%s_DMstatus_count_genes.png', prefix, suffix)
+	cat_count_genes_png = sprintf('summary/figures/%s_%s_DMstatus_count_genes.png', sample, suffix)
 	plot_cat_count_genes = visualize_categorical(
 	  annotated_regions = ar, x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_gene_order, position='stack',
@@ -205,7 +205,7 @@ if(suffix == 'methylSig') {
 	ggplot2::ggsave(filename = cat_count_genes_png, plot = plot_cat_count_genes, width = 8, height = 8)
 
 	# Regions split by category and filled by CpG annotations (prop)
-	cat_prop_cpgs_png = sprintf('summary/figures/%s_%s_DMstatus_prop_cpgs.png', prefix, suffix)
+	cat_prop_cpgs_png = sprintf('summary/figures/%s_%s_DMstatus_prop_cpgs.png', sample, suffix)
 	plot_cat_prop_cpgs = visualize_categorical(
 	  annotated_regions = ar, x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_cpg_order, position='fill',
@@ -216,7 +216,7 @@ if(suffix == 'methylSig') {
 	ggplot2::ggsave(filename = cat_prop_cpgs_png, plot = plot_cat_prop_cpgs, width = 8, height = 8)
 
 	# Regions split by category and filled by knownGene annotations (prop)
-	cat_prop_genes_png = sprintf('summary/figures/%s_%s_DMstatus_prop_genes.png', prefix, suffix)
+	cat_prop_genes_png = sprintf('summary/figures/%s_%s_DMstatus_prop_genes.png', sample, suffix)
 	plot_cat_prop_genes = visualize_categorical(
 	  annotated_regions = ar, x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_gene_order, position='fill',
