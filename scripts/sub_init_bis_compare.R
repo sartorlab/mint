@@ -68,8 +68,8 @@ if(bool_bis_comp) {
 		# Targets
 		msig_results = sprintf('$(DIR_BIS_MSIG)/%s_methylSig.txt', var_comparison)
 		msig_tmp_results = sprintf('$(DIR_BIS_MSIG)/%s_methylSig_tmp.txt', var_comparison)
-		annotatr_bed = sprintf('$(DIR_BIS_MSIG)/%s_methylSig_for_annotatr.txt', var_name)
-		annotatr_png = sprintf('$(DIR_SUM_FIGURES)/%s_methylSig_counts.png', var_name)
+		annotatr_bed = sprintf('$(DIR_BIS_MSIG)/%s_methylSig_for_annotatr.txt', var_comparison)
+		annotatr_png = sprintf('$(DIR_SUM_FIGURES)/%s_methylSig_counts.png', var_comparison)
 		msig_bigwig = sprintf('$(DIR_TRACK)/%s_methylSig.bw', var_comparison)
 
 		########################################################################
