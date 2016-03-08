@@ -99,7 +99,7 @@ if(bool_pull_comp) {
 		make_var_pull_compare = c(
 			'################################################################################',
 			'# Workflow for pulldown_compare',
-			sprintf('PULLDOWN_COMPARE_%s_PREREQS := %s %s %s', i, up_bed, bigbed, input_signal),
+			sprintf('PULLDOWN_COMPARE_%s_PREREQS := %s %s %s', i, up_bed, bigbed, input_signal, annotatr_png),
 			sprintf('PULLDOWN_COMPARE_%s_INPUT1 := %s', i, var_input1),
 			sprintf('PULLDOWN_COMPARE_%s_INPUT2 := %s', i, var_input2),
 			sprintf('PULLDOWN_COMPARE_%s_CHIP1 := %s', i, var_chip1),
