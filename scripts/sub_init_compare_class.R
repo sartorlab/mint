@@ -137,7 +137,7 @@ $(DIR_SUM_FIGURES)/%%_compare_class_counts.png : $(DIR_CLASS_COMPARE)/%%_compare
 
 .INTERMEDIATE : $(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt
 $(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
-	awk -v OFS="\\t" \'{ print $$1, $$2, $$3, $$4 }\' $< > $@
+	cut -f 1-4 $< > $@
 
 # NOTE: There is a known bug in make that incorrectly determines implicit intermediate
 # files when they occur in a list of multiple targets and prerequisites.

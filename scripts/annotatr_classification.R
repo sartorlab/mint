@@ -22,6 +22,9 @@ if(grepl('simple', prefix)) {
 } else if (grepl('compare', prefix)) {
 	class_type = 'compare'
 	display_type = 'Compare'
+} else if (grepl('PePr', prefix)) {
+	class_type = 'PePr'
+	display_type = 'PePr'
 } else {
 	stop('Invalid classification type. Must be one of simple, sample, or compare.')
 }
@@ -129,6 +132,10 @@ if(class_type == 'simple') {
 		'hypo-mc',
 		'hypo_hmc',
 		'no_DM')
+} else if (class_type == 'PePr') {
+	cats_order = c(
+		'hyper',
+		'hypo')
 }
 
 ###############################################################
@@ -163,7 +170,7 @@ plot_counts = visualize_annotation(
 ggplot2::ggsave(filename = counts_png, plot = plot_counts, width = 8, height = 8)
 
 # Other classifications are too big for this
-if(class_type == 'simple') {
+if(class_type == 'simple' || class_type == 'PePr') {
 	# Heatmap of regions in pairs of annotations
 	cocounts_png = sprintf('summary/figures/%s_cocounts.png', prefix)
 	plot_cocounts = visualize_coannotations(
