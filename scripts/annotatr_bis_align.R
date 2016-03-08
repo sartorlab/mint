@@ -189,7 +189,7 @@ if(suffix == 'methylSig') {
 	plot_cat_count_cpgs = visualize_categorical(
 	  annotated_regions = ar, x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_cpg_order, position='stack',
-	  plot_title = sprintf('%s DM status by Annotation', display_type),
+	  plot_title = sprintf('%s DM status by Annotation', sample),
 	  legend_title = 'Annotations',
 	  x_label = sprintf('%s DM status', sample),
 	  y_label = 'Count')
@@ -202,7 +202,7 @@ if(suffix == 'methylSig') {
 	  x_order = cats_order, fill_order = a_gene_order, position='stack',
 	  plot_title = sprintf('%s DM status by Annotation', sample),
 	  legend_title = 'Annotations',
-	  x_label = sprintf('%s DM status', display_type),
+	  x_label = sprintf('%s DM status', sample),
 	  y_label = 'Count')
 	ggplot2::ggsave(filename = cat_count_genes_png, plot = plot_cat_count_genes, width = 8, height = 8)
 
@@ -211,9 +211,9 @@ if(suffix == 'methylSig') {
 	plot_cat_prop_cpgs = visualize_categorical(
 	  annotated_regions = ar, x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_cpg_order, position='fill',
-	  plot_title = sprintf('%s DM status by Annotation', display_type),
+	  plot_title = sprintf('%s DM status by Annotation', sample),
 	  legend_title = 'Annotations',
-	  x_label = sprintf('%s DM status', display_type),
+	  x_label = sprintf('%s DM status', sample),
 	  y_label = 'Proportion')
 	ggplot2::ggsave(filename = cat_prop_cpgs_png, plot = plot_cat_prop_cpgs, width = 8, height = 8)
 
@@ -222,9 +222,9 @@ if(suffix == 'methylSig') {
 	plot_cat_prop_genes = visualize_categorical(
 	  annotated_regions = ar, x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_gene_order, position='fill',
-	  plot_title = sprintf('%s DM status by Annotation', display_type),
+	  plot_title = sprintf('%s DM status by Annotation', sample),
 	  legend_title = 'Annotations',
-	  x_label = sprintf('%s DM status', display_type),
+	  x_label = sprintf('%s DM status', sample),
 	  y_label = 'Proportion')
 	ggplot2::ggsave(filename = cat_prop_genes_png, plot = plot_cat_prop_genes, width = 8, height = 8)
 
