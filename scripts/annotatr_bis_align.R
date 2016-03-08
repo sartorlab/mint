@@ -174,7 +174,7 @@ if(suffix == 'methylSig') {
 	plot_volcano = visualize_numerical(
 		tbl = ar,
 		x = 'meth_diff',
-		y = 'pvalue'
+		y = 'pvalue',
 		facet = 'annot_type',
 		facet_order = a_all_order,
 		plot_title = sprintf('%s meth. diff. vs -log10(pval)', sample),
