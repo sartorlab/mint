@@ -96,6 +96,8 @@ if(genome %in% c('hg19','hg38','mm9','mm10')) {
 	}
 }
 
+cats_order = c('hyper','hypo','noDM')
+
 ###############################################################
 # Annotate regions
 ar = annotate_regions(
