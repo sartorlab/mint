@@ -16,6 +16,7 @@ genome = opt$genome
 datapath = opt$datapath
 
 file_make = sprintf('projects/%s/makefile', project)
+file_config = sprintf('projects/%s/config.mk', project)
 dir_hub = sprintf('projects/%s/%s_hub', project, project)
 dir_track = sprintf('%s/%s', dir_hub, genome)
 

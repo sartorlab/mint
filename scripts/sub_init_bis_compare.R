@@ -95,7 +95,7 @@ if(bool_bis_comp) {
 			sprintf('bisulfite_compare_%s : $(BISULFITE_COMPARE_%s_PREREQS)', i, i),
 			'',
 			sprintf('%s : %s', msig_results, var_cytfiles_pre),
-			sprintf('	Rscript ../../scripts/process_bisulfite_comparison_run_methylSig.R --project $(PROJECT) --cytfiles $(BISULFITE_COMPARE_%s_CYTFILES) --sampleids $(BISULFITE_COMPARE_%s_SAMPLEIDS) --treatment $(BISULFITE_COMPARE_%s_TREATMENT) --assembly $(GENOME) --pipeline mint --comparison $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_METHYLSIG)', i, i, i, i),
+			sprintf('	Rscript ../../scripts/process_bisulfite_comparison_run_methylSig.R --project $(PROJECT) --cytfiles $(BISULFITE_COMPARE_%s_CYTFILES) --sampleids $(BISULFITE_COMPARE_%s_SAMPLEIDS) --treatment $(BISULFITE_COMPARE_%s_TREATMENT) --assembly $(GENOME) --pipeline mint --comparison $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_METHYLSIG_%s)', i, i, i, i, var_comparison),
 			'',
 			sprintf('.INTERMEDIATE : %s', msig_tmp_results),
 			sprintf('%s : %s', msig_tmp_results, msig_results), # THIS IS CUSTOMIZABLE to p-value or FDR and the threshold
@@ -115,6 +115,14 @@ if(bool_bis_comp) {
 
 		# Track the number of bisulfite compares
 		bisulfite_compares = c(bisulfite_compares, sprintf('bisulfite_compare_%s', i))
+
+		########################################################################
+		# OPTS for config.mk
+		config_bis_compare = sprintf(
+			'OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --ncores 4 --quiet FALSE --tile TRUE --dispersion both --minpergroup 2,2
+			',
+			var_comparison)
+		cat(config_bis_compare, file = file_config, sep='\n', append=T)
 
 		# trackDb.txt entry for methylSig result
 		trackEntry = c(

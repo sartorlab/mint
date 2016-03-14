@@ -35,11 +35,10 @@ OPTS_TRIMGALORE_PULLDOWN = --quality 20 --illumina --stringency 6 -e 0.2 --gzip 
 OPTS_BISMARK = --bowtie2 $(GENOME_PATH)
 # bismark_methylation_extractor
 OPTS_EXTRACTOR = --single-end --gzip --bedGraph --cutoff 5 --cytosine_report --genome_folder $(GENOME_PATH) --multicore 5
-# methylSig
-OPTS_METHYLSIG = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --ncores 4 --quiet FALSE --tile TRUE --dispersion both --minpergroup 2,2
 # bowtie2
 OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
 # macs2
 OPTS_MACS = -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/macs_peaks -n $macsPrefix
-# PePr
-OPTS_PEPR = --file-format=bam --peaktype=sharp --diff --threshold 1e-03 --remove_artefacts
+
+################################################################################
+# Comparison specific options
