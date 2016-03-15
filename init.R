@@ -85,11 +85,6 @@ bool_pull_samp = nrow(pulldown_samples) > 0
 bool_bis_comp = nrow(bisulfite_comparisons) > 0
 bool_pull_comp = nrow(pulldown_comparisons) > 0
 
-# NOTE: Error for pure bisulfite setup. Will eventually support this.
-if (bool_bis_samp && !bool_pull_samp) {
-	stop('Error: Pure bisulfite experimental setups are not currently supported.')
-}
-
 # NOTE: ADD ERROR CHECKING
 # 1. Are there input samples for pulldowns?
 # 2. If there are comparisons, do the group numbers correspond to the groups assigned to the samples?
