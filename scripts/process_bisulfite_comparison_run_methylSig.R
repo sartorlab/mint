@@ -16,7 +16,7 @@ option_list = list(
     make_option('--filterSNPs', type='logical'),
     make_option('--ncores', type='integer', default=1),
     make_option('--quiet', type='logical', default=FALSE),
-    make_option('--dmtype', type='logical'),
+    make_option('--dmtype', type='character'),
 	make_option('--winsize.tile', type='integer'),
     make_option('--dispersion', type='character'),
 	make_option('--local.disp', type='logical'),
