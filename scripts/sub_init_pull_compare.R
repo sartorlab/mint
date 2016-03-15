@@ -32,8 +32,12 @@ if(bool_pull_comp) {
 		  mark = "hmc"
 		}
 
-		# Sorting this ensures that the lower group number is A
-		groups = sort(as.integer(unlist(strsplit(group, ','))))
+		# Sorting this way ensures the higher group number is groupB
+		# NOTE: This makes the PePr DM test match that of methylSig,
+		# where control is the lower number (often 0) and the treatment
+		# is the higher number (often 1). PePr up peaks mean up in chip1/input1
+		# with respect to chip2/input2.
+		groups = sort(as.integer(unlist(strsplit(group, ','))), decreasing = TRUE)
 
 		groupA = subset(pulldown_samples,
 			grepl(groups[1], pulldown_samples$group) &
