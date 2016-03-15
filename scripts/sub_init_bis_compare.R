@@ -98,12 +98,12 @@ if(bool_bis_comp) {
 			sprintf('	Rscript ../../scripts/process_bisulfite_comparison_run_methylSig.R --project $(PROJECT) --cytfiles $(BISULFITE_COMPARE_%s_CYTFILES) --sampleids $(BISULFITE_COMPARE_%s_SAMPLEIDS) --treatment $(BISULFITE_COMPARE_%s_TREATMENT) --assembly $(GENOME) --pipeline mint --outprefix $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_METHYLSIG_%s)', i, i, i, i, var_comparison),
 			'',
 			sprintf('.INTERMEDIATE : %s', msig_tmp_results),
-			sprintf('%s : %s', msig_tmp_results, msig_results), # THIS IS CUSTOMIZABLE to p-value or FDR and the threshold
-			"	awk -v OFS='\\t' '$$5 < 0.05 {print $$1, $$2, $$3, $$7 }' $^ | sort -T . -k1,1 -k2,2n > $@",
+			sprintf('%s : %s', msig_tmp_results, msig_results), # THIS IS CUSTOMIZABLE
+			"	awk -v OFS='\\t' -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) 'NR > 1 && $6 < FDR && sqrt($7^2) > DIFF { print $$1, $$2, $$3, $$7 }' $^ | sort -T . -k1,1 -k2,2n > $@",
 			'',
 			sprintf('.INTERMEDIATE : %s', annotatr_bed),
 			sprintf('%s : %s', annotatr_bed, msig_results),
-			'	awk -f ../../scripts/methylSig_to_annotatr.awk $< > $@',
+			'	awk -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) -f ../../scripts/methylSig_to_annotatr.awk $< > $@',
 			'',
 			sprintf('%s : %s', annotatr_png, annotatr_bed),
 			'	Rscript ../../scripts/annotatr_bis_align.R --file $< --genome $(GENOME)',
