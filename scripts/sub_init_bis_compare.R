@@ -70,7 +70,7 @@ if(bool_bis_comp) {
 		msig_tmp_results = sprintf('$(DIR_BIS_MSIG)/%s_$(OPT_DM_TYPE)_methylSig_tmp.txt', var_comparison)
 		annotatr_bed = sprintf('$(DIR_BIS_MSIG)/%s_$(OPT_DM_TYPE)_methylSig_for_annotatr.txt', var_comparison)
 		annotatr_png = sprintf('$(DIR_SUM_FIGURES)/%s_$(OPT_DM_TYPE)_methylSig_counts.png', var_comparison)
-		msig_bigwig = sprintf('$(DIR_TRACK)/%s_$(OPT_DM_TYPE)_methylSig.bw', var_comparison)
+		msig_bigwig = sprintf('$(DIR_TRACK)/%s_methylSig.bw', var_comparison)
 
 		########################################################################
 		# Variables for the makefile
@@ -99,7 +99,7 @@ if(bool_bis_comp) {
 			'',
 			sprintf('.INTERMEDIATE : %s', msig_tmp_results),
 			sprintf('%s : %s', msig_tmp_results, msig_results), # THIS IS CUSTOMIZABLE
-			"	awk -v OFS='\\t' -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) 'NR > 1 && $6 < FDR && sqrt($7^2) > DIFF { print $$1, $$2, $$3, $$7 }' $^ | sort -T . -k1,1 -k2,2n > $@",
+			"	awk -v OFS='\\t' -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) 'NR > 1 && $$6 < FDR && sqrt($$7^2) > DIFF { print $$1, $$2, $$3, $$7 }' $^ | sort -T . -k1,1 -k2,2n > $@",
 			'',
 			sprintf('.INTERMEDIATE : %s', annotatr_bed),
 			sprintf('%s : %s', annotatr_bed, msig_results),
