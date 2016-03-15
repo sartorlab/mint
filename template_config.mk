@@ -41,4 +41,11 @@ OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
 OPTS_MACS = -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/macs_peaks -n $macsPrefix
 
 ################################################################################
+# Command line options for methylSig and sample and compare classifications
+# DMC for CpG resolution, and DMR for region resolution (window size parameter
+# used in the methylSig options below).
+
+OPT_DM_TYPE = DMR
+
+################################################################################
 # Comparison specific options

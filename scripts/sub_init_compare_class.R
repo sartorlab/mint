@@ -6,19 +6,19 @@ if(bool_bis_comp || bool_pull_comp) {
 make_rule_compare_class_bis_module = '
 # Intermediates for the bisulfite piece
 .INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_DMup.txt
-$(DIR_BIS_MSIG)/%_bisulfite_DMup.txt : $(DIR_BIS_MSIG)/%_bisulfite_methylSig.txt
+$(DIR_BIS_MSIG)/%_bisulfite_DMup.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OPT_DM_TYPE)_methylSig.txt
 	awk -v OFS="\\t" \'NR > 1 && $$5 < 0.05 && $$7 > 0 { print $$1, $$2, $$3 }\' $< | sort -T . -k1,1 -k2,2n > $@
 
 .INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_DMdown.txt
-$(DIR_BIS_MSIG)/%_bisulfite_DMdown.txt : $(DIR_BIS_MSIG)/%_bisulfite_methylSig.txt
+$(DIR_BIS_MSIG)/%_bisulfite_DMdown.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OPT_DM_TYPE)_methylSig.txt
 	awk -v OFS="\\t" \'NR > 1 && $$5 < 0.05 && $$7 < 0 { print $$1, $$2, $$3 }\' $< | sort -T . -k1,1 -k2,2n > $@
 
 .INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_noDM_signal.txt
-$(DIR_BIS_MSIG)/%_bisulfite_noDM_signal.txt : $(DIR_BIS_MSIG)/%_bisulfite_methylSig.txt
+$(DIR_BIS_MSIG)/%_bisulfite_noDM_signal.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OPT_DM_TYPE)_methylSig.txt
 	awk -v OFS="\\t" \'NR > 1 && $$5 > 0.05 { print $$1, $$2, $$3 }\' $< | sort -T . -k1,1 -k2,2n > $@
 
 .INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_noDM_nosignal.txt
-$(DIR_BIS_MSIG)/%_bisulfite_noDM_nosignal.txt : $(DIR_BIS_MSIG)/%_bisulfite_methylSig.txt
+$(DIR_BIS_MSIG)/%_bisulfite_noDM_nosignal.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OPT_DM_TYPE)_methylSig.txt
 	bedtools complement -i <(awk -v OFS="\\t" \'NR > 1 { print $$1, $$2, $$3 }\' $<) -g <(sort -T . -k1,1 $(CHROM_PATH)) | sort -T . -k1,1 -k2,2n > $@
 '
 

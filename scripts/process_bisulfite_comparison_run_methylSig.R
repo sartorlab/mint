@@ -1,9 +1,6 @@
 library(optparse)
 library(methylSig)
 
-# Example call
-#    Rscript ~/latte/Methylation/Methylation_Code/process_errbs_comparison-wise_run_methylSig.R  --cytfiles   --sampleids   --assembly   --pipeline  --context  --resolution  --treatment  --destranded  --maxcount  --mincount  --filterSNPs  --ncores  --quiet  --tile  --dispersion  --minpergroup
-
 option_list = list(
     make_option('--project', type='character'),
     make_option('--cytfiles', type='character'),
@@ -19,17 +16,23 @@ option_list = list(
     make_option('--filterSNPs', type='logical'),
     make_option('--ncores', type='integer', default=1),
     make_option('--quiet', type='logical', default=FALSE),
-    make_option('--tile', type='logical'),
+    make_option('--dmtype', type='logical'),
+	make_option('--winsize.tile', type='integer'),
     make_option('--dispersion', type='character'),
+	make_option('--local.disp', type='logical'),
+	make_option('--winsize.disp', type='integer'),
+	make_option('--local.meth', type='logical'),
+	make_option('--winsize.meth', type='integer'),
     make_option('--minpergroup', type='character'),
-    make_option('--comparison', type='character')
+	make_option('--T.approx', type='logical'),
+    make_option('--outprefix', type='character')
 )
 
 opt = parse_args(OptionParser(option_list=option_list))
 
 # Setup data directory string
 project = opt$project
-comparison = opt$comparison
+prefix = opt$outprefix
 
 # Parse comma-separated arguments
 cyt_files = unlist(strsplit(opt$cytfiles, ','))
@@ -57,31 +60,42 @@ meth = methylSigReadData(
     num.cores = opt$ncores,
     quiet= opt$quiet)
 
-save(meth, file=sprintf('bisulfite/methylsig_calls/%s_raw_data.RData', comparison))
+save(meth, file=sprintf('bisulfite/methylsig_calls/%s_raw_CpG_data.RData', prefix))
 
-if(opt$tile) {
+if(opt$dmtype == 'DMR') {
     message('Doing tiled analysis')
-    meth_tiled = methylSigTile(meth, win.size=100)
+    meth_tiled = methylSigTile(meth, win.size = opt$winsize.tile)
+	save(meth_tiled, file=sprintf('bisulfite/methylsig_calls/%s_raw_region_data.RData', prefix))
 
     diff_meth = methylSigCalc(
         meth_tiled,
-        group = c('Treatment'=1,'Control'=0),
+        group = c('Treatment' = max(treatment),'Control' = min(treatment)),
         dispersion = opt$dispersion,
+		local.disp = opt$local.disp,
+		winsize.disp = opt$winsize.disp,
+		local.meth = opt$local.meth,
+		winsize.meth = opt$winsize.meth,
         min.per.group = min_per_group,
-        num.cores= opt$ncores
-        )
+		T.approx = opt$T.approx,
+        num.cores= opt$ncores)
 
-    write.methylSigDiff(diff_meth, file=sprintf('bisulfite/methylsig_calls/%s_methylSig.txt', comparison), row.names=F,quote=F,sep='\t')
-} else {
+    write.methylSigDiff(diff_meth, file=sprintf('bisulfite/methylsig_calls/%s.txt', prefix), row.names=F,quote=F,sep='\t')
+} else if (opt$dmtype == 'DMC' ){
     message('Doing CpG analysis')
     diff_meth = methylSigCalc(
         meth,
-        group = c('Treatment'=1,'Control'=0),
-        dispersion = 'both',
+        group = c('Treatment' = max(treatment),'Control' = min(treatment)),
+		dispersion = opt$dispersion,
+		local.disp = opt$local.disp,
+		winsize.disp = opt$winsize.disp,
+		local.meth = opt$local.meth,
+		winsize.meth = opt$winsize.meth,
         min.per.group = min_per_group,
-        num.cores = opt$ncores
-        )
+		T.approx = opt$T.approx,
+        num.cores= opt$ncores)
 
-    write.methylSigDiff(diff_meth, file=sprintf('bisulfite/methylsig_calls/%s_methylSig.txt', comparison), row.names=F,quote=F,sep='\t')
+    write.methylSigDiff(diff_meth, file=sprintf('bisulfite/methylsig_calls/%s.txt', prefix), row.names=F,quote=F,sep='\t')
 
+} else {
+	stop('Error in methylSig run. Invalid OPT_DM_TYPE in config.mk. Must be DMC for CpG resolution or DMR for regions of winsize.tile resolution.')
 }

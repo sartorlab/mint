@@ -66,11 +66,11 @@ if(bool_bis_comp) {
 			paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt', groupB$fullHumanID), sep='')), collapse=' ')
 
 		# Targets
-		msig_results = sprintf('$(DIR_BIS_MSIG)/%s_methylSig.txt', var_comparison)
-		msig_tmp_results = sprintf('$(DIR_BIS_MSIG)/%s_methylSig_tmp.txt', var_comparison)
-		annotatr_bed = sprintf('$(DIR_BIS_MSIG)/%s_methylSig_for_annotatr.txt', var_comparison)
-		annotatr_png = sprintf('$(DIR_SUM_FIGURES)/%s_methylSig_counts.png', var_comparison)
-		msig_bigwig = sprintf('$(DIR_TRACK)/%s_methylSig.bw', var_comparison)
+		msig_results = sprintf('$(DIR_BIS_MSIG)/%s_$(OPT_DM_TYPE)_methylSig.txt', var_comparison)
+		msig_tmp_results = sprintf('$(DIR_BIS_MSIG)/%s_$(OPT_DM_TYPE)_methylSig_tmp.txt', var_comparison)
+		annotatr_bed = sprintf('$(DIR_BIS_MSIG)/%s_$(OPT_DM_TYPE)_methylSig_for_annotatr.txt', var_comparison)
+		annotatr_png = sprintf('$(DIR_SUM_FIGURES)/%s_$(OPT_DM_TYPE)_methylSig_counts.png', var_comparison)
+		msig_bigwig = sprintf('$(DIR_TRACK)/%s_$(OPT_DM_TYPE)_methylSig.bw', var_comparison)
 
 		########################################################################
 		# Variables for the makefile
@@ -83,7 +83,7 @@ if(bool_bis_comp) {
 			sprintf('BISULFITE_COMPARE_%s_CYTFILES := %s', i, var_cytfiles),
 			sprintf('BISULFITE_COMPARE_%s_SAMPLEIDS := %s', i, var_sampleids),
 			sprintf('BISULFITE_COMPARE_%s_TREATMENT := %s', i, var_treatment),
-			sprintf('BISULFITE_COMPARE_%s_COMPARISON := %s', i, var_comparison))
+			sprintf('BISULFITE_COMPARE_%s_COMPARISON := %s_$(OPT_DM_TYPE)_methylSig', i, var_comparison))
 		cat(make_vars_bis_compare, file = file_make, sep='\n', append=T)
 
 		########################################################################
@@ -95,7 +95,7 @@ if(bool_bis_comp) {
 			sprintf('bisulfite_compare_%s : $(BISULFITE_COMPARE_%s_PREREQS)', i, i),
 			'',
 			sprintf('%s : %s', msig_results, var_cytfiles_pre),
-			sprintf('	Rscript ../../scripts/process_bisulfite_comparison_run_methylSig.R --project $(PROJECT) --cytfiles $(BISULFITE_COMPARE_%s_CYTFILES) --sampleids $(BISULFITE_COMPARE_%s_SAMPLEIDS) --treatment $(BISULFITE_COMPARE_%s_TREATMENT) --assembly $(GENOME) --pipeline mint --comparison $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_METHYLSIG_%s)', i, i, i, i, var_comparison),
+			sprintf('	Rscript ../../scripts/process_bisulfite_comparison_run_methylSig.R --project $(PROJECT) --cytfiles $(BISULFITE_COMPARE_%s_CYTFILES) --sampleids $(BISULFITE_COMPARE_%s_SAMPLEIDS) --treatment $(BISULFITE_COMPARE_%s_TREATMENT) --assembly $(GENOME) --pipeline mint --outprefix $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_METHYLSIG_%s)', i, i, i, i, var_comparison),
 			'',
 			sprintf('.INTERMEDIATE : %s', msig_tmp_results),
 			sprintf('%s : %s', msig_tmp_results, msig_results), # THIS IS CUSTOMIZABLE to p-value or FDR and the threshold
@@ -119,8 +119,9 @@ if(bool_bis_comp) {
 		########################################################################
 		# OPTS for config.mk
 		config_bis_compare = sprintf(
-			'OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --ncores 4 --quiet FALSE --tile TRUE --dispersion both --minpergroup 2,2
-			',
+'# See ?methylSig::methylSigReadData and ?methylSig::methylSigCalc after installing methylSig in R for parameter information
+OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --dmtype $(OPT_DM_TYPE) --winsize.tile 50 --dispersion both --local.disp FALSE --winsize.disp 200 --local.meth FALSE --winsize.meth 200 --minpergroup 2,2 --T.approx TRUE --ncores 4 --quiet FALSE
+',
 			var_comparison)
 		cat(config_bis_compare, file = file_config, sep='\n', append=T)
 
