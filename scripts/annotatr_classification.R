@@ -161,7 +161,7 @@ readr::write_tsv(x = count_annots, path = sprintf('summary/tables/%s_annotation_
 
 # Regular barplot of regions in annotations
 counts_png = sprintf('summary/figures/%s_counts.png', prefix)
-plot_counts = visualize_annotation(
+plot_counts = plot_annotation(
 	annotated_regions = ar,
 	annotation_order = a_all_order,
 	plot_title = sprintf('%s regions per annotation', prefix),
@@ -173,7 +173,7 @@ ggplot2::ggsave(filename = counts_png, plot = plot_counts, width = 8, height = 8
 if(class_type == 'simple' || class_type == 'PePr') {
 	# Heatmap of regions in pairs of annotations
 	cocounts_png = sprintf('summary/figures/%s_cocounts.png', prefix)
-	plot_cocounts = visualize_coannotations(
+	plot_cocounts = plot_coannotations(
 		annotated_regions = ar,
 		annotation_order = a_all_order,
 		plot_title = sprintf('%s regions in pairs of annotations', prefix),
@@ -183,7 +183,7 @@ if(class_type == 'simple' || class_type == 'PePr') {
 
 # Regions split by category and stacked by CpG annotations (count)
 cat_count_cpgs_png = sprintf('summary/figures/%s_cat_count_cpgs.png', prefix)
-plot_cat_count_cpgs = visualize_categorical(
+plot_cat_count_cpgs = plot_categorical(
   annotated_regions = ar, x='name', fill='annot_type',
   x_order = cats_order, fill_order = a_cpg_order, position='stack',
   plot_title = sprintf('%s classification by Annotation', display_type),
@@ -194,7 +194,7 @@ ggplot2::ggsave(filename = cat_count_cpgs_png, plot = plot_cat_count_cpgs, width
 
 # Regions split by category and stacked by knownGene annotations (count)
 cat_count_genes_png = sprintf('summary/figures/%s_cat_count_genes.png', prefix)
-plot_cat_count_genes = visualize_categorical(
+plot_cat_count_genes = plot_categorical(
   annotated_regions = ar, x='name', fill='annot_type',
   x_order = cats_order, fill_order = a_gene_order, position='stack',
   plot_title = sprintf('%s classification by Annotation', display_type),
@@ -205,7 +205,7 @@ ggplot2::ggsave(filename = cat_count_genes_png, plot = plot_cat_count_genes, wid
 
 # Regions split by category and filled by CpG annotations (prop)
 cat_prop_cpgs_png = sprintf('summary/figures/%s_cat_prop_cpgs.png', prefix)
-plot_cat_prop_cpgs = visualize_categorical(
+plot_cat_prop_cpgs = plot_categorical(
   annotated_regions = ar, x='name', fill='annot_type',
   x_order = cats_order, fill_order = a_cpg_order, position='fill',
   plot_title = sprintf('%s classification by Annotation', display_type),
@@ -216,7 +216,7 @@ ggplot2::ggsave(filename = cat_prop_cpgs_png, plot = plot_cat_prop_cpgs, width =
 
 # Regions split by category and filled by knownGene annotations (prop)
 cat_prop_genes_png = sprintf('summary/figures/%s_cat_prop_genes.png', prefix)
-plot_cat_prop_genes = visualize_categorical(
+plot_cat_prop_genes = plot_categorical(
   annotated_regions = ar, x='name', fill='annot_type',
   x_order = cats_order, fill_order = a_gene_order, position='fill',
   plot_title = sprintf('%s classification by Annotation', display_type),

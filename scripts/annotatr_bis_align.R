@@ -120,7 +120,7 @@ readr::write_tsv(x = count_annots, path = sprintf('summary/tables/%s_%s_annotati
 # Visualizations
 
 counts_png = sprintf('summary/figures/%s_%s_counts.png', sample, suffix)
-plot_counts = visualize_annotation(
+plot_counts = plot_annotation(
 	annotated_regions = ar,
 	annotation_order = a_all_order,
 	plot_title = sprintf('%s CpGs per annotation', sample),
@@ -129,7 +129,7 @@ plot_counts = visualize_annotation(
 ggplot2::ggsave(filename = counts_png, plot = plot_counts, width = 8, height = 8)
 
 cocounts_png = sprintf('summary/figures/%s_%s_cocounts.png', sample, suffix)
-plot_cocounts = visualize_coannotations(
+plot_cocounts = plot_coannotations(
 	annotated_regions = ar,
 	annotation_order = a_all_order,
 	plot_title = sprintf('%s CpGs in pairs of annotations', sample),
@@ -138,7 +138,7 @@ ggplot2::ggsave(filename = cocounts_png, plot = plot_cocounts, width = 8, height
 
 if(suffix == 'bismark') {
 	coverage_png = sprintf('summary/figures/%s_%s_coverage.png', sample, suffix)
-	plot_coverage = visualize_numerical(
+	plot_coverage = plot_numerical(
 		tbl = ar,
 		x = 'coverage',
 		facet = 'annot_type',
@@ -149,7 +149,7 @@ if(suffix == 'bismark') {
 	ggplot2::ggsave(filename = coverage_png, plot = plot_coverage, width = 8, height = 8)
 
 	percmeth_png = sprintf('summary/figures/%s_%s_percmeth.png', sample, suffix)
-	plot_percmeth = visualize_numerical(
+	plot_percmeth = plot_numerical(
 		tbl = ar,
 		x = 'perc_meth',
 		facet = 'annot_type',
@@ -162,7 +162,7 @@ if(suffix == 'bismark') {
 
 if(suffix == 'methylSig') {
 	methdiff_png = sprintf('summary/figures/%s_%s_methdiff.png', sample, suffix)
-	plot_methdiff = visualize_numerical(
+	plot_methdiff = plot_numerical(
 		tbl = ar,
 		x = 'meth_diff',
 		facet = 'annot_type',
@@ -173,7 +173,7 @@ if(suffix == 'methylSig') {
 	ggplot2::ggsave(filename = methdiff_png, plot = plot_methdiff, width = 8, height = 8)
 
 	volcano_png = sprintf('summary/figures/%s_%s_volcano.png', sample, suffix)
-	plot_volcano = visualize_numerical(
+	plot_volcano = plot_numerical(
 		tbl = ar,
 		x = 'meth_diff',
 		y = 'pvalue',
@@ -186,7 +186,7 @@ if(suffix == 'methylSig') {
 
 	# Regions split by category and stacked by CpG annotations (count)
 	cat_count_cpgs_png = sprintf('summary/figures/%s_%s_DMstatus_count_cpgs.png', sample, suffix)
-	plot_cat_count_cpgs = visualize_categorical(
+	plot_cat_count_cpgs = plot_categorical(
 	  annotated_regions = ar, x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_cpg_order, position='stack',
 	  plot_title = sprintf('%s DM status by Annotation', sample),
@@ -197,7 +197,7 @@ if(suffix == 'methylSig') {
 
 	# Regions split by category and stacked by knownGene annotations (count)
 	cat_count_genes_png = sprintf('summary/figures/%s_%s_DMstatus_count_genes.png', sample, suffix)
-	plot_cat_count_genes = visualize_categorical(
+	plot_cat_count_genes = plot_categorical(
 	  annotated_regions = ar, x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_gene_order, position='stack',
 	  plot_title = sprintf('%s DM status by Annotation', sample),
@@ -208,7 +208,7 @@ if(suffix == 'methylSig') {
 
 	# Regions split by category and filled by CpG annotations (prop)
 	cat_prop_cpgs_png = sprintf('summary/figures/%s_%s_DMstatus_prop_cpgs.png', sample, suffix)
-	plot_cat_prop_cpgs = visualize_categorical(
+	plot_cat_prop_cpgs = plot_categorical(
 	  annotated_regions = ar, x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_cpg_order, position='fill',
 	  plot_title = sprintf('%s DM status by Annotation', sample),
@@ -219,7 +219,7 @@ if(suffix == 'methylSig') {
 
 	# Regions split by category and filled by knownGene annotations (prop)
 	cat_prop_genes_png = sprintf('summary/figures/%s_%s_DMstatus_prop_genes.png', sample, suffix)
-	plot_cat_prop_genes = visualize_categorical(
+	plot_cat_prop_genes = plot_categorical(
 	  annotated_regions = ar, x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_gene_order, position='fill',
 	  plot_title = sprintf('%s DM status by Annotation', sample),
