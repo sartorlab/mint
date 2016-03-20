@@ -9,18 +9,18 @@ make_var_bis_align_prefix = sprintf('
 BISULFITE_ALIGN_PREFIXES := %s', paste(bisulfite_samples$fullHumanID, collapse=' '))
 
 make_var_bis_align = 'BISULFITE_ALIGN_PREREQS := 	$(patsubst %,$(DIR_TRACK)/%_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
-												$(patsubst %,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
-												$(patsubst %,$(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw,$(BISULFITE_ALIGN_PREFIXES)) \\
-												$(patsubst %,$(DIR_SUM_FIGURES)/%_bismark_counts.png,$(BISULFITE_ALIGN_PREFIXES))\\
-												$(patsubst %,$(DIR_SUM_FIGURES)/%_simple_class_counts.png,$(BISULFITE_ALIGN_PREFIXES))\\
-												$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
-												$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
-												$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
-												$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
-												$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam,$(BISULFITE_ALIGN_PREFIXES)) \\
-												$(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
-												$(patsubst %,$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
-												$(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES))'
+					$(patsubst %,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_SUM_FIGURES)/%_bismark_counts.png,$(BISULFITE_ALIGN_PREFIXES))\\
+					$(patsubst %,$(DIR_SUM_FIGURES)/%_simple_class_counts.png,$(BISULFITE_ALIGN_PREFIXES))\\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES))'
 
 # NOTE: This cannot be indented because they would mess up the makefile
 make_rule_bis_align = '

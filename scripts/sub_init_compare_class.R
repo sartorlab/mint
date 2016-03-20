@@ -81,13 +81,13 @@ cat(make_var_compare_class_prefix, file = file_make, sep = '\n', append = TRUE)
 # The compare class type depends on the type of compares present
 if(bool_bis_comp && bool_pull_comp) {
 	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed : 	$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMup.txt \\
-														$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMdown.txt \\
-														$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_signal.txt \\
-														$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_nosignal.txt \\
-														$(DIR_PULL_PEPR)/%_hmc_pulldown_DMup.txt \\
-														$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt \\
-														$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt \\
-														$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt'
+								$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMdown.txt \\
+								$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_signal.txt \\
+								$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_nosignal.txt \\
+								$(DIR_PULL_PEPR)/%_hmc_pulldown_DMup.txt \\
+								$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt \\
+								$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt \\
+								$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt'
 	rule1 = make_rule_compare_class_bis_module
 	rule2 = make_rule_compare_class_pull_module
 	class_script = '../../scripts/classify_compare.sh'
@@ -96,25 +96,25 @@ if(bool_bis_comp && bool_pull_comp) {
 	# NOTE: THIS IS NOT EXPLICITLY SUPPORTED RIGHT NOW
 	############################################################
 	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed : 	$(DIR_BIS_MSIG)/%_mc_bisulfite_DMup.txt \\
-														$(DIR_BIS_MSIG)/%_mc_bisulfite_DMdown.txt \\
-														$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_signal.txt \\
-														$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_nosignal.txt \\
-														$(DIR_BIS_MSIG)/%_hmc_bisulfite_DMup.txt \\
-														$(DIR_BIS_MSIG)/%_hmc_bisulfite_DMdown.txt \\
-														$(DIR_BIS_MSIG)/%_hmc_bisulfite_noDM_signal.txt \\
-														$(DIR_BIS_MSIG)/%_hmc_bisulfite_noDM_nosignal.txt'
+								$(DIR_BIS_MSIG)/%_mc_bisulfite_DMdown.txt \\
+								$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_signal.txt \\
+								$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_nosignal.txt \\
+								$(DIR_BIS_MSIG)/%_hmc_bisulfite_DMup.txt \\
+								$(DIR_BIS_MSIG)/%_hmc_bisulfite_DMdown.txt \\
+								$(DIR_BIS_MSIG)/%_hmc_bisulfite_noDM_signal.txt \\
+								$(DIR_BIS_MSIG)/%_hmc_bisulfite_noDM_nosignal.txt'
 	rule1 = make_rule_compare_class_bis_module
 	rule2 = ''
 	class_script = '../../scripts/classify_compare.sh'
 } else if (!bool_bis_comp && bool_pull_comp) {
 	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed : 	$(DIR_PULL_PEPR)/%_mc_pulldown_DMup.txt \\
-														$(DIR_PULL_PEPR)/%_mc_pulldown_DMdown.txt \\
-														$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_signal.txt \\
-														$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_nosignal.txt \\
-														$(DIR_PULL_PEPR)/%_hmc_pulldown_DMup.txt \\
-														$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt \\
-														$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt \\
-														$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt'
+								$(DIR_PULL_PEPR)/%_mc_pulldown_DMdown.txt \\
+								$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_signal.txt \\
+								$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_nosignal.txt \\
+								$(DIR_PULL_PEPR)/%_hmc_pulldown_DMup.txt \\
+								$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt \\
+								$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt \\
+								$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt'
 	rule1 = make_rule_compare_class_pull_module
 	rule2 = ''
 	class_script = '../../scripts/classify_compare.sh'

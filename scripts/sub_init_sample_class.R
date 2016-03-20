@@ -56,12 +56,12 @@ cat(make_var_sample_class_prefix, file = file_make, sep = '\n', append = TRUE)
 if(bool_bis_samp && bool_pull_samp) {
 	extra_removes = 'rm -f $(DIR_BIS_BISMARK)/$*_mc_hmc_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/$*_mc_hmc_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/$*_mc_hmc_bisulfite_nometh_nosignal.txt $(DIR_PULL_MACS)/$*_hmc_pulldown_peak.txt'
 	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_highmeth.txt \\
-														$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_lowmeth.txt \\
-														$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_signal.txt \\
-														$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_nosignal.txt \\
-														$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt \\
-														$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_signal.txt \\
-														$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt'
+								$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_lowmeth.txt \\
+								$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_signal.txt \\
+								$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_nosignal.txt \\
+								$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt \\
+								$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_signal.txt \\
+								$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt'
 	rule1 = make_rule_sample_class_bis_module
 	rule2 = make_rule_sample_class_pull_module
 	class_script = '../../scripts/classify_hybrid_sample.sh'
@@ -71,24 +71,24 @@ if(bool_bis_samp && bool_pull_samp) {
 	############################################################
 	extra_removes = 'rm -f $(DIR_BIS_BISMARK)/$*_mc_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/$*_mc_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/$*_mc_bisulfite_nometh_nosignal.txt $(DIR_BIS_BISMARK)/$*_hmc_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/$*_hmc_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/$*_hmc_bisulfite_nometh_nosignal.txt'
 	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_BIS_BISMARK)/%_mc_bisulfite_highmeth.txt \\
-														$(DIR_BIS_BISMARK)/%_mc_bisulfite_lowmeth.txt \\
-														$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_signal.txt \\
-														$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_nosignal.txt \\
-														$(DIR_BIS_BISMARK)/%_hmc_bisulfite_highmeth.txt \\
-														$(DIR_BIS_BISMARK)/%_hmc_bisulfite_lowmeth.txt \\
-														$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_signal.txt \\
-														$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_nosignal.txt'
+								$(DIR_BIS_BISMARK)/%_mc_bisulfite_lowmeth.txt \\
+								$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_signal.txt \\
+								$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_nosignal.txt \\
+								$(DIR_BIS_BISMARK)/%_hmc_bisulfite_highmeth.txt \\
+								$(DIR_BIS_BISMARK)/%_hmc_bisulfite_lowmeth.txt \\
+								$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_signal.txt \\
+								$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_nosignal.txt'
 	rule1 = make_rule_sample_class_bis_module
 	rule2 = ''
 	class_script = '../../scripts/classify_bisulfite_sample.sh'
 } else {
 	extra_removes = 'rm -f $(DIR_PULL_MACS)/$*_mc_pulldown_peak.txt $(DIR_PULL_MACS)/$*_hmc_pulldown_peak.txt'
 	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_PULL_MACS)/%_mc_pulldown_peak.txt \\
-														$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_signal.txt \\
-														$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_nosignal.txt \\
-														$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt \\
-														$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_signal.txt \\
-														$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt'
+								$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_signal.txt \\
+								$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_nosignal.txt \\
+								$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt \\
+								$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_signal.txt \\
+								$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt'
 	rule1 = make_rule_sample_class_pull_module
 	rule2 = ''
 	class_script = '../../scripts/classify_pulldown_sample.sh'
