@@ -129,8 +129,3 @@ merged_final = merged[,c('chrom','start','end','class','score','strand','thickSt
 merged_final = merged_final[order(merged_final$chrom, merged_final$start),]
 
 readr::write_tsv(merged_final, path=outFile, col_names=F)
-
-# Convert to bigBed
-# message('Converting BED to bigBED...')
-# command = sprintf('bedToBigBed %s ~/latte/Homo_sapiens/chromInfo_hg19.txt %s', class_bed_file, class_bb_file)
-# system(command)
