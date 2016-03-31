@@ -95,7 +95,7 @@ if(bool_bis_comp) {
 			sprintf('bisulfite_compare_%s : $(BISULFITE_COMPARE_%s_PREREQS)', i, i),
 			'',
 			sprintf('%s : %s', msig_results, var_cytfiles_pre),
-			sprintf('	Rscript ../../scripts/process_bisulfite_comparison_run_methylSig.R --project $(PROJECT) --cytfiles $(BISULFITE_COMPARE_%s_CYTFILES) --sampleids $(BISULFITE_COMPARE_%s_SAMPLEIDS) --treatment $(BISULFITE_COMPARE_%s_TREATMENT) --assembly $(GENOME) --pipeline mint --outprefix $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_METHYLSIG_%s)', i, i, i, i, var_comparison),
+			sprintf('	Rscript ../../scripts/methylSig_run.R --project $(PROJECT) --cytfiles $(BISULFITE_COMPARE_%s_CYTFILES) --sampleids $(BISULFITE_COMPARE_%s_SAMPLEIDS) --treatment $(BISULFITE_COMPARE_%s_TREATMENT) --assembly $(GENOME) --pipeline mint --outprefix $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_METHYLSIG_%s)', i, i, i, i, var_comparison),
 			'',
 			sprintf('.INTERMEDIATE : %s', msig_tmp_results),
 			sprintf('%s : %s', msig_tmp_results, msig_results), # THIS IS CUSTOMIZABLE
@@ -106,7 +106,7 @@ if(bool_bis_comp) {
 			'	awk -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) -f ../../scripts/methylSig_to_annotatr.awk $< > $@',
 			'',
 			sprintf('%s : %s', annotatr_png, annotatr_bed),
-			'	Rscript ../../scripts/annotatr_bis_align.R --file $< --genome $(GENOME)',
+			'	Rscript ../../scripts/annotatr_bisulfite.R --file $< --genome $(GENOME)',
 			'',
 			sprintf('%s : %s', msig_bigwig, msig_tmp_results),
 			'	bedGraphToBigWig $^ $(CHROM_PATH) $@',

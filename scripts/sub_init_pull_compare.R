@@ -122,7 +122,7 @@ if(bool_pull_comp) {
 			sprintf('%s : %s', down_bed, up_bed),
 			'',
 			sprintf('%s : %s %s', combined_bed, up_bed, down_bed),
-			'	bash ../../scripts/combine_pepr.sh $(word 1,$^) $(word 2,$^) $@',
+			'	bash ../../scripts/pepr_combine.sh $(word 1,$^) $(word 2,$^) $@',
 			'',
 			sprintf('.INTERMEDIATE : %s', annotatr_bed),
 			sprintf('%s : %s', annotatr_bed, combined_bed),

@@ -6,7 +6,7 @@ if(bool_bis_samp || bool_pull_samp) {
 make_rule_sample_class_bis_module = '
 # Intermediates for the bisulfite piece
 $(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal.txt : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	awk -f ../../scripts/bisulfite_sample_module.awk $<
+	awk -f ../../scripts/classify_prepare_bisulfite_sample.awk $<
 '
 
 make_rule_sample_class_pull_module = '
