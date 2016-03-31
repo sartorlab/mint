@@ -46,7 +46,7 @@ $(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip : $(DIR_PULL_TRIM_FASTQS)/%_tri
 
 # Rule for trim_galore
 $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip
-	$(PATH_TO_TRIMGALORE)$(OPTS_TRIMGALORE_PULLDOWN) --output_dir $(@D) $(DIR_PULL_RAW_FASTQS)/$*.fastq.gz
+	$(PATH_TO_TRIMGALORE) $(OPTS_TRIMGALORE_PULLDOWN) --output_dir $(@D) $(DIR_PULL_RAW_FASTQS)/$*.fastq.gz
 
 # Rule for FastQC on raw
 $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip :
