@@ -43,8 +43,8 @@ awk -v OFS="\t" 'NR > 1 { \
 join \
 	-1 2 \
 	-2 6 \
-	<(sort -T . -k2,2n ../../scripts/class_table_compare.txt) \
-	<(sort -T . -k6,6n ${classTmp}) \
+	<(sort -T . -k2,2 ../../scripts/class_table_compare.txt) \
+	<(sort -T . -k6,6 ${classTmp}) \
 > ${joinTmp}
 
 # Create the bed file
