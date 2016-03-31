@@ -129,13 +129,13 @@ if(bool_pull_comp) {
 			'	cut -f 1-4 $< > $@',
 			'',
 			sprintf('%s : %s', annotatr_png, annotatr_bed),
-			'	Rscript ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)',
+			'	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)',
 			'',
 			sprintf('%s : %s %s', input_signal, var_merged_input1_pre, var_merged_input2_pre),
 			'	cat $^ | sort -T . -k1,1 -k2,2n | bedtools merge -d 20 | sort -T . -k1,1 -k2,2n > $@',
 			'',
 			sprintf('%s : %s', bigbed, combined_bed),
-			'	bedToBigBed $^ $(CHROM_PATH) $@',
+			'	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@',
 			'')
 		cat(make_rule_pull_compare, file = file_make, sep='\n', append=T)
 

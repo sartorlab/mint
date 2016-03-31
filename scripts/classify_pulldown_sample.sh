@@ -4,14 +4,16 @@ set -u
 set -o pipefail
 
 # Paths from parameters
-CHROM_PATH=$1
-outFile=$2
-mcPeak=$3
-mcNoPeakSig=$4
-mcNoPeakNoSig=$5
-hmcPeak=$6
-hmcNoPeakSig=$7
-hmcNoPeakNoSig=$8
+PATH_TO_BEDTOOLS=$1
+PATH_TO_AWK=$2
+CHROM_PATH=$3
+outFile=$4
+mcPeak=$5
+mcNoPeakSig=$6
+mcNoPeakNoSig=$7
+hmcPeak=$8
+hmcNoPeakSig=$9
+hmcNoPeakNoSig=${10}
 ID=`basename $outFile _sample_classification.bed`
 
 # tmp files
@@ -20,7 +22,7 @@ classTmp=classifications/sample/${ID}_tmpSampleClass.txt
 joinTmp=classifications/sample/${ID}_tmpSampleJoin.txt
 
 # Initial intersection
-bedtools multiinter \
+${PATH_TO_BEDTOOLS} multiinter \
 	-header \
 	-names mcPeak mcNoPeakSig mcNoPeakNoSig hmcPeak hmcNoPeakSig hmcNoPeakNoSig \
 	-empty \
@@ -30,7 +32,7 @@ bedtools multiinter \
 
 # Encode each region with the appropriate classification
 # Columns 6-11 are the binary columns that should be operated on
-awk -v OFS="\t" 'NR > 1 { \
+${PATH_TO_AWK} -v OFS="\t" 'NR > 1 { \
 	group1 = ($6 * 3) + ($7 * 5) + ($8 * 7); \
 	group2 = ($9 * 2) + ($10 * 4) + ($11 * 6); \
 	if (group1 * group2 > 0) print $1, $2, $3, group1, group2, group1 * group2; \
@@ -46,7 +48,7 @@ join \
 > ${joinTmp}
 
 # Create the bed file
-awk -v OFS="\t" '{
+${PATH_TO_AWK} -v OFS="\t" '{
 	print $4, $5, $6, $2, "1000", ".", $5, $6, $3
 }' ${joinTmp} | sort -T . -k1,1 -k2,2n > ${outFile}
 

@@ -12,6 +12,7 @@ PATH_TO_FASTQC := $(shell which fastqc)
 PATH_TO_TRIMGALORE := $(shell which trim_galore)
 PATH_TO_BISMARK := $(shell which bismark)
 PATH_TO_EXTRACTOR := $(shell which bismark_methylation_extractor)
+PATH_TO_BOWTIE2 := $(shell which bowtie2)
 PATH_TO_R := $(shell which Rscript)
 PATH_TO_MACS := $(shell which macs2)
 PATH_TO_PEPR := python2.7 /home/rcavalca/.local/lib/python2.7/site-packages/PePr-1.0.8-py2.7.egg/PePr/PePr.py

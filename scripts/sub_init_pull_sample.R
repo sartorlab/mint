@@ -22,33 +22,33 @@ pulldown_sample : pulldown_align $(PULLDOWN_SAMPLE_PREREQS)
 
 # Rule for UCSC bigBed track of simple classifiation
 $(DIR_TRACK)/%_pulldown_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_pulldown_simple_classification.bed
-	bedToBigBed $< $(CHROM_PATH) $@
+	$(PATH_TO_BDG2BB) $< $(CHROM_PATH) $@
 
 # Rule for annotatr of simple classification
 $(DIR_SUM_FIGURES)/%_pulldown_simple_class_counts.png : $(DIR_CLASS_SIMPLE)/%_pulldown_simple_class_for_annotatr.txt
-	Rscript ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
+	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
 
 .INTERMEDIATE : $(DIR_CLASS_SIMPLE)/%_pulldown_simple_class_for_annotatr.txt
 $(DIR_CLASS_SIMPLE)/%_pulldown_simple_class_for_annotatr.txt : $(DIR_CLASS_SIMPLE)/%_pulldown_simple_classification.bed
-	awk -v OFS="\\t" \'{ print $$1, $$2, $$3, $$4 }\' $< > $@
+	$(PATH_TO_AWK) -v OFS="\\t" \'{ print $$1, $$2, $$3, $$4 }\' $< > $@
 
 # Simple classification
 $(DIR_CLASS_SIMPLE)/%_pulldown_simple_classification.bed : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
-	Rscript ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
+	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
 
 # Rule for UCSC bigBed track
 $(DIR_TRACK)/%_macs2_peaks.bb : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
-	bedToBigBed -type=bed6+4 -as=narrowPeak.as $^ $(CHROM_PATH) $@
+	$(PATH_TO_BDG2BB) -type=bed6+4 -as=narrowPeak.as $^ $(CHROM_PATH) $@
 
 # Rule for macs2 peak fix
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
 $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak : $(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak
-	awk -f ../../scripts/macs_fix_narrowPeak.awk $^ | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -f ../../scripts/macs_fix_narrowPeak.awk $^ | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for macs2 peaks
 $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak : 	$(DIR_PULL_BOWTIE2)/%_pulldown_trimmed.fq.gz_aligned.bam \\
 														$(DIR_PULL_BOWTIE2)/%_input_pulldown_trimmed.fq.gz_aligned.bam
-	macs2 callpeak -t $(word 1, $^) -c $(word 2, $^) -f BAM -g hs --name $(patsubst %_peaks.narrowPeak,%,$(@F)) --outdir $(@D)
+	$(PATH_TO_MACS) callpeak -t $(word 1, $^) -c $(word 2, $^) -f BAM -g hs --name $(patsubst %_peaks.narrowPeak,%,$(@F)) --outdir $(@D)
 '
 
 cat(make_var_pull_samp_prefix, file = file_make, sep = '\n', append = TRUE)

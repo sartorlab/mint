@@ -29,62 +29,62 @@ bisulfite_align : $(BISULFITE_ALIGN_PREREQS)
 
 # Rule for UCSC bigBed track of simple classifiation
 $(DIR_TRACK)/%_bisulfite_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed
-	bedToBigBed $< $(CHROM_PATH) $@
+	$(PATH_TO_BDG2BB) $< $(CHROM_PATH) $@
 
 # Rule for annotatr of simple classification
 $(DIR_SUM_FIGURES)/%_bisulfite_simple_class_counts.png : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt
-	Rscript ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
+	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
 
 .INTERMEDIATE : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt
 $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed
-	awk -v OFS="\\t" \'{ print $$1, $$2, $$3, $$4 }\' $< > $@
+	$(PATH_TO_AWK) -v OFS="\\t" \'{ print $$1, $$2, $$3, $$4 }\' $< > $@
 
 # Simple classification for percent methylation
 $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed.fq.gz_bismark_bt2.bedGraph.gz
-	Rscript ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
+	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
 
 # Rules for UCSC bigWig track
 $(DIR_TRACK)/%_trimmed.fq.gz_bismark_bt2.bw : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph
-	bedGraphToBigWig $< $(CHROM_PATH) $@
+	$(PATH_TO_BDG2BW) $< $(CHROM_PATH) $@
 
 .INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph
 $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz
-	gunzip -c $< | awk \'NR > 1 {print $$0}\' | sort -T . -k1,1 -k2,2n > $@
+	gunzip -c $< | $(PATH_TO_AWK) \'NR > 1 {print $$0}\' | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for annotatr of extractor results
 $(DIR_SUM_FIGURES)/%_bismark_counts.png : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt
-	Rscript ../../scripts/annotatr_bisulfite.R --file $< --genome $(GENOME)
+	$(PATH_TO_R) ../../scripts/annotatr_bisulfite.R --file $< --genome $(GENOME)
 
 # Rule for methylSig input
 $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	awk -f ../../scripts/extractor_to_methylSig.awk $< | sort -T . -k2,2 -k3,3n > $@
+	$(PATH_TO_AWK) -f ../../scripts/extractor_to_methylSig.awk $< | sort -T . -k2,2 -k3,3n > $@
 
 # Rule for annotatr input
 $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	awk -f ../../scripts/extractor_to_annotatr.awk $< | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -f ../../scripts/extractor_to_annotatr.awk $< | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for bismark methylation extractor
 $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bedGraph.gz $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.CpG_report.txt : $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam
 	cd $(DIR_BIS_BISMARK); \\
-	bismark_methylation_extractor $(OPTS_EXTRACTOR) $(<F)
+	$(PATH_TO_EXTRACTOR) $(OPTS_EXTRACTOR) $(<F)
 
 # Rule for bismark alignment
 $(DIR_BIS_BISMARK)/%_trimmed.fq.gz_bismark_bt2.bam : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_BIS_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip
-	bismark $(OPTS_BISMARK) --output_dir $(@D) --temp_dir $(@D) $<
-	samtools sort $@ $(patsubst %.bam,%,$@)
-	samtools index $@
+	$(PATH_TO_BISMARK) $(OPTS_BISMARK) --output_dir $(@D) --temp_dir $(@D) $<
+	$(PATH_TO_SAMTOOLS) sort $@ $(patsubst %.bam,%,$@)
+	$(PATH_TO_SAMTOOLS) index $@
 
 # Rule for FastQC on trimmed
 $(DIR_BIS_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $<
+	$(PATH_TO_FASTQC) $(OPTS_FASTQC) --outdir $(@D) $<
 
 # Rule for trim_galore
 $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip
-	trim_galore $(OPTS_TRIMGALORE_BISULFITE) --output_dir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
+	$(PATH_TO_TRIMGALORE)$(OPTS_TRIMGALORE_BISULFITE) --output_dir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
 
 # Rule for FastQC on raw
 $(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip :
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
+	$(PATH_TO_FASTQC) $(OPTS_FASTQC) --outdir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
 '
 
 cat(make_var_bis_align_prefix, file = file_make, sep = '\n', append = TRUE)

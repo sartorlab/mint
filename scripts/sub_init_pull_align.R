@@ -23,34 +23,34 @@ pulldown_align : $(PULLDOWN_ALIGN_PREREQS)
 
 # Rule for UCSC bigWig track
 $(DIR_TRACK)/%_coverage.bw : $(DIR_PULL_COVERAGES)/%_coverage.bdg
-	bedGraphToBigWig $< $(CHROM_PATH) $@
+	$(PATH_TO_BDG2BW) $< $(CHROM_PATH) $@
 
 # Rule for coverage bedGraph
 $(DIR_PULL_COVERAGES)/%_coverage.bdg : $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam
-	bedtools genomecov -bg -g $(CHROM_PATH) -ibam $< | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) genomecov -bg -g $(CHROM_PATH) -ibam $< | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for merged coverage BED
 # For use in signal BEDs downstream
 $(DIR_PULL_COVERAGES)/%_merged_coverage.bdg : $(DIR_PULL_COVERAGES)/%_coverage.bdg
-	bedtools merge -d 20 -i $< | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) merge -d 20 -i $< | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for bowtie2 alignment
 $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip
-	bowtie2 $(OPTS_BOWTIE2) $< | samtools view -bS - > $@
-	samtools sort $@ $(patsubst %.bam,%,$@)
-	samtools index $@
+	$(PATH_TO_BOWTIE2) $(OPTS_BOWTIE2) $< | $(PATH_TO_SAMTOOLS) view -bS - > $@
+	$(PATH_TO_SAMTOOLS) sort $@ $(patsubst %.bam,%,$@)
+	$(PATH_TO_SAMTOOLS) index $@
 
 # Rule for FastQC on trimmed
 $(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $<
+	$(PATH_TO_FASTQC) $(OPTS_FASTQC) --outdir $(@D) $<
 
 # Rule for trim_galore
 $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip
-	trim_galore $(OPTS_TRIMGALORE_PULLDOWN) --output_dir $(@D) $(DIR_PULL_RAW_FASTQS)/$*.fastq.gz
+	$(PATH_TO_TRIMGALORE)$(OPTS_TRIMGALORE_PULLDOWN) --output_dir $(@D) $(DIR_PULL_RAW_FASTQS)/$*.fastq.gz
 
 # Rule for FastQC on raw
 $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip :
-	fastqc $(OPTS_FASTQC) --outdir $(@D) $(DIR_PULL_RAW_FASTQS)/$*.fastq.gz
+	$(PATH_TO_FASTQC) $(OPTS_FASTQC) --outdir $(@D) $(DIR_PULL_RAW_FASTQS)/$*.fastq.gz
 '
 
 cat(make_var_pull_align_prefix, file = file_make, sep = '\n', append = TRUE)

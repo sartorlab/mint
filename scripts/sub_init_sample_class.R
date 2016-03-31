@@ -6,32 +6,32 @@ if(bool_bis_samp || bool_pull_samp) {
 make_rule_sample_class_bis_module = '
 # Intermediates for the bisulfite piece
 $(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal.txt : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed.fq.gz_bismark_bt2.CpG_report.txt
-	awk -f ../../scripts/classify_prepare_bisulfite_sample.awk $<
+	$(PATH_TO_AWK) -f ../../scripts/classify_prepare_bisulfite_sample.awk $<
 '
 
 make_rule_sample_class_pull_module = '
 # Intermediates for the pulldown piece
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_peak.txt
 $(DIR_PULL_MACS)/%_pulldown_peak.txt : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
-	awk -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
+	$(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nopeak_signal.txt
 $(DIR_PULL_MACS)/%_pulldown_nopeak_signal.txt : $(DIR_PULL_MACS)/%_pulldown_nopeak.txt $(DIR_PULL_MACS)/%_pulldown_signal.txt
-	bedtools intersect -a $(word 1, $^) -b $(word 2, $^) \\
+	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nopeak_nosignal.txt
 $(DIR_PULL_MACS)/%_pulldown_nopeak_nosignal.txt : $(DIR_PULL_MACS)/%_pulldown_nopeak.txt $(DIR_PULL_MACS)/%_pulldown_nosignal.txt
-	bedtools intersect -a $(word 1, $^) -b $(word 2, $^) \\
+	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nopeak.txt
 $(DIR_PULL_MACS)/%_pulldown_nopeak.txt : $(DIR_PULL_MACS)/%_pulldown_peak.txt
-	bedtools complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
+	$(PATH_TO_BEDTOOLS) complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
 
@@ -41,7 +41,7 @@ $(DIR_PULL_MACS)/%_pulldown_signal.txt : $(DIR_PULL_COVERAGES)/%_input_pulldown_
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nosignal.txt
 $(DIR_PULL_MACS)/%_pulldown_nosignal.txt : $(DIR_PULL_MACS)/%_pulldown_signal.txt
-	bedtools complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
+	$(PATH_TO_BEDTOOLS) complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
 '
@@ -103,11 +103,11 @@ sample_classification : 	$(patsubst %%,$(DIR_TRACK)/%%_sample_classification.bb,
 
 # Rule for sample classification bigBed
 $(DIR_TRACK)/%%_sample_classification.bb : $(DIR_CLASS_SAMPLE)/%%_sample_classification.bed
-	bedToBigBed $^ $(CHROM_PATH) $@
+	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@
 
 # Rule for annotatr of sample classification
 $(DIR_SUM_FIGURES)/%%_sample_class_counts.png : $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt
-	Rscript ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
+	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
 
 .INTERMEDIATE : $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt
 $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt : $(DIR_CLASS_SAMPLE)/%%_sample_classification.bed
@@ -120,7 +120,7 @@ $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt : $(DIR_CLASS_SAMPLE)/%%_sa
 
 # Classification BED
 %s
-	bash %s $(CHROM_PATH) $@ $^
+	bash %s $(PATH_TO_BEDTOOLS) $(PATH_TO_AWK) $(CHROM_PATH) $@ $^
 
 %s
 %s',

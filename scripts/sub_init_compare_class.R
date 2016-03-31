@@ -7,42 +7,42 @@ make_rule_compare_class_bis_module = '
 # Intermediates for the bisulfite piece
 .INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_DMup.txt
 $(DIR_BIS_MSIG)/%_bisulfite_DMup.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OPT_DM_TYPE)_methylSig.txt
-	awk -v OFS="\\t" -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) \'NR > 1 && $$6 < FDR && $$7 > DIFF { print $$1, $$2, $$3 }\' $< | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -v OFS="\\t" -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) \'NR > 1 && $$6 < FDR && $$7 > DIFF { print $$1, $$2, $$3 }\' $< | sort -T . -k1,1 -k2,2n > $@
 
 .INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_DMdown.txt
 $(DIR_BIS_MSIG)/%_bisulfite_DMdown.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OPT_DM_TYPE)_methylSig.txt
-	awk -v OFS="\\t" -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) \'NR > 1 && $$6 < FDR && $$7 < DIFF*(-1) { print $$1, $$2, $$3 }\' $< | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -v OFS="\\t" -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) \'NR > 1 && $$6 < FDR && $$7 < DIFF*(-1) { print $$1, $$2, $$3 }\' $< | sort -T . -k1,1 -k2,2n > $@
 
 .INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_noDM_signal.txt
 $(DIR_BIS_MSIG)/%_bisulfite_noDM_signal.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OPT_DM_TYPE)_methylSig.txt
-	awk -v OFS="\\t" -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) \'NR > 1 && $$6 > FDR { print $$1, $$2, $$3 }\' $< | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -v OFS="\\t" -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) \'NR > 1 && $$6 > FDR { print $$1, $$2, $$3 }\' $< | sort -T . -k1,1 -k2,2n > $@
 
 .INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_noDM_nosignal.txt
 $(DIR_BIS_MSIG)/%_bisulfite_noDM_nosignal.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OPT_DM_TYPE)_methylSig.txt
-	bedtools complement -i <(awk -v OFS="\\t" \'NR > 1 { print $$1, $$2, $$3 }\' $<) -g <(sort -T . -k1,1 $(CHROM_PATH)) | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) complement -i <($(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2, $$3 }\' $<) -g <(sort -T . -k1,1 $(CHROM_PATH)) | sort -T . -k1,1 -k2,2n > $@
 '
 
 make_rule_compare_class_pull_module = '
 # Intermediates for the pulldown piece
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt
 $(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt : $(DIR_PULL_PEPR)/%_pulldown__PePr_up_peaks.bed
-	awk -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
+	$(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt
 $(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt : $(DIR_PULL_PEPR)/%_pulldown__PePr_down_peaks.bed
-	awk -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
+	$(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_DMup.txt
 $(DIR_PULL_PEPR)/%_pulldown_DMup.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt
-	bedops --difference $^ > $@
+	$(PATH_TO_BEDOPS) --difference $^ > $@
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_DMdown.txt
 $(DIR_PULL_PEPR)/%_pulldown_DMdown.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt
-	bedops --difference $^ > $@
+	$(PATH_TO_BEDOPS) --difference $^ > $@
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt
 $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt : $(DIR_PULL_PEPR)/%_pulldown_DMup.txt $(DIR_PULL_PEPR)/%_pulldown_DMdown.txt
@@ -50,7 +50,7 @@ $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt : $(DIR_PULL_PEPR)/%_pulldown_DM
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt
 $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt: $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt
-	bedtools complement -i $< -g <(sort -T . -k1,1 $(CHROM_PATH)) > $@
+	$(PATH_TO_BEDTOOLS) complement -i $< -g <(sort -T . -k1,1 $(CHROM_PATH)) > $@
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
 $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt : $(DIR_PULL_PEPR)/%_pulldown_merged_signal.bed
@@ -58,15 +58,15 @@ $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt : $(DIR_PULL_PEPR)/%_pulldown_merged_
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt
 $(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
-	bedtools complement -i $< -g <(sort -T . -k1,1 $(CHROM_PATH)) > $@
+	$(PATH_TO_BEDTOOLS) complement -i $< -g <(sort -T . -k1,1 $(CHROM_PATH)) > $@
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_DMdown.txt
 $(DIR_PULL_PEPR)/%_pulldown_noDM_signal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
-	bedtools intersect -a $(word 1, $^) -b $(word 2, $^) | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) | sort -T . -k1,1 -k2,2n > $@
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_noDM_nosignal.txt
 $(DIR_PULL_PEPR)/%_pulldown_noDM_nosignal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt
-	bedtools intersect -a $(word 1, $^) -b $(word 2, $^) | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) | sort -T . -k1,1 -k2,2n > $@
 '
 
 # Collect
@@ -129,11 +129,11 @@ compare_classification : 	$(patsubst %%,$(DIR_TRACK)/%%_compare_classification.b
 
 # Rule for compare classification bigBed
 $(DIR_TRACK)/%%_compare_classification.bb : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
-	bedToBigBed $^ $(CHROM_PATH) $@
+	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@
 
 # Rule for annotatr of compare classification
 $(DIR_SUM_FIGURES)/%%_compare_class_counts.png : $(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt
-	Rscript ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
+	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
 
 .INTERMEDIATE : $(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt
 $(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
@@ -147,7 +147,7 @@ $(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt : $(DIR_CLASS_COMPARE)/%%
 # Classification BED
 .PRECIOUS : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
 %s
-	bash %s $(CHROM_PATH) $@ $^
+	bash %s $(PATH_TO_BEDTOOLS) $(PATH_TO_AWK) $(CHROM_PATH) $@ $^
 
 %s
 %s',
