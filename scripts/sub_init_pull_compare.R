@@ -73,10 +73,10 @@ if(bool_pull_comp) {
 		# Setup variables to put into the makefile
 
 		# For the PePr call from projects/project/pepr_peaks/
-		var_input1 = paste(sprintf('../bowtie2_bams/%s_trimmed.fq.gz_aligned.bam', inputGroupA$fullHumanID), sep='', collapse=',')
-		var_input2 = paste(sprintf('../bowtie2_bams/%s_trimmed.fq.gz_aligned.bam', inputGroupB$fullHumanID), sep='', collapse=',')
-		var_chip1 = paste(sprintf('../bowtie2_bams/%s_trimmed.fq.gz_aligned.bam', groupA$fullHumanID), sep='', collapse=',')
-		var_chip2 = paste(sprintf('../bowtie2_bams/%s_trimmed.fq.gz_aligned.bam', groupB$fullHumanID), sep='', collapse=',')
+		var_input1 = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', inputGroupA$fullHumanID), sep='', collapse=',')
+		var_input2 = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', inputGroupB$fullHumanID), sep='', collapse=',')
+		var_chip1 = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', groupA$fullHumanID), sep='', collapse=',')
+		var_chip2 = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', groupB$fullHumanID), sep='', collapse=',')
 
 		# For the prerequisites in the make rule
 		var_merged_input1_pre = paste(sprintf('$(DIR_PULL_COVERAGES)/%s_merged_coverage.bdg', inputGroupA$fullHumanID), sep='', collapse=' ')
