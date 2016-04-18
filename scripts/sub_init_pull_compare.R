@@ -117,8 +117,7 @@ if(bool_pull_comp) {
 			sprintf('pulldown_compare_%s : $(PULLDOWN_COMPARE_%s_PREREQS)', i, i),
 			'',
 			sprintf('%s : %s %s %s %s', up_bed, var_input1_pre, var_input2_pre, var_chip1_pre, var_chip2_pre),
-			'	cd pulldown/pepr_peaks; \\',
-			sprintf('	$(PATH_TO_PEPR) --input1=$(PULLDOWN_COMPARE_%s_INPUT1) --input2=$(PULLDOWN_COMPARE_%s_INPUT2) --chip1=$(PULLDOWN_COMPARE_%s_CHIP1) --chip2=$(PULLDOWN_COMPARE_%s_CHIP2) --name=$(PULLDOWN_COMPARE_%s_NAME) $(OPTS_PEPR_%s)', i, i, i, i, i, var_name),
+			sprintf('	$(PATH_TO_PEPR) --input1=$(PULLDOWN_COMPARE_%s_INPUT1) --input2=$(PULLDOWN_COMPARE_%s_INPUT2) --chip1=$(PULLDOWN_COMPARE_%s_CHIP1) --chip2=$(PULLDOWN_COMPARE_%s_CHIP2) --name=$(PULLDOWN_COMPARE_%s_NAME) --output-directory=$(DIR_PULL_PEPR) $(OPTS_PEPR_%s)', i, i, i, i, i, var_name),
 			sprintf('%s : %s', down_bed, up_bed),
 			'',
 			sprintf('%s : %s %s', combined_bed, up_bed, down_bed),
@@ -145,7 +144,7 @@ if(bool_pull_comp) {
 		########################################################################
 		# OPTS for config.mk
 		config_pull_compare = sprintf(
-			'OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold 1e-03 --remove_artefacts
+			'OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-03 --num-processors=1
 			',
 			var_name)
 		cat(config_pull_compare, file = file_config, sep='\n', append=T)
