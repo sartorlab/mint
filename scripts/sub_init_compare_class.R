@@ -25,13 +25,13 @@ $(DIR_BIS_MSIG)/%_bisulfite_noDM_nosignal.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OP
 make_rule_compare_class_pull_module = '
 # Intermediates for the pulldown piece
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt
-$(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt : $(DIR_PULL_PEPR)/%_pulldown__PePr_up_peaks.bed
+$(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt : $(DIR_PULL_PEPR)/%_pulldown__PePr_chip1_peaks.bed
 	$(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt
-$(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt : $(DIR_PULL_PEPR)/%_pulldown__PePr_down_peaks.bed
+$(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt : $(DIR_PULL_PEPR)/%_pulldown__PePr_chip2_peaks.bed
 	$(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
 	| sort -T . -k1,1 -k2,2n \\
 	> $@
