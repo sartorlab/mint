@@ -73,7 +73,8 @@ if(genome %in% c('hg19','hg38','mm9','mm10')) {
 			'knownGenes_5UTRs',
 			'knownGenes_exons',
 			'knownGenes_introns',
-			'knownGenes_3UTRs'), sep='_')
+			'knownGenes_3UTRs',
+			'knownGenes_intergenic'), sep='_')
 		a_all_order = c(
 			a_cpg_order,
 			a_gene_order)
@@ -89,7 +90,8 @@ if(genome %in% c('hg19','hg38','mm9','mm10')) {
 			'knownGenes_5UTRs',
 			'knownGenes_exons',
 			'knownGenes_introns',
-			'knownGenes_3UTRs'), sep='_')
+			'knownGenes_3UTRs',
+			'knownGenes_intergenic'), sep='_')
 		a_all_order = c(
 			a_cpg_order,
 			a_gene_order)
