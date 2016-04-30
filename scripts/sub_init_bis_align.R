@@ -18,7 +18,7 @@ make_var_bis_align = 'BISULFITE_ALIGN_PREREQS := 	$(patsubst %,$(DIR_TRACK)/%_si
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam,$(BISULFITE_ALIGN_PREFIXES)) \\
-					$(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES))'
 
@@ -69,13 +69,13 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz $(DIR_BIS_BISMARK)/%_trimme
 	$(PATH_TO_EXTRACTOR) $(OPTS_EXTRACTOR) $(<F)
 
 # Rule for bismark alignment
-$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_BIS_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip
+$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip
 	$(PATH_TO_BISMARK) $(OPTS_BISMARK) --output_dir $(@D) --temp_dir $(@D) $<
 	$(PATH_TO_SAMTOOLS) sort $@ $(patsubst %.bam,%,$@)
 	$(PATH_TO_SAMTOOLS) index $@
 
 # Rule for FastQC on trimmed
-$(DIR_BIS_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz
+$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz
 	$(PATH_TO_FASTQC) $(OPTS_FASTQC) --outdir $(@D) $<
 
 # Rule for trim_galore
