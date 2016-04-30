@@ -45,8 +45,10 @@ r = r[r$name != 'unclassifiable']
 # Pick annotations
 if(genome %in% c('hg19','hg38','mm9','mm10')) {
 	a = c(
-		sprintf('%s_cpgs', genome),
-		sprintf('%s_basicgenes', genome))
+		a = c(
+			sprintf('%s_cpgs', genome),
+			sprintf('%s_basicgenes', genome),
+			sprintf('%s_knownGenes_intergenic', genome))
 } else {
 	# TODO: Add support for insertion of custom annotation path via command line
 	stop('Only hg19, hg38, mm9, and mm10 annotations are supported for this part of mint at the moment.')
