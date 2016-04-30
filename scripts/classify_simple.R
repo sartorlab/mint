@@ -105,8 +105,7 @@ if(platform == 'pulldown') {
 
 } else if (platform == 'bisulfite') {
 
-	peaks$code = apply(peaks, 1, function(r) {
-		pm = as.numeric(r['perc_meth'])
+	peaks$code = sapply(peaks$perc_meth, function(pm) {
 		if(pm < 5) {
 			return(1)
 		} else if (pm < 33 && pm >= 5) {
@@ -116,7 +115,7 @@ if(platform == 'pulldown') {
 		} else if (pm >= 66) {
 			return(4)
 		}
-	})
+	}, USE.NAMES = FALSE)
 
 }
 
