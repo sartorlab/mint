@@ -149,6 +149,7 @@ if(suffix == 'bismark') {
 		bin_width = 10,
 		plot_title = sprintf('%s coverage over annotations', sample),
 		x_label = 'Coverage')
+	plot_coverage = plot_coverage + xlim(0,500)
 	ggplot2::ggsave(filename = coverage_png, plot = plot_coverage, width = 8, height = 8)
 
 	percmeth_png = sprintf('summary/figures/%s_%s_percmeth.png', sample, suffix)
