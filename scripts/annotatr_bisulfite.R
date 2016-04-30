@@ -11,8 +11,8 @@ opt = parse_args(OptionParser(option_list=option_list))
 
 file = opt$file
 genome = opt$genome
-if(grepl('_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt', file)) {
-	sample = gsub('_trimmed.fq.gz_bismark_bt2.CpG_report_for_annotatr.txt','', basename(file))
+if(grepl('_trimmed_bismark_bt2.CpG_report_for_annotatr.txt', file)) {
+	sample = gsub('_trimmed_bismark_bt2.CpG_report_for_annotatr.txt','', basename(file))
 	suffix = 'bismark'
 } else if (grepl('_methylSig_for_annotatr.txt', file)) {
 	sample = gsub('_methylSig_for_annotatr.txt','', basename(file))
@@ -47,7 +47,8 @@ if(suffix == 'methylSig') {
 if(genome %in% c('hg19','hg38','mm9','mm10')) {
 	a = c(
 		sprintf('%s_cpgs', genome),
-		sprintf('%s_basicgenes', genome))
+		sprintf('%s_basicgenes', genome),
+		sprintf('%s_knownGenes_intergenic', genome))
 } else {
 	# TODO: Add support for insertion of custom annotation path via command line
 	stop('Only hg19, hg38, mm9, and mm10 annotations are supported for this part of mint at the moment.')
@@ -73,7 +74,8 @@ if(genome %in% c('hg19','hg38','mm9','mm10')) {
 			'knownGenes_5UTRs',
 			'knownGenes_exons',
 			'knownGenes_introns',
-			'knownGenes_3UTRs'), sep='_')
+			'knownGenes_3UTRs',
+			'knownGenes_intergenic'), sep='_')
 		a_all_order = c(
 			a_cpg_order,
 			a_gene_order)
@@ -89,7 +91,8 @@ if(genome %in% c('hg19','hg38','mm9','mm10')) {
 			'knownGenes_5UTRs',
 			'knownGenes_exons',
 			'knownGenes_introns',
-			'knownGenes_3UTRs'), sep='_')
+			'knownGenes_3UTRs',
+			'knownGenes_intergenic'), sep='_')
 		a_all_order = c(
 			a_cpg_order,
 			a_gene_order)
@@ -146,6 +149,7 @@ if(suffix == 'bismark') {
 		bin_width = 10,
 		plot_title = sprintf('%s coverage over annotations', sample),
 		x_label = 'Coverage')
+	plot_coverage = plot_coverage + xlim(0,500)
 	ggplot2::ggsave(filename = coverage_png, plot = plot_coverage, width = 8, height = 8)
 
 	percmeth_png = sprintf('summary/figures/%s_%s_percmeth.png', sample, suffix)

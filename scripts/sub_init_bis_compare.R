@@ -51,8 +51,8 @@ if(bool_bis_comp) {
 		# Setup variables to put into the makefile
 
 		var_cytfiles = paste(c(
-			paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt', groupA$fullHumanID), sep=''),
-			paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt', groupB$fullHumanID), sep='')), collapse=',')
+			paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed_bismark_bt2.CpG_report_for_methylSig.txt', groupA$fullHumanID), sep=''),
+			paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed_bismark_bt2.CpG_report_for_methylSig.txt', groupB$fullHumanID), sep='')), collapse=',')
 		var_sampleids = paste(c(
 			groupA$fullHumanID,
 			groupB$fullHumanID), collapse=',')
@@ -62,8 +62,8 @@ if(bool_bis_comp) {
 		var_comparison = fullHumanID
 
 		var_cytfiles_pre = paste(c(
-			paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt', groupA$fullHumanID), sep=''),
-			paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed.fq.gz_bismark_bt2.CpG_report_for_methylSig.txt', groupB$fullHumanID), sep='')), collapse=' ')
+			paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed_bismark_bt2.CpG_report_for_methylSig.txt', groupA$fullHumanID), sep=''),
+			paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed_bismark_bt2.CpG_report_for_methylSig.txt', groupB$fullHumanID), sep='')), collapse=' ')
 
 		# Targets
 		msig_results = sprintf('$(DIR_BIS_MSIG)/%s_$(OPT_DM_TYPE)_methylSig.txt', var_comparison)

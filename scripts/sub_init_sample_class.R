@@ -4,8 +4,12 @@
 if(bool_bis_samp || bool_pull_samp) {
 
 make_rule_sample_class_bis_module = '
+.INTERMEDIATE : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.CpG_report.txt
+$(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.CpG_report.txt : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.CpG_report.txt.gz
+	gunzip -c $< > $@
+
 # Intermediates for the bisulfite piece
-$(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal.txt : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed.fq.gz_bismark_bt2.CpG_report.txt
+$(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal.txt : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.CpG_report.txt
 	$(PATH_TO_AWK) -f ../../scripts/classify_prepare_bisulfite_sample.awk $<
 '
 

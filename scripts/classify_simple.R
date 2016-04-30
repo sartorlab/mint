@@ -105,17 +105,17 @@ if(platform == 'pulldown') {
 
 } else if (platform == 'bisulfite') {
 
-	peaks$code = apply(peaks, 1, function(r) {
-		if(r['perc_meth'] < 5) {
+	peaks$code = sapply(peaks$perc_meth, function(pm) {
+		if(pm < 5) {
 			return(1)
-		} else if (r['perc_meth'] < 33 && r['perc_meth'] >= 5) {
+		} else if (pm < 33 && pm >= 5) {
 			return(2)
-		} else if (r['perc_meth'] >= 33 && r['perc_meth'] < 66) {
+		} else if (pm >= 33 && pm < 66) {
 			return(3)
-		} else if (r['perc_meth'] >= 66) {
+		} else if (pm >= 66) {
 			return(4)
 		}
-	})
+	}, USE.NAMES = FALSE)
 
 }
 

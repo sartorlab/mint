@@ -12,7 +12,7 @@ make_var_pull_align = 'PULLDOWN_ALIGN_PREREQS :=  $(patsubst %,$(DIR_TRACK)/%_co
 					$(patsubst %,$(DIR_PULL_COVERAGES)/%_coverage.bdg,$(PULLDOWN_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_PULL_COVERAGES)/%_merged_coverage.bdg,$(PULLDOWN_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam,$(PULLDOWN_ALIGN_PREFIXES)) \\
-					$(patsubst %,$(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz,$(PULLDOWN_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES))'
 
@@ -35,13 +35,13 @@ $(DIR_PULL_COVERAGES)/%_merged_coverage.bdg : $(DIR_PULL_COVERAGES)/%_coverage.b
 	$(PATH_TO_BEDTOOLS) merge -d 20 -i $< | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for bowtie2 alignment
-$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip
+$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip
 	$(PATH_TO_BOWTIE2) $(OPTS_BOWTIE2) $< | $(PATH_TO_SAMTOOLS) view -bS - > $@
 	$(PATH_TO_SAMTOOLS) sort $@ $(patsubst %.bam,%,$@)
 	$(PATH_TO_SAMTOOLS) index $@
 
 # Rule for FastQC on trimmed
-$(DIR_PULL_TRIM_FASTQCS)/%_trimmed.fq_fastqc.zip : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz
+$(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz
 	$(PATH_TO_FASTQC) $(OPTS_FASTQC) --outdir $(@D) $<
 
 # Rule for trim_galore

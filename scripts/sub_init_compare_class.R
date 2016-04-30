@@ -60,7 +60,7 @@ $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt : $(DIR_PULL_PEPR)/%_pulldown_merged_
 $(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
 	$(PATH_TO_BEDTOOLS) complement -i $< -g <(sort -T . -k1,1 $(CHROM_PATH)) > $@
 
-.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_DMdown.txt
+.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_noDM_signal.txt
 $(DIR_PULL_PEPR)/%_pulldown_noDM_signal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
 	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) | sort -T . -k1,1 -k2,2n > $@
 
