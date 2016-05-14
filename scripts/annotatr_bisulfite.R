@@ -131,13 +131,13 @@ plot_counts = plot_annotation(
 	y_label = '# CpGs')
 ggplot2::ggsave(filename = counts_png, plot = plot_counts, width = 8, height = 8)
 
-cocounts_png = sprintf('summary/figures/%s_%s_cocounts.png', sample, suffix)
-plot_cocounts = plot_coannotations(
-	annotated_regions = ar,
-	annotation_order = a_all_order,
-	plot_title = sprintf('%s CpGs in pairs of annotations', sample),
-	axes_label = 'Annotations')
-ggplot2::ggsave(filename = cocounts_png, plot = plot_cocounts, width = 8, height = 8)
+# cocounts_png = sprintf('summary/figures/%s_%s_cocounts.png', sample, suffix)
+# plot_cocounts = plot_coannotations(
+# 	annotated_regions = ar,
+# 	annotation_order = a_all_order,
+# 	plot_title = sprintf('%s CpGs in pairs of annotations', sample),
+# 	axes_label = 'Annotations')
+# ggplot2::ggsave(filename = cocounts_png, plot = plot_cocounts, width = 8, height = 8)
 
 if(suffix == 'bismark') {
 	coverage_png = sprintf('summary/figures/%s_%s_coverage.png', sample, suffix)
