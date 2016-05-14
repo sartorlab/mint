@@ -137,15 +137,15 @@ if(bool_pull_comp) {
 			sprintf('%s : %s', bigbed, combined_bed),
 			'	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@',
 			'',
-			sprintf('.PHONY : pulldown_compare_clean_tmp_%s', i),
-			sprintf('pulldown_compare_clean_tmp_%s :
+			sprintf('.PHONY : clean_pulldown_compare_tmp_%s', i),
+			sprintf('clean_pulldown_compare_tmp_%s :
 				rm -f $(PULLDOWN_COMPARE_%s_CLEAN_TMP)', i, i),
 			'')
 		cat(make_rule_pull_compare, file = file_make, sep='\n', append=T)
 
 		# Track the number of pulldown compares
 		pulldown_compares = c(pulldown_compares, sprintf('pulldown_compare_%s', i))
-		pulldown_clean_tmps = c(pulldown_clean_tmps, sprintf('pulldown_compare_clean_tmp_%s', i))
+		pulldown_clean_tmps = c(pulldown_clean_tmps, sprintf('clean_pulldown_compare_tmp_%s', i))
 
 		########################################################################
 		# OPTS for config.mk

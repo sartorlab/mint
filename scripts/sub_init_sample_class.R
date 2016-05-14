@@ -145,8 +145,8 @@ $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt : $(DIR_CLASS_SAMPLE)/%%_sa
 # Clean temporary files that make does not clean up
 %s
 
-.PHONY : sample_classification_clean_tmp
-sample_classification_clean_tmp :
+.PHONY : clean_sample_classification_tmp
+clean_sample_classification_tmp :
 	rm -f $(SAMPLE_CLASS_CLEAN_TMP)',
 	sample_class_target, class_script, rule1, rule2, sample_class_tmps)
 cat(make_rule_class_sample, file = file_make, sep = '\n', append = TRUE)

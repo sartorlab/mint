@@ -174,8 +174,8 @@ $(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt : $(DIR_CLASS_COMPARE)/%%
 # Clean temporary files that make does not clean up
 %s
 
-.PHONY : compare_classification_clean_tmp
-compare_classification_clean_tmp :
+.PHONY : clean_compare_classification_tmp
+clean_compare_classification_tmp :
 	rm -f $(COMPARE_CLASS_CLEAN_TMP)',
 	compare_class_target, class_script, rule1, rule2, compare_class_tmps)
 cat(make_rule_class_compare, file = file_make, sep = '\n', append = TRUE)

@@ -113,15 +113,15 @@ if(bool_bis_comp) {
 			sprintf('%s : %s', msig_bigwig, msig_tmp_results),
 			'	$(PATH_TO_BDG2BW) $^ $(CHROM_PATH) $@',
 			'',
-			sprintf('.PHONY : bisulfite_compare_clean_tmp_%s', i),
-			sprintf('bisulfite_compare_clean_tmp_%s :
+			sprintf('.PHONY : clean_bisulfite_compare_tmp_%s', i),
+			sprintf('clean_bisulfite_compare_tmp_%s :
 				rm -f $(BISULFITE_COMPARE_%s_CLEAN_TMP)', i, i),
 			'')
 		cat(make_rule_bis_compare, file = file_make, sep='\n', append=T)
 
 		# Track the number of bisulfite compares and bisulfite clean tmps
 		bisulfite_compares = c(bisulfite_compares, sprintf('bisulfite_compare_%s', i))
-		bisulfite_clean_tmps = c(bisulfite_clean_tmps, sprintf('bisulfite_compare_clean_tmp_%s', i))
+		bisulfite_clean_tmps = c(bisulfite_clean_tmps, sprintf('clean_bisulfite_compare_tmp_%s', i))
 
 		########################################################################
 		# OPTS for config.mk
