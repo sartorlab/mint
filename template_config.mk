@@ -33,13 +33,13 @@ PATH_TO_BDG2BB := $(shell which bedToBigBed)
 # FastQC
 OPTS_FASTQC = --format fastq --noextract
 # trim_galore bisulfite
-OPTS_TRIMGALORE_BISULFITE = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 20 --rrbs
+OPTS_TRIMGALORE_BISULFITE = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 25 --rrbs
 # trim_galore pulldown
-OPTS_TRIMGALORE_PULLDOWN = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 20
+OPTS_TRIMGALORE_PULLDOWN = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 25
 # bismark
 OPTS_BISMARK = --bowtie2 $(GENOME_PATH)
 # bismark_methylation_extractor
-OPTS_EXTRACTOR = --single-end --gzip --bedGraph --cutoff 5 --cytosine_report --genome_folder $(GENOME_PATH) --multicore 5
+OPTS_EXTRACTOR = --single-end --gzip --bedGraph --cutoff 5 --cytosine_report --genome_folder $(GENOME_PATH) --multicore 1
 # bowtie2
 OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
 # macs2
@@ -53,8 +53,8 @@ OPTS_MACS = -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/
 OPT_DM_TYPE = DMR
 
 # Thresholds to use for DMCs or DMRs (above) in methylSig
-OPT_MSIG_DM_FDR_THRESHOLD = 0.2
-OPT_MSIG_DM_DIFF_THRESHOLD = 5
+OPT_MSIG_DM_FDR_THRESHOLD = 0.05
+OPT_MSIG_DM_DIFF_THRESHOLD = 10
 
 ################################################################################
 # Comparison specific options

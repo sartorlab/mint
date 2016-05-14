@@ -144,7 +144,7 @@ if(bool_pull_comp) {
 		########################################################################
 		# OPTS for config.mk
 		config_pull_compare = sprintf(
-			'OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-03 --num-processors=1
+			'OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=1
 			',
 			var_name)
 		cat(config_pull_compare, file = file_config, sep='\n', append=T)
