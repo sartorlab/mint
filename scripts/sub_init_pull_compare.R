@@ -109,7 +109,7 @@ if(bool_pull_comp) {
 			sprintf('PULLDOWN_COMPARE_%s_CHIP1 := %s', i, var_chip1),
 			sprintf('PULLDOWN_COMPARE_%s_CHIP2 := %s', i, var_chip2),
 			sprintf('PULLDOWN_COMPARE_%s_NAME := %s', i, var_name),
-			sprintf('PULLDOWN_COMPARE_%s_CLEAN_TMP := %s', annotatr_bed))
+			sprintf('PULLDOWN_COMPARE_%s_CLEAN_TMP := %s', i, annotatr_bed))
 		cat(make_var_pull_compare, file = file_make, sep='\n', append=T)
 
 		# Write the pulldown_compare rule for this comparison
