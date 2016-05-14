@@ -80,6 +80,14 @@ cat(make_var_compare_class_prefix, file = file_make, sep = '\n', append = TRUE)
 
 # The compare class type depends on the type of compares present
 if(bool_bis_comp && bool_pull_comp) {
+	compare_class_tmps = '$(COMPARE_CLASS_CLEAN_TMP) := $(patsubst %,$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\'
 	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed : 	$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMup.txt \\
 								$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMdown.txt \\
 								$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_signal.txt \\
@@ -95,6 +103,14 @@ if(bool_bis_comp && bool_pull_comp) {
 	############################################################
 	# NOTE: THIS IS NOT EXPLICITLY SUPPORTED RIGHT NOW
 	############################################################
+	compare_class_tmps = '$(COMPARE_CLASS_CLEAN_TMP) := $(patsubst %,$(DIR_BIS_MSIG)/%_mc_bisulfite_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_bisulfite_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_MSIG)/%_hmc_bisulfite_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_MSIG)/%_hmc_bisulfite_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_MSIG)/%_hmc_bisulfite_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_MSIG)/%_hmc_bisulfite_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\'
 	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed : 	$(DIR_BIS_MSIG)/%_mc_bisulfite_DMup.txt \\
 								$(DIR_BIS_MSIG)/%_mc_bisulfite_DMdown.txt \\
 								$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_signal.txt \\
@@ -107,6 +123,14 @@ if(bool_bis_comp && bool_pull_comp) {
 	rule2 = ''
 	class_script = '../../scripts/classify_compare.sh'
 } else if (!bool_bis_comp && bool_pull_comp) {
+	compare_class_tmps = '$(COMPARE_CLASS_CLEAN_TMP) := $(patsubst %,$(DIR_PULL_PEPR)/%_mc_pulldown_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_PEPR)/%_mc_pulldown_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\'
 	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed : 	$(DIR_PULL_PEPR)/%_mc_pulldown_DMup.txt \\
 								$(DIR_PULL_PEPR)/%_mc_pulldown_DMdown.txt \\
 								$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_signal.txt \\
@@ -139,19 +163,21 @@ $(DIR_SUM_FIGURES)/%%_compare_class_counts.png : $(DIR_CLASS_COMPARE)/%%_compare
 $(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
 	cut -f 1-4 $< > $@
 
-# NOTE: There is a known bug in make that incorrectly determines implicit intermediate
-# files when they occur in a list of multiple targets and prerequisites.
-# https://savannah.gnu.org/bugs/index.php?32042
-# The easiest workaround is to make them precious and remove them
-
 # Classification BED
 .PRECIOUS : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
 %s
 	bash %s $(PATH_TO_BEDTOOLS) $(PATH_TO_AWK) $(CHROM_PATH) $@ $^
 
 %s
-%s',
-	compare_class_target, class_script, rule1, rule2)
+%s
+
+# Clean temporary files that make does not clean up
+%s
+
+.PHONY : compare_classification_clean_tmp
+compare_classification_clean_tmp :
+	rm -f $(COMPARE_CLASS_CLEAN_TMP)',
+	compare_class_target, class_script, rule1, rule2, compare_class_tmps)
 cat(make_rule_class_compare, file = file_make, sep = '\n', append = TRUE)
 
 #######################################

@@ -58,7 +58,13 @@ cat(make_var_sample_class_prefix, file = file_make, sep = '\n', append = TRUE)
 
 # The sample class type depends on the type of samples present
 if(bool_bis_samp && bool_pull_samp) {
-	extra_removes = 'rm -f $(DIR_BIS_BISMARK)/$*_mc_hmc_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/$*_mc_hmc_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/$*_mc_hmc_bisulfite_nometh_nosignal.txt $(DIR_PULL_MACS)/$*_hmc_pulldown_peak.txt'
+	sample_class_tmps = '$(SAMPLE_CLASS_CLEAN_TMP) := $(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_highmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_lowmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_nosignal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt,$(SAMPLE_CLASS_PREFIXES))'
 	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_highmeth.txt \\
 								$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_lowmeth.txt \\
 								$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_signal.txt \\
@@ -73,7 +79,14 @@ if(bool_bis_samp && bool_pull_samp) {
 	############################################################
 	# NOTE: THIS IS NOT EXPLICITLY SUPPORTED RIGHT NOW
 	############################################################
-	extra_removes = 'rm -f $(DIR_BIS_BISMARK)/$*_mc_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/$*_mc_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/$*_mc_bisulfite_nometh_nosignal.txt $(DIR_BIS_BISMARK)/$*_hmc_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/$*_hmc_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/$*_hmc_bisulfite_nometh_nosignal.txt'
+	sample_class_tmps = '$(SAMPLE_CLASS_CLEAN_TMP) := $(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_highmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_lowmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_nosignal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_highmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_lowmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_nosignal.txt,$(SAMPLE_CLASS_PREFIXES))'
 	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_BIS_BISMARK)/%_mc_bisulfite_highmeth.txt \\
 								$(DIR_BIS_BISMARK)/%_mc_bisulfite_lowmeth.txt \\
 								$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_signal.txt \\
@@ -86,7 +99,12 @@ if(bool_bis_samp && bool_pull_samp) {
 	rule2 = ''
 	class_script = '../../scripts/classify_bisulfite_sample.sh'
 } else {
-	extra_removes = 'rm -f $(DIR_PULL_MACS)/$*_mc_pulldown_peak.txt $(DIR_PULL_MACS)/$*_hmc_pulldown_peak.txt'
+	sample_class_tmps = '$(SAMPLE_CLASS_CLEAN_TMP) := $(patsubst %,$(DIR_PULL_MACS)/%_mc_pulldown_peak.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_nosignal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt,$(SAMPLE_CLASS_PREFIXES))'
 	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_PULL_MACS)/%_mc_pulldown_peak.txt \\
 								$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_signal.txt \\
 								$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_nosignal.txt \\
@@ -117,18 +135,20 @@ $(DIR_SUM_FIGURES)/%%_sample_class_counts.png : $(DIR_CLASS_SAMPLE)/%%_sample_cl
 $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt : $(DIR_CLASS_SAMPLE)/%%_sample_classification.bed
 	cut -f 1-4 $< > $@
 
-# NOTE: There is a known bug in make that incorrectly determines implicit intermediate
-# files when they occur in a list of multiple targets and prerequisites.
-# https://savannah.gnu.org/bugs/index.php?32042
-# The easiest workaround is to remove the ones make does not automatically remove
-
 # Classification BED
 %s
 	bash %s $(PATH_TO_BEDTOOLS) $(PATH_TO_AWK) $(CHROM_PATH) $@ $^
 
 %s
-%s',
-	sample_class_target, class_script, rule1, rule2)
+%s
+
+# Clean temporary files that make does not clean up
+%s
+
+.PHONY : sample_classification_clean_tmp
+sample_classification_clean_tmp :
+	rm -f $(SAMPLE_CLASS_CLEAN_TMP)',
+	sample_class_target, class_script, rule1, rule2, sample_class_tmps)
 cat(make_rule_class_sample, file = file_make, sep = '\n', append = TRUE)
 
 #######################################

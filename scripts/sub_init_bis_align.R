@@ -20,6 +20,12 @@ make_var_bis_align = 'BISULFITE_ALIGN_PREREQS := 	$(patsubst %,$(DIR_TRACK)/%_si
 					$(patsubst %,$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES))'
 
+make_var_bis_align_clean_tmp = 'BISFULITE_ALIGN_CLEAN_TMP := $(patsubst %,$(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt,$(BISULFITE_ALIGN_PREFIXES))
+'
+
 # NOTE: This cannot be indented because they would mess up the makefile
 make_rule_bis_align = '
 .PHONY : bisulfite_align
@@ -85,10 +91,16 @@ $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip
 # Rule for FastQC on raw
 $(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip :
 	$(PATH_TO_FASTQC) $(OPTS_FASTQC) --outdir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
+
+# Rule to delete all temporary files from make bis_align
+.PHONY : clean_bisulfite_align_tmp
+clean_bisulfite_align_tmp :
+	rm -f $(BISFULITE_ALIGN_CLEAN_TMP)
 '
 
 cat(make_var_bis_align_prefix, file = file_make, sep = '\n', append = TRUE)
 cat(make_var_bis_align, file = file_make, sep = '\n', append = TRUE)
+cat(make_var_bis_align_clean_tmp, file = file_make, sep = '\n', append = TRUE)
 cat(make_rule_bis_align, file = file_make, sep = '\n', append = TRUE)
 
 #######################################

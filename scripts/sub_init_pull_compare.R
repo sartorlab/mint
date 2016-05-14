@@ -4,7 +4,7 @@
 if(bool_pull_comp) {
 	# Keep track of the compares for the master make rules
 	pulldown_compares = c()
-
+	pulldown_clean_tmps = c()
 	for(i in 1:nrow(pulldown_comparisons)) {
 		# Establish row variables
 		projectID = pulldown_comparisons[i,'projectID']
@@ -108,7 +108,8 @@ if(bool_pull_comp) {
 			sprintf('PULLDOWN_COMPARE_%s_INPUT2 := %s', i, var_input2),
 			sprintf('PULLDOWN_COMPARE_%s_CHIP1 := %s', i, var_chip1),
 			sprintf('PULLDOWN_COMPARE_%s_CHIP2 := %s', i, var_chip2),
-			sprintf('PULLDOWN_COMPARE_%s_NAME := %s', i, var_name))
+			sprintf('PULLDOWN_COMPARE_%s_NAME := %s', i, var_name),
+			sprintf('PULLDOWN_COMPARE_%s_CLEAN_TMP := %s', annotatr_bed))
 		cat(make_var_pull_compare, file = file_make, sep='\n', append=T)
 
 		# Write the pulldown_compare rule for this comparison
@@ -135,11 +136,16 @@ if(bool_pull_comp) {
 			'',
 			sprintf('%s : %s', bigbed, combined_bed),
 			'	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@',
+			'',
+			sprintf('.PHONY : pulldown_compare_clean_tmp_%s', i),
+			sprintf('pulldown_compare_clean_tmp_%s :
+				rm -f $(PULLDOWN_COMPARE_%s_CLEAN_TMP)', i, i),
 			'')
 		cat(make_rule_pull_compare, file = file_make, sep='\n', append=T)
 
 		# Track the number of pulldown compares
 		pulldown_compares = c(pulldown_compares, sprintf('pulldown_compare_%s', i))
+		pulldown_clean_tmps = c(pulldown_clean_tmps, sprintf('pulldown_compare_clean_tmp_%s', i))
 
 		########################################################################
 		# OPTS for config.mk
@@ -169,6 +175,9 @@ if(bool_pull_comp) {
 	make_rule_master_pull_compare = c(
 		'.PHONY : pulldown_compare',
 		sprintf('pulldown_compare : pulldown_align %s', paste(pulldown_compares, collapse=' ')),
+		'',
+		'.PHONY : clean_pulldown_compare_tmp',
+		sprintf('clean_pulldown_compare_tmp : %s', paste(pulldown_clean_tmps, collapse=' ')),
 		'')
 	cat(make_rule_master_pull_compare, file = file_make, sep='\n', append=T)
 

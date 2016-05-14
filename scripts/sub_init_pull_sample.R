@@ -15,6 +15,10 @@ make_var_pull_samp = 'PULLDOWN_SAMPLE_PREREQS :=	$(patsubst %,$(DIR_TRACK)/%_sim
 						$(patsubst %,$(DIR_TRACK)/%_macs2_peaks.bb,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES))'
 
+make_var_pull_samp_clean_tmp = 'PULLDOWN_SAMPLE_CLEAN_TMP := $(patsubst %,$(DIR_CLASS_SIMPLE)/%_pulldown_simple_class_for_annotatr.txt,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES))
+'
+
 # NOTE: This cannot be indented because they would mess up the makefile
 make_rule_pull_samp = '
 .PHONY : pulldown_sample
@@ -49,10 +53,16 @@ $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak : $(DIR_PULL_MACS)/%_macs2_peaks.n
 $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak : 	$(DIR_PULL_BOWTIE2)/%_pulldown_trimmed.fq.gz_aligned.bam \\
 														$(DIR_PULL_BOWTIE2)/%_input_pulldown_trimmed.fq.gz_aligned.bam
 	$(PATH_TO_MACS) callpeak -t $(word 1, $^) -c $(word 2, $^) -f BAM -g hs --name $(patsubst %_peaks.narrowPeak,%,$(@F)) --outdir $(@D)
+
+# Rule to delete all temporary files from make bis_align
+.PHONY : clean_pulldown_sample_tmp
+clean_pulldown_sample_tmp :
+	rm -f $(PULLDOWN_SAMPLE_CLEAN_TMP)
 '
 
 cat(make_var_pull_samp_prefix, file = file_make, sep = '\n', append = TRUE)
 cat(make_var_pull_samp, file = file_make, sep = '\n', append = TRUE)
+cat(make_var_pull_samp_clean_tmp, file = file_make, sep = '\n', append = TRUE)
 cat(make_rule_pull_samp, file = file_make, sep = '\n', append = TRUE)
 
 #######################################
