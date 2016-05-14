@@ -13,8 +13,6 @@ make_var_bis_align = 'BISULFITE_ALIGN_PREREQS := 	$(patsubst %,$(DIR_TRACK)/%_si
 					$(patsubst %,$(DIR_TRACK)/%_trimmed_bismark_bt2.bw,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_SUM_FIGURES)/%_bismark_counts.png,$(BISULFITE_ALIGN_PREFIXES))\\
 					$(patsubst %,$(DIR_SUM_FIGURES)/%_simple_class_counts.png,$(BISULFITE_ALIGN_PREFIXES))\\
-					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
-					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam,$(BISULFITE_ALIGN_PREFIXES)) \\
@@ -56,10 +54,12 @@ $(DIR_SUM_FIGURES)/%_bismark_counts.png : $(DIR_BIS_BISMARK)/%_trimmed_bismark_b
 	$(PATH_TO_R) ../../scripts/annotatr_bisulfite.R --file $< --genome $(GENOME)
 
 # Rule for methylSig input
+.INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz
 	$(PATH_TO_AWK) -f ../../scripts/extractor_to_methylSig.awk <(gunzip -c $<) | sort -T . -k2,2 -k3,3n > $@
 
 # Rule for annotatr input
+.INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz
 	$(PATH_TO_AWK) -f ../../scripts/extractor_to_annotatr.awk <(gunzip -c $<) | sort -T . -k1,1 -k2,2n > $@
 
