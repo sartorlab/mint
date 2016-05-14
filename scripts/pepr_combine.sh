@@ -3,32 +3,32 @@ set -e
 set -u
 set -o pipefail
 
-peprUp=$1
-peprDown=$2
+peprChip1=$1
+peprChip2=$2
 peprCombined=$3
 
-upPrefix=`basename ${peprUp} __PePr_up_peaks.bed`
-downPrefix=`basename ${peprDown} __PePr_down_peaks.bed`
+upPrefix=`basename ${peprChip1} __PePr_chip1_peaks.bed`
+downPrefix=`basename ${peprChip2} __PePr_chip2_peaks.bed`
 
-disUp=pulldown/pepr_peaks/${upPrefix}_disjoint_up.bed
-disDown=pulldown/pepr_peaks/${upPrefix}_disjoint_down.bed 
-
-bedops --difference \
-	<(cut -f 1-3 ${peprUp}) \
-	<(cut -f 1-3 ${peprDown}) \
-| sort -T . -k1,1 -k2,2n \
-> $disUp
+disChip1=pulldown/pepr_peaks/${upPrefix}_disjoint_chip1.bed
+disChip2=pulldown/pepr_peaks/${upPrefix}_disjoint_chip2.bed
 
 bedops --difference \
-	<(cut -f 1-3 ${peprDown}) \
-	<(cut -f 1-3 ${peprUp}) \
+	<(cut -f 1-3 ${peprChip1}) \
+	<(cut -f 1-3 ${peprChip2}) \
 | sort -T . -k1,1 -k2,2n \
-> $disDown
+> $disChip1
+
+bedops --difference \
+	<(cut -f 1-3 ${peprChip2}) \
+	<(cut -f 1-3 ${peprChip1}) \
+| sort -T . -k1,1 -k2,2n \
+> $disChip2
 
 cat \
-  <(awk -v OFS="\t" '{ print $1, $2, $3, "hyper", "1000", ".", $2, $3, "0,0,255" }' ${disUp}) \
-  <(awk -v OFS="\t" '{ print $1, $2, $3, "hypo", "1000", ".", $2, $3, "102,102,255" }' ${disDown}) \
+  <(awk -v OFS="\t" '{ print $1, $2, $3, "chip1", "1000", ".", $2, $3, "0,0,255" }' ${disChip1}) \
+  <(awk -v OFS="\t" '{ print $1, $2, $3, "chip2", "1000", ".", $2, $3, "102,102,255" }' ${disChip2}) \
 | sort -T . -k1,1 -k2,2n > ${peprCombined}
 
 # Clean up
-rm -f ${disUp} ${disDown}
+rm -f ${disChip1} ${disChip2}

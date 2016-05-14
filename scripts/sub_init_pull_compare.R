@@ -89,8 +89,8 @@ if(bool_pull_comp) {
 
 		# Targets
 		input_signal = sprintf('$(DIR_PULL_PEPR)/%s_merged_signal.bed', var_name)
-		up_bed = sprintf('$(DIR_PULL_PEPR)/%s__PePr_chip1_peaks.bed', var_name)
-		down_bed = sprintf('$(DIR_PULL_PEPR)/%s__PePr_chip2_peaks.bed', var_name)
+		chip1_bed = sprintf('$(DIR_PULL_PEPR)/%s__PePr_chip1_peaks.bed', var_name)
+		chip2_bed = sprintf('$(DIR_PULL_PEPR)/%s__PePr_chip2_peaks.bed', var_name)
 		combined_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_combined.bed', var_name)
 		annotatr_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_for_annotatr.txt', var_name)
 		annotatr_png = sprintf('$(DIR_SUM_FIGURES)/%s_PePr_counts.png', var_name)
@@ -103,7 +103,7 @@ if(bool_pull_comp) {
 		make_var_pull_compare = c(
 			'################################################################################',
 			'# Workflow for pulldown_compare',
-			sprintf('PULLDOWN_COMPARE_%s_PREREQS := %s %s %s %s', i, up_bed, bigbed, input_signal, annotatr_png),
+			sprintf('PULLDOWN_COMPARE_%s_PREREQS := %s %s %s %s', i, chip1_bed, bigbed, input_signal, annotatr_png),
 			sprintf('PULLDOWN_COMPARE_%s_INPUT1 := %s', i, var_input1),
 			sprintf('PULLDOWN_COMPARE_%s_INPUT2 := %s', i, var_input2),
 			sprintf('PULLDOWN_COMPARE_%s_CHIP1 := %s', i, var_chip1),
@@ -116,11 +116,11 @@ if(bool_pull_comp) {
 			sprintf('.PHONY : pulldown_compare_%s', i),
 			sprintf('pulldown_compare_%s : $(PULLDOWN_COMPARE_%s_PREREQS)', i, i),
 			'',
-			sprintf('%s : %s %s %s %s', up_bed, var_input1_pre, var_input2_pre, var_chip1_pre, var_chip2_pre),
+			sprintf('%s : %s %s %s %s', chip1_bed, var_input1_pre, var_input2_pre, var_chip1_pre, var_chip2_pre),
 			sprintf('	$(PATH_TO_PEPR) --input1=$(PULLDOWN_COMPARE_%s_INPUT1) --input2=$(PULLDOWN_COMPARE_%s_INPUT2) --chip1=$(PULLDOWN_COMPARE_%s_CHIP1) --chip2=$(PULLDOWN_COMPARE_%s_CHIP2) --name=$(PULLDOWN_COMPARE_%s_NAME) --output-directory=$(DIR_PULL_PEPR) $(OPTS_PEPR_%s)', i, i, i, i, i, var_name),
-			sprintf('%s : %s', down_bed, up_bed),
+			sprintf('%s : %s', chip2_bed, chip1_bed),
 			'',
-			sprintf('%s : %s %s', combined_bed, up_bed, down_bed),
+			sprintf('%s : %s %s', combined_bed, chip1_bed, chip2_bed),
 			'	bash ../../scripts/pepr_combine.sh $(word 1,$^) $(word 2,$^) $@',
 			'',
 			sprintf('.INTERMEDIATE : %s', annotatr_bed),

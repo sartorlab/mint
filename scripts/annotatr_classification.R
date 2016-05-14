@@ -137,8 +137,8 @@ if(class_type == 'simple') {
 		'no_DM')
 } else if (class_type == 'PePr') {
 	cats_order = c(
-		'hyper',
-		'hypo')
+		'chip1',
+		'chip2')
 }
 
 ###############################################################
