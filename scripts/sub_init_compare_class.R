@@ -80,7 +80,7 @@ cat(make_var_compare_class_prefix, file = file_make, sep = '\n', append = TRUE)
 
 # The compare class type depends on the type of compares present
 if(bool_bis_comp && bool_pull_comp) {
-	compare_class_tmps = '$(COMPARE_CLASS_CLEAN_TMP) := $(patsubst %,$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
+	compare_class_tmps = 'COMPARE_CLASS_CLEAN_TMP := $(patsubst %,$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\
@@ -103,7 +103,7 @@ if(bool_bis_comp && bool_pull_comp) {
 	############################################################
 	# NOTE: THIS IS NOT EXPLICITLY SUPPORTED RIGHT NOW
 	############################################################
-	compare_class_tmps = '$(COMPARE_CLASS_CLEAN_TMP) := $(patsubst %,$(DIR_BIS_MSIG)/%_mc_bisulfite_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
+	compare_class_tmps = 'COMPARE_CLASS_CLEAN_TMP := $(patsubst %,$(DIR_BIS_MSIG)/%_mc_bisulfite_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_bisulfite_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\
@@ -123,7 +123,7 @@ if(bool_bis_comp && bool_pull_comp) {
 	rule2 = ''
 	class_script = '../../scripts/classify_compare.sh'
 } else if (!bool_bis_comp && bool_pull_comp) {
-	compare_class_tmps = '$(COMPARE_CLASS_CLEAN_TMP) := $(patsubst %,$(DIR_PULL_PEPR)/%_mc_pulldown_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
+	compare_class_tmps = 'COMPARE_CLASS_CLEAN_TMP := $(patsubst %,$(DIR_PULL_PEPR)/%_mc_pulldown_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_PULL_PEPR)/%_mc_pulldown_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\

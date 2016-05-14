@@ -58,7 +58,7 @@ cat(make_var_sample_class_prefix, file = file_make, sep = '\n', append = TRUE)
 
 # The sample class type depends on the type of samples present
 if(bool_bis_samp && bool_pull_samp) {
-	sample_class_tmps = '$(SAMPLE_CLASS_CLEAN_TMP) := $(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_highmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+	sample_class_tmps = 'SAMPLE_CLASS_CLEAN_TMP := $(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_highmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_lowmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_nosignal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
@@ -79,7 +79,7 @@ if(bool_bis_samp && bool_pull_samp) {
 	############################################################
 	# NOTE: THIS IS NOT EXPLICITLY SUPPORTED RIGHT NOW
 	############################################################
-	sample_class_tmps = '$(SAMPLE_CLASS_CLEAN_TMP) := $(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_highmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+	sample_class_tmps = 'SAMPLE_CLASS_CLEAN_TMP := $(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_highmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_lowmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_nosignal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
@@ -99,7 +99,7 @@ if(bool_bis_samp && bool_pull_samp) {
 	rule2 = ''
 	class_script = '../../scripts/classify_bisulfite_sample.sh'
 } else {
-	sample_class_tmps = '$(SAMPLE_CLASS_CLEAN_TMP) := $(patsubst %,$(DIR_PULL_MACS)/%_mc_pulldown_peak.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+	sample_class_tmps = 'SAMPLE_CLASS_CLEAN_TMP := $(patsubst %,$(DIR_PULL_MACS)/%_mc_pulldown_peak.txt,$(SAMPLE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_nosignal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt,$(SAMPLE_CLASS_PREFIXES)) \\
