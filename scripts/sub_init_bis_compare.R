@@ -162,20 +162,20 @@ OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount
 
 	#######################################
 	# PBS script
-	# bisulfite_compare_q = c(
-	# 	'#!/bin/bash',
-	# 	'#### Begin PBS preamble',
-	# 	'#PBS -N bis_compare',
-	# 	'#PBS -l procs=4,mem=32gb,walltime=6:00:00',
-	# 	'#PBS -A sartor_lab',
-	# 	'#PBS -q first',
-	# 	'#PBS -M rcavalca@umich.edu',
-	# 	'#PBS -m abe',
-	# 	'#PBS -j oe',
-	# 	'#PBS -V',
-	# 	'#### End PBS preamble',
-	# 	'# Put your job commands after this line',
-	# 	sprintf('cd ~/latte/mint/projects/%s/',project),
-	# 	'make -j 4 bisulfite_compare')
-	# cat(bisulfite_compare_q, file=sprintf('projects/%s/pbs_jobs/bisulfite_compare.q', project), sep='\n')
+	bisulfite_compare_q = c(
+		'#!/bin/bash',
+		'#### Begin PBS preamble',
+		'#PBS -N bis_compare',
+		'#PBS -l nodes=1:ppn=4,walltime=24:00:00,pmem=8gb',
+		'#PBS -A sartor_lab',
+		'#PBS -q first',
+		'#PBS -M rcavalca@umich.edu',
+		'#PBS -m abe',
+		'#PBS -j oe',
+		'#PBS -V',
+		'#### End PBS preamble',
+		'# Put your job commands after this line',
+		sprintf('cd ~/latte/mint/projects/%s/',project),
+		'make -j 4 bisulfite_compare')
+	cat(bisulfite_compare_q, file=sprintf('projects/%s/pbs_jobs/bisulfite_compare.q', project), sep='\n')
 }

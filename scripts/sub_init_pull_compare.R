@@ -183,21 +183,21 @@ if(bool_pull_comp) {
 
 	#######################################
 	# PBS script
-	# pulldown_compare_q = c(
-	# 	'#!/bin/bash',
-	# 	'#### Begin PBS preamble',
-	# 	'#PBS -N pull_compare',
-	# 	'#PBS -l procs=1,mem=32gb,walltime=6:00:00',
-	# 	'#PBS -A sartor_lab',
-	# 	'#PBS -q first',
-	# 	'#PBS -M rcavalca@umich.edu',
-	# 	'#PBS -m abe',
-	# 	'#PBS -j oe',
-	# 	'#PBS -V',
-	# 	'#### End PBS preamble',
-	# 	'# Put your job commands after this line',
-	# 	sprintf('cd ~/latte/mint/projects/%s/',project),
-	# 	'make pulldown_compare')
-	# cat(pulldown_compare_q, file=sprintf('projects/%s/pbs_jobs/pulldown_compare.q', project), sep='\n')
+	pulldown_compare_q = c(
+		'#!/bin/bash',
+		'#### Begin PBS preamble',
+		'#PBS -N pull_compare',
+		'#PBS -l nodes=1:ppn=8,walltime=24:00:00,pmem=8gb',
+		'#PBS -A sartor_lab',
+		'#PBS -q first',
+		'#PBS -M rcavalca@umich.edu',
+		'#PBS -m abe',
+		'#PBS -j oe',
+		'#PBS -V',
+		'#### End PBS preamble',
+		'# Put your job commands after this line',
+		sprintf('cd ~/latte/mint/projects/%s/',project),
+		'make pulldown_compare')
+	cat(pulldown_compare_q, file=sprintf('projects/%s/pbs_jobs/pulldown_compare.q', project), sep='\n')
 
 }

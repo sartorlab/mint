@@ -59,22 +59,22 @@ cat(make_rule_pull_align, file = file_make, sep = '\n', append = TRUE)
 
 #######################################
 # PBS script
-# pulldown_align_q = c(
-# 	'#!/bin/bash',
-# 	'#### Begin PBS preamble',
-# 	'#PBS -N pull_align',
-# 	'#PBS -l procs=4,mem=32gb,walltime=6:00:00',
-# 	'#PBS -A sartor_lab',
-# 	'#PBS -q first',
-# 	'#PBS -M rcavalca@umich.edu',
-# 	'#PBS -m abe',
-# 	'#PBS -j oe',
-# 	'#PBS -V',
-# 	'#### End PBS preamble',
-# 	'# Put your job commands after this line',
-# 	sprintf('cd ~/latte/mint/projects/%s/',project),
-# 	'make -j 4 pulldown_align')
-# cat(pulldown_align_q, file=sprintf('projects/%s/pbs_jobs/pulldown_align.q', project), sep='\n')
+pulldown_align_q = c(
+	'#!/bin/bash',
+	'#### Begin PBS preamble',
+	'#PBS -N pull_align',
+	'#PBS -l nodes=1:ppn=8,walltime=24:00:00,pmem=16gb',
+	'#PBS -A sartor_lab',
+	'#PBS -q first',
+	'#PBS -M rcavalca@umich.edu',
+	'#PBS -m abe',
+	'#PBS -j oe',
+	'#PBS -V',
+	'#### End PBS preamble',
+	'# Put your job commands after this line',
+	sprintf('cd ~/latte/mint/projects/%s/',project),
+	'make -j 8 pulldown_align')
+cat(pulldown_align_q, file=sprintf('projects/%s/pbs_jobs/pulldown_align.q', project), sep='\n')
 
 for(i in 1:nrow(pulldown_samples)) {
 	# trackDb.txt entry for chip/input pulldown coverages
