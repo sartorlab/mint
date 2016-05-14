@@ -1,5 +1,7 @@
 SHELL=/bin/bash
 
+# This makefile was generated using mint v0.1.0
+
 ################################################################################
 # Directories
 
