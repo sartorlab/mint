@@ -233,3 +233,5 @@ if(suffix == 'methylSig') {
 	ggplot2::ggsave(filename = cat_prop_genes_png, plot = plot_cat_prop_genes, width = 8, height = 8)
 
 }
+
+save.image(file = sprintf('RData/%s_%s_annotatr_analysis.RData', sample, suffix))

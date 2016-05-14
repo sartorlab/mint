@@ -227,3 +227,5 @@ plot_cat_prop_genes = plot_categorical(
   x_label = sprintf('%s classification', display_type),
   y_label = 'Proportion')
 ggplot2::ggsave(filename = cat_prop_genes_png, plot = plot_cat_prop_genes, width = 8, height = 8)
+
+save.image(file = sprintf('RData/%s_annotatr_analysis.RData', prefix))

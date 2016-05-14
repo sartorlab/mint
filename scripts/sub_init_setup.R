@@ -24,7 +24,8 @@ setup_commands = c(
 	sprintf('mkdir projects/%s/%s_hub', project, project),
 	sprintf('mkdir projects/%s/%s_hub/%s', project, project, genome),
 	sprintf('mkdir projects/%s/classifications', project),
-	sprintf('mkdir projects/%s/classifications/{simple,sample}', project)
+	sprintf('mkdir projects/%s/classifications/{simple,sample}', project),
+	sprintf('mkdir projects/%s/RData', project)
 )
 
 # Create folders for bisulfite samples if there are any
