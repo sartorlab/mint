@@ -49,7 +49,7 @@ The mint pipeline can be used for any combination of the following experimental 
 3. Put a tab-delimited annotation file `project_name_annotation.txt` in the `mint/projects` directory. It **must** have the following 9 columns. See below for examples.
 	1. `projectID`: The name of the project.
 	2. `sampleID`: An alphanumeric ID (perhaps from SRA, GEO, a sequencing core, etc.). Typically these will be the names of the `.fastq` files.
-	3. `humanID`: The human readable ID for the sample.
+	3. `humanID`: The human readable ID for the sample to make finding files easier.
 	4. `pulldown`: A binary value indicating whether the sample is the result of a pulldown experiment (1) or not (0).
 	5. `bisulfite`: A binary value indicating whether the sample is the result of a bisulfite-conversion experiment (1) or not (0).
 	6. `mc`: A binary value indicating whether the sample represents 5mc methylation.

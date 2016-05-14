@@ -9,8 +9,8 @@ This file gives the current version of software used in the pipeline as of March
 * macs2 v2.1.0.20140616
 * PePr v1.0.9
 * R v3.2.5
-	* annotatr v0.7.0
-	* methylSig v0.4.2
+	* annotatr v0.7.1
+	* methylSig v0.4.3
 * samtools v0.1.19
 * trim_galore v0.4.1
 * cutadapt v1.9.1
