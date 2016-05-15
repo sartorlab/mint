@@ -85,7 +85,7 @@ if(bool_bis_comp) {
 			sprintf('BISULFITE_COMPARE_%s_SAMPLEIDS := %s', i, var_sampleids),
 			sprintf('BISULFITE_COMPARE_%s_TREATMENT := %s', i, var_treatment),
 			sprintf('BISULFITE_COMPARE_%s_COMPARISON := %s_$(OPT_DM_TYPE)_methylSig', i, var_comparison),
-			sprintf('BISULFITE_COMPARE_%s_CLEAN_TMP := %s %s', i, msig_tmp_results, annotatr_bed))
+			sprintf('BISULFITE_COMPARE_%s_CLEAN_TMP := %s %s %s', i, msig_tmp_results, annotatr_bed, var_cytfiles_pre))
 		cat(make_vars_bis_compare, file = file_make, sep='\n', append=T)
 
 		########################################################################
