@@ -40,7 +40,7 @@ $(DIR_PULL_MACS)/%_pulldown_nopeak.txt : $(DIR_PULL_MACS)/%_pulldown_peak.txt
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_signal.txt
-$(DIR_PULL_MACS)/%_pulldown_signal.txt : $(DIR_PULL_COVERAGES)/%_input_pulldown_merged_coverage.bdg
+$(DIR_PULL_MACS)/%_pulldown_signal.txt : $(DIR_PULL_COVERAGES)/%_input_pulldown_coverage_merged.bdg
 	cp $< $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nosignal.txt

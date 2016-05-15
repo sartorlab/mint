@@ -79,8 +79,8 @@ if(bool_pull_comp) {
 		var_chip2 = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', groupB$fullHumanID), sep='', collapse=',')
 
 		# For the prerequisites in the make rule
-		var_merged_input1_pre = paste(sprintf('$(DIR_PULL_COVERAGES)/%s_merged_coverage.bdg', inputGroupA$fullHumanID), sep='', collapse=' ')
-		var_merged_input2_pre = paste(sprintf('$(DIR_PULL_COVERAGES)/%s_merged_coverage.bdg', inputGroupB$fullHumanID), sep='', collapse=' ')
+		var_merged_input1_pre = paste(sprintf('$(DIR_PULL_COVERAGES)/%s_coverage_merged.bdg', inputGroupA$fullHumanID), sep='', collapse=' ')
+		var_merged_input2_pre = paste(sprintf('$(DIR_PULL_COVERAGES)/%s_coverage_merged.bdg', inputGroupB$fullHumanID), sep='', collapse=' ')
 		var_input1_pre = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', inputGroupA$fullHumanID), sep='', collapse=' ')
 		var_input2_pre = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', inputGroupB$fullHumanID), sep='', collapse=' ')
 		var_chip1_pre = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', groupA$fullHumanID), sep='', collapse=' ')
