@@ -147,8 +147,7 @@ if(bool_bis_comp && bool_pull_comp) {
 make_rule_class_compare = sprintf('
 # Master rule
 .PHONY : compare_classification
-compare_classification : pulldown_align pulldown_compare bisulfite_align bisulfite_compare
-		$(patsubst %%,$(DIR_TRACK)/%%_compare_classification.bb,$(COMPARE_CLASS_PREFIXES)) \\
+compare_classification : $(patsubst %%,$(DIR_TRACK)/%%_compare_classification.bb,$(COMPARE_CLASS_PREFIXES)) \\
 		$(patsubst %%,$(DIR_SUM_FIGURES)/%%_compare_class_counts.png,$(COMPARE_CLASS_PREFIXES)) \\
 		$(patsubst %%,$(DIR_CLASS_COMPARE)/%%_compare_classification.bed,$(COMPARE_CLASS_PREFIXES))
 

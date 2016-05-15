@@ -119,8 +119,7 @@ if(bool_bis_samp && bool_pull_samp) {
 make_rule_class_sample = sprintf('
 # Master rule
 .PHONY : sample_classification
-sample_classification : 	pulldown_align pulldown_sample bisulfite_align \\
-		$(patsubst %%,$(DIR_TRACK)/%%_sample_classification.bb,$(SAMPLE_CLASS_PREFIXES)) \\
+sample_classification : 	$(patsubst %%,$(DIR_TRACK)/%%_sample_classification.bb,$(SAMPLE_CLASS_PREFIXES)) \\
 		$(patsubst %%,$(DIR_SUM_FIGURES)/%%_sample_class_counts.png,$(SAMPLE_CLASS_PREFIXES)) \\
 		$(patsubst %%,$(DIR_CLASS_SAMPLE)/%%_sample_classification.bed,$(SAMPLE_CLASS_PREFIXES))
 
