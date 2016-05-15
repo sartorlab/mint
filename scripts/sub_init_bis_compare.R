@@ -94,7 +94,7 @@ if(bool_bis_comp) {
 		# Write the bisulfite_compare rule for this comparison
 		make_rule_bis_compare = c(
 			sprintf('.PHONY : bisulfite_compare_%s', i),
-			sprintf('bisulfite_compare_%s : $(BISULFITE_COMPARE_%s_PREREQS)', i, i),
+			sprintf('bisulfite_compare_%s : bisulfite_align $(BISULFITE_COMPARE_%s_PREREQS)', i, i),
 			'',
 '# Rule for methylSig input
 .INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt

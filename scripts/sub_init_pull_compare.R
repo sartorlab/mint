@@ -115,7 +115,7 @@ if(bool_pull_comp) {
 		# Write the pulldown_compare rule for this comparison
 		make_rule_pull_compare = c(
 			sprintf('.PHONY : pulldown_compare_%s', i),
-			sprintf('pulldown_compare_%s : $(PULLDOWN_COMPARE_%s_PREREQS)', i, i),
+			sprintf('pulldown_compare_%s : pulldown_align $(PULLDOWN_COMPARE_%s_PREREQS)', i, i),
 			'',
 			sprintf('%s : %s %s %s %s', chip1_bed, var_input1_pre, var_input2_pre, var_chip1_pre, var_chip2_pre),
 			sprintf('	$(PATH_TO_PEPR) --input1=$(PULLDOWN_COMPARE_%s_INPUT1) --input2=$(PULLDOWN_COMPARE_%s_INPUT2) --chip1=$(PULLDOWN_COMPARE_%s_CHIP1) --chip2=$(PULLDOWN_COMPARE_%s_CHIP2) --name=$(PULLDOWN_COMPARE_%s_NAME) --output-directory=$(DIR_PULL_PEPR) $(OPTS_PEPR_%s)', i, i, i, i, i, var_name),
