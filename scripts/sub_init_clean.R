@@ -7,15 +7,23 @@ if(bool_bis_samp) {
 }
 
 if(bool_pull_samp) {
-	clean_str = paste(clean_str, 'clean_pulldown_sample_tmp', 'clean_sample_classification_tmp')
+	clean_str = paste(clean_str, 'clean_pulldown_sample_tmp')
+}
+
+if(bool_bis_samp || bool_pull_samp) {
+	clean_str = paste(clean_str, 'clean_sample_classification_tmp')
 }
 
 if(bool_bis_comp) {
-	clean_str = paste(clean_str, 'clean_bisulfite_compare_tmp', 'clean_compare_classification_tmp')
+	clean_str = paste(clean_str, 'clean_bisulfite_compare_tmp')
 }
 
 if(bool_pull_comp) {
 	clean_str = paste(clean_str, 'clean_pulldown_compare_tmp')
+}
+
+if(bool_bis_comp || bool_pull_comp) {
+	clean_str = paste(clean_str, 'clean_compare_classification_tmp')
 }
 
 make_clean_tmp_rule = sprintf('.PHONY : clean_tmp
