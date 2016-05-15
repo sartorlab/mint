@@ -35,7 +35,7 @@ $(DIR_TRACK)/%_bisulfite_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulf
 	$(PATH_TO_BDG2BB) $< $(CHROM_PATH) $@
 
 # Rule for annotatr of simple classification
-$(DIR_RDATA)/%_simple_class_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt
+$(DIR_RDATA)/%_bisulfite_simple_class_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt
 	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
 
 .INTERMEDIATE : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt
