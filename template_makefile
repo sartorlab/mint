@@ -39,6 +39,9 @@ DIR_SUM_FIGURES := summary/figures
 DIR_SUM_REPORTS := summary/reports
 DIR_SUM_TABLES := summary/tables
 
+# RData directories
+DIR_RDATA := RData
+
 ################################################################################
 # Includes
 include config.mk

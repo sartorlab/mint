@@ -93,7 +93,7 @@ if(bool_pull_comp) {
 		chip2_bed = sprintf('$(DIR_PULL_PEPR)/%s__PePr_chip2_peaks.bed', var_name)
 		combined_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_combined.bed', var_name)
 		annotatr_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_for_annotatr.txt', var_name)
-		annotatr_png = sprintf('$(DIR_SUM_FIGURES)/%s_PePr_counts.png', var_name)
+		annotatr_rdata = sprintf('$(DIR_RDATA)/%s_PePr_annotatr_analysis.RData', var_name)
 		bigbed = sprintf('$(DIR_TRACK)/%s_PePr_peaks.bb', var_name)
 
 		########################################################################
@@ -103,7 +103,7 @@ if(bool_pull_comp) {
 		make_var_pull_compare = c(
 			'################################################################################',
 			'# Workflow for pulldown_compare',
-			sprintf('PULLDOWN_COMPARE_%s_PREREQS := %s %s %s %s', i, chip1_bed, bigbed, input_signal, annotatr_png),
+			sprintf('PULLDOWN_COMPARE_%s_PREREQS := %s %s %s %s', i, chip1_bed, bigbed, input_signal, annotatr_rdata),
 			sprintf('PULLDOWN_COMPARE_%s_INPUT1 := %s', i, var_input1),
 			sprintf('PULLDOWN_COMPARE_%s_INPUT2 := %s', i, var_input2),
 			sprintf('PULLDOWN_COMPARE_%s_CHIP1 := %s', i, var_chip1),
@@ -128,7 +128,7 @@ if(bool_pull_comp) {
 			sprintf('%s : %s', annotatr_bed, combined_bed),
 			'	cut -f 1-4 $< > $@',
 			'',
-			sprintf('%s : %s', annotatr_png, annotatr_bed),
+			sprintf('%s : %s', annotatr_rdata, annotatr_bed),
 			'	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)',
 			'',
 			sprintf('%s : %s %s', input_signal, var_merged_input1_pre, var_merged_input2_pre),

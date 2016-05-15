@@ -11,8 +11,8 @@ BISULFITE_ALIGN_PREFIXES := %s', paste(bisulfite_samples$fullHumanID, collapse='
 make_var_bis_align = 'BISULFITE_ALIGN_PREREQS := 	$(patsubst %,$(DIR_TRACK)/%_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_TRACK)/%_trimmed_bismark_bt2.bw,$(BISULFITE_ALIGN_PREFIXES)) \\
-					$(patsubst %,$(DIR_SUM_FIGURES)/%_bismark_counts.png,$(BISULFITE_ALIGN_PREFIXES))\\
-					$(patsubst %,$(DIR_SUM_FIGURES)/%_simple_class_counts.png,$(BISULFITE_ALIGN_PREFIXES))\\
+					$(patsubst %,$(DIR_RDATA)/%_bismark_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES))\\
+					$(patsubst %,$(DIR_RDATA)/%_simple_class_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES))\\
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam,$(BISULFITE_ALIGN_PREFIXES)) \\
@@ -35,7 +35,7 @@ $(DIR_TRACK)/%_bisulfite_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulf
 	$(PATH_TO_BDG2BB) $< $(CHROM_PATH) $@
 
 # Rule for annotatr of simple classification
-$(DIR_SUM_FIGURES)/%_bisulfite_simple_class_counts.png : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt
+$(DIR_RDATA)/%_simple_class_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt
 	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
 
 .INTERMEDIATE : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt
@@ -55,7 +55,7 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph : $(DIR_BIS_BISMARK)/%_trimmed
 	gunzip -c $< | $(PATH_TO_AWK) \'NR > 1 {print $$0}\' | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for annotatr of extractor results
-$(DIR_SUM_FIGURES)/%_bismark_counts.png : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt
+$(DIR_RDATA)/%_bismark_annotatr_analysis.RData : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt
 	$(PATH_TO_R) ../../scripts/annotatr_bisulfite.R --file $< --genome $(GENOME)
 
 # Rule for annotatr input

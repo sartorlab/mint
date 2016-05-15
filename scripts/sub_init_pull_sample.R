@@ -10,7 +10,7 @@ PULLDOWN_SAMPLE_PREFIXES := %s', paste(pulldown_samples_noinput$fullHumanID, col
 
 
 make_var_pull_samp = 'PULLDOWN_SAMPLE_PREREQS :=	$(patsubst %,$(DIR_TRACK)/%_simple_classification.bb,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-						$(patsubst %,$(DIR_SUM_FIGURES)/%_simple_class_counts.png,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+						$(patsubst %,$(DIR_RDATA)/%_simple_class_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 						$(patsubst %,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 						$(patsubst %,$(DIR_TRACK)/%_macs2_peaks.bb,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES))'
@@ -29,7 +29,7 @@ $(DIR_TRACK)/%_pulldown_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_pulldow
 	$(PATH_TO_BDG2BB) $< $(CHROM_PATH) $@
 
 # Rule for annotatr of simple classification
-$(DIR_SUM_FIGURES)/%_pulldown_simple_class_counts.png : $(DIR_CLASS_SIMPLE)/%_pulldown_simple_class_for_annotatr.txt
+$(DIR_RDATA)/%_simple_class_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_pulldown_simple_class_for_annotatr.txt
 	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
 
 .INTERMEDIATE : $(DIR_CLASS_SIMPLE)/%_pulldown_simple_class_for_annotatr.txt

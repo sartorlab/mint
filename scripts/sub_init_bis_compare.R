@@ -70,7 +70,7 @@ if(bool_bis_comp) {
 		msig_results = sprintf('$(DIR_BIS_MSIG)/%s_$(OPT_DM_TYPE)_methylSig.txt', var_comparison)
 		msig_tmp_results = sprintf('$(DIR_BIS_MSIG)/%s_$(OPT_DM_TYPE)_methylSig_tmp.txt', var_comparison)
 		annotatr_bed = sprintf('$(DIR_BIS_MSIG)/%s_$(OPT_DM_TYPE)_methylSig_for_annotatr.txt', var_comparison)
-		annotatr_png = sprintf('$(DIR_SUM_FIGURES)/%s_$(OPT_DM_TYPE)_methylSig_counts.png', var_comparison)
+		annotatr_rdata = sprintf('$(DIR_RDATA)/%s_$(OPT_DM_TYPE)_methylSig_annotatr_analysis.RData', var_comparison)
 		msig_bigwig = sprintf('$(DIR_TRACK)/%s_methylSig.bw', var_comparison)
 
 		########################################################################
@@ -80,7 +80,7 @@ if(bool_bis_comp) {
 		make_vars_bis_compare = c(
 			'################################################################################',
 			'# Workflow for bisulfite_compare',
-			sprintf('BISULFITE_COMPARE_%s_PREREQS := %s %s %s', i, msig_results, msig_bigwig, annotatr_png),
+			sprintf('BISULFITE_COMPARE_%s_PREREQS := %s %s %s', i, msig_results, msig_bigwig, annotatr_rdata),
 			sprintf('BISULFITE_COMPARE_%s_CYTFILES := %s', i, var_cytfiles),
 			sprintf('BISULFITE_COMPARE_%s_SAMPLEIDS := %s', i, var_sampleids),
 			sprintf('BISULFITE_COMPARE_%s_TREATMENT := %s', i, var_treatment),
@@ -111,7 +111,7 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BI
 			sprintf('%s : %s', annotatr_bed, msig_results),
 			'	$(PATH_TO_AWK) -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) -f ../../scripts/methylSig_to_annotatr.awk $< > $@',
 			'',
-			sprintf('%s : %s', annotatr_png, annotatr_bed),
+			sprintf('%s : %s', annotatr_rdata, annotatr_bed),
 			'	$(PATH_TO_R) ../../scripts/annotatr_bisulfite.R --file $< --genome $(GENOME)',
 			'',
 			sprintf('%s : %s', msig_bigwig, msig_tmp_results),
