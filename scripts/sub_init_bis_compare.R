@@ -96,6 +96,10 @@ if(bool_bis_comp) {
 			sprintf('.PHONY : bisulfite_compare_%s', i),
 			sprintf('bisulfite_compare_%s : $(BISULFITE_COMPARE_%s_PREREQS)', i, i),
 			'',
+			'# Rule for methylSig input
+			.INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt
+			$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz
+				$(PATH_TO_AWK) -f ../../scripts/extractor_to_methylSig.awk <(gunzip -c $<) | sort -T . -k2,2 -k3,3n > $@',
 			sprintf('%s : %s', msig_results, var_cytfiles_pre),
 			sprintf('	$(PATH_TO_R) ../../scripts/methylSig_run.R --project $(PROJECT) --cytfiles $(BISULFITE_COMPARE_%s_CYTFILES) --sampleids $(BISULFITE_COMPARE_%s_SAMPLEIDS) --treatment $(BISULFITE_COMPARE_%s_TREATMENT) --assembly $(GENOME) --pipeline mint --outprefix $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_METHYLSIG_%s)', i, i, i, i, var_comparison),
 			'',

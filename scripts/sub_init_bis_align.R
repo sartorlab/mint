@@ -59,11 +59,6 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph : $(DIR_BIS_BISMARK)/%_trimmed
 $(DIR_SUM_FIGURES)/%_bismark_counts.png : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt
 	$(PATH_TO_R) ../../scripts/annotatr_bisulfite.R --file $< --genome $(GENOME)
 
-# Rule for methylSig input
-.INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt
-$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz
-	$(PATH_TO_AWK) -f ../../scripts/extractor_to_methylSig.awk <(gunzip -c $<) | sort -T . -k2,2 -k3,3n > $@
-
 # Rule for annotatr input
 .INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz
