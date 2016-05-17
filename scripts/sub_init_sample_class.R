@@ -10,7 +10,7 @@ $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.CpG_report.txt : $(DIR_BIS_BI
 
 # Intermediates for the bisulfite piece
 $(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal.txt : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.CpG_report.txt
-	$(PATH_TO_AWK) -f ../../scripts/classify_prepare_bisulfite_sample.awk $<
+	$(PATH_TO_AWK) -v MIN_COV=$(OPT_MIN_COV) -f ../../scripts/classify_prepare_bisulfite_sample.awk $<
 '
 
 make_rule_sample_class_pull_module = '
