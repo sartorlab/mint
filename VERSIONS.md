@@ -7,7 +7,7 @@ This file gives the current version of software used in the pipeline as of May 1
 * bismark v0.16.1
 * bowtie2 v2.2.4
 * macs2 v2.1.0.20140616
-* PePr v1.0.9
+* PePr v1.1.1
 * R v3.2.5
 	* annotatr v0.7.1
 	* methylSig v0.4.3
