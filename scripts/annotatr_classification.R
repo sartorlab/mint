@@ -186,7 +186,7 @@ ggplot2::ggsave(filename = counts_png, plot = plot_counts, width = 8, height = 8
 # }
 
 # Histogram of region (peak) widths for *pulldown_simple* and PePr inputs
-if( (class_type == 'simple' && grepl('pulldown')) || class_type == 'PePr' ) {
+if( (class_type == 'simple' && grepl('pulldown', prefix)) || class_type == 'PePr' ) {
 	widths = data.frame(
 		region = 1:length(r),
 		width = end(r) - start(r), stringsAsFactors=F)
