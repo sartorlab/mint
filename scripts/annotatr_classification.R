@@ -2,6 +2,7 @@ library(annotatr)
 library(readr)
 library(ggplot2)
 library(optparse)
+library(GenomicRanges)
 
 option_list = list(
   make_option('--file', type='character'),
@@ -183,6 +184,21 @@ ggplot2::ggsave(filename = counts_png, plot = plot_counts, width = 8, height = 8
 # 		axes_label = 'Annotations')
 # 	ggplot2::ggsave(filename = cocounts_png, plot = plot_cocounts, width = 8, height = 8)
 # }
+
+# Histogram of region (peak) widths for *pulldown_simple* and PePr inputs
+if( (class_type == 'simple' && grepl('pulldown')) || class_type == 'PePr' ) {
+	widths = data.frame(
+		region = 1:length(r),
+		width = end(r) - start(r), stringsAsFactors=F)
+
+	widths_png = sprintf('summary/figures/%s_peak_widths.png', prefix)
+	plot_region_widths = ggplot(data = widths, aes(x = width, y=..density..)) +
+		scale_x_log10() + geom_histogram(stat = 'bin', fill = NA, color='gray', bins=30) +
+		theme_bw() +
+		xlab('Peak Widths (log10 scale)') +
+		ggtitle(sprintf('%s peak widths', prefix))
+	ggplot2::ggsave(filename = widths_png, plot = plot_region_widths, width = 6, height = 6)
+}
 
 # Regions split by category and stacked by CpG annotations (count)
 cat_count_cpgs_png = sprintf('summary/figures/%s_cat_count_cpgs.png', prefix)
