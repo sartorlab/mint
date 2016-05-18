@@ -9,8 +9,7 @@ make_var_pull_align_prefix = sprintf('
 PULLDOWN_ALIGN_PREFIXES := %s', paste(pulldown_samples$fullHumanID, collapse=' '))
 
 make_var_pull_align = 'PULLDOWN_ALIGN_PREREQS :=  $(patsubst %,$(DIR_TRACK)/%_coverage.bw,$(PULLDOWN_ALIGN_PREFIXES)) \\
-					$(patsubst %,$(DIR_PULL_COVERAGES)/%_coverage.bdg,$(PULLDOWN_ALIGN_PREFIXES)) \\
-					$(patsubst %,$(DIR_PULL_COVERAGES)/%_merged_coverage.bdg,$(PULLDOWN_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_PULL_COVERAGES)/%_coverage_merged.bdg,$(PULLDOWN_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam,$(PULLDOWN_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz,$(PULLDOWN_ALIGN_PREFIXES)) \\
@@ -26,17 +25,18 @@ $(DIR_TRACK)/%_coverage.bw : $(DIR_PULL_COVERAGES)/%_coverage.bdg
 	$(PATH_TO_BDG2BW) $< $(CHROM_PATH) $@
 
 # Rule for coverage bedGraph
+.INTERMEDIATE : $(DIR_PULL_COVERAGES)/%_coverage.bdg
 $(DIR_PULL_COVERAGES)/%_coverage.bdg : $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam
 	$(PATH_TO_BEDTOOLS) genomecov -bg -g $(CHROM_PATH) -ibam $< | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for merged coverage BED
 # For use in signal BEDs downstream
-$(DIR_PULL_COVERAGES)/%_merged_coverage.bdg : $(DIR_PULL_COVERAGES)/%_coverage.bdg
+$(DIR_PULL_COVERAGES)/%_coverage_merged.bdg : $(DIR_PULL_COVERAGES)/%_coverage.bdg
 	$(PATH_TO_BEDTOOLS) merge -d 20 -i $< | sort -T . -k1,1 -k2,2n > $@
 
 # Rule for bowtie2 alignment
 $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip
-	$(PATH_TO_BOWTIE2) $(OPTS_BOWTIE2) $< | $(PATH_TO_SAMTOOLS) view -bS - > $@
+	$(PATH_TO_BOWTIE2) $(OPTS_BOWTIE2) $< 2> $(@D)/$(@F).txt | $(PATH_TO_SAMTOOLS) view -bS - > $@
 	$(PATH_TO_SAMTOOLS) sort $@ $(patsubst %.bam,%,$@)
 	$(PATH_TO_SAMTOOLS) index $@
 
@@ -59,22 +59,22 @@ cat(make_rule_pull_align, file = file_make, sep = '\n', append = TRUE)
 
 #######################################
 # PBS script
-# pulldown_align_q = c(
-# 	'#!/bin/bash',
-# 	'#### Begin PBS preamble',
-# 	'#PBS -N pull_align',
-# 	'#PBS -l procs=4,mem=32gb,walltime=6:00:00',
-# 	'#PBS -A sartor_lab',
-# 	'#PBS -q first',
-# 	'#PBS -M rcavalca@umich.edu',
-# 	'#PBS -m abe',
-# 	'#PBS -j oe',
-# 	'#PBS -V',
-# 	'#### End PBS preamble',
-# 	'# Put your job commands after this line',
-# 	sprintf('cd ~/latte/mint/projects/%s/',project),
-# 	'make -j 4 pulldown_align')
-# cat(pulldown_align_q, file=sprintf('projects/%s/pbs_jobs/pulldown_align.q', project), sep='\n')
+pulldown_align_q = c(
+	'#!/bin/bash',
+	'#### Begin PBS preamble',
+	'#PBS -N pull_align',
+	'#PBS -l nodes=1:ppn=8,walltime=24:00:00,pmem=16gb',
+	'#PBS -A sartor_lab',
+	'#PBS -q first',
+	'#PBS -M rcavalca@umich.edu',
+	'#PBS -m abe',
+	'#PBS -j oe',
+	'#PBS -V',
+	'#### End PBS preamble',
+	'# Put your job commands after this line',
+	sprintf('cd ~/latte/mint/projects/%s/',project),
+	'make -j 8 pulldown_align')
+cat(pulldown_align_q, file=sprintf('projects/%s/pbs_jobs/pulldown_align.q', project), sep='\n')
 
 for(i in 1:nrow(pulldown_samples)) {
 	# trackDb.txt entry for chip/input pulldown coverages

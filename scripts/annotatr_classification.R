@@ -2,6 +2,7 @@ library(annotatr)
 library(readr)
 library(ggplot2)
 library(optparse)
+library(GenomicRanges)
 
 option_list = list(
   make_option('--file', type='character'),
@@ -137,8 +138,8 @@ if(class_type == 'simple') {
 		'no_DM')
 } else if (class_type == 'PePr') {
 	cats_order = c(
-		'hyper',
-		'hypo')
+		'chip1',
+		'chip2')
 }
 
 ###############################################################
@@ -173,15 +174,30 @@ plot_counts = plot_annotation(
 ggplot2::ggsave(filename = counts_png, plot = plot_counts, width = 8, height = 8)
 
 # Other classifications are too big for this
-if(class_type == 'simple' || class_type == 'PePr') {
-	# Heatmap of regions in pairs of annotations
-	cocounts_png = sprintf('summary/figures/%s_cocounts.png', prefix)
-	plot_cocounts = plot_coannotations(
-		annotated_regions = ar,
-		annotation_order = a_all_order,
-		plot_title = sprintf('%s regions in pairs of annotations', prefix),
-		axes_label = 'Annotations')
-	ggplot2::ggsave(filename = cocounts_png, plot = plot_cocounts, width = 8, height = 8)
+# if(class_type == 'simple' || class_type == 'PePr') {
+# 	# Heatmap of regions in pairs of annotations
+# 	cocounts_png = sprintf('summary/figures/%s_cocounts.png', prefix)
+# 	plot_cocounts = plot_coannotations(
+# 		annotated_regions = ar,
+# 		annotation_order = a_all_order,
+# 		plot_title = sprintf('%s regions in pairs of annotations', prefix),
+# 		axes_label = 'Annotations')
+# 	ggplot2::ggsave(filename = cocounts_png, plot = plot_cocounts, width = 8, height = 8)
+# }
+
+# Histogram of region (peak) widths for *pulldown_simple* and PePr inputs
+if( (class_type == 'simple' && grepl('pulldown', prefix)) || class_type == 'PePr' ) {
+	widths = data.frame(
+		region = 1:length(r),
+		width = end(r) - start(r), stringsAsFactors=F)
+
+	widths_png = sprintf('summary/figures/%s_peak_widths.png', prefix)
+	plot_region_widths = ggplot(data = widths, aes(x = width, y=..density..)) +
+		scale_x_log10() + geom_histogram(stat = 'bin', fill = NA, color='gray', bins=30) +
+		theme_bw() +
+		xlab('Peak Widths (log10 scale)') +
+		ggtitle(sprintf('%s peak widths', prefix))
+	ggplot2::ggsave(filename = widths_png, plot = plot_region_widths, width = 6, height = 6)
 }
 
 # Regions split by category and stacked by CpG annotations (count)
@@ -227,3 +243,5 @@ plot_cat_prop_genes = plot_categorical(
   x_label = sprintf('%s classification', display_type),
   y_label = 'Proportion')
 ggplot2::ggsave(filename = cat_prop_genes_png, plot = plot_cat_prop_genes, width = 8, height = 8)
+
+save.image(file = sprintf('RData/%s_annotatr_analysis.RData', prefix))

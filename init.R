@@ -112,3 +112,5 @@ source('scripts/sub_init_bis_compare.R')
 source('scripts/sub_init_pull_compare.R')
 
 source('scripts/sub_init_compare_class.R')
+
+source('scripts/sub_init_clean.R')

@@ -10,7 +10,7 @@ $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.CpG_report.txt : $(DIR_BIS_BI
 
 # Intermediates for the bisulfite piece
 $(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal.txt : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.CpG_report.txt
-	$(PATH_TO_AWK) -f ../../scripts/classify_prepare_bisulfite_sample.awk $<
+	$(PATH_TO_AWK) -v MIN_COV=$(OPT_MIN_COV) -f ../../scripts/classify_prepare_bisulfite_sample.awk $<
 '
 
 make_rule_sample_class_pull_module = '
@@ -40,7 +40,7 @@ $(DIR_PULL_MACS)/%_pulldown_nopeak.txt : $(DIR_PULL_MACS)/%_pulldown_peak.txt
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_signal.txt
-$(DIR_PULL_MACS)/%_pulldown_signal.txt : $(DIR_PULL_COVERAGES)/%_input_pulldown_merged_coverage.bdg
+$(DIR_PULL_MACS)/%_pulldown_signal.txt : $(DIR_PULL_COVERAGES)/%_input_pulldown_coverage_merged.bdg
 	cp $< $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nosignal.txt
@@ -58,7 +58,13 @@ cat(make_var_sample_class_prefix, file = file_make, sep = '\n', append = TRUE)
 
 # The sample class type depends on the type of samples present
 if(bool_bis_samp && bool_pull_samp) {
-	extra_removes = 'rm -f $(DIR_BIS_BISMARK)/$*_mc_hmc_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/$*_mc_hmc_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/$*_mc_hmc_bisulfite_nometh_nosignal.txt $(DIR_PULL_MACS)/$*_hmc_pulldown_peak.txt'
+	sample_class_tmps = 'SAMPLE_CLASS_CLEAN_TMP := $(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_highmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_lowmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_nosignal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt,$(SAMPLE_CLASS_PREFIXES))'
 	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_highmeth.txt \\
 								$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_lowmeth.txt \\
 								$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_signal.txt \\
@@ -73,7 +79,14 @@ if(bool_bis_samp && bool_pull_samp) {
 	############################################################
 	# NOTE: THIS IS NOT EXPLICITLY SUPPORTED RIGHT NOW
 	############################################################
-	extra_removes = 'rm -f $(DIR_BIS_BISMARK)/$*_mc_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/$*_mc_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/$*_mc_bisulfite_nometh_nosignal.txt $(DIR_BIS_BISMARK)/$*_hmc_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/$*_hmc_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/$*_hmc_bisulfite_nometh_nosignal.txt'
+	sample_class_tmps = 'SAMPLE_CLASS_CLEAN_TMP := $(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_highmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_lowmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_nosignal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_highmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_lowmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_nosignal.txt,$(SAMPLE_CLASS_PREFIXES))'
 	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_BIS_BISMARK)/%_mc_bisulfite_highmeth.txt \\
 								$(DIR_BIS_BISMARK)/%_mc_bisulfite_lowmeth.txt \\
 								$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_signal.txt \\
@@ -86,7 +99,12 @@ if(bool_bis_samp && bool_pull_samp) {
 	rule2 = ''
 	class_script = '../../scripts/classify_bisulfite_sample.sh'
 } else {
-	extra_removes = 'rm -f $(DIR_PULL_MACS)/$*_mc_pulldown_peak.txt $(DIR_PULL_MACS)/$*_hmc_pulldown_peak.txt'
+	sample_class_tmps = 'SAMPLE_CLASS_CLEAN_TMP := $(patsubst %,$(DIR_PULL_MACS)/%_mc_pulldown_peak.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_nosignal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt,$(SAMPLE_CLASS_PREFIXES))'
 	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed : 	$(DIR_PULL_MACS)/%_mc_pulldown_peak.txt \\
 								$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_signal.txt \\
 								$(DIR_PULL_MACS)/%_mc_pulldown_nopeak_nosignal.txt \\
@@ -102,7 +120,7 @@ make_rule_class_sample = sprintf('
 # Master rule
 .PHONY : sample_classification
 sample_classification : 	$(patsubst %%,$(DIR_TRACK)/%%_sample_classification.bb,$(SAMPLE_CLASS_PREFIXES)) \\
-		$(patsubst %%,$(DIR_SUM_FIGURES)/%%_sample_class_counts.png,$(SAMPLE_CLASS_PREFIXES)) \\
+		$(patsubst %%,$(DIR_RDATA)/%%_sample_class_annotatr_analysis.RData,$(SAMPLE_CLASS_PREFIXES)) \\
 		$(patsubst %%,$(DIR_CLASS_SAMPLE)/%%_sample_classification.bed,$(SAMPLE_CLASS_PREFIXES))
 
 # Rule for sample classification bigBed
@@ -110,45 +128,47 @@ $(DIR_TRACK)/%%_sample_classification.bb : $(DIR_CLASS_SAMPLE)/%%_sample_classif
 	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@
 
 # Rule for annotatr of sample classification
-$(DIR_SUM_FIGURES)/%%_sample_class_counts.png : $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt
+$(DIR_RDATA)/%%_sample_class_annotatr_analysis.RData : $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt
 	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
 
 .INTERMEDIATE : $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt
 $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt : $(DIR_CLASS_SAMPLE)/%%_sample_classification.bed
 	cut -f 1-4 $< > $@
 
-# NOTE: There is a known bug in make that incorrectly determines implicit intermediate
-# files when they occur in a list of multiple targets and prerequisites.
-# https://savannah.gnu.org/bugs/index.php?32042
-# The easiest workaround is to remove the ones make does not automatically remove
-
 # Classification BED
 %s
 	bash %s $(PATH_TO_BEDTOOLS) $(PATH_TO_AWK) $(CHROM_PATH) $@ $^
 
 %s
-%s',
-	sample_class_target, class_script, rule1, rule2)
+%s
+
+# Clean temporary files that make does not clean up
+%s
+
+.PHONY : clean_sample_classification_tmp
+clean_sample_classification_tmp :
+	rm -f $(SAMPLE_CLASS_CLEAN_TMP)',
+	sample_class_target, class_script, rule1, rule2, sample_class_tmps)
 cat(make_rule_class_sample, file = file_make, sep = '\n', append = TRUE)
 
 #######################################
 # PBS script
-# pulldown_sample_q = c(
-# 	'#!/bin/bash',
-# 	'#### Begin PBS preamble',
-# 	'#PBS -N class_sample',
-# 	'#PBS -l procs=4,mem=48gb,walltime=6:00:00',
-# 	'#PBS -A sartor_lab',
-# 	'#PBS -q first',
-# 	'#PBS -M rcavalca@umich.edu',
-# 	'#PBS -m abe',
-# 	'#PBS -j oe',
-# 	'#PBS -V',
-# 	'#### End PBS preamble',
-# 	'# Put your job commands after this line',
-# 	sprintf('cd ~/latte/mint/projects/%s/',project),
-# 	'make -j 4 sample_classification')
-# cat(pulldown_sample_q, file=sprintf('projects/%s/pbs_jobs/classify_sample.q', project), sep='\n')
+pulldown_sample_q = c(
+	'#!/bin/bash',
+	'#### Begin PBS preamble',
+	'#PBS -N class_sample',
+	'#PBS -l nodes=1:ppn=4,walltime=24:00:00,pmem=16gb',
+	'#PBS -A sartor_lab',
+	'#PBS -q first',
+	'#PBS -M rcavalca@umich.edu',
+	'#PBS -m abe',
+	'#PBS -j oe',
+	'#PBS -V',
+	'#### End PBS preamble',
+	'# Put your job commands after this line',
+	sprintf('cd ~/latte/mint/projects/%s/',project),
+	'make -j 4 sample_classification')
+cat(pulldown_sample_q, file=sprintf('projects/%s/pbs_jobs/classify_sample.q', project), sep='\n')
 
 for(sample in unique(samples$humanID)) {
 	# trackDb.txt entry for sample classification

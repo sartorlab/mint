@@ -60,12 +60,9 @@ meth = methylSigReadData(
     num.cores = opt$ncores,
     quiet= opt$quiet)
 
-save(meth, file=sprintf('bisulfite/methylsig_calls/%s_raw_CpG_data.RData', prefix))
-
 if(opt$dmtype == 'DMR') {
     message('Doing tiled analysis')
     meth_tiled = methylSigTile(meth, win.size = opt$winsize.tile)
-	save(meth_tiled, file=sprintf('bisulfite/methylsig_calls/%s_raw_region_data.RData', prefix))
 
     diff_meth = methylSigCalc(
         meth_tiled,
@@ -99,3 +96,5 @@ if(opt$dmtype == 'DMR') {
 } else {
 	stop('Error in methylSig run. Invalid OPT_DM_TYPE in config.mk. Must be DMC for CpG resolution or DMR for regions of winsize.tile resolution.')
 }
+
+save.image(file=sprintf('RData/%s_analysis.RData', prefix))
