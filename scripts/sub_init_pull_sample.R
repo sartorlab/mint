@@ -13,7 +13,9 @@ make_var_pull_samp = 'PULLDOWN_SAMPLE_PREREQS :=	$(patsubst %,$(DIR_TRACK)/%_sim
 						$(patsubst %,$(DIR_RDATA)/%_simple_class_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 						$(patsubst %,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 						$(patsubst %,$(DIR_TRACK)/%_macs2_peaks.bb,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES))'
+						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_model.r,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_model.pdf,$(PULLDOWN_SAMPLE_PREFIXES))'
 
 make_var_pull_samp_clean_tmp = 'PULLDOWN_SAMPLE_CLEAN_TMP := $(patsubst %,$(DIR_CLASS_SIMPLE)/%_pulldown_simple_class_for_annotatr.txt,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES))
@@ -49,8 +51,13 @@ $(DIR_TRACK)/%_macs2_peaks.bb : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
 $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak : $(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak
 	$(PATH_TO_AWK) -f ../../scripts/macs_fix_narrowPeak.awk $^ | sort -T . -k1,1 -k2,2n > $@
 
+# Rule for macs2 model
+$(DIR_PULL_MACS)/%_pulldown_macs2_model.pdf : $(DIR_PULL_MACS)/%_pulldown_macs2_model.r
+	cd $(DIR_PULL_MACS); \\
+	Rscript $<
+
 # Rule for macs2 peaks
-$(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak : 	$(DIR_PULL_BOWTIE2)/%_pulldown_trimmed.fq.gz_aligned.bam \\
+$(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak $(DIR_PULL_MACS)/%_pulldown_macs2_model.r : 	$(DIR_PULL_BOWTIE2)/%_pulldown_trimmed.fq.gz_aligned.bam \\
 														$(DIR_PULL_BOWTIE2)/%_input_pulldown_trimmed.fq.gz_aligned.bam
 	$(PATH_TO_MACS) callpeak -t $(word 1, $^) -c $(word 2, $^) -f BAM -g hs --name $(patsubst %_peaks.narrowPeak,%,$(@F)) --outdir $(@D)
 
