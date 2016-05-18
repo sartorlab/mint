@@ -54,7 +54,7 @@ $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak : $(DIR_PULL_MACS)/%_macs2_peaks.n
 # Rule for macs2 model
 $(DIR_PULL_MACS)/%_pulldown_macs2_model.pdf : $(DIR_PULL_MACS)/%_pulldown_macs2_model.r
 	cd $(DIR_PULL_MACS); \\
-	Rscript $<
+	Rscript $(<F)
 
 # Rule for macs2 peaks
 $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak $(DIR_PULL_MACS)/%_pulldown_macs2_model.r : 	$(DIR_PULL_BOWTIE2)/%_pulldown_trimmed.fq.gz_aligned.bam \\
