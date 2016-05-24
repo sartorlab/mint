@@ -33,15 +33,28 @@ if(bool_bis_comp) {
 		# Sorting this ensures that the lower group number is A
 		groups = sort(as.integer(unlist(strsplit(group, ','))))
 
+		# Create a list
+		sample_groups = lapply(bisulfite_samples$group, function(g){
+			as.integer(unlist(strsplit(g, ',')))
+		})
+
+		# Get the correct indices
+		groupAindices = sapply(sample_groups, function(sg){
+			groups[1] %in% sg
+		})
+		groupBindices = sapply(sample_groups, function(sg){
+			groups[2] %in% sg
+		})
+
 		groupA = subset(bisulfite_samples,
-			grepl(groups[1], bisulfite_samples$group) &
+			groupAIndices &
 			bisulfite_samples$pulldown == pull &
 			bisulfite_samples$bisulfite == bis &
 			bisulfite_samples$mc == mc_stat &
 			bisulfite_samples$hmc == hmc_stat &
 			bisulfite_samples$input == 0)
 		groupB = subset(bisulfite_samples,
-			grepl(groups[2], bisulfite_samples$group) &
+			groupBindices &
 			bisulfite_samples$pulldown == pull &
 			bisulfite_samples$bisulfite == bis &
 			bisulfite_samples$mc == mc_stat &

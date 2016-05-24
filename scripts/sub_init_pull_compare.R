@@ -39,15 +39,28 @@ if(bool_pull_comp) {
 		# with respect to chip2/input2.
 		groups = sort(as.integer(unlist(strsplit(group, ','))), decreasing = TRUE)
 
+		# Create a list
+		sample_groups = lapply(pulldown_samples$group, function(g){
+			as.integer(unlist(strsplit(g, ',')))
+		})
+
+		# Get the correct indices
+		groupAindices = sapply(sample_groups, function(sg){
+			groups[1] %in% sg
+		})
+		groupBindices = sapply(sample_groups, function(sg){
+			groups[2] %in% sg
+		})
+
 		groupA = subset(pulldown_samples,
-			grepl(groups[1], pulldown_samples$group) &
+			groupAindices &
 			pulldown_samples$pulldown == pull &
 			pulldown_samples$bisulfite == bis &
 			pulldown_samples$mc == mc_stat &
 			pulldown_samples$hmc == hmc_stat &
 			pulldown_samples$input == 0)
 		groupB = subset(pulldown_samples,
-			grepl(groups[2], pulldown_samples$group) &
+			groupBindices &
 			pulldown_samples$pulldown == pull &
 			pulldown_samples$bisulfite == bis &
 			pulldown_samples$mc == mc_stat &
@@ -55,14 +68,14 @@ if(bool_pull_comp) {
 			pulldown_samples$input == 0)
 
 		inputGroupA = subset(pulldown_samples,
-			grepl(groups[1], pulldown_samples$group) &
+			groupAindices &
 			pulldown_samples$pulldown == pull &
 			pulldown_samples$bisulfite == bis &
 			pulldown_samples$mc == mc_stat &
 			pulldown_samples$hmc == hmc_stat &
 			pulldown_samples$input == 1)
 		inputGroupB = subset(pulldown_samples,
-			grepl(groups[2], pulldown_samples$group) &
+			groupBindices &
 			pulldown_samples$pulldown == pull &
 			pulldown_samples$bisulfite == bis &
 			pulldown_samples$mc == mc_stat &
@@ -150,7 +163,7 @@ if(bool_pull_comp) {
 		########################################################################
 		# OPTS for config.mk
 		config_pull_compare = sprintf(
-			'OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=1
+			'OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=8
 			',
 			var_name)
 		cat(config_pull_compare, file = file_config, sep='\n', append=T)
@@ -187,7 +200,7 @@ if(bool_pull_comp) {
 		'#!/bin/bash',
 		'#### Begin PBS preamble',
 		'#PBS -N pull_compare',
-		'#PBS -l nodes=1:ppn=8,walltime=24:00:00,pmem=8gb',
+		'#PBS -l nodes=1:ppn=8,pmem=16gb,walltime=24:00:00',
 		'#PBS -A sartor_lab',
 		'#PBS -q first',
 		'#PBS -M rcavalca@umich.edu',
