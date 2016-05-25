@@ -43,6 +43,13 @@ if(suffix == 'methylSig') {
 }
 
 ###############################################################
+# Make random regions
+
+r_rand = randomize_regions(
+	regions = r,
+	genome = 'hg19',)
+
+###############################################################
 # Pick annotations
 if(genome %in% c('hg19','hg38','mm9','mm10')) {
 	a = c(
@@ -113,8 +120,17 @@ ar = annotate_regions(
 readr::write_tsv(x = ar, path = sprintf('summary/tables/%s_%s_annotations.txt', sample, suffix))
 
 ###############################################################
+# Annotate random regions
+
+ar_rand = annotate_regions(
+	regions = r_rand,
+	annotations = a,
+	ignore.strand = TRUE,
+	use.score= FALSE)
+
+###############################################################
 # Summarize annotations
-count_annots = summarize_annotations(ar)
+count_annots = summarize_annotations(annotated_regions = ar, annotated_random = ar_rand)
 
 # Write it
 readr::write_tsv(x = count_annots, path = sprintf('summary/tables/%s_%s_annotation_counts.txt', sample, suffix))
@@ -125,6 +141,7 @@ readr::write_tsv(x = count_annots, path = sprintf('summary/tables/%s_%s_annotati
 counts_png = sprintf('summary/figures/%s_%s_counts.png', sample, suffix)
 plot_counts = plot_annotation(
 	annotated_regions = ar,
+	annotated_random = ar_rand,
 	annotation_order = a_all_order,
 	plot_title = sprintf('%s CpGs per annotation', sample),
 	x_label = 'Annotations',
@@ -191,7 +208,9 @@ if(suffix == 'methylSig') {
 	# Regions split by category and stacked by CpG annotations (count)
 	cat_count_cpgs_png = sprintf('summary/figures/%s_%s_DMstatus_count_cpgs.png', sample, suffix)
 	plot_cat_count_cpgs = plot_categorical(
-	  annotated_regions = ar, x='DM_status', fill='annot_type',
+	  annotated_regions = ar,
+	  annotated_random = ar_rand,
+	  x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_cpg_order, position='stack',
 	  plot_title = sprintf('%s DM status by Annotation', sample),
 	  legend_title = 'Annotations',
@@ -202,7 +221,9 @@ if(suffix == 'methylSig') {
 	# Regions split by category and stacked by knownGene annotations (count)
 	cat_count_genes_png = sprintf('summary/figures/%s_%s_DMstatus_count_genes.png', sample, suffix)
 	plot_cat_count_genes = plot_categorical(
-	  annotated_regions = ar, x='DM_status', fill='annot_type',
+	  annotated_regions = ar,
+	  annotated_random = ar_rand,
+	  x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_gene_order, position='stack',
 	  plot_title = sprintf('%s DM status by Annotation', sample),
 	  legend_title = 'Annotations',
@@ -213,7 +234,9 @@ if(suffix == 'methylSig') {
 	# Regions split by category and filled by CpG annotations (prop)
 	cat_prop_cpgs_png = sprintf('summary/figures/%s_%s_DMstatus_prop_cpgs.png', sample, suffix)
 	plot_cat_prop_cpgs = plot_categorical(
-	  annotated_regions = ar, x='DM_status', fill='annot_type',
+	  annotated_regions = ar,
+	  annotated_random = ar_rand,
+	  x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_cpg_order, position='fill',
 	  plot_title = sprintf('%s DM status by Annotation', sample),
 	  legend_title = 'Annotations',
@@ -224,7 +247,9 @@ if(suffix == 'methylSig') {
 	# Regions split by category and filled by knownGene annotations (prop)
 	cat_prop_genes_png = sprintf('summary/figures/%s_%s_DMstatus_prop_genes.png', sample, suffix)
 	plot_cat_prop_genes = plot_categorical(
-	  annotated_regions = ar, x='DM_status', fill='annot_type',
+	  annotated_regions = ar,
+	  annotated_random = ar_rand,
+	  x='DM_status', fill='annot_type',
 	  x_order = cats_order, fill_order = a_gene_order, position='fill',
 	  plot_title = sprintf('%s DM status by Annotation', sample),
 	  legend_title = 'Annotations',
