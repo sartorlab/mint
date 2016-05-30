@@ -43,6 +43,13 @@ r = read_bed(
 r = r[r$name != 'unclassifiable']
 
 ###############################################################
+# Make random regions
+
+r_rand = randomize_regions(
+	regions = r,
+	genome = 'hg19',)
+
+###############################################################
 # Pick annotations
 if(genome %in% c('hg19','hg38','mm9','mm10')) {
 	a = c(
@@ -154,8 +161,17 @@ ar = annotate_regions(
 readr::write_tsv(x = ar, path = sprintf('summary/tables/%s_annotations.txt', prefix))
 
 ###############################################################
+# Annotate random regions
+
+ar_rand = annotate_regions(
+	regions = r_rand,
+	annotations = a,
+	ignore.strand = TRUE,
+	use.score= FALSE)
+
+###############################################################
 # Summarize annotations
-count_annots = summarize_annotations(ar)
+count_annots = summarize_annotations(annotated_regions = ar, annotated_random = ar_rand)
 
 # Write it
 readr::write_tsv(x = count_annots, path = sprintf('summary/tables/%s_annotation_counts.txt', prefix))
@@ -167,6 +183,7 @@ readr::write_tsv(x = count_annots, path = sprintf('summary/tables/%s_annotation_
 counts_png = sprintf('summary/figures/%s_counts.png', prefix)
 plot_counts = plot_annotation(
 	annotated_regions = ar,
+	annotated_random = ar_rand,
 	annotation_order = a_all_order,
 	plot_title = sprintf('%s regions per annotation', prefix),
 	x_label = 'Annotations',
@@ -203,7 +220,9 @@ if( (class_type == 'simple' && grepl('pulldown', prefix)) || class_type == 'PePr
 # Regions split by category and stacked by CpG annotations (count)
 cat_count_cpgs_png = sprintf('summary/figures/%s_cat_count_cpgs.png', prefix)
 plot_cat_count_cpgs = plot_categorical(
-  annotated_regions = ar, x='name', fill='annot_type',
+  annotated_regions = ar,
+  annotated_random = ar_rand,
+  x='name', fill='annot_type',
   x_order = cats_order, fill_order = a_cpg_order, position='stack',
   plot_title = sprintf('%s classification by Annotation', display_type),
   legend_title = 'Annotations',
@@ -214,7 +233,9 @@ ggplot2::ggsave(filename = cat_count_cpgs_png, plot = plot_cat_count_cpgs, width
 # Regions split by category and stacked by knownGene annotations (count)
 cat_count_genes_png = sprintf('summary/figures/%s_cat_count_genes.png', prefix)
 plot_cat_count_genes = plot_categorical(
-  annotated_regions = ar, x='name', fill='annot_type',
+  annotated_regions = ar,
+  annotated_random = ar_rand,
+  x='name', fill='annot_type',
   x_order = cats_order, fill_order = a_gene_order, position='stack',
   plot_title = sprintf('%s classification by Annotation', display_type),
   legend_title = 'Annotations',
@@ -225,7 +246,9 @@ ggplot2::ggsave(filename = cat_count_genes_png, plot = plot_cat_count_genes, wid
 # Regions split by category and filled by CpG annotations (prop)
 cat_prop_cpgs_png = sprintf('summary/figures/%s_cat_prop_cpgs.png', prefix)
 plot_cat_prop_cpgs = plot_categorical(
-  annotated_regions = ar, x='name', fill='annot_type',
+  annotated_regions = ar,
+  annotated_random = ar_rand,
+  x='name', fill='annot_type',
   x_order = cats_order, fill_order = a_cpg_order, position='fill',
   plot_title = sprintf('%s classification by Annotation', display_type),
   legend_title = 'Annotations',
@@ -236,7 +259,9 @@ ggplot2::ggsave(filename = cat_prop_cpgs_png, plot = plot_cat_prop_cpgs, width =
 # Regions split by category and filled by knownGene annotations (prop)
 cat_prop_genes_png = sprintf('summary/figures/%s_cat_prop_genes.png', prefix)
 plot_cat_prop_genes = plot_categorical(
-  annotated_regions = ar, x='name', fill='annot_type',
+  annotated_regions = ar,
+  annotated_random = ar_rand,
+  x='name', fill='annot_type',
   x_order = cats_order, fill_order = a_gene_order, position='fill',
   plot_title = sprintf('%s classification by Annotation', display_type),
   legend_title = 'Annotations',
