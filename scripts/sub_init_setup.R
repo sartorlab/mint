@@ -1,6 +1,8 @@
 # Configuration header
 config_header = sprintf('# Configuration for mint pipeline analyses
 
+# This makefile was generated using mint v0.1.1
+
 ################################################################################
 # Project and experimental information
 
