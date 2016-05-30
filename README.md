@@ -1,6 +1,6 @@
 ## mint: Analysis, integration, classification, and annotation of DNA methylation and hydroxymethylation data
 
-### Contents
+## Contents
 
 * [Overview](https://github.com/sartorlab/mint#overview)
 * [Installation](https://github.com/sartorlab/mint#installation)
@@ -32,7 +32,7 @@
 	* [Annotations and Visualizations](https://github.com/sartorlab/mint#annotations-and-visualizations)
 	* [UCSC Browser track hub](https://github.com/sartorlab/mint#ucsc-browser-track-hub)
 
-### Overview
+## Overview
 
 The `mint` pipeline analyzes single-end reads coming from sequencing assays measuring DNA methylation. The pipeline analyzes reads from both bisulfite-conversion assays such as WGBS and RRBS, and from pulldown assays such as MeDIP-seq, hMeDIP-seq, and hMeSeal. Moreover, with data measuring both 5-methylcytosine (5mc) and 5-hydroxymethylcytosine (5hmc), the `mint` pipeline integrates the two data types to classify genomic regions of 5mc, 5hmc, a mixture, or neither.
 
@@ -51,9 +51,9 @@ The `mint` pipeline is executed with `make` and includes configurable steps for:
 * Genomic annotation and visualization of methylation quantifications and classifications (`annotatr`)
 * Visualization in the UCSC Genome Browser
 
-### Installation
+## Installation
 
-#### Dependencies
+### Dependencies
 
 The `mint` pipeline is dependent on several software packages to carry out its analysis, integration, annotation, and visualization. Links to appropriate versions are included in the list below.
 
@@ -71,7 +71,7 @@ The `mint` pipeline is dependent on several software packages to carry out its a
 * [`cutadapt` v1.9.1](https://pypi.python.org/pypi/cutadapt/1.9.1)
 * [`FastQC` v0.11.5](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5_source.zip)
 
-#### Getting `mint`
+### Getting `mint`
 
 The easiest way to install `mint` is to `cd` into the directory you'd like to place the `mint` folder and do:
 
@@ -81,13 +81,13 @@ git clone https://github.com/sartorlab/mint.git
 
 Cloning `mint` makes getting updates easy with `git pull` from within `mint/`. Updating `mint` will never erase existing analyses.
 
-#### Testing `mint`
+### Testing `mint`
 
 After installing the dependencies and cloning `mint`, there are two datasets totalling `996M` available for testing at [LINK COMING](http://sartorlab.ccmb.med.umich.edu/software/). The tests consist of one hybrid experiment (based on [GSE52945](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE52945)) and one pulldown experiment (based on [GSE63743](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63743)). The examples in the Usage section below are for these two test datasets.
 
-### Usage
+## Usage
 
-#### Supported Experiments and Designs
+### Supported Experiments and Designs
 
 The `mint` pipeline supports **either**:
 
@@ -99,7 +99,7 @@ And the `mint` pipeline can analyze:
 * **sample-wise**, where no groups are present for comparison, and 5mc / 5hmc integration is done per-sample, **and/or**
 * **comparison-wise**, where two or more groups are tested for differential methylation, and 5mc / 5hmc differential methylation integration is done per-group.
 
-#### Setting up a project
+### Setting up a project
 
 After setting up the [dependencies](https://github.com/sartorlab/mint#dependencies) and [getting `mint`](https://github.com/sartorlab/mint#getting-mint), you're ready to start a project. In the two examples below, we'll use the [test data](https://github.com/sartorlab/mint#testing-mint) to setup and run a project. To set up a project in `mint`, the pipeline needs the following three things:
 
@@ -107,7 +107,7 @@ After setting up the [dependencies](https://github.com/sartorlab/mint#dependenci
 2. The location of the raw sequencing reads corresponding to the samples.
 3. The specific parameters desired for the tools in the pipeline.
 
-##### Annotation file
+#### Annotation file
 
 The annotation file is a tab-delimited text file named `projectID_annotation.txt`, and contains the following 9 columns (with headers):
 
@@ -167,7 +167,7 @@ test_pulldown	comparison	preeclamptic_v_normal	1	0	1	0	0	0,1
 test_pulldown	comparison	preeclamptic_v_normal	1	0	0	1	0	0,1
 ```
 
-##### Instantiating a project
+#### Instantiating a project
 
 After creating an appropriate annotation file for your project, within the `mint/` folder do the following:
 
@@ -180,7 +180,7 @@ Rscript init.R --project projectID --genome genome --datapath /path/to/data
 
 The `init.R` script creates an appropriate directory structure in `mint/projects/projectID/`, creates symlinks to the `.fastq.gz` files in `/path/to/data`, and creates the `makefile` and `config.mk` files that control the analysis of your project.
 
-##### Configuring a project
+#### Configuring a project
 
 The `mint/projects/projectID/config.mk` file contains options for analysis implied in the project annotation file.
 
@@ -266,7 +266,7 @@ OPTS_METHYLSIG_IDH2mut_v_NBM_mc_hmc_bisulfite = --context CpG --resolution base 
 OPTS_PEPR_IDH2mut_v_NBM_hmc_pulldown = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=1
 ```
 
-##### Running a project
+#### Running a project
 
 Once a project is instantiated and configured, the analysis steps can begin. The `mint` pipeline is controlled by `make` and there are up to 7 simple commands to run the modules, depending on the analyses implied by the project annotation file. In general, the bisulfite and pulldown commands are independent of each other until classification, and the `*_sample` and `*_compare` commands rely on the corresponding `*_align` steps.
 
@@ -298,7 +298,7 @@ Depending on the computing hardware used, projects can be run with the `make -j 
 
 **NOTE:** Some software in the `mint` pipeline have options for the number of processors to use, so some care should be taken not to exceed the computing limitations of the hardware. For example, `bismark` tends to use 5 cores per instantiation, so using `make -j 5` would really use 25 cores.
 
-### Outputs
+## Outputs
 
 In the case of the `test_hybrid` project the following directory structure is created by `Rscript init.R` and the outputs of the `make` commands above are organized within:
 
@@ -342,45 +342,45 @@ test_hybrid/classifications/comparison
 test_hybrid/classifications/simple
 ```
 
-#### FastQC
+### FastQC
 
 The `FastQC` output is by default not extracted, so the `.zip` files and `.html` files for the raw reads are located in `test_hybrid/bisulfite/raw_fastqcs` and `test_hybrid/pulldown/raw_fastqcs`. The output `FastQC` done after trimming are located in `test_hybrid/bisulfite/trim_fastqcs` and `test_hybrid/pulldown/trim_fastqcs`. The output is standard.
 
-#### Trim Galore
+### Trim Galore
 
 The adapter and quality trimmed raw reads, as well as trimming reports, are output in `test_hybrid/bisulfite/trim_fastqs` and `test_hybrid/pulldown/trim_fastqs`. The trimming reports are the normal output of `trim_galore`.
 
-#### Bisulfite
+### Bisulfite
 
-##### bismark
+#### bismark
 
 The results of the `bismark` alignment and the `bismark_methylation_extractor` go in `test_hybrid/bisulfite/bismark`.
 
-##### methylSig
+#### methylSig
 
 The results of the tests for differential methylation with `methylSig` go in `test_hybrid/bisulfite/methylsig_calls`. The `R` session image for each `methylSig` run is saved as an `.RData` file in `test_hybrid/RData`. This allows for retesting for differential methylation with different parameters without having to read in all the data again.
 
-#### Pulldown
+### Pulldown
 
-##### bowtie2
+#### bowtie2
 
 The results of `bowtie2` alignments go in `test_hybrid/pulldown/bowtie2_bams`. All alignments are sorted and indexed after they are aligned, and the mapping efficiencies are output to a text file in the same folder.
 
-##### Genome coverage
+#### Genome coverage
 
 The read pileups using `bedtools genomecov` go in `test_hybrid/pulldown/pulldown_coverages`. This includes both pulldowns with an antibody and input pulldowns. The corresponding coverage `.bedGraph` files are compressed into `.bigWig`s and placed in `test_hybrid/test_hybrid_hub/hg19`. For downstream use, a 'merged' coverage `.bed` file is created that fills coverage gaps of up to 20bp. These files are used to determine where no signal is present for classifications.
 
-##### macs2
+#### macs2
 
 The `.narrowPeak` files resulting from `macs2` peak calling go in `test_hybrid/pulldown/macs2_peaks`. Additionally, the `.pdf` images of the model used for peak calling are in the same folder.
 
-##### PePr
+#### PePr
 
 The `*_chip1_peaks.bed` and `*_chip2_peaks.bed` files resulting from `PePr`'s test for differentially methylated regions go in `test_hybrid/pulldown/pepr_peaks`.
 
-#### Classifications
+### Classifications
 
-##### Simple classification
+#### Simple classification
 
 Simple classifications are done on the results of `bismark_methylation_extractor` and `macs2` in order to classify sites/regions in each sample as having no, low, medium, or high methylation. In the case of `bismark_methylation_extractor` we have absolute quantification of methylation levels and the breakdown classification is:
 
@@ -393,7 +393,7 @@ Since `macs2` peaks determines qualitative methylation, we determine if a peak r
 
 The resulting simple classifications go in `test_hybrid/classifications/simple` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
 
-##### Sample classification
+#### Sample classification
 
 Sample classifications are done when data is available measuring 5mc + 5hmc (WGBS, RRBS, etc.) and 5hmc (hMeDIP-seq, hMeSeal, etc.), or 5mc (MeDIP-seq, etc.) and 5hmc (hMeDIP-seq, etc.). The inputs into the classifier are sites/regions of 5mc + 5hmc and regions of 5hmc or regions of 5mc and regions of 5hmc. The tables below determine how the data is integrated into classifications.
 
@@ -416,7 +416,7 @@ Pulldown sample classification:
 
 The sample classifications go in `test_hybrid/classifications/sample` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
 
-##### Comparison classification
+#### Comparison classification
 
 Comparison classifications are done when data is available measuring 5mc + 5hmc (WGBS, RRBS, etc.) and 5hmc (hMeDIP-seq, hMeSeal, etc.), or 5mc (MeDIP-seq, etc.) and 5hmc (hMeDIP-seq, etc.), and there are groups of samples compared against each other for differential methylation (DM). The inputs into the classifier are sites/regions of 5mc + 5hmc DM and regions of 5hmc DM or regions of 5mc DM and 5hmc DM. The tables below determine how the data is integrated into classifications.
 
@@ -440,6 +440,6 @@ Pulldown comparison classification:
 
 The comparison classifications go in `test_hybrid/classifications/comparison` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
 
-#### Annotations and Visualizations
+### Annotations and Visualizations
 
-#### UCSC Browser track hub
+### UCSC Browser track hub
