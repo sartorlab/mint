@@ -368,7 +368,7 @@ The results of `bowtie2` alignments go in `test_hybrid/pulldown/bowtie2_bams`. A
 
 ##### Genome coverage
 
-The read pileups using `bedtools genomecov` go in `test_hybrid/pulldown/pulldown_coverages`. This includes both for pulldowns with an antibody and input pulldowns. The corresponding coverage `.bedGraph` files are compressed into `.bigWig`s and placed in `test_hybrid/test_hybrid_hub/hg19`. For downstream use, a 'merged' coverage `.bed` file is created taht fills gaps of up to 20bp.
+The read pileups using `bedtools genomecov` go in `test_hybrid/pulldown/pulldown_coverages`. This includes both pulldowns with an antibody and input pulldowns. The corresponding coverage `.bedGraph` files are compressed into `.bigWig`s and placed in `test_hybrid/test_hybrid_hub/hg19`. For downstream use, a 'merged' coverage `.bed` file is created that fills coverage gaps of up to 20bp. These files are used to determine where no signal is present for classifications.
 
 ##### macs2
 
