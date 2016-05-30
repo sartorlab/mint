@@ -448,6 +448,46 @@ Only the hg19, hg38, mm9, or mm10 genomes are currently supported for annotation
 
 All annotation sessions output a table of all genomic annotations intersecting the input regions in `test_hybrid/summary/tables`. Also output are summary tables indicating the number of regions annotated to a particular type, along with corresponding numbers for a set of random regions.
 
+#### Table: Complete annotations
+
+```{bash}
+annot_chrom	annot_start	annot_end	annot_strand	annot_type	annot_id	entrez_id	symbol	data_chrom	data_start	data_end	data_strand	name
+chr21	9909278	9966321	-	hg19_knownGenes_introns	uc002zka.2,uc021wgx.1	100132288	TEKT4P2	chr21	9909661	9909789	*	hmc_low
+chr21	9909515	9909759	*	hg19_cpg_islands	island:17089	NA	NA	chr21	9909661	9909789	*	hmc_low
+chr21	9909759	9912040	*	hg19_cpg_shores	shore:30779	NA	NA	chr21	9909661	9909789	*	hmc_low
+chr21	9909278	9966321	-	hg19_knownGenes_introns	uc002zka.2,uc021wgx.1	100132288	TEKT4P2	chr21	9944159	9944343	*	hmc_low
+```
+
+#### Table: Annotation summaries
+
+```{bash}
+data_type       annot_type      n
+Data    hg19_cpg_inter  2977
+Data    hg19_cpg_islands        134
+Data    hg19_cpg_shelves        327
+Data    hg19_cpg_shores 519
+Data    hg19_enhancers_fantom   294
+Data    hg19_knownGenes_1to5kb  399
+Data    hg19_knownGenes_3UTRs   131
+Data    hg19_knownGenes_5UTRs   1533
+Data    hg19_knownGenes_exons   408
+Data    hg19_knownGenes_intergenic      1528
+Data    hg19_knownGenes_introns 3562
+Data    hg19_knownGenes_promoters       158
+Random Regions  hg19_cpg_inter  3420
+Random Regions  hg19_cpg_islands        48
+Random Regions  hg19_cpg_shelves        157
+Random Regions  hg19_cpg_shores 177
+Random Regions  hg19_enhancers_fantom   39
+Random Regions  hg19_knownGenes_1to5kb  208
+Random Regions  hg19_knownGenes_3UTRs   60
+Random Regions  hg19_knownGenes_5UTRs   652
+Random Regions  hg19_knownGenes_exons   169
+Random Regions  hg19_knownGenes_intergenic      2394
+Random Regions  hg19_knownGenes_introns 1938
+Random Regions  hg19_knownGenes_promoters       66
+```
+
 Additionally, a variety of plots are output to help interpret the output of `bismark_methylation_extractor`, `methylSig`, `PePr`, and the classifications.
 
 #### Plot: Number of regions per annotation
@@ -473,6 +513,7 @@ Additionally, a variety of plots are output to help interpret the output of `bis
 #### Plot: Distribution of chip1/chip2 peaks in annotations
 
 ![Counts of DM type in annots](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_hmc_pulldown_PePr_cat_count_genes.png)
+
 ![Prop. of DM type in annots](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_hmc_pulldown_PePr_cat_prop_genes.png)
 
 #### Plot: Distribution of classifications in annotations
