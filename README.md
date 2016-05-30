@@ -120,7 +120,7 @@ The annotation file is a tab-delimited text file named `projectID_annotation.txt
 8. `input`: A binary indicating whether the sample represents an input (1) or not (0).
 9. `group`: A comma-separated string of integers where each integer collects all samples belonging to a particular group. **NOTE:** When testing for differential methylation in `PePr`, the group with the higher number will be `chip1` and the lower number will be `chip2`. When testing for differential methylation in `methylSig`, the group with the higher number will be `group 1` and the group with lower number will be `group 0`. Hypermethylation is then higher methylation in `group 1`, and hypomethylation is then lower methylation in `group 1`.
 
-Any additional columns are ignored, but will not cause errors. This may help keep track of which samples belong to which groups.
+Additional columns can be included, but their heading cannot be one of the above 9 headings.
 
 In particular, for the hybrid test data we have:
 
@@ -185,7 +185,7 @@ The `mint/projects/projectID/config.mk` file contains options for analysis impli
 
 Below is an example of the `config.mk` file for the `test_hybrid` data. In this file, the `PROJECT` and `GENOME` variables have been automatically populated from the `Rscript init.R` call.
 
-At minimum, paths to reference genome information must be provided in the `Genom paths` block. Optionally, specific paths to any of the software used for analysis can be given. Options for software used and cutoffs for classification are considered reasonable defaults, but these can be changed as desired.
+At minimum, paths to reference genome information must be provided in the `Genome paths` block. Optionally, specific paths to any of the software used for analysis can be given. Options for software used and cutoffs for classification are considered reasonable defaults, but these can be changed as desired.
 
 **NOTE:** The documentation for each program should be consulted before adding or removing parameters.
 
@@ -267,7 +267,7 @@ OPTS_PEPR_IDH2mut_v_NBM_hmc_pulldown = --file-format=bam --peaktype=sharp --diff
 
 ##### Running a project
 
-Once a project is instantiated and configured, the analysis steps can begin. The `mint` pipeline is controlled by `make` and there are up to 7 simple commands to run the modules, depending on the analyses implied by the project annotation file.
+Once a project is instantiated and configured, the analysis steps can begin. The `mint` pipeline is controlled by `make` and there are up to 7 simple commands to run the modules, depending on the analyses implied by the project annotation file. In general, the bisulfite and pulldown commands are independent of each other until classification, and the `*_sample` and `*_compare` commands are rely on the corresponding `*_align` steps.
 
 For example, the following commands will analyze the test hybrid data:
 
@@ -293,7 +293,7 @@ make sample_classification
 make compare_classification
 ```
 
-Depending on the computing hardware used, projects can be run with the `make -j n` command where `n` is an integer. The `-j` flag specifies how many commands `make` is allowed to run simultaneously. When it is not present, the default is to run commands in serial.
+Depending on the computing hardware used, projects can be run with the `make -j n` command where `n` is a positive integer. The `-j` flag specifies how many commands `make` is allowed to run simultaneously. When it is not present, the default is to run commands in serial.
 
 **NOTE:** Some software in the `mint` pipeline have options for the number of processors to use, so some care should be taken not to exceed the computing limitations of the hardware. For example, `bismark` tends to use 5 cores per instantiation, so using `make -j 5` would really use 25 cores.
 
