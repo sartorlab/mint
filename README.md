@@ -382,20 +382,20 @@ The `*_chip1_peaks.bed` and `*_chip2_peaks.bed` files resulting from `PePr`'s te
 
 ##### Simple classification
 
-Simple classifications are done on the results of `bismark_methylation_extractor` and `macs2` in order to classify sites/regions in each sample as having no, low, medium, or high methylation. In the case of `bismark_methylation_extractor` we have absolute quantification of methylation levels and the breakdown is then:
+Simple classifications are done on the results of `bismark_methylation_extractor` and `macs2` in order to classify sites/regions in each sample as having no, low, medium, or high methylation. In the case of `bismark_methylation_extractor` we have absolute quantification of methylation levels and the breakdown classification is:
 
 * None: [0%, 5%)
 * Low: [5%, 33%)
 * Medium: [33%, 66%)
 * High : [66%, 100%]
 
-Since `macs2` peaks relative methylation levels, we determine low, medium, and high methylation in a peak by dividing the fold-changes reported by `macs2` into tertiles based on the minimum observed fold-change and the minimum observed fold-change among the top 1%-tile of fold changes. Regions with no peaks are considered to have no methylation.
+Since `macs2` peaks determines qualitative methylation, we determine if a peak represents low, medium, or high methylation by dividing the fold-changes reported by `macs2` into tertiles based on the range of the fold-changes: The minimum observed fold-change and the minimum observed fold-change among the top 1%-tile of fold changes. Regions with no peaks are considered to have no methylation.
 
-The results of simple classifications go in `test_hybrid/classifications/simple` and are in `.bed` format which include colors for visualization in the UCSC Genome Browser. The `bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
+The resulting simple classifications go in `test_hybrid/classifications/simple` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
 
 ##### Sample classification
 
-Sample classifications are done when data is available measuring 5mc + 5hmc (WGBS, RRBS, etc.) and 5hmc (hMeDIP-seq, hMeSeal, etc.), or 5mc (MeDIP-seq, etc.) and 5hmc (hMeDIP-seq, etc.). The inputs into the classifier are sites/regions of 5mc + 5hmc and regions of 5hmc or regions of 5mc and regions of 5hmc. The tables below determine how a region or site is classified after integrating the data.
+Sample classifications are done when data is available measuring 5mc + 5hmc (WGBS, RRBS, etc.) and 5hmc (hMeDIP-seq, hMeSeal, etc.), or 5mc (MeDIP-seq, etc.) and 5hmc (hMeDIP-seq, etc.). The inputs into the classifier are sites/regions of 5mc + 5hmc and regions of 5hmc or regions of 5mc and regions of 5hmc. The tables below determine how the data is integrated into classifications.
 
 Hybrid sample classification:
 
@@ -414,11 +414,11 @@ Pulldown sample classification:
 | **No mc peak**	| hmc			| No methylation| No methylation|
 | **No signal**		| hmc			| No methylation| Unlassifiable	|
 
-The results of sample classifications go in `test_hybrid/classifications/sample` and are in `.bed` format which include colors for visualization in the UCSC Genome Browser. The `bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
+The sample classifications go in `test_hybrid/classifications/sample` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
 
 ##### Comparison classification
 
-Comparison classifications are done when data is available measuring 5mc + 5hmc (WGBS, RRBS, etc.) and 5hmc (hMeDIP-seq, hMeSeal, etc.), or 5mc (MeDIP-seq, etc.) and 5hmc (hMeDIP-seq, etc.), and there are groups of samples compared against each other for differential methylation (DM). The inputs into the classifier are sites/regions of 5mc + 5hmc DM and regions of 5hmc DM or regions of 5mc DM and 5hmc DM. The table below determines how a region or site is classified after integrating the data.
+Comparison classifications are done when data is available measuring 5mc + 5hmc (WGBS, RRBS, etc.) and 5hmc (hMeDIP-seq, hMeSeal, etc.), or 5mc (MeDIP-seq, etc.) and 5hmc (hMeDIP-seq, etc.), and there are groups of samples compared against each other for differential methylation (DM). The inputs into the classifier are sites/regions of 5mc + 5hmc DM and regions of 5hmc DM or regions of 5mc DM and 5hmc DM. The tables below determine how the data is integrated into classifications.
 
 Hybrid comparison classification:
 
@@ -438,7 +438,7 @@ Pulldown comparison classification:
 | **No DM**		| Hyper hmc				| Hypo hmc				| No DM			| No DM			|
 | **No signal**	| Hyper hmc				| Hypo hmc				| No DM			| Unclassifiable|
 
-The results of comparison classifications go in `test_hybrid/classifications/comparison` and are in `.bed` format which include colors for visualization in the UCSC Genome Browser. The `bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
+The comparison classifications go in `test_hybrid/classifications/comparison` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
 
 #### Annotations and Visualizations
 
