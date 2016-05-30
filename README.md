@@ -12,7 +12,7 @@
 	* [Setting up a project](https://github.com/sartorlab/mint#setting-up-a-project)
 		* [Annotation file](https://github.com/sartorlab/mint#annotation-file)
 		* [Instantiating a project](https://github.com/sartorlab/mint#instantiating-a-project)
-	* [Configuring a project](https://github.com/sartorlab/mint#configuring-a-project)
+		* [Configuring a project](https://github.com/sartorlab/mint#configuring-a-project)
 	* [Running a project](https://github.com/sartorlab/mint#running-a-project)
 * [Outputs](https://github.com/sartorlab/mint#outputs)
 	* [FastQC](https://github.com/sartorlab/mint#fastqc)
