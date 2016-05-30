@@ -344,7 +344,7 @@ test_hybrid/classifications/simple
 
 ### FastQC
 
-The `FastQC` output is by default not extracted, so the `.zip` files and `.html` files for the raw reads are located in `test_hybrid/bisulfite/raw_fastqcs` and `test_hybrid/pulldown/raw_fastqcs`. The output `FastQC` done after trimming are located in `test_hybrid/bisulfite/trim_fastqcs` and `test_hybrid/pulldown/trim_fastqcs`. The output is standard.
+The `FastQC` output is by default not extracted, so the `.zip` files and `.html` files for the raw reads are located in `test_hybrid/bisulfite/raw_fastqcs` and `test_hybrid/pulldown/raw_fastqcs`. The output `FastQC` done after trimming are located in `test_hybrid/bisulfite/trim_fastqcs` and `test_hybrid/pulldown/trim_fastqcs`.
 
 ### Trim Galore
 
@@ -354,7 +354,7 @@ The adapter and quality trimmed raw reads, as well as trimming reports, are outp
 
 #### bismark
 
-The results of the `bismark` alignment and the `bismark_methylation_extractor` go in `test_hybrid/bisulfite/bismark`.
+The results of the `bismark` alignment and methylation quantification from `bismark_methylation_extractor` go in `test_hybrid/bisulfite/bismark`. These include sorted and indexed alignment `.bam`s, methylation rate `bedGraph`s, coverage files, CpG reports, M-bias plots, and the splitting reports.
 
 #### methylSig
 
@@ -393,6 +393,14 @@ Since `macs2` peaks determines qualitative methylation, we determine if a peak r
 
 The resulting simple classifications go in `test_hybrid/classifications/simple` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
 
+```{bash}
+chr2	39812689	39812804	hmc_low	1000	.	39812689	39812804	102,102,255
+chr21	15197751	15198018	hmc_low	1000	.	15197751	15198018	102,102,255
+chr21	15198928	15199092	hmc_low	1000	.	15198928	15199092	102,102,255
+chr21	15200122	15200346	hmc_low	1000	.	15200122	15200346	102,102,255
+chr21	15353077	15353463	hmc_med	1000	.	15353077	15353463	0,0,255
+```
+
 #### Sample classification
 
 Sample classifications are done when data is available measuring 5mc + 5hmc (WGBS, RRBS, etc.) and 5hmc (hMeDIP-seq, hMeSeal, etc.), or 5mc (MeDIP-seq, etc.) and 5hmc (hMeDIP-seq, etc.). The inputs into the classifier are sites/regions of 5mc + 5hmc and regions of 5hmc or regions of 5mc and regions of 5hmc. The tables below determine how the data is integrated into classifications.
@@ -415,6 +423,18 @@ Pulldown sample classification:
 | **No signal**		| hmc			| No methylation| Unlassifiable	|
 
 The sample classifications go in `test_hybrid/classifications/sample` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
+
+```{bash}
+chr21   9826885 9826886 mc      1000    .       9826885 9826886 255,0,0
+chr21   9826886 9826887 mc_low  1000    .       9826886 9826887 255,165,0
+chr21   9826887 9826888 mc      1000    .       9826887 9826888 255,0,0
+chr21   9826891 9826892 no_meth 1000    .       9826891 9826892 0,0,0
+chr21   9826892 9826893 mc_low  1000    .       9826892 9826893 255,165,0
+chr21   9826895 9826896 no_meth 1000    .       9826895 9826896 0,0,0
+chr21   9826896 9826897 mc_low  1000    .       9826896 9826897 255,165,0
+chr21   9826899 9826901 mc_low  1000    .       9826899 9826901 255,165,0
+chr21   9826903 9826905 mc_low  1000    .       9826903 9826905 255,165,0
+```
 
 #### Comparison classification
 
@@ -439,6 +459,16 @@ Pulldown comparison classification:
 | **No signal**	| Hyper hmc				| Hypo hmc				| No DM			| Unclassifiable|
 
 The comparison classifications go in `test_hybrid/classifications/comparison` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
+
+```{bash}
+chr21   16423450        16423650        hypo_hmc        1000    .       16423450        16423650        102,102,255
+chr21   16423650        16424400        no_DM   1000    .       16423650        16424400        0,0,0
+chr21   16424400        16424650        hyper_hmc       1000    .       16424400        16424650        0,0,255
+chr21   16424650        16427750        no_DM   1000    .       16424650        16427750        0,0,0
+chr21   16427750        16427900        hypo_hmc        1000    .       16427750        16427900        102,102,255
+chr21   16427900        16429700        no_DM   1000    .       16427900        16429700        0,0,0
+chr21   16429700        16429850        hyper_hmc       1000    .       16429700        16429850        0,0,255
+```
 
 ### Annotations and Visualizations
 
@@ -496,11 +526,11 @@ Additionally, a variety of plots are output to help interpret the output of `bis
 
 #### Plot: Distribution of % methylation in annotations
 
-
+![Distribution of perc. meth. in annotations](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_1_mc_hmc_bisulfite_bismark_percmeth.png)
 
 #### Plot: Distribution of coverage in annotations
 
-
+![Distribution of coverage in annotations](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_1_mc_hmc_bisulfite_bismark_coverage.png)
 
 #### Plot: Distribution of peak widths
 
@@ -508,7 +538,9 @@ Additionally, a variety of plots are output to help interpret the output of `bis
 
 #### Plot: Volcano plots of DM
 
+![Volcano plots from methylSig results](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_mc_hmc_bisulfite_DMR_methylSig_volcano.png)
 
+![Distribution of methylSig calls in annots](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_mc_hmc_bisulfite_DMR_methylSig_DMstatus_prop_genes.png)
 
 #### Plot: Distribution of chip1/chip2 peaks in annotations
 
@@ -518,7 +550,13 @@ Additionally, a variety of plots are output to help interpret the output of `bis
 
 #### Plot: Distribution of classifications in annotations
 
+![Simple classification pulldown](https://github.com/sartorlab/mint/blob/master/docs/NBM_2_hmc_pulldown_simple_class_cat_prop_cpgs.png)
 
+![Simple classification bisulfite](https://github.com/sartorlab/mint/blob/master/docs/NBM_2_mc_hmc_bisulfite_simple_class_cat_prop_cpgs.png)
+
+![Sample classification](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_2_sample_class_cat_prop_genes.png)
+
+![Comparison classification](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_compare_class_cat_prop_genes.png)
 
 For details on the general features of `annotatr`, visit the [GitHub repository](https://github.com/rcavalcante/annotatr).
 
