@@ -47,7 +47,7 @@ if(bool_bis_comp) {
 		})
 
 		groupA = subset(bisulfite_samples,
-			groupAIndices &
+			groupAindices &
 			bisulfite_samples$pulldown == pull &
 			bisulfite_samples$bisulfite == bis &
 			bisulfite_samples$mc == mc_stat &
