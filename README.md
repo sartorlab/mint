@@ -112,12 +112,12 @@ The annotation file is a tab-delimited text file named `projectID_annotation.txt
 
 1. `projectID`: The name of the project.
 2. `sampleID`: Often an alphanumeric ID (perhaps from SRA, GEO, a sequencing core, etc.). These will be the names of the `.fastq.gz` files containing the raw reads.
-3. `humanID`: An ID that makes the `sampleID`s easier to understand. For example, instead of a `sampleID` from the SRA like 'SRA876549', use 'IDH2mut_1' to indicate what kind of mutant and what replicate the sample is. **NOTE:** The `humanID` may not be unique if a particular condition has a corresponding input sample (pulldown) or a corresponding sample on a different platform. *See examples below*.
-4. `pulldown`: A binary value indicating whether the sample is the result of a pulldown experiment (1) or not (0).
-5. `bisulfite`: A binary value indicating whether the sample is the result of a bisulfite-conversion experiment (1) or not (0).
-6. `mc`: A binary value indicating whether the sample represents 5mc methylation.
-7. `hmc`: A binary value indicating whether the sample represents 5hmc methylation.
-8. `input`: A binary value indicating whether the sample represents an input.
+3. `humanID`: An ID that makes the `sampleID`s easier to understand. For example, instead of a `sampleID` from the SRA like 'SRA876549', use 'IDH2mut_1' to indicate what kind of mutant and what replicate the sample is. **NOTE:** The `humanID` may not be unique if a particular condition has a corresponding input sample (e.g., pulldown) or a corresponding sample on a different platform (e.g., WGBS). *See examples below*.
+4. `pulldown`: A binary indicating whether the sample is the result of a pulldown experiment (1) or not (0).
+5. `bisulfite`: A binary indicating whether the sample is the result of a bisulfite-conversion experiment (1) or not (0).
+6. `mc`: A binary indicating whether the sample represents 5mc methylation (1) or not (0).
+7. `hmc`: A binary indicating whether the sample represents 5hmc methylation (1) or not (0).
+8. `input`: A binary indicating whether the sample represents an input (1) or not (0).
 9. `group`: A comma-separated string of integers where each integer collects all samples belonging to a particular group. **NOTE:** When testing for differential methylation in `PePr`, the group with the higher number will be `chip1` and the lower number will be `chip2`. When testing for differential methylation in `methylSig`, the group with the higher number will be `group 1` and the group with lower number will be `group 0`. Hypermethylation is then higher methylation in `group 1`, and hypomethylation is then lower methylation in `group 1`.
 
 Any additional columns are ignored, but will not cause errors. This may help keep track of which samples belong to which groups.
