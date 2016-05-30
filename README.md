@@ -22,6 +22,7 @@
 		* [methylSig](https://github.com/sartorlab/mint#methylsig)
 	* [Pulldown](https://github.com/sartorlab/mint#pulldown)
 		* [bowtie2](https://github.com/sartorlab/mint#bowtie2)
+		* [Genome coverage](https://github.com/sartorlab/mint#genome-coverage)
 		* [macs2](https://github.com/sartorlab/mint#macs2)
 		* [PePr](https://github.com/sartorlab/mint#pepr)
 	* [Classifications](https://github.com/sartorlab/mint#classifications)
@@ -267,7 +268,7 @@ OPTS_PEPR_IDH2mut_v_NBM_hmc_pulldown = --file-format=bam --peaktype=sharp --diff
 
 ##### Running a project
 
-Once a project is instantiated and configured, the analysis steps can begin. The `mint` pipeline is controlled by `make` and there are up to 7 simple commands to run the modules, depending on the analyses implied by the project annotation file. In general, the bisulfite and pulldown commands are independent of each other until classification, and the `*_sample` and `*_compare` commands are rely on the corresponding `*_align` steps.
+Once a project is instantiated and configured, the analysis steps can begin. The `mint` pipeline is controlled by `make` and there are up to 7 simple commands to run the modules, depending on the analyses implied by the project annotation file. In general, the bisulfite and pulldown commands are independent of each other until classification, and the `*_sample` and `*_compare` commands rely on the corresponding `*_align` steps.
 
 For example, the following commands will analyze the test hybrid data:
 
@@ -357,13 +358,17 @@ The results of the `bismark` alignment and the `bismark_methylation_extractor` g
 
 ##### methylSig
 
-The results of the tests for differential methylation with `methylSig` go in `test_hybrid/bisulfite/methylsig_calls`. The session image for each `methylSig` run is saved as an `.RData` file in `test_hybrid/RData`. This allows for retesting for differential methylation with different parameters without having to read in all the data again.
+The results of the tests for differential methylation with `methylSig` go in `test_hybrid/bisulfite/methylsig_calls`. The `R` session image for each `methylSig` run is saved as an `.RData` file in `test_hybrid/RData`. This allows for retesting for differential methylation with different parameters without having to read in all the data again.
 
 #### Pulldown
 
 ##### bowtie2
 
 The results of `bowtie2` alignments go in `test_hybrid/pulldown/bowtie2_bams`. All alignments are sorted and indexed after they are aligned, and the mapping efficiencies are output to a text file in the same folder.
+
+##### Genome coverage
+
+The read pileups using `bedtools genomecov` go in `test_hybrid/pulldown/pulldown_coverages`. This includes both for pulldowns with an antibody and input pulldowns. The corresponding coverage `.bedGraph` files are compressed into `.bigWig`s and placed in `test_hybrid/test_hybrid_hub/hg19`. For downstream use, a 'merged' coverage `.bed` file is created taht fills gaps of up to 20bp.
 
 ##### macs2
 
