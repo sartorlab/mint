@@ -145,7 +145,7 @@ if(bool_pull_comp) {
 			'	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)',
 			'',
 			sprintf('%s : %s %s', input_signal, var_merged_input1_pre, var_merged_input2_pre),
-			'	cat $^ | sort -T . -k1,1 -k2,2n | bedtools merge -d 20 | sort -T . -k1,1 -k2,2n > $@',
+			'	cat $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n | bedtools merge -d 20 | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@',
 			'',
 			sprintf('%s : %s', bigbed, combined_bed),
 			'	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@',

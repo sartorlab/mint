@@ -27,12 +27,12 @@ $(DIR_TRACK)/%_coverage.bw : $(DIR_PULL_COVERAGES)/%_coverage.bdg
 # Rule for coverage bedGraph
 .INTERMEDIATE : $(DIR_PULL_COVERAGES)/%_coverage.bdg
 $(DIR_PULL_COVERAGES)/%_coverage.bdg : $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam
-	$(PATH_TO_BEDTOOLS) genomecov -bg -g $(CHROM_PATH) -ibam $< | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) genomecov -bg -g $(CHROM_PATH) -ibam $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 
 # Rule for merged coverage BED
 # For use in signal BEDs downstream
 $(DIR_PULL_COVERAGES)/%_coverage_merged.bdg : $(DIR_PULL_COVERAGES)/%_coverage.bdg
-	$(PATH_TO_BEDTOOLS) merge -d 20 -i $< | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) merge -d 20 -i $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 
 # Rule for bowtie2 alignment
 $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip

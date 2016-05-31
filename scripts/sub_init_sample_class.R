@@ -18,25 +18,25 @@ make_rule_sample_class_pull_module = '
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_peak.txt
 $(DIR_PULL_MACS)/%_pulldown_peak.txt : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
 	$(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
-	| sort -T . -k1,1 -k2,2n \\
+	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nopeak_signal.txt
 $(DIR_PULL_MACS)/%_pulldown_nopeak_signal.txt : $(DIR_PULL_MACS)/%_pulldown_nopeak.txt $(DIR_PULL_MACS)/%_pulldown_signal.txt
 	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) \\
-	| sort -T . -k1,1 -k2,2n \\
+	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nopeak_nosignal.txt
 $(DIR_PULL_MACS)/%_pulldown_nopeak_nosignal.txt : $(DIR_PULL_MACS)/%_pulldown_nopeak.txt $(DIR_PULL_MACS)/%_pulldown_nosignal.txt
 	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) \\
-	| sort -T . -k1,1 -k2,2n \\
+	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nopeak.txt
 $(DIR_PULL_MACS)/%_pulldown_nopeak.txt : $(DIR_PULL_MACS)/%_pulldown_peak.txt
-	$(PATH_TO_BEDTOOLS) complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
-	| sort -T . -k1,1 -k2,2n \\
+	$(PATH_TO_BEDTOOLS) complement -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) -i $< \\
+	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_signal.txt
@@ -45,8 +45,8 @@ $(DIR_PULL_MACS)/%_pulldown_signal.txt : $(DIR_PULL_COVERAGES)/%_input_pulldown_
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nosignal.txt
 $(DIR_PULL_MACS)/%_pulldown_nosignal.txt : $(DIR_PULL_MACS)/%_pulldown_signal.txt
-	$(PATH_TO_BEDTOOLS) complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
-	| sort -T . -k1,1 -k2,2n \\
+	$(PATH_TO_BEDTOOLS) complement -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) -i $< \\
+	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
 	> $@
 '
 

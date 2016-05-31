@@ -18,6 +18,7 @@ cat(config_header, file = 'config_header.mk', sep='\n')
 # Always create these folders
 setup_commands = c(
 	sprintf('mkdir projects/%s', project),
+	sprintf('mkdir projects/%s/tmp', project),
 	sprintf('mkdir projects/%s/pbs_jobs', project),
 	sprintf('mkdir projects/%s/data', project),
 	sprintf('mkdir projects/%s/data/raw_fastqs', project),

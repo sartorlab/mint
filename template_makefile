@@ -5,6 +5,9 @@ SHELL=/bin/bash
 ################################################################################
 # Directories
 
+# tmp directory
+DIR_TMP := tmp/
+
 # bisulfite_align directories
 DIR_BIS_BISMARK := bisulfite/bismark
 DIR_BIS_TRIM_FASTQS := bisulfite/trim_fastqs

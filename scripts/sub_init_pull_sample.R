@@ -49,7 +49,7 @@ $(DIR_TRACK)/%_macs2_peaks.bb : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
 # Rule for macs2 peak fix
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
 $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak : $(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak
-	$(PATH_TO_AWK) -f ../../scripts/macs_fix_narrowPeak.awk $^ | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -f ../../scripts/macs_fix_narrowPeak.awk $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 
 # Rule for macs2 model
 $(DIR_PULL_MACS)/%_pulldown_macs2_model.pdf : $(DIR_PULL_MACS)/%_pulldown_macs2_model.r

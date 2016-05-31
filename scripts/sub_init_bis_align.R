@@ -52,7 +52,7 @@ $(DIR_TRACK)/%_trimmed_bismark_bt2.bw : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2
 
 .INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz
-	gunzip -c $< | $(PATH_TO_AWK) \'NR > 1 {print $$0}\' | sort -T . -k1,1 -k2,2n > $@
+	gunzip -c $< | $(PATH_TO_AWK) \'NR > 1 {print $$0}\' | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 
 # Rule for annotatr of extractor results
 $(DIR_RDATA)/%_bismark_annotatr_analysis.RData : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt
@@ -61,7 +61,7 @@ $(DIR_RDATA)/%_bismark_annotatr_analysis.RData : $(DIR_BIS_BISMARK)/%_trimmed_bi
 # Rule for annotatr input
 .INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz
-	$(PATH_TO_AWK) -f ../../scripts/extractor_to_annotatr.awk <(gunzip -c $<) | sort -T . -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -f ../../scripts/extractor_to_annotatr.awk <(gunzip -c $<) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 
 # Rule for bismark methylation extractor
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam
