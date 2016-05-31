@@ -62,7 +62,7 @@ The `mint` pipeline is dependent on several software packages to carry out its a
 * [`bismark` v0.16.1](https://github.com/FelixKrueger/Bismark/releases/tag/0.16.1)
 * [`bowtie2` v2.2.4](https://github.com/BenLangmead/bowtie2/releases/tag/v2.2.4)
 * [`macs2` v2.1.0.20140616](https://pypi.python.org/pypi/MACS2/2.1.0.20140616)
-* [`PePr` v1.1.5](https://github.com/shawnzhangyx/PePr/releases/tag/1.1.5)
+* [`PePr` v1.1.9](https://github.com/shawnzhangyx/PePr/releases/tag/1.1.9)
 * [`R` >= v3.2.5](https://cran.r-project.org)
 	* [`annotatr` v0.7.3](https://github.com/rcavalcante/annotatr/releases/tag/v0.7.3)
 	* [`methylSig` v0.4.3](https://github.com/sartorlab/methylSig/releases/tag/v0.4.3)
