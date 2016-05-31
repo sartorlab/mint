@@ -472,7 +472,7 @@ chr21   16429700        16429850        hyper_hmc       1000    .       16429700
 
 ### Annotations and Visualizations
 
-The results of `bismark_methylation_extractor`, `methylSig`, `PePr`, and the classifications are annotated to genomic regions using `annotatr`, a fast and flexible `R` package that annotates genomic regions to genomic annotations. As with `methylSig`, every `annotatr` session is saved as an `.RData` file in `test_hybrid/RData` to enable users to quickly go back to the annotations, investigate further, alter plots, or create new plots.
+The genomic regions given by `bismark_methylation_extractor`, `methylSig`, `PePr`, and the classifications are annotated to genomic annotations using `annotatr`, a fast and flexible `R` package designed for exactly this task. As with `methylSig`, every `annotatr` session is saved as an `.RData` file in `test_hybrid/RData` to enable users to quickly go back to the annotations, investigate further, alter plots, or create new plots.
 
 Only the hg19, hg38, mm9, or mm10 genomes are currently supported for annotation in the `mint` pipeline. We plan to implement the use of custom annotations *within the pipeline* in the future (`annotatr` already supports custom annotations). All files are annotated against CpG features (islands, shores, shelves, and inter CGI) and genic features based on UCSC knownGene transcripts (1-5kb upstream of promoter, promoter (<1kb upstream of TSS), 5'UTR, exons, introns, and 3'UTR). In the case of hg19, the FANTOM5 robust enhancers are also included. Annotations include UCSC transcript IDs, Entrez Gene IDs, and gene symbols.
 
