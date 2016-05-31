@@ -321,6 +321,8 @@ make sample_classification
 make compare_classification
 ```
 
+To see what will be run by the pipeline without *actually* running anything, you can `make -n pulldown_align`, etc. for each of the commands.
+
 Depending on the computing hardware used, projects can be run with the `make -j n` command where `n` is a positive integer. The `-j` flag specifies how many commands `make` is allowed to run simultaneously. When it is not present, the default is to run commands in serial.
 
 **NOTE:** Some software in the `mint` pipeline have options for the number of processors to use, so some care should be taken not to exceed the computing limitations of the hardware. For example, `bismark` tends to use 5 cores per instantiation, so using `make -j 5` would really use 25 cores.
