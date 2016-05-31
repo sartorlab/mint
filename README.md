@@ -478,6 +478,8 @@ Only the hg19, hg38, mm9, or mm10 genomes are currently supported for annotation
 
 All annotation sessions output a table of all genomic annotations intersecting the input regions in `test_hybrid/summary/tables`. Also output are summary tables indicating the number of regions annotated to a particular type, along with corresponding numbers for a set of random regions.
 
+For details on the general features of `annotatr`, visit the [GitHub repository](https://github.com/rcavalcante/annotatr).
+
 #### Table: Complete annotations
 
 ```{bash}
@@ -557,8 +559,6 @@ Additionally, a variety of plots are output to help interpret the output of `bis
 ![Sample classification](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_2_sample_class_cat_prop_genes.png)
 
 ![Comparison classification](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_compare_class_cat_prop_genes.png)
-
-For details on the general features of `annotatr`, visit the [GitHub repository](https://github.com/rcavalcante/annotatr).
 
 ### UCSC Browser track hub
 
