@@ -172,17 +172,17 @@ test_pulldown	comparison	preeclamptic_v_normal	1	0	0	1	0	0,1
 After creating an appropriate annotation file for your project, within the `mint/` folder do the following:
 
 1. `mkdir projects`
-2. Put the `projectID_annotation.txt` file in `mint/projects/`.
+2. Put the `test_hybrid_annotation.txt` file in `mint/projects/`.
 3. In `mint/` do:
 ```{bash}
-Rscript init.R --project projectID --genome genome --datapath /path/to/data
+Rscript init.R --project test_hybrid --genome hg19 --datapath /path/to/data
 ```
 
-The `init.R` script creates an appropriate directory structure in `mint/projects/projectID/`, creates symlinks to the `.fastq.gz` files in `/path/to/data`, and creates the `makefile` and `config.mk` files that control the analysis of your project.
+The `init.R` script creates an appropriate directory structure in `mint/projects/test_hybrid/`, creates symlinks to the `.fastq.gz` files in `/path/to/data`, and creates the `makefile` and `config.mk` files that control the analysis of your project.
 
 #### Configuring a project
 
-The `mint/projects/projectID/config.mk` file contains options for analysis implied in the project annotation file.
+The `mint/projects/test_hybrid/config.mk` file contains options for analysis implied in the project annotation file.
 
 Below is an example of the `config.mk` file for the `test_hybrid` data. In this file, the `PROJECT` and `GENOME` variables have been automatically populated from the `Rscript init.R` call.
 
