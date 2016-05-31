@@ -79,7 +79,7 @@ config_pull_sample = '##########################################################
 
 # macs2
 # For documentation about parameters see https://github.com/taoliu/MACS
-OPTS_MACS = --gsize hs --qvalue 0.01 --mfold 5,50
+OPTS_MACS = --gsize hs --qvalue 0.01 --mfold 5 50
 '
 cat(config_pull_sample, file = file_config, sep='\n', append=T)
 
