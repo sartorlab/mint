@@ -42,7 +42,7 @@ $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULL_TRIM_FASTQS)/%_trim
 
 # Rule for FastQC on trimmed
 $(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz
-	$(PATH_TO_FASTQC) $(OPTS_FASTQC) --outdir $(@D) $<
+	$(PATH_TO_FASTQC) --format fastq --noextract --outdir $(@D) $<
 
 # Rule for trim_galore
 $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip
@@ -50,12 +50,28 @@ $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip
 
 # Rule for FastQC on raw
 $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip :
-	$(PATH_TO_FASTQC) $(OPTS_FASTQC) --outdir $(@D) $(DIR_PULL_RAW_FASTQS)/$*.fastq.gz
+	$(PATH_TO_FASTQC) --format fastq --noextract --outdir $(@D) $(DIR_PULL_RAW_FASTQS)/$*.fastq.gz
 '
 
 cat(make_var_pull_align_prefix, file = file_make, sep = '\n', append = TRUE)
 cat(make_var_pull_align, file = file_make, sep = '\n', append = TRUE)
 cat(make_rule_pull_align, file = file_make, sep = '\n', append = TRUE)
+
+########################################################################
+# OPTS for config.mk
+config_pull_align = '################################################################################
+# pulldown_align configuration options
+
+# trim_galore pulldown
+# For trim_galore parameters see http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_User_Guide_v0.4.1.pdf
+OPTS_TRIMGALORE_PULLDOWN = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 25
+
+# bowtie2
+# For bowtie2 parameters see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml
+OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
+'
+cat(config_pull_align, file = file_config, sep='\n', append=T)
+
 
 #######################################
 # PBS script

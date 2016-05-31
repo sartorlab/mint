@@ -59,7 +59,7 @@ $(DIR_PULL_MACS)/%_pulldown_macs2_model.pdf : $(DIR_PULL_MACS)/%_pulldown_macs2_
 # Rule for macs2 peaks
 $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak $(DIR_PULL_MACS)/%_pulldown_macs2_model.r : 	$(DIR_PULL_BOWTIE2)/%_pulldown_trimmed.fq.gz_aligned.bam \\
 														$(DIR_PULL_BOWTIE2)/%_input_pulldown_trimmed.fq.gz_aligned.bam
-	$(PATH_TO_MACS) callpeak -t $(word 1, $^) -c $(word 2, $^) -f BAM -g hs --name $(patsubst %_peaks.narrowPeak,%,$(@F)) --outdir $(@D)
+	$(PATH_TO_MACS) callpeak -t $(word 1, $^) -c $(word 2, $^) -f BAM --name $(patsubst %_peaks.narrowPeak,%,$(@F)) --outdir $(@D) $(OPTS_MACS)
 
 # Rule to delete all temporary files from make bis_align
 .PHONY : clean_pulldown_sample_tmp
@@ -71,6 +71,17 @@ cat(make_var_pull_samp_prefix, file = file_make, sep = '\n', append = TRUE)
 cat(make_var_pull_samp, file = file_make, sep = '\n', append = TRUE)
 cat(make_var_pull_samp_clean_tmp, file = file_make, sep = '\n', append = TRUE)
 cat(make_rule_pull_samp, file = file_make, sep = '\n', append = TRUE)
+
+########################################################################
+# OPTS for config.mk
+config_pull_sample = '################################################################################
+# pulldown_sample configuration options
+
+# macs2
+# For documentation about parameters see https://github.com/taoliu/MACS
+OPTS_MACS = --gsize hs --qvalue 0.01 --mfold 5,50
+'
+cat(config_pull_sample, file = file_config, sep='\n', append=T)
 
 #######################################
 # PBS script

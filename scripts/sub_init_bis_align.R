@@ -76,7 +76,7 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.
 
 # Rule for FastQC on trimmed
 $(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz
-	$(PATH_TO_FASTQC) $(OPTS_FASTQC) --outdir $(@D) $<
+	$(PATH_TO_FASTQC) --format fastq --noextract --outdir $(@D) $<
 
 # Rule for trim_galore
 $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip
@@ -84,7 +84,7 @@ $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz : $(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip
 
 # Rule for FastQC on raw
 $(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip :
-	$(PATH_TO_FASTQC) $(OPTS_FASTQC) --outdir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
+	$(PATH_TO_FASTQC) --format fastq --noextract --outdir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
 
 # Rule to delete all temporary files from make bis_align
 .PHONY : clean_bisulfite_align_tmp
@@ -97,7 +97,31 @@ cat(make_var_bis_align, file = file_make, sep = '\n', append = TRUE)
 cat(make_var_bis_align_clean_tmp, file = file_make, sep = '\n', append = TRUE)
 cat(make_rule_bis_align, file = file_make, sep = '\n', append = TRUE)
 
-# ######################################
+########################################################################
+# OPTS for config.mk
+config_bis_align = '################################################################################
+# bisulfite_align configuration options
+
+# trim_galore bisulfite
+# For trim_galore parameters see http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_User_Guide_v0.4.1.pdf
+OPTS_TRIMGALORE_BISULFITE = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 25 --rrbs
+
+# bismark
+# For bismark parameters see http://www.bioinformatics.babraham.ac.uk/projects/bismark/Bismark_User_Guide_v0.15.0.pdf
+OPTS_BISMARK = --bowtie2 $(GENOME_PATH)
+
+# Command line option for minimum coverage required for bismark_methylation_extractor
+# and scripts/classify_prepare_bisulfite_sample.awk in the sample classification module
+# NOTE: This does not affect methylSig runs
+OPT_MIN_COV = 5
+
+# bismark_methylation_extractor
+# For methylation extractor parameters see http://www.bioinformatics.babraham.ac.uk/projects/bismark/Bismark_User_Guide_v0.15.0.pdf
+OPTS_EXTRACTOR = --single-end --gzip --bedGraph --cutoff $(OPT_MIN_COV) --cytosine_report --genome_folder $(GENOME_PATH) --multicore 1
+'
+cat(config_bis_align, file = file_config, sep='\n', append=T)
+
+#######################################
 # PBS script
 bisulfite_align_q = c(
 	'#!/bin/bash',

@@ -142,8 +142,20 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BI
 
 		########################################################################
 		# OPTS for config.mk
-		config_bis_compare = sprintf(
-'# See ?methylSig::methylSigReadData and ?methylSig::methylSigCalc after installing methylSig in R for parameter information
+		config_bis_compare = sprintf('################################################################################
+# bisulfite_compare configuration options
+
+# DMC for CpG resolution, and DMR for region resolution (window size parameter
+# used in the methylSig options below).
+OPT_DM_TYPE = DMR
+
+# Thresholds to use for DMCs or DMRs (above) methylSig output
+# FDR significance level
+OPT_MSIG_DM_FDR_THRESHOLD = 0.05
+# Desired absolute value of methylation difference
+OPT_MSIG_DM_DIFF_THRESHOLD = 10
+
+# See ?methylSig::methylSigReadData and ?methylSig::methylSigCalc after installing methylSig in R for parameter information
 OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --dmtype $(OPT_DM_TYPE) --winsize.tile 50 --dispersion both --local.disp FALSE --winsize.disp 200 --local.meth FALSE --winsize.meth 200 --minpergroup 2,2 --T.approx TRUE --ncores 4 --quiet FALSE
 ',
 			var_comparison)
