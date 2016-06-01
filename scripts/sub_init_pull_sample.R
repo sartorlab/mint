@@ -74,13 +74,23 @@ cat(make_rule_pull_samp, file = file_make, sep = '\n', append = TRUE)
 
 ########################################################################
 # OPTS for config.mk
-config_pull_sample = '################################################################################
+if(genome == 'hg19' || genome == 'hg38') {
+	macs_genome = 'hs'
+} else if (genome == 'mm9' || genome == 'mm10') {
+	macs_genome = 'mm'
+} else {
+	macs_genome = 'SPECIFY'
+}
+
+config_pull_sample = sprintf('################################################################################
 # pulldown_sample configuration options
 
 # macs2
+# NOTE: Please ensure the genome size matches the organism in the study
 # For documentation about parameters see https://github.com/taoliu/MACS
-OPTS_MACS = --gsize hs --qvalue 0.01 --mfold 5 50
-'
+OPTS_MACS = --gsize %s --qvalue 0.01 --mfold 5 50
+',
+	macs_genome)
 cat(config_pull_sample, file = file_config, sep='\n', append=T)
 
 #######################################
