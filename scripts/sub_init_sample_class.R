@@ -153,22 +153,22 @@ cat(make_rule_class_sample, file = file_make, sep = '\n', append = TRUE)
 
 #######################################
 # PBS script
-pulldown_sample_q = c(
-	'#!/bin/bash',
-	'#### Begin PBS preamble',
-	'#PBS -N class_sample',
-	'#PBS -l nodes=1:ppn=4,walltime=24:00:00,pmem=16gb',
-	'#PBS -A sartor_lab',
-	'#PBS -q first',
-	'#PBS -M rcavalca@umich.edu',
-	'#PBS -m abe',
-	'#PBS -j oe',
-	'#PBS -V',
-	'#### End PBS preamble',
-	'# Put your job commands after this line',
-	sprintf('cd ~/latte/mint/projects/%s/',project),
-	'make -j 4 sample_classification')
-cat(pulldown_sample_q, file=sprintf('projects/%s/pbs_jobs/classify_sample.q', project), sep='\n')
+# pulldown_sample_q = c(
+# 	'#!/bin/bash',
+# 	'#### Begin PBS preamble',
+# 	'#PBS -N class_sample',
+# 	'#PBS -l nodes=1:ppn=4,walltime=24:00:00,pmem=16gb',
+# 	'#PBS -A sartor_lab',
+# 	'#PBS -q first',
+# 	'#PBS -M rcavalca@umich.edu',
+# 	'#PBS -m abe',
+# 	'#PBS -j oe',
+# 	'#PBS -V',
+# 	'#### End PBS preamble',
+# 	'# Put your job commands after this line',
+# 	sprintf('cd ~/latte/mint/projects/%s/',project),
+# 	'make -j 4 sample_classification')
+# cat(pulldown_sample_q, file=sprintf('projects/%s/pbs_jobs/classify_sample.q', project), sep='\n')
 
 for(sample in unique(samples$humanID)) {
 	# trackDb.txt entry for sample classification

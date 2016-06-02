@@ -95,22 +95,22 @@ cat(config_pull_sample, file = file_config, sep='\n', append=T)
 
 #######################################
 # PBS script
-pulldown_sample_q = c(
-	'#!/bin/bash',
-	'#### Begin PBS preamble',
-	'#PBS -N pull_sample',
-	'#PBS -l nodes=1:ppn=6,walltime=24:00:00,pmem=8gb',
-	'#PBS -A sartor_lab',
-	'#PBS -q first',
-	'#PBS -M rcavalca@umich.edu',
-	'#PBS -m abe',
-	'#PBS -j oe',
-	'#PBS -V',
-	'#### End PBS preamble',
-	'# Put your job commands after this line',
-	sprintf('cd ~/latte/mint/projects/%s/',project),
-	'make -j 6 pulldown_sample')
-cat(pulldown_sample_q, file=sprintf('projects/%s/pbs_jobs/pulldown_sample.q', project), sep='\n')
+# pulldown_sample_q = c(
+# 	'#!/bin/bash',
+# 	'#### Begin PBS preamble',
+# 	'#PBS -N pull_sample',
+# 	'#PBS -l nodes=1:ppn=6,walltime=24:00:00,pmem=8gb',
+# 	'#PBS -A sartor_lab',
+# 	'#PBS -q first',
+# 	'#PBS -M rcavalca@umich.edu',
+# 	'#PBS -m abe',
+# 	'#PBS -j oe',
+# 	'#PBS -V',
+# 	'#### End PBS preamble',
+# 	'# Put your job commands after this line',
+# 	sprintf('cd ~/latte/mint/projects/%s/',project),
+# 	'make -j 6 pulldown_sample')
+# cat(pulldown_sample_q, file=sprintf('projects/%s/pbs_jobs/pulldown_sample.q', project), sep='\n')
 
 for(i in 1:nrow(pulldown_samples_noinput)) {
 	# trackDb.txt entry for MACS2 output

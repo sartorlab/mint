@@ -123,22 +123,22 @@ cat(config_bis_align, file = file_config, sep='\n', append=T)
 
 #######################################
 # PBS script
-bisulfite_align_q = c(
-	'#!/bin/bash',
-	'#### Begin PBS preamble',
-	'#PBS -N bis_align',
-	'#PBS -l nodes=1:ppn=15,walltime=24:00:00,pmem=8gb',
-	'#PBS -A sartor_lab',
-	'#PBS -q first',
-	'#PBS -M rcavalca@umich.edu',
-	'#PBS -m abe',
-	'#PBS -j oe',
-	'#PBS -V',
-	'#### End PBS preamble',
-	'# Put your job commands after this line',
-	sprintf('cd ~/latte/mint/projects/%s/',project),
-	'make -j 3 bisulfite_align')
-cat(bisulfite_align_q, file=sprintf('projects/%s/pbs_jobs/bisulfite_align.q', project), sep='\n')
+# bisulfite_align_q = c(
+# 	'#!/bin/bash',
+# 	'#### Begin PBS preamble',
+# 	'#PBS -N bis_align',
+# 	'#PBS -l nodes=1:ppn=15,walltime=24:00:00,pmem=8gb',
+# 	'#PBS -A sartor_lab',
+# 	'#PBS -q first',
+# 	'#PBS -M rcavalca@umich.edu',
+# 	'#PBS -m abe',
+# 	'#PBS -j oe',
+# 	'#PBS -V',
+# 	'#### End PBS preamble',
+# 	'# Put your job commands after this line',
+# 	sprintf('cd ~/latte/mint/projects/%s/',project),
+# 	'make -j 3 bisulfite_align')
+# cat(bisulfite_align_q, file=sprintf('projects/%s/pbs_jobs/bisulfite_align.q', project), sep='\n')
 
 for(i in 1:nrow(bisulfite_samples)) {
 	# trackDb.txt entry for Bismark methylation calls
