@@ -45,6 +45,12 @@ if(class_type == 'macs2' || class_type == 'PePr') {
 
 	# Remove unclassifiable regions
 	r = r[r$name != 'unclassifiable']
+
+	# PePr does not take -log10 of p-values, gotta do it yourself
+	if(class_type == 'PePr') {
+		r$pvalue = -log10(r$pvalue)
+	}
+
 } else {
 	r = read_bed(
 		file = file,
