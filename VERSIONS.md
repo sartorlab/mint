@@ -19,9 +19,14 @@ This file gives the current version of software used in the pipeline as of May 1
 The following R command will install the required R packages (assuming fresh R install):
 
 ```{r}
-install.packages(c('readr','optparse','ggplot2','dplyr','devtools'), repos='http://cran.rstudio.com')
-source("http://bioconductor.org/biocLite.R")
+# Install CRAN packages
+install.packages(c('devtools','optparse','readr','dplyr','ggplot2'), repos='http://cran.rstudio.com')
+
+# Install Bioconductor packages
+source("https://bioconductor.org/biocLite.R")
 biocLite(c("BiocStyle","GenomeInfoDb","IRanges","GenomicRanges"))
-devtools::install_github('sartorlab/methylSig')
-devtools::install_github('rcavalcante/annotatr')
+
+# Install GitHub packages
+install_github('rcavalcante/annotatr@v0.7.3')
+install_github('sartorlab/methylSig@v0.4.3')
 ```

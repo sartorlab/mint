@@ -71,6 +71,21 @@ The `mint` pipeline is dependent on several software packages to carry out its a
 * [`cutadapt` v1.9.1](https://pypi.python.org/pypi/cutadapt/1.9.1)
 * [`FastQC` v0.11.5](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5_source.zip)
 
+The following `R` code will install the necessary packages:
+
+```{r}
+# Install CRAN packages
+install.packages(c('devtools','optparse','readr','dplyr','ggplot2'), repos='http://cran.rstudio.com')
+
+# Install Bioconductor packages
+source("https://bioconductor.org/biocLite.R")
+biocLite(c("BiocStyle","GenomeInfoDb","IRanges","GenomicRanges"))
+
+# Install GitHub packages
+install_github('rcavalcante/annotatr@v0.7.3')
+install_github('sartorlab/methylSig@v0.4.3')
+```
+
 ### Getting `mint`
 
 The easiest way to install `mint` is to `cd` into the directory you'd like to place the `mint` folder and do:
