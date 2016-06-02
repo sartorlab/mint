@@ -13,12 +13,14 @@ make_var_pull_samp = 'PULLDOWN_SAMPLE_PREREQS :=	$(patsubst %,$(DIR_TRACK)/%_sim
 						$(patsubst %,$(DIR_RDATA)/%_simple_class_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 						$(patsubst %,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 						$(patsubst %,$(DIR_TRACK)/%_macs2_peaks.bb,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+						$(patsubst %,$(DIR_RDATA)/%_macs2_peaks_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_model.r,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_model.pdf,$(PULLDOWN_SAMPLE_PREFIXES))'
 
 make_var_pull_samp_clean_tmp = 'PULLDOWN_SAMPLE_CLEAN_TMP := $(patsubst %,$(DIR_CLASS_SIMPLE)/%_pulldown_simple_class_for_annotatr.txt,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES))
+						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+						$(patsubst %,$(DIR_PULL_MACS)/%_pulldown_macs2_peaks_for_annotatr.txt,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 '
 
 # NOTE: This cannot be indented because they would mess up the makefile
@@ -41,6 +43,14 @@ $(DIR_CLASS_SIMPLE)/%_pulldown_simple_class_for_annotatr.txt : $(DIR_CLASS_SIMPL
 # Simple classification
 $(DIR_CLASS_SIMPLE)/%_pulldown_simple_classification.bed : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
 	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
+
+# Rule for annotatr of macs2 narrowPeak
+$(DIR_RDATA)/%_pulldown_macs2_peaks_annotatr_analysis.RData : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks_for_annotatr.txt
+	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
+
+.INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks_for_annotatr.txt
+$(DIR_PULL_MACS)/%_pulldown_macs2_peaks_for_annotatr.txt : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
+	$(PATH_TO_AWK) -v OFS="\\t" \'{ print $$1, $$2, $$3, $$4, $$7, "*", $$8 }\' $< > $@
 
 # Rule for UCSC bigBed track
 $(DIR_TRACK)/%_macs2_peaks.bb : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
