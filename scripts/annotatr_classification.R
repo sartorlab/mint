@@ -303,7 +303,7 @@ if(class_type == 'PePr') {
 		tbl = r_tbl,
 		x = 'fold',
 		facet = 'name',
-		facet_order = a_all_order,
+		facet_order = c('chip1','chip2'),
 		bin_width = 5,
 		plot_title = sprintf('%s fold change over annotations', prefix),
 		x_label = 'Fold Change')
@@ -315,7 +315,7 @@ if(class_type == 'PePr') {
 		x = 'fold',
 		y = 'pvalue',
 		facet = 'name',
-		facet_order = a_all_order,
+		facet_order = c('chip1','chip2'),
 		plot_title = sprintf('%s fold change vs -log10(pval)', prefix),
 		x_label = 'Fold change',
 		y_label = '-log10(pval)')
@@ -352,7 +352,7 @@ if(class_type == 'PePr') {
 	plot_foldchg = plot_numerical(
 		tbl = subset(ar, name == 'chip2'),
 		x = 'fold',
-		facet = 'name',
+		facet = 'annot_type',
 		facet_order = a_all_order,
 		bin_width = 5,
 		plot_title = sprintf('%s chip2 fold change over annotations', prefix),
@@ -364,7 +364,7 @@ if(class_type == 'PePr') {
 		tbl = subset(ar, name == 'chip2'),
 		x = 'fold',
 		y = 'pvalue',
-		facet = 'name',
+		facet = 'annot_type',
 		facet_order = a_all_order,
 		plot_title = sprintf('%s chip2 fold change vs -log10(pval)', prefix),
 		x_label = 'chip2 fold change',
