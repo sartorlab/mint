@@ -23,7 +23,8 @@ bisulfite_align : 	bisulfite_raw_fastqc \\
 					bisulfite_trim_fastqc \\
 					bisulfite_bismark \\
 					bisulfite_extractor \\
-					bisulfite_simple_classification
+					bisulfite_simple_classification \\
+					bisulfite_multiqc
 
 ########################################
 .PHONY : bisulfite_raw_fastqc

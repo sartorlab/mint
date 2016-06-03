@@ -18,7 +18,8 @@ pulldown_align :	pulldown_raw_fastqc \\
 					pulldown_trim \\
 					pulldown_trim_fastqc \\
 					pulldown_bowtie2 \\
-					pulldown_coverage
+					pulldown_coverage \\
+					pulldown_multiqc
 
 ########################################
 .PHONY : pulldown_raw_fastqc
