@@ -24,6 +24,7 @@ setup_commands = c(
 	sprintf('mkdir projects/%s/data/raw_fastqs', project),
 	sprintf('mkdir projects/%s/summary', project),
 	sprintf('mkdir projects/%s/summary/{figures,tables,reports}', project),
+	sprintf('mkdir projects/%s/summary/reports/multiqc', project),
 	sprintf('mkdir projects/%s/%s_hub', project, project),
 	sprintf('mkdir projects/%s/%s_hub/%s', project, project, genome),
 	sprintf('mkdir projects/%s/classifications', project),

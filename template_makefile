@@ -5,6 +5,9 @@ SHELL=/bin/bash
 ################################################################################
 # Directories
 
+# multiqc directory
+DIR_MULTIQC := summary/reports/multiqc
+
 # tmp directory
 DIR_TMP := tmp/
 
