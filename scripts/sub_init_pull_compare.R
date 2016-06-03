@@ -4,7 +4,9 @@
 if(bool_pull_comp) {
 	# Keep track of the compares for the master make rules
 	pulldown_compares = c()
+	pulldown_compare_rules = c()
 	pulldown_clean_tmps = c()
+	pulldown_compare_configs = c()
 	for(i in 1:nrow(pulldown_comparisons)) {
 		# Establish row variables
 		projectID = pulldown_comparisons[i,'projectID']
@@ -114,8 +116,9 @@ if(bool_pull_comp) {
 
 		# Write the pulldown_compare variables for this comparison
 		make_var_pull_compare = c(
-			'################################################################################',
-			'# Workflow for pulldown_compare',
+			'########################################',
+			sprintf('# Workflow for pulldown_compare_%s', i),
+			'',
 			sprintf('PULLDOWN_COMPARE_%s_PREREQS := %s %s %s %s', i, chip1_bed, bigbed, input_signal, annotatr_rdata),
 			sprintf('PULLDOWN_COMPARE_%s_INPUT1 := %s', i, var_input1),
 			sprintf('PULLDOWN_COMPARE_%s_INPUT2 := %s', i, var_input2),
@@ -123,53 +126,69 @@ if(bool_pull_comp) {
 			sprintf('PULLDOWN_COMPARE_%s_CHIP2 := %s', i, var_chip2),
 			sprintf('PULLDOWN_COMPARE_%s_NAME := %s', i, var_name),
 			sprintf('PULLDOWN_COMPARE_%s_CLEAN_TMP := %s', i, annotatr_bed))
-		cat(make_var_pull_compare, file = file_make, sep='\n', append=T)
 
 		# Write the pulldown_compare rule for this comparison
 		make_rule_pull_compare = c(
-			sprintf('.PHONY : pulldown_compare_%s', i),
-			sprintf('pulldown_compare_%s : pulldown_align $(PULLDOWN_COMPARE_%s_PREREQS)', i, i),
 			'',
+			'########################################',
+			sprintf('.PHONY : pulldown_compare_%s', i),
+			sprintf('pulldown_compare_%s : $(PULLDOWN_COMPARE_%s_PREREQS)', i, i),
+			'',
+			'# Rule for PePr peaks',
 			sprintf('%s : %s %s %s %s', chip1_bed, var_input1_pre, var_input2_pre, var_chip1_pre, var_chip2_pre),
 			sprintf('	$(PATH_TO_PEPR) --input1=$(PULLDOWN_COMPARE_%s_INPUT1) --input2=$(PULLDOWN_COMPARE_%s_INPUT2) --chip1=$(PULLDOWN_COMPARE_%s_CHIP1) --chip2=$(PULLDOWN_COMPARE_%s_CHIP2) --name=$(PULLDOWN_COMPARE_%s_NAME) --output-directory=$(DIR_PULL_PEPR) $(OPTS_PEPR_%s)', i, i, i, i, i, var_name),
 			sprintf('%s : %s', chip2_bed, chip1_bed),
 			'',
+			'# Rule to combine PePr peaks',
+			'# NOTE: This script ensures chip1 and chip2 peaks do not overlap',
+			'# and then combines the peaks and keeps track of their source',
 			sprintf('%s : %s %s', combined_bed, chip1_bed, chip2_bed),
 			'	bash ../../scripts/pepr_combine.sh $(word 1,$^) $(word 2,$^) $@',
 			'',
+			'# Rule for annotatr input of PePr peaks',
+			'# NOTE: Using fold change ($7) and p-value ($8)',
 			sprintf('.INTERMEDIATE : %s', annotatr_bed),
 			sprintf('%s : %s %s', annotatr_bed, chip1_bed, chip2_bed),
 			'	cat <(awk -v OFS="\\t" \'{print $$1, $$2, $$3, "chip1", $$7, "*", $$8}\' $(word 1,$^)) <(awk -v OFS="\\t" \'{print $$1, $$2, $$3, "chip2", $$7, "*", $$8}\' $(word 2,$^)) > $@',
 			'',
+			'# Rule for annotatr of PePr peaks',
 			sprintf('%s : %s', annotatr_rdata, annotatr_bed),
 			'	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)',
 			'',
+			'# Rule to merge input signals from the two groups',
 			sprintf('%s : %s %s', input_signal, var_merged_input1_pre, var_merged_input2_pre),
 			'	cat $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n | bedtools merge -d 20 | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@',
 			'',
+			'# Rule for UCSC bigBed track of PePr peaks',
 			sprintf('%s : %s', bigbed, combined_bed),
 			'	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@',
 			'',
+			'########################################',
+			sprintf('# Rule to delete all temporary files from make pulldown_compare_%s',i),
 			sprintf('.PHONY : clean_pulldown_compare_tmp_%s', i),
-			sprintf('clean_pulldown_compare_tmp_%s :
-				rm -f $(PULLDOWN_COMPARE_%s_CLEAN_TMP)', i, i),
-			'')
-		cat(make_rule_pull_compare, file = file_make, sep='\n', append=T)
+			sprintf('clean_pulldown_compare_tmp_%s :', i),
+			sprintf('	rm -f $(PULLDOWN_COMPARE_%s_CLEAN_TMP)', i))
 
-		# Track the number of pulldown compares
-		pulldown_compares = c(pulldown_compares, sprintf('pulldown_compare_%s', i))
-		pulldown_clean_tmps = c(pulldown_clean_tmps, sprintf('clean_pulldown_compare_tmp_%s', i))
+		# Track all the rules for the pulldown compares
+		pulldown_compare_rules = c(
+			pulldown_compare_rules,
+			make_var_pull_compare,
+			make_rule_pull_compare)
 
 		########################################################################
 		# OPTS for config.mk
-		config_pull_compare = sprintf('################################################################################
-# pulldown_compare configuration options
+		config_pull_compare = sprintf('########################################
+# pulldown_compare_%s configuration options
 
 # For PePr parameters see https://ones.ccmb.med.umich.edu/wiki/PePr/
-OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=8
+OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=1
 ',
-			var_name)
-		cat(config_pull_compare, file = file_config, sep='\n', append=T)
+			i, var_name)
+
+		# Track all the configs for the pulldown compares
+		pulldown_compare_configs = c(
+			pulldown_compare_configs,
+			config_pull_compare)
 
 		# trackDb.txt entry for PePr output
 		trackEntry = c(
@@ -184,18 +203,41 @@ OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num
 		  'priority 1.3',
 		  ' ')
 		cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+
+		# Track the pulldown compares
+		pulldown_compares = c(pulldown_compares, sprintf('pulldown_compare_%s', i))
+		pulldown_clean_tmps = c(pulldown_clean_tmps, sprintf('clean_pulldown_compare_tmp_%s', i))
 	}
 
 	############################################################################
 	# Write the master pulldown_compare rule that will call all created
 	make_rule_master_pull_compare = c(
+		'################################################################################',
+		'# Workflow for pulldown_compare',
+		'',
+		'########################################',
+		'',
 		'.PHONY : pulldown_compare',
 		sprintf('pulldown_compare : pulldown_align %s', paste(pulldown_compares, collapse=' ')),
 		'',
+		pulldown_compare_rules,
+		'',
+		'########################################',
+		'# Rule to delete all temporary files from make pulldown_compare',
 		'.PHONY : clean_pulldown_compare_tmp',
 		sprintf('clean_pulldown_compare_tmp : %s', paste(pulldown_clean_tmps, collapse=' ')),
+		'',
+		'################################################################################',
 		'')
 	cat(make_rule_master_pull_compare, file = file_make, sep='\n', append=T)
+
+	config_master_pull_compare = c(
+		'################################################################################',
+		'# pulldown_compare configuration options',
+		'',
+		pulldown_compare_configs
+	)
+	cat(config_master_pull_compare, file = file_config, sep='\n', append=T)
 
 	#######################################
 	# PBS script

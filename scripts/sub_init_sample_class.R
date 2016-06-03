@@ -51,6 +51,7 @@ $(DIR_PULL_MACS)/%_pulldown_nosignal.txt : $(DIR_PULL_MACS)/%_pulldown_signal.tx
 '
 
 make_var_sample_class_prefix = sprintf('
+
 ################################################################################
 # Workflow for sample_classification
 SAMPLE_CLASS_PREFIXES := %s', paste(unique(samples$humanID), collapse=' '))
@@ -147,7 +148,11 @@ $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt : $(DIR_CLASS_SAMPLE)/%%_sa
 
 .PHONY : clean_sample_classification_tmp
 clean_sample_classification_tmp :
-	rm -f $(SAMPLE_CLASS_CLEAN_TMP)',
+	rm -f $(SAMPLE_CLASS_CLEAN_TMP)
+
+################################################################################
+
+',
 	sample_class_target, class_script, rule1, rule2, sample_class_tmps)
 cat(make_rule_class_sample, file = file_make, sep = '\n', append = TRUE)
 

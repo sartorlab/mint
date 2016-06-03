@@ -16,11 +16,14 @@ OPT_DM_TYPE = DMR
 # FDR significance level
 OPT_MSIG_DM_FDR_THRESHOLD = 0.05
 # Desired absolute value of methylation difference
-OPT_MSIG_DM_DIFF_THRESHOLD = 10'
+OPT_MSIG_DM_DIFF_THRESHOLD = 10
+'
 	cat(config_bis_compare, file = file_config, sep='\n', append=T)
 
 	bisulfite_compares = c()
+	bisulfite_compare_rules = c()
 	bisulfite_clean_tmps = c()
+	bisulfite_compare_configs = c()
 
 	for(i in 1:nrow(bisulfite_comparisons)) {
 		# Establish row variables
@@ -108,62 +111,80 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10'
 
 		# Write the bisulfite_compare variables for this comparison
 		make_vars_bis_compare = c(
-			'################################################################################',
-			'# Workflow for bisulfite_compare',
+			'########################################',
+			sprintf('# Workflow for bisulfite_compare_%s', i),
+			'',
 			sprintf('BISULFITE_COMPARE_%s_PREREQS := %s %s %s', i, msig_results, msig_bigwig, annotatr_rdata),
 			sprintf('BISULFITE_COMPARE_%s_CYTFILES := %s', i, var_cytfiles),
 			sprintf('BISULFITE_COMPARE_%s_SAMPLEIDS := %s', i, var_sampleids),
 			sprintf('BISULFITE_COMPARE_%s_TREATMENT := %s', i, var_treatment),
 			sprintf('BISULFITE_COMPARE_%s_COMPARISON := %s_$(OPT_DM_TYPE)_methylSig', i, var_comparison),
 			sprintf('BISULFITE_COMPARE_%s_CLEAN_TMP := %s %s %s', i, msig_tmp_results, annotatr_bed, var_cytfiles_pre))
-		cat(make_vars_bis_compare, file = file_make, sep='\n', append=T)
 
 		########################################################################
 		# Rules for the makefile
 
 		# Write the bisulfite_compare rule for this comparison
 		make_rule_bis_compare = c(
-			sprintf('.PHONY : bisulfite_compare_%s', i),
-			sprintf('bisulfite_compare_%s : bisulfite_align $(BISULFITE_COMPARE_%s_PREREQS)', i, i),
 			'',
-'# Rule for methylSig input
+			'########################################',
+			sprintf('.PHONY : bisulfite_compare_%s', i),
+			sprintf('bisulfite_compare_%s : $(BISULFITE_COMPARE_%s_PREREQS)', i, i),
+			'',
+'# Rule for methylSig input of bismark CpG report
 .INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz
 	$(PATH_TO_AWK) -f ../../scripts/extractor_to_methylSig.awk <(gunzip -c $<) | sort -T $(DIR_TMP) -k2,2 -k3,3n > $@',
+			'',
+			'# Rule for methylSig',
 			sprintf('%s : %s', msig_results, var_cytfiles_pre),
 			sprintf('	$(PATH_TO_R) ../../scripts/methylSig_run.R --project $(PROJECT) --cytfiles $(BISULFITE_COMPARE_%s_CYTFILES) --sampleids $(BISULFITE_COMPARE_%s_SAMPLEIDS) --treatment $(BISULFITE_COMPARE_%s_TREATMENT) --assembly $(GENOME) --pipeline mint --outprefix $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_METHYLSIG_%s)', i, i, i, i, var_comparison),
 			'',
+			'# Rule for methylSig filtering for annotatr and bigWig',
 			sprintf('.INTERMEDIATE : %s', msig_tmp_results),
 			sprintf('%s : %s', msig_tmp_results, msig_results), # THIS IS CUSTOMIZABLE
 			"	$(PATH_TO_AWK) -v OFS='\\t' -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) 'NR > 1 && $$6 < FDR && sqrt($$7^2) > DIFF { print $$1, $$2, $$3, $$7 }' $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@",
 			'',
+			'# Rule for annotatr input of methylSig filtered results',
 			sprintf('.INTERMEDIATE : %s', annotatr_bed),
 			sprintf('%s : %s', annotatr_bed, msig_results),
 			'	$(PATH_TO_AWK) -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) -f ../../scripts/methylSig_to_annotatr.awk $< > $@',
 			'',
+			'# Rule for annotatr of methylSig filtered results',
 			sprintf('%s : %s', annotatr_rdata, annotatr_bed),
 			'	$(PATH_TO_R) ../../scripts/annotatr_bisulfite.R --file $< --genome $(GENOME)',
 			'',
+			'# Rule for UCSC bigWig of filtered methylSig results',
 			sprintf('%s : %s', msig_bigwig, msig_tmp_results),
 			'	$(PATH_TO_BDG2BW) $^ $(CHROM_PATH) $@',
 			'',
+			'########################################',
+			sprintf('# Rule to delete all temporary files from make bisulfite_compare_%s',i),
 			sprintf('.PHONY : clean_bisulfite_compare_tmp_%s', i),
 			sprintf('clean_bisulfite_compare_tmp_%s :
 				rm -f $(BISULFITE_COMPARE_%s_CLEAN_TMP)', i, i),
 			'')
-		cat(make_rule_bis_compare, file = file_make, sep='\n', append=T)
 
-		# Track the number of bisulfite compares and bisulfite clean tmps
-		bisulfite_compares = c(bisulfite_compares, sprintf('bisulfite_compare_%s', i))
-		bisulfite_clean_tmps = c(bisulfite_clean_tmps, sprintf('clean_bisulfite_compare_tmp_%s', i))
+		# Track all the rules for the bisulfite compares
+		bisulfite_compare_rules = c(
+			bisulfite_compare_rules,
+			make_vars_bis_compare,
+			make_rule_bis_compare)
 
 		########################################################################
 		# OPTS for config.mk
-		config_bis_compare = sprintf('# See ?methylSig::methylSigReadData and ?methylSig::methylSigCalc after installing methylSig in R for parameter information
-OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --dmtype $(OPT_DM_TYPE) --winsize.tile 50 --dispersion both --local.disp FALSE --winsize.disp 200 --local.meth FALSE --winsize.meth 200 --minpergroup 2,2 --T.approx TRUE --ncores 4 --quiet FALSE
+		config_bis_compare = sprintf('########################################
+# bisulfite_compare_%s configuration options
+
+# For methylSig parameters, in R, after installing methylSig do:
+# ?methylSig::methylSigReadData and ?methylSig::methylSigCalc
+OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --dmtype $(OPT_DM_TYPE) --winsize.tile 50 --dispersion both --local.disp FALSE --winsize.disp 200 --local.meth FALSE --winsize.meth 200 --minpergroup 2,2 --T.approx TRUE --ncores 1 --quiet FALSE
 ',
-			var_comparison)
-		cat(config_bis_compare, file = file_config, sep='\n', append=T)
+			i, var_comparison)
+
+		bisulfite_compare_configs = c(
+			bisulfite_compare_configs,
+			config_bis_compare)
 
 		# trackDb.txt entry for methylSig result
 		trackEntry = c(
@@ -180,18 +201,39 @@ OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount
 		  'priority 1.2',
 		  ' ')
 		cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+
+		# Track the number of bisulfite compares and bisulfite clean tmps
+		bisulfite_compares = c(bisulfite_compares, sprintf('bisulfite_compare_%s', i))
+		bisulfite_clean_tmps = c(bisulfite_clean_tmps, sprintf('clean_bisulfite_compare_tmp_%s', i))
 	}
 
 	############################################################################
 	# Write the master bisulfite_compare rule that will call all created
 	make_rule_master_bis_compare = c(
+		'################################################################################',
+		'# Workflow for bisulfite_compare',
+		'',
+		'########################################',
+		'',
 		'.PHONY : bisulfite_compare',
 		sprintf('bisulfite_compare : bisulfite_align %s', paste(bisulfite_compares, collapse=' ')),
 		'',
+		bisulfite_compare_rules,
+		'',
+		'########################################',
+		'# Rule to delete all temporary files from make bisulfite_sample',
 		'.PHONY : clean_bisulfite_compare_tmp',
 		sprintf('clean_bisulfite_compare_tmp : %s', paste(bisulfite_clean_tmps, collapse=' ')),
+		'',
+		'################################################################################',
+		'',
 		'')
 	cat(make_rule_master_bis_compare, file = file_make, sep='\n', append=T)
+
+	config_master_bis_compare = c(
+		bisulfite_compare_configs
+	)
+	cat(config_master_bis_compare, file = file_config, sep='\n', append=T)
 
 	#######################################
 	# PBS script

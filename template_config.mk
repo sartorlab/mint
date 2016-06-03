@@ -26,5 +26,3 @@ PATH_TO_BEDOPS := $(shell which bedops)
 PATH_TO_AWK := $(shell which awk)
 PATH_TO_BDG2BW := $(shell which bedGraphToBigWig)
 PATH_TO_BDG2BB := $(shell which bedToBigBed)
-
-################################################################################
