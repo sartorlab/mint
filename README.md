@@ -61,15 +61,21 @@ The `mint` pipeline is dependent on several software packages to carry out its a
 * [`bedops` v2.4.14](https://github.com/bedops/bedops/releases/tag/v2.4.14)
 * [`bismark` v0.16.1](https://github.com/FelixKrueger/Bismark/releases/tag/0.16.1)
 * [`bowtie2` v2.2.4](https://github.com/BenLangmead/bowtie2/releases/tag/v2.2.4)
+* [`cutadapt` v1.9.1](https://pypi.python.org/pypi/cutadapt/1.9.1)
+* [`FastQC` v0.11.5](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5_source.zip)
 * [`macs2` v2.1.0.20140616](https://pypi.python.org/pypi/MACS2/2.1.0.20140616)
+* [`multiqc` v0.6.0](https://github.com/ewels/MultiQC/releases/tag/v0.6)
 * [`PePr` v1.1.9](https://github.com/shawnzhangyx/PePr/releases/tag/1.1.9)
 * [`R` >= v3.2.5](https://cran.r-project.org)
 	* [`annotatr` v0.7.3](https://github.com/rcavalcante/annotatr/releases/tag/v0.7.3)
+	* `devtools`
+	* `dplyr`
+	* `ggplot2`
 	* [`methylSig` v0.4.3](https://github.com/sartorlab/methylSig/releases/tag/v0.4.3)
+	* `optparse`
+	* `readr`
 * [`samtools` v0.1.19](https://github.com/samtools/samtools/releases/tag/0.1.19)
 * [`trim_galore` v0.4.1](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_v0.4.1.zip)
-* [`cutadapt` v1.9.1](https://pypi.python.org/pypi/cutadapt/1.9.1)
-* [`FastQC` v0.11.5](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5_source.zip)
 
 The following `R` code will install the necessary packages:
 
