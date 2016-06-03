@@ -80,7 +80,7 @@ $(DIR_PULL_COVERAGES)/%_coverage_merged.bdg : $(DIR_PULL_COVERAGES)/%_coverage.b
 .PHONY : pulldown_multiqc
 pulldown_multiqc : $(DIR_MULTIQC)/pulldown/multiqc_report.html
 
-$(DIR_MULTIQC)/pulldown/multiqc_report.html : pulldown_raw_fastqc pulldown_trim pulldown_trim_fastqc
+$(DIR_MULTIQC)/pulldown/multiqc_report.html : 
 	multiqc ./pulldown --outdir $(@D)
 
 ################################################################################
