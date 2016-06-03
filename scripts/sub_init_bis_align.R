@@ -112,6 +112,14 @@ $(DIR_TRACK)/%_bisulfite_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulf
 	$(PATH_TO_BDG2BB) $< $(CHROM_PATH) $@
 
 ########################################
+# Rule to do multiqc on the bisulfite_align results
+.PHONY : bisulfite_multiqc
+bisulfite_multiqc : $(DIR_MULTIQC)/bisulfite/multiqc_report.html
+
+$(DIR_MULTIQC)/bisulfite/multiqc_report.html : bisulfite_raw_fastqc bisulfite_trim bisulfite_trim_fastqc bisulfite_bismark
+	multiqc ./bisulfite --outdir $(@D)
+
+########################################
 # Rule to delete all temporary files from make bis_align
 .PHONY : clean_bisulfite_align_tmp
 clean_bisulfite_align_tmp :

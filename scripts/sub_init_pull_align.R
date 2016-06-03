@@ -73,6 +73,14 @@ $(DIR_TRACK)/%_coverage.bw : $(DIR_PULL_COVERAGES)/%_coverage.bdg
 $(DIR_PULL_COVERAGES)/%_coverage_merged.bdg : $(DIR_PULL_COVERAGES)/%_coverage.bdg
 	$(PATH_TO_BEDTOOLS) merge -d 20 -i $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 
+########################################
+# Rule to do multiqc on the pulldown_align results
+.PHONY : pulldown_multiqc
+pulldown_multiqc : $(DIR_MULTIQC)/pulldown/multiqc_report.html
+
+$(DIR_MULTIQC)/pulldown/multiqc_report.html : pulldown_raw_fastqc pulldown_trim pulldown_trim_fastqc
+	multiqc ./pulldown --outdir $(@D)
+
 ################################################################################
 '
 
