@@ -18,24 +18,29 @@ make_var_bis_align_clean_tmp = 'BISFULITE_ALIGN_CLEAN_TMP := $(patsubst %,$(DIR_
 make_rule_bis_align = '########################################
 
 .PHONY : bisulfite_align
-bisulfite_align : 	bisulfite_raw_fastqc \\
-					bisulfite_trim \\
-					bisulfite_trim_fastqc \\
-					bisulfite_bismark \\
-					bisulfite_extractor \\
-					bisulfite_simple_classification \\
-					bisulfite_multiqc
+bisulfite_align : 	$(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_RDATA)/%_bismark_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES))\\
+					$(patsubst %,$(DIR_TRACK)/%_trimmed_bismark_bt2.bw,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_RDATA)/%_bisulfite_simple_class_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_TRACK)/%_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(DIR_MULTIQC)/bisulfite/multiqc_report.html
 
 ########################################
 .PHONY : bisulfite_raw_fastqc
-bisulfite_raw_fastqc : $(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES))
+bisulfite_raw_fastqc : $(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip
 
 $(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip :
 	$(PATH_TO_FASTQC) --format fastq --noextract --outdir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
 
 ########################################
 .PHONY : bisulfite_trim
-bisulfite_trim : $(patsubst %,$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE_ALIGN_PREFIXES))
+bisulfite_trim : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz
 
 # Rule for trim_galore
 $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz :
@@ -43,7 +48,7 @@ $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz :
 
 ########################################
 .PHONY : bisulfite_trim_fastqc
-bisulfite_trim_fastqc : $(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES))
+bisulfite_trim_fastqc : $(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip
 
 # Rule for FastQC on trimmed
 $(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz
@@ -51,7 +56,7 @@ $(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.
 
 ########################################
 .PHONY : bisulfite_bismark
-bisulfite_bismark : $(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam,$(BISULFITE_ALIGN_PREFIXES))
+bisulfite_bismark : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam
 
 # Rule for bismark alignment
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz
@@ -61,10 +66,8 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.
 
 ########################################
 .PHONY : bisulfite_extractor
-bisulfite_extractor : 	$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
-						$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
-						$(patsubst %,$(DIR_RDATA)/%_bismark_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES))\\
-						$(patsubst %,$(DIR_TRACK)/%_trimmed_bismark_bt2.bw,$(BISULFITE_ALIGN_PREFIXES))
+bisulfite_extractor : 	$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz \\
+						$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz
 
 # Rule for bismark methylation extractor
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam
@@ -91,9 +94,9 @@ $(DIR_TRACK)/%_trimmed_bismark_bt2.bw : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2
 
 ########################################
 .PHONY : bisulfite_simple_classification
-bisulfite_simple_classification : 	$(patsubst %,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
-									$(patsubst %,$(DIR_RDATA)/%_bisulfite_simple_class_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
-									$(patsubst %,$(DIR_TRACK)/%_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES))
+bisulfite_simple_classification : 	$(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed \\
+									$(DIR_RDATA)/%_bisulfite_simple_class_annotatr_analysis.RData \\
+									$(DIR_TRACK)/%_bisulfite_simple_classification.bb
 
 # Simple classification for percent methylation
 $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.bedGraph.gz

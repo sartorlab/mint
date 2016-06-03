@@ -14,16 +14,17 @@ make_rule_pull_align = '
 ########################################
 
 .PHONY : pulldown_align
-pulldown_align :	pulldown_raw_fastqc \\
-					pulldown_trim \\
-					pulldown_trim_fastqc \\
-					pulldown_bowtie2 \\
-					pulldown_coverage \\
-					pulldown_multiqc
+pulldown_align :	$(patsubst %,$(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz,$(PULLDOWN_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam,$(PULLDOWN_ALIGN_PREFIXES))
+					$(patsubst %,$(DIR_PULL_COVERAGES)/%_coverage_merged.bdg,$(PULLDOWN_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_TRACK)/%_coverage.bw,$(PULLDOWN_ALIGN_PREFIXES))
+					$(DIR_MULTIQC)/pulldown/multiqc_report.html
 
 ########################################
 .PHONY : pulldown_raw_fastqc
-pulldown_raw_fastqc : $(patsubst %,$(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES))
+pulldown_raw_fastqc : $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip
 
 # Rule for FastQC on raw
 $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip :
@@ -31,7 +32,7 @@ $(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip :
 
 ########################################
 .PHONY : pulldown_trim
-pulldown_trim : $(patsubst %,$(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz,$(PULLDOWN_ALIGN_PREFIXES))
+pulldown_trim : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz
 
 # Rule for trim_galore
 $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz :
@@ -39,7 +40,7 @@ $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz :
 
 ########################################
 .PHONY : pulldown_trim_fastqc
-pulldown_trim_fastqc : $(patsubst %,$(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES))
+pulldown_trim_fastqc : $(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip
 
 # Rule for FastQC on trimmed
 $(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz
@@ -47,7 +48,7 @@ $(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip : $(DIR_PULL_TRIM_FASTQS)/%_trimme
 
 ########################################
 .PHONY : pulldown_bowtie2
-pulldown_bowtie2 : $(patsubst %,$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam,$(PULLDOWN_ALIGN_PREFIXES))
+pulldown_bowtie2 : $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam
 
 # Rule for bowtie2 alignment
 $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip
@@ -57,8 +58,7 @@ $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULL_TRIM_FASTQS)/%_trim
 
 ########################################
 .PHONY : pulldown_coverage
-pulldown_coverage : $(patsubst %,$(DIR_PULL_COVERAGES)/%_coverage_merged.bdg,$(PULLDOWN_ALIGN_PREFIXES)) \\
-					$(patsubst %,$(DIR_TRACK)/%_coverage.bw,$(PULLDOWN_ALIGN_PREFIXES))
+pulldown_coverage : $(DIR_TRACK)/%_coverage.bw $(DIR_PULL_COVERAGES)/%_coverage_merged.bdg
 
 # Rule for coverage bedGraph
 .INTERMEDIATE : $(DIR_PULL_COVERAGES)/%_coverage.bdg
