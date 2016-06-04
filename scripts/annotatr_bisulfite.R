@@ -168,6 +168,11 @@ ggplot2::ggsave(filename = counts_png, plot = plot_counts, width = 8, height = 8
 # ggplot2::ggsave(filename = cocounts_png, plot = plot_cocounts, width = 8, height = 8)
 
 if(suffix == 'bismark') {
+	# NOTE: Will receive a warning like:
+	# Warning messages:
+	# 1: Removed 578 rows containing non-finite values (stat_bin).
+	# 2: Removed 6936 rows containing non-finite values (stat_bin).
+	# When there are coverages exceeding the x limits
 	coverage_png = sprintf('summary/figures/%s_%s_coverage.png', sample, suffix)
 	plot_coverage = plot_numerical(
 		tbl = ar,
