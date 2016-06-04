@@ -53,7 +53,7 @@ $(DIR_PULL_MACS)/%_pulldown_macs2_peaks_for_annotatr.txt : $(DIR_PULL_MACS)/%_pu
 
 # Rule for annotatr of macs2 narrowPeak
 $(DIR_RDATA)/%_pulldown_macs2_peaks_annotatr_analysis.RData : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks_for_annotatr.txt
-	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
+	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME) --group1 NULL --group2 NULL
 
 # Rule to cap macs2 narrowPeaks at 1000 for bigBed
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
@@ -81,7 +81,7 @@ $(DIR_CLASS_SIMPLE)/%_pulldown_simple_class_for_annotatr.txt : $(DIR_CLASS_SIMPL
 
 # Rule for annotatr of simple classification
 $(DIR_RDATA)/%_pulldown_simple_class_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_pulldown_simple_class_for_annotatr.txt
-	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
+	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME) --group1 NULL --group2 NULL
 
 # Rule for UCSC bigBed track of simple classifiation
 $(DIR_TRACK)/%_pulldown_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_pulldown_simple_classification.bed

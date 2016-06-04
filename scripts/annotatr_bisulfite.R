@@ -5,12 +5,23 @@ library(optparse)
 
 option_list = list(
   make_option('--file', type='character'),
-  make_option('--genome', type='character')
+  make_option('--genome', type='character'),
+  make_option('--group1', type='character'),
+  make_option('--group0', type='character')
 )
 opt = parse_args(OptionParser(option_list=option_list))
 
 file = opt$file
 genome = opt$genome
+
+# If the group names are not NULL, use them
+if(!is.null(opt$group1)) {
+	group1 = opt$group1
+}
+if(!is.null(opt$group0)) {
+	group0 = opt$group0
+}
+
 if(grepl('_trimmed_bismark_bt2.CpG_report_for_annotatr.txt', file)) {
 	sample = gsub('_trimmed_bismark_bt2.CpG_report_for_annotatr.txt','', basename(file))
 	suffix = 'bismark'
@@ -106,7 +117,7 @@ if(genome %in% c('hg19','hg38','mm9','mm10')) {
 	}
 }
 
-cats_order = c('hyper','hypo','noDM')
+cats_order = c(group1,group0,'noDM')
 
 ###############################################################
 # Annotate regions
@@ -190,7 +201,7 @@ if(suffix == 'methylSig') {
 		facet_order = a_all_order,
 		bin_width = 5,
 		plot_title = sprintf('%s methylation difference over annotations', sample),
-		x_label = 'Methylation Difference (Group1 - Group0)')
+		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0))
 	ggplot2::ggsave(filename = methdiff_png, plot = plot_methdiff, width = 8, height = 8)
 
 	volcano_png = sprintf('summary/figures/%s_%s_volcano.png', sample, suffix)
@@ -201,7 +212,7 @@ if(suffix == 'methylSig') {
 		facet = 'annot_type',
 		facet_order = a_all_order,
 		plot_title = sprintf('%s meth. diff. vs -log10(pval)', sample),
-		x_label = 'Methylation Difference (Group1 - Group0)',
+		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
 		y_label = '-log10(pvalue)')
 	ggplot2::ggsave(filename = volcano_png, plot = plot_volcano, width = 8, height = 8)
 

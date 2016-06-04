@@ -130,7 +130,7 @@ $(DIR_TRACK)/%%_sample_classification.bb : $(DIR_CLASS_SAMPLE)/%%_sample_classif
 
 # Rule for annotatr of sample classification
 $(DIR_RDATA)/%%_sample_class_annotatr_analysis.RData : $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt
-	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
+	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME) --group1 NULL --group2 NULL
 
 .INTERMEDIATE : $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt
 $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt : $(DIR_CLASS_SAMPLE)/%%_sample_classification.bed

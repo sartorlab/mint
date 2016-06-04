@@ -83,7 +83,7 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt : $(DIR_BIS
 
 # Rule for annotatr of extractor results
 $(DIR_RDATA)/%_trimmed_bismark_annotatr_analysis.RData : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt
-	$(PATH_TO_R) ../../scripts/annotatr_bisulfite.R --file $< --genome $(GENOME)
+	$(PATH_TO_R) ../../scripts/annotatr_bisulfite.R --file $< --genome $(GENOME) --group1 NULL --group0 NULL
 
 # Rule for temporary unzipping of extractor bedGraph
 .INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph
@@ -111,7 +111,7 @@ $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt : $(DIR_CLASS_SIMP
 
 # Rule for annotatr of simple classification
 $(DIR_RDATA)/%_bisulfite_simple_class_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt
-	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
+	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME) --group1 NULL --group2 NULL
 
 # Rule for UCSC bigBed track of simple classifiation
 $(DIR_TRACK)/%_bisulfite_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed

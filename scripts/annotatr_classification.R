@@ -6,12 +6,22 @@ library(GenomicRanges)
 
 option_list = list(
   make_option('--file', type='character'),
-  make_option('--genome', type='character')
+  make_option('--genome', type='character'),
+  make_option('--group1', type='character'),
+  make_option('--group2', type='character')
 )
 opt = parse_args(OptionParser(option_list=option_list))
 
 file = opt$file
 genome = opt$genome
+
+# If the group names are not NULL, use them
+if(!is.null(opt$group1)) {
+	chip1 = opt$group1
+}
+if(!is.null(opt$group2)) {
+	chip2 = opt$group2
+}
 
 prefix = gsub('_for_annotatr.txt','', basename(file))
 if(grepl('simple', prefix)) {
@@ -166,8 +176,8 @@ if(class_type == 'simple') {
 		'no_DM')
 } else if (class_type == 'PePr') {
 	cats_order = c(
-		'chip1',
-		'chip2')
+		chip1,
+		chip2)
 }
 
 ###############################################################
@@ -309,11 +319,11 @@ if(class_type == 'PePr') {
 		tbl = r_tbl,
 		x = 'fold',
 		facet = 'name',
-		facet_order = c('chip1','chip2'),
+		facet_order = cats_order,
 		bin_width = 5,
 		plot_title = sprintf('%s fold change over annotations', prefix),
 		x_label = 'Fold Change')
-	ggplot2::ggsave(filename = foldchg_png, plot = plot_foldchg, width = 8, height = 8)
+	ggplot2::ggsave(filename = foldchg_png, plot = plot_foldchg, width = 12, height = 6)
 
 	volcano_png = sprintf('summary/figures/%s_volcano_overall.png', prefix)
 	plot_volcano = plot_numerical(
@@ -321,59 +331,59 @@ if(class_type == 'PePr') {
 		x = 'fold',
 		y = 'pvalue',
 		facet = 'name',
-		facet_order = c('chip1','chip2'),
+		facet_order = cats_order,
 		plot_title = sprintf('%s fold change vs -log10(pval)', prefix),
 		x_label = 'Fold change',
 		y_label = '-log10(pval)')
-	ggplot2::ggsave(filename = volcano_png, plot = plot_volcano, width = 8, height = 8)
+	ggplot2::ggsave(filename = volcano_png, plot = plot_volcano, width = 12, height = 6)
 
 	###############################################################
 	# Fold change and volcano in chip1 with facet over annots
-	foldchg_png = sprintf('summary/figures/%s_foldchg_chip1_annots.png', prefix)
+	foldchg_png = sprintf('summary/figures/%s_foldchg_%s_annots.png', prefix, chip1)
 	plot_foldchg = plot_numerical(
-		tbl = subset(ar, name == 'chip1'),
+		tbl = subset(ar, name == chip1),
 		x = 'fold',
 		facet = 'annot_type',
 		facet_order = a_all_order,
 		bin_width = 5,
-		plot_title = sprintf('%s chip1 fold change over annotations', prefix),
-		x_label = 'chip1 fold Change')
+		plot_title = sprintf('%s %s fold change over annotations', prefix, chip1),
+		x_label = sprintf('%s fold change', chip1))
 	ggplot2::ggsave(filename = foldchg_png, plot = plot_foldchg, width = 8, height = 8)
 
-	volcano_png = sprintf('summary/figures/%s_volcano_chip1_annots.png', prefix)
+	volcano_png = sprintf('summary/figures/%s_volcano_%s_annots.png', prefix, chip1)
 	plot_volcano = plot_numerical(
-		tbl = subset(ar, name == 'chip1'),
+		tbl = subset(ar, name == chip1),
 		x = 'fold',
 		y = 'pvalue',
 		facet = 'annot_type',
 		facet_order = a_all_order,
-		plot_title = sprintf('%s chip1 fold change vs -log10(pval)', prefix),
-		x_label = 'chip1 fold change',
+		plot_title = sprintf('%s %s fold change vs -log10(pval)', prefix, chip1),
+		x_label = sprintf('%s fold change', chip1),
 		y_label = '-log10(pval)')
 	ggplot2::ggsave(filename = volcano_png, plot = plot_volcano, width = 8, height = 8)
 
 	###############################################################
 	# Fold change and volcano in chip2 with facet over annots
-	foldchg_png = sprintf('summary/figures/%s_foldchg_chip2_annots.png', prefix)
+	foldchg_png = sprintf('summary/figures/%s_foldchg_%s_annots.png', prefix, chip2)
 	plot_foldchg = plot_numerical(
-		tbl = subset(ar, name == 'chip2'),
+		tbl = subset(ar, name == chip2),
 		x = 'fold',
 		facet = 'annot_type',
 		facet_order = a_all_order,
 		bin_width = 5,
-		plot_title = sprintf('%s chip2 fold change over annotations', prefix),
-		x_label = 'Fold Change')
+		plot_title = sprintf('%s %s fold change over annotations', prefix, chip2),
+		x_label = sprintf('%s fold change', chip2))
 	ggplot2::ggsave(filename = foldchg_png, plot = plot_foldchg, width = 8, height = 8)
 
-	volcano_png = sprintf('summary/figures/%s_volcano_chip2_annots.png', prefix)
+	volcano_png = sprintf('summary/figures/%s_volcano_%s_annots.png', prefix, chip2)
 	plot_volcano = plot_numerical(
-		tbl = subset(ar, name == 'chip2'),
+		tbl = subset(ar, name == chip2),
 		x = 'fold',
 		y = 'pvalue',
 		facet = 'annot_type',
 		facet_order = a_all_order,
-		plot_title = sprintf('%s chip2 fold change vs -log10(pval)', prefix),
-		x_label = 'chip2 fold change',
+		plot_title = sprintf('%s %s fold change vs -log10(pval)', prefix, chip2),
+		x_label = sprintf('%s fold change', chip2),
 		y_label = '-log10(pval)')
 	ggplot2::ggsave(filename = volcano_png, plot = plot_volcano, width = 8, height = 8)
 }

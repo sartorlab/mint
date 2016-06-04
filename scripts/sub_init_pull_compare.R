@@ -143,17 +143,17 @@ if(bool_pull_comp) {
 			'# NOTE: This script ensures chip1 and chip2 peaks do not overlap',
 			'# and then combines the peaks and keeps track of their source',
 			sprintf('%s : %s %s', combined_bed, chip1_bed, chip2_bed),
-			'	bash ../../scripts/pepr_combine.sh $(word 1,$^) $(word 2,$^) $@',
+			sprintf('	bash ../../scripts/pepr_combine.sh $(word 1,$^) $(word 2,$^) $@ $(CHIP1_NAME_%s) $(CHIP2_NAME_%s)', i, i),
 			'',
 			'# Rule for annotatr input of PePr peaks',
 			'# NOTE: Using fold change ($7) and p-value ($8)',
 			sprintf('.INTERMEDIATE : %s', annotatr_bed),
 			sprintf('%s : %s %s', annotatr_bed, chip1_bed, chip2_bed),
-			'	cat <(awk -v OFS="\\t" \'{print $$1, $$2, $$3, "chip1", $$7, "*", $$8}\' $(word 1,$^)) <(awk -v OFS="\\t" \'{print $$1, $$2, $$3, "chip2", $$7, "*", $$8}\' $(word 2,$^)) > $@',
+			sprintf('	cat <(awk -v OFS="\\t" -v CHIP1=$(CHIP1_NAME_%s) \'{print $$1, $$2, $$3, CHIP1, $$7, "*", $$8}\' $(word 1,$^)) <(awk -v OFS="\\t" -v CHIP2=$(CHIP2_NAME_%s) \'{print $$1, $$2, $$3, CHIP2, $$7, "*", $$8}\' $(word 2,$^)) > $@', i, i),
 			'',
 			'# Rule for annotatr of PePr peaks',
 			sprintf('%s : %s', annotatr_rdata, annotatr_bed),
-			'	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)',
+			sprintf('	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME) --group1 $(CHIP1_NAME_%s) --group2 $(CHIP2_NAME_%s)', i, i),
 			'',
 			'# Rule to merge input signals from the two groups',
 			sprintf('%s : %s %s', input_signal, var_merged_input1_pre, var_merged_input2_pre),
@@ -180,10 +180,17 @@ if(bool_pull_comp) {
 		config_pull_compare = sprintf('########################################
 # pulldown_compare_%s configuration options
 
+# Informative names for chip1 and chip2 groups
+# CHIP1_NAME should be for the group with higher group number in the project annotation
+# file and CHIP2_NAME should be for the group with the lower group number
+# If unsure, check the "workflow for pulldown_compare_%s" section of the makefile
+CHIP1_NAME_%s := chip1
+CHIP2_NAME_%s := chip2
+
 # For PePr parameters see https://ones.ccmb.med.umich.edu/wiki/PePr/
 OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=1
 ',
-			i, var_name)
+			i, i, i, i, var_name)
 
 		# Track all the configs for the pulldown compares
 		pulldown_compare_configs = c(

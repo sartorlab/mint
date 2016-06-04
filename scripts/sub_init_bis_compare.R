@@ -148,11 +148,11 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BI
 			'# Rule for annotatr input of methylSig filtered results',
 			sprintf('.INTERMEDIATE : %s', annotatr_bed),
 			sprintf('%s : %s', annotatr_bed, msig_results),
-			'	$(PATH_TO_AWK) -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) -f ../../scripts/methylSig_to_annotatr.awk $< > $@',
+			sprintf('	$(PATH_TO_AWK) -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) -v GROUP1=$(GROUP1_NAME_%s) -v GROUP0=$(GROUP0_NAME_%s) -f ../../scripts/methylSig_to_annotatr.awk $< > $@', i, i),
 			'',
 			'# Rule for annotatr of methylSig filtered results',
 			sprintf('%s : %s', annotatr_rdata, annotatr_bed),
-			'	$(PATH_TO_R) ../../scripts/annotatr_bisulfite.R --file $< --genome $(GENOME)',
+			sprintf('	$(PATH_TO_R) ../../scripts/annotatr_bisulfite.R --file $< --genome $(GENOME) --group1 $(GROUP1_NAME_%s) --group0 $(GROUP0_NAME_%s)', i, i),
 			'',
 			'# Rule for UCSC bigWig of filtered methylSig results',
 			sprintf('%s : %s', msig_bigwig, msig_tmp_results),
@@ -176,11 +176,18 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BI
 		config_bis_compare = sprintf('########################################
 # bisulfite_compare_%s configuration options
 
+# Informative names for group1 and group0
+# GROUP1_NAME should be the group with higher group number in the project annotation
+# file and GROUP0_NAME should be the group with the lower group number
+# If unsure, check the "workflow for bisulfite_compare_%s" section of the makefile
+GROUP1_NAME_%s := group1
+GROUP0_NAME_%s := group0
+
 # For methylSig parameters, in R, after installing methylSig do:
 # ?methylSig::methylSigReadData and ?methylSig::methylSigCalc
 OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --dmtype $(OPT_DM_TYPE) --winsize.tile 50 --dispersion both --local.disp FALSE --winsize.disp 200 --local.meth FALSE --winsize.meth 200 --minpergroup 2,2 --T.approx TRUE --ncores 1 --quiet FALSE
 ',
-			i, var_comparison)
+			i, i, i, i, var_comparison)
 
 		bisulfite_compare_configs = c(
 			bisulfite_compare_configs,
