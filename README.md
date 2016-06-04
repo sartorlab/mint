@@ -65,7 +65,7 @@ The `mint` pipeline is dependent on several software packages to carry out its a
 * [`FastQC` v0.11.5](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5_source.zip)
 * [`macs2` v2.1.0.20140616](https://pypi.python.org/pypi/MACS2/2.1.0.20140616)
 * [`multiqc` v0.6.0](https://github.com/ewels/MultiQC/releases/tag/v0.6)
-* [`PePr` v1.1.9](https://github.com/shawnzhangyx/PePr/releases/tag/1.1.9)
+* [`PePr` v1.1.10](https://github.com/shawnzhangyx/PePr/releases/tag/1.1.10)
 * [`R` >= v3.2.5](https://cran.r-project.org)
 	* [`annotatr` v0.7.3](https://github.com/rcavalcante/annotatr/releases/tag/v0.7.3)
 	* `devtools`
