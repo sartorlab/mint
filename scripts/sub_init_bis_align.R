@@ -122,7 +122,9 @@ $(DIR_TRACK)/%_bisulfite_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulf
 .PHONY : bisulfite_multiqc
 bisulfite_multiqc : $(DIR_MULTIQC)/bisulfite/multiqc_report.html
 
-$(DIR_MULTIQC)/bisulfite/multiqc_report.html : bisulfite_raw_fastqc bisulfite_trim bisulfite_trim_fastqc bisulfite_bismark
+$(DIR_MULTIQC)/bisulfite/multiqc_report.html : 	$(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
+												$(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
+												$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES))
 	multiqc ./bisulfite --outdir $(@D)
 
 ########################################
