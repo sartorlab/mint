@@ -6,6 +6,8 @@ set -o pipefail
 peprChip1=$1
 peprChip2=$2
 peprCombined=$3
+chip1Name=$4
+chip2Name=$5
 
 upPrefix=`basename ${peprChip1} __PePr_chip1_peaks.bed`
 downPrefix=`basename ${peprChip2} __PePr_chip2_peaks.bed`
@@ -26,8 +28,8 @@ bedops --difference \
 > $disChip2
 
 cat \
-  <(awk -v OFS="\t" '{ print $1, $2, $3, "chip1", "1000", ".", $2, $3, "0,0,255" }' ${disChip1}) \
-  <(awk -v OFS="\t" '{ print $1, $2, $3, "chip2", "1000", ".", $2, $3, "102,102,255" }' ${disChip2}) \
+  <(awk -v OFS="\t" -v CHIP1=${chip1Name} '{ print $1, $2, $3, CHIP1, "1000", ".", $2, $3, "0,0,255" }' ${disChip1}) \
+  <(awk -v OFS="\t" -v CHIP2=${chip2Name} '{ print $1, $2, $3, CHIP2, "1000", ".", $2, $3, "102,102,255" }' ${disChip2}) \
 | sort -T . -k1,1 -k2,2n > ${peprCombined}
 
 # Clean up

@@ -18,25 +18,25 @@ make_rule_sample_class_pull_module = '
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_peak.txt
 $(DIR_PULL_MACS)/%_pulldown_peak.txt : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
 	$(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
-	| sort -T . -k1,1 -k2,2n \\
+	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nopeak_signal.txt
 $(DIR_PULL_MACS)/%_pulldown_nopeak_signal.txt : $(DIR_PULL_MACS)/%_pulldown_nopeak.txt $(DIR_PULL_MACS)/%_pulldown_signal.txt
 	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) \\
-	| sort -T . -k1,1 -k2,2n \\
+	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nopeak_nosignal.txt
 $(DIR_PULL_MACS)/%_pulldown_nopeak_nosignal.txt : $(DIR_PULL_MACS)/%_pulldown_nopeak.txt $(DIR_PULL_MACS)/%_pulldown_nosignal.txt
 	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) \\
-	| sort -T . -k1,1 -k2,2n \\
+	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nopeak.txt
 $(DIR_PULL_MACS)/%_pulldown_nopeak.txt : $(DIR_PULL_MACS)/%_pulldown_peak.txt
-	$(PATH_TO_BEDTOOLS) complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
-	| sort -T . -k1,1 -k2,2n \\
+	$(PATH_TO_BEDTOOLS) complement -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) -i $< \\
+	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_signal.txt
@@ -45,12 +45,13 @@ $(DIR_PULL_MACS)/%_pulldown_signal.txt : $(DIR_PULL_COVERAGES)/%_input_pulldown_
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nosignal.txt
 $(DIR_PULL_MACS)/%_pulldown_nosignal.txt : $(DIR_PULL_MACS)/%_pulldown_signal.txt
-	$(PATH_TO_BEDTOOLS) complement -g <(sort -T . -k1,1 $(CHROM_PATH)) -i $< \\
-	| sort -T . -k1,1 -k2,2n \\
+	$(PATH_TO_BEDTOOLS) complement -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) -i $< \\
+	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
 	> $@
 '
 
 make_var_sample_class_prefix = sprintf('
+
 ################################################################################
 # Workflow for sample_classification
 SAMPLE_CLASS_PREFIXES := %s', paste(unique(samples$humanID), collapse=' '))
@@ -129,7 +130,7 @@ $(DIR_TRACK)/%%_sample_classification.bb : $(DIR_CLASS_SAMPLE)/%%_sample_classif
 
 # Rule for annotatr of sample classification
 $(DIR_RDATA)/%%_sample_class_annotatr_analysis.RData : $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt
-	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME)
+	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME) --group1 NULL --group2 NULL
 
 .INTERMEDIATE : $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt
 $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt : $(DIR_CLASS_SAMPLE)/%%_sample_classification.bed
@@ -147,28 +148,32 @@ $(DIR_CLASS_SAMPLE)/%%_sample_class_for_annotatr.txt : $(DIR_CLASS_SAMPLE)/%%_sa
 
 .PHONY : clean_sample_classification_tmp
 clean_sample_classification_tmp :
-	rm -f $(SAMPLE_CLASS_CLEAN_TMP)',
+	rm -f $(SAMPLE_CLASS_CLEAN_TMP)
+
+################################################################################
+
+',
 	sample_class_target, class_script, rule1, rule2, sample_class_tmps)
 cat(make_rule_class_sample, file = file_make, sep = '\n', append = TRUE)
 
 #######################################
 # PBS script
-pulldown_sample_q = c(
-	'#!/bin/bash',
-	'#### Begin PBS preamble',
-	'#PBS -N class_sample',
-	'#PBS -l nodes=1:ppn=4,walltime=24:00:00,pmem=16gb',
-	'#PBS -A sartor_lab',
-	'#PBS -q first',
-	'#PBS -M rcavalca@umich.edu',
-	'#PBS -m abe',
-	'#PBS -j oe',
-	'#PBS -V',
-	'#### End PBS preamble',
-	'# Put your job commands after this line',
-	sprintf('cd ~/latte/mint/projects/%s/',project),
-	'make -j 4 sample_classification')
-cat(pulldown_sample_q, file=sprintf('projects/%s/pbs_jobs/classify_sample.q', project), sep='\n')
+# pulldown_sample_q = c(
+# 	'#!/bin/bash',
+# 	'#### Begin PBS preamble',
+# 	'#PBS -N class_sample',
+# 	'#PBS -l nodes=1:ppn=4,walltime=24:00:00,pmem=16gb',
+# 	'#PBS -A sartor_lab',
+# 	'#PBS -q first',
+# 	'#PBS -M rcavalca@umich.edu',
+# 	'#PBS -m abe',
+# 	'#PBS -j oe',
+# 	'#PBS -V',
+# 	'#### End PBS preamble',
+# 	'# Put your job commands after this line',
+# 	sprintf('cd ~/latte/mint/projects/%s/',project),
+# 	'make -j 4 sample_classification')
+# cat(pulldown_sample_q, file=sprintf('projects/%s/pbs_jobs/classify_sample.q', project), sep='\n')
 
 for(sample in unique(samples$humanID)) {
 	# trackDb.txt entry for sample classification

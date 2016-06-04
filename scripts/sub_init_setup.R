@@ -1,7 +1,7 @@
 # Configuration header
 config_header = sprintf('# Configuration for mint pipeline analyses
 
-# This makefile was generated using mint v0.1.1
+# This makefile was generated using mint v0.1.2
 
 ################################################################################
 # Project and experimental information
@@ -18,11 +18,13 @@ cat(config_header, file = 'config_header.mk', sep='\n')
 # Always create these folders
 setup_commands = c(
 	sprintf('mkdir projects/%s', project),
+	sprintf('mkdir projects/%s/tmp', project),
 	sprintf('mkdir projects/%s/pbs_jobs', project),
 	sprintf('mkdir projects/%s/data', project),
 	sprintf('mkdir projects/%s/data/raw_fastqs', project),
 	sprintf('mkdir projects/%s/summary', project),
 	sprintf('mkdir projects/%s/summary/{figures,tables,reports}', project),
+	sprintf('mkdir projects/%s/summary/reports/multiqc', project),
 	sprintf('mkdir projects/%s/%s_hub', project, project),
 	sprintf('mkdir projects/%s/%s_hub/%s', project, project, genome),
 	sprintf('mkdir projects/%s/classifications', project),

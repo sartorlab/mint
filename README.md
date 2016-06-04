@@ -61,15 +61,36 @@ The `mint` pipeline is dependent on several software packages to carry out its a
 * [`bedops` v2.4.14](https://github.com/bedops/bedops/releases/tag/v2.4.14)
 * [`bismark` v0.16.1](https://github.com/FelixKrueger/Bismark/releases/tag/0.16.1)
 * [`bowtie2` v2.2.4](https://github.com/BenLangmead/bowtie2/releases/tag/v2.2.4)
-* [`macs2` v2.1.0.20140616](https://pypi.python.org/pypi/MACS2/2.1.0.20140616)
-* [`PePr` v1.1.5](https://github.com/shawnzhangyx/PePr/releases/tag/1.1.5)
-* [`R` >= v3.2.5](https://cran.r-project.org)
-	* [`annotatr` v0.7.3](https://github.com/rcavalcante/annotatr/releases/tag/v0.7.3)
-	* [`methylSig` v0.4.3](https://github.com/sartorlab/methylSig/releases/tag/v0.4.3)
-* [`samtools` v0.1.19](https://github.com/samtools/samtools/releases/tag/0.1.19)
-* [`trim_galore` v0.4.1](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_v0.4.1.zip)
 * [`cutadapt` v1.9.1](https://pypi.python.org/pypi/cutadapt/1.9.1)
 * [`FastQC` v0.11.5](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5_source.zip)
+* [`macs2` v2.1.0.20140616](https://pypi.python.org/pypi/MACS2/2.1.0.20140616)
+* [`multiqc` v0.6.0](https://github.com/ewels/MultiQC/releases/tag/v0.6)
+* [`PePr` v1.1.10](https://github.com/shawnzhangyx/PePr/releases/tag/1.1.10)
+* [`R` >= v3.2.5](https://cran.r-project.org)
+	* [`annotatr` v0.7.3](https://github.com/rcavalcante/annotatr/releases/tag/v0.7.3)
+	* `devtools`
+	* `dplyr`
+	* `ggplot2`
+	* [`methylSig` v0.4.3](https://github.com/sartorlab/methylSig/releases/tag/v0.4.3)
+	* `optparse`
+	* `readr`
+* [`samtools` v0.1.19](https://github.com/samtools/samtools/releases/tag/0.1.19)
+* [`trim_galore` v0.4.1](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_v0.4.1.zip)
+
+The following `R` code will install the necessary packages:
+
+```{r}
+# Install CRAN packages
+install.packages(c('devtools','optparse','readr','dplyr','ggplot2'), repos='http://cran.rstudio.com')
+
+# Install Bioconductor packages
+source("https://bioconductor.org/biocLite.R")
+biocLite(c("BiocStyle","GenomeInfoDb","IRanges","GenomicRanges"))
+
+# Install GitHub packages
+install_github('rcavalcante/annotatr@v0.7.3')
+install_github('sartorlab/methylSig@v0.4.3')
+```
 
 ### Getting `mint`
 
@@ -193,6 +214,8 @@ At minimum, paths to reference genome information must be provided in the `Genom
 ```{make}
 # Configuration for mint pipeline analyses
 
+# This makefile was generated using mint v0.1.2
+
 ################################################################################
 # Project and experimental information
 
@@ -230,40 +253,65 @@ PATH_TO_BDG2BW := $(shell which bedGraphToBigWig)
 PATH_TO_BDG2BB := $(shell which bedToBigBed)
 
 ################################################################################
-# Command line options for tools
+################################################################################
+# bisulfite_align configuration options
 
-# FastQC
-OPTS_FASTQC = --format fastq --noextract
 # trim_galore bisulfite
+# For trim_galore parameters see http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_User_Guide_v0.4.1.pdf
 OPTS_TRIMGALORE_BISULFITE = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 25 --rrbs
-# trim_galore pulldown
-OPTS_TRIMGALORE_PULLDOWN = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 25
+
 # bismark
+# For bismark parameters see http://www.bioinformatics.babraham.ac.uk/projects/bismark/Bismark_User_Guide_v0.15.0.pdf
 OPTS_BISMARK = --bowtie2 $(GENOME_PATH)
+
+# Command line option for minimum coverage required for bismark_methylation_extractor
+# and scripts/classify_prepare_bisulfite_sample.awk in the sample classification module
+# NOTE: This does not affect methylSig runs
+OPT_MIN_COV = 5
+
 # bismark_methylation_extractor
-OPTS_EXTRACTOR = --single-end --gzip --bedGraph --cutoff 5 --cytosine_report --genome_folder $(GENOME_PATH) --multicore 1
-# bowtie2
-OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
-# macs2
-OPTS_MACS = -t $bowtie2Bam -c $bowtie2InputBam -f BAM -g hs --outdir ./analysis/macs_peaks -n $macsPrefix
+# For methylation extractor parameters see http://www.bioinformatics.babraham.ac.uk/projects/bismark/Bismark_User_Guide_v0.15.0.pdf
+OPTS_EXTRACTOR = --single-end --gzip --bedGraph --cutoff $(OPT_MIN_COV) --cytosine_report --genome_folder $(GENOME_PATH) --multicore 5
 
 ################################################################################
-# Command line options for methylSig and compare classifications
+# pulldown_align configuration options
+
+# trim_galore pulldown
+# For trim_galore parameters see http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_User_Guide_v0.4.1.pdf
+OPTS_TRIMGALORE_PULLDOWN = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 25
+
+# bowtie2
+# For bowtie2 parameters see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml
+OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
+
+################################################################################
+# pulldown_sample configuration options
+
+# macs2
+# For documentation about parameters see https://github.com/taoliu/MACS
+OPTS_MACS = --gsize hs --qvalue 0.01 --mfold 5,50
+
+################################################################################
+# bisulfite_compare configuration options
 
 # DMC for CpG resolution, and DMR for region resolution (window size parameter
 # used in the methylSig options below).
 OPT_DM_TYPE = DMR
 
-# Thresholds to use for DMCs or DMRs (above) in methylSig
+# Thresholds to use for DMCs or DMRs (above) methylSig output
+# FDR significance level
 OPT_MSIG_DM_FDR_THRESHOLD = 0.05
+# Desired absolute value of methylation difference
 OPT_MSIG_DM_DIFF_THRESHOLD = 10
 
-################################################################################
-# Comparison specific options
 # See ?methylSig::methylSigReadData and ?methylSig::methylSigCalc after installing methylSig in R for parameter information
 OPTS_METHYLSIG_IDH2mut_v_NBM_mc_hmc_bisulfite = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --dmtype $(OPT_DM_TYPE) --winsize.tile 50 --dispersion both --local.disp FALSE --winsize.disp 200 --local.meth FALSE --winsize.meth 200 --minpergroup 2,2 --T.approx TRUE --ncores 4 --quiet FALSE
 
-OPTS_PEPR_IDH2mut_v_NBM_hmc_pulldown = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=1
+################################################################################
+# pulldown_compare configuration options
+
+# For PePr parameters see https://ones.ccmb.med.umich.edu/wiki/PePr/
+OPTS_PEPR_IDH2mut_v_NBM_hmc_pulldown = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=8
 ```
 
 #### Running a project
@@ -293,6 +341,8 @@ make pulldown_compare
 make sample_classification
 make compare_classification
 ```
+
+To see what will be run by the pipeline without *actually* running anything, you can `make -n pulldown_align`, etc. for each of the commands.
 
 Depending on the computing hardware used, projects can be run with the `make -j n` command where `n` is a positive integer. The `-j` flag specifies how many commands `make` is allowed to run simultaneously. When it is not present, the default is to run commands in serial.
 
@@ -333,6 +383,7 @@ test_hybrid/pulldown/raw_fastqs
 test_hybrid/pulldown/pepr_peaks
 test_hybrid/pulldown/macs2_peaks
 test_hybrid/pulldown/pulldown_coverages
+test_hybrid/tmp
 test_hybrid/data
 test_hybrid/data/test_hybrid_annotation.txt
 test_hybrid/data/raw_fastqs
@@ -541,6 +592,8 @@ Additionally, a variety of plots are output to help interpret the output of `bis
 #### Plot: Volcano plots of DM
 
 ![Volcano plots from methylSig results](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_mc_hmc_bisulfite_DMR_methylSig_volcano.png)
+
+#### Plot: Distribution of methylSig calls in annotations
 
 ![Distribution of methylSig calls in annots](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_mc_hmc_bisulfite_DMR_methylSig_DMstatus_prop_genes.png)
 
