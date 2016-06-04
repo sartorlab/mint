@@ -22,8 +22,8 @@ if(!is.null(opt$group0)) {
 	group0 = opt$group0
 }
 
-if(grepl('_trimmed_bismark_bt2.CpG_report_for_annotatr.txt', file)) {
-	sample = gsub('_trimmed_bismark_bt2.CpG_report_for_annotatr.txt','', basename(file))
+if(grepl('_bismark_bt2.CpG_report_for_annotatr.txt', file)) {
+	sample = gsub('_bismark_bt2.CpG_report_for_annotatr.txt','', basename(file))
 	suffix = 'bismark'
 } else if (grepl('_methylSig_for_annotatr.txt', file)) {
 	sample = gsub('_methylSig_for_annotatr.txt','', basename(file))
