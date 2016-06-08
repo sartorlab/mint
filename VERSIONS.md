@@ -29,7 +29,7 @@ The following R command will install the required R packages (assuming fresh R i
 install.packages(c('devtools','optparse','readr','dplyr','ggplot2'), repos='http://cran.rstudio.com')
 
 # Install Bioconductor packages
-source("https://bioconductor.org/biocLite.R")
+source("http://bioconductor.org/biocLite.R")
 biocLite(c("BiocStyle","GenomeInfoDb","IRanges","GenomicRanges"))
 
 # Install GitHub packages
