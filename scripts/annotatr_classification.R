@@ -78,7 +78,7 @@ if(class_type == 'macs2' || class_type == 'PePr') {
 
 r_rand = randomize_regions(
 	regions = r,
-	genome = 'hg19',)
+	genome = genome)
 
 ###############################################################
 # Pick annotations
