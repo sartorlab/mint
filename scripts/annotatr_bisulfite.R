@@ -58,7 +58,7 @@ if(suffix == 'methylSig') {
 
 r_rand = randomize_regions(
 	regions = r,
-	genome = 'hg19',)
+	genome = genome,)
 
 ###############################################################
 # Pick annotations
