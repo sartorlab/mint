@@ -171,7 +171,7 @@ if(class_type == 'simple') {
 		'hypo_mc_hyper_hmc',
 		'hyper_mc',
 		'hyper_hmc',
-		'hypo-mc',
+		'hypo_mc',
 		'hypo_hmc',
 		'no_DM')
 } else if (class_type == 'PePr') {

@@ -1,6 +1,6 @@
 ## mint: Analysis, integration, classification, and annotation of DNA methylation and hydroxymethylation data
 
-v0.1.3
+v0.1.4
 
 ## Contents
 
@@ -86,7 +86,7 @@ The following `R` code will install the necessary packages:
 install.packages(c('devtools','optparse','readr','dplyr','ggplot2'), repos='http://cran.rstudio.com')
 
 # Install Bioconductor packages
-source("https://bioconductor.org/biocLite.R")
+source("http://bioconductor.org/biocLite.R")
 biocLite(c("BiocStyle","GenomeInfoDb","IRanges","GenomicRanges"))
 
 # Install GitHub packages
