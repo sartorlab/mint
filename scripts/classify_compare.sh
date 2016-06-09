@@ -87,11 +87,11 @@ ${PATH_TO_AWK} -v OFS="\t" 'NR > 1 { \
 tmpClassFiles=( ${tmp6} ${tmp10} ${tmp1422} ${tmp12} ${tmp20} ${tmp2844} ${tmp1824} ${tmp3040} ${tmp426656} ${tmp88} )
 for file in "${tmpClassFiles[@]}"
 do
-	bedtools merge -i <(sort -T . -k1,1 -k2,2n ${file}) -c 4,5,6 -o first,first,first > ${file}
+	bedtools merge -i <(sort -T . -k1,1 -k2,2n ${file}) -c 4,5,6 -o first,first,first > ${file}.merged
 done
 
 # Combine and sort in preparation for joining with the table
-cat ${tmp6} ${tmp10} ${tmp1422} ${tmp12} ${tmp20} ${tmp2844} ${tmp1824} ${tmp3040} ${tmp426656} ${tmp88} | sort -T . -k1,1 -k2,2n > ${classTmp}
+cat ${tmp6}.merged ${tmp10}.merged ${tmp1422}.merged ${tmp12}.merged ${tmp20}.merged ${tmp2844}.merged ${tmp1824}.merged ${tmp3040}.merged ${tmp426656}.merged ${tmp88}.merged | sort -T . -k1,1 -k2,2n > ${classTmp}
 
 # Join on the classification code
 # NOTE: Files must be sorted on the join field (code)
@@ -108,4 +108,4 @@ ${PATH_TO_AWK} -v OFS="\t" '{
 }' ${joinTmp} | sort -T . -k1,1 -k2,2n > ${outFile}
 
 # Cleanup
-rm -f ${intTmp} ${classTmp} ${joinTmp} ${tmp6} ${tmp10} ${tmp1422} ${tmp12} ${tmp20} ${tmp2844} ${tmp1824} ${tmp3040} ${tmp426656} ${tmp88}
+rm -f ${intTmp} ${classTmp} ${joinTmp} ${tmp6} ${tmp10} ${tmp1422} ${tmp12} ${tmp20} ${tmp2844} ${tmp1824} ${tmp3040} ${tmp426656} ${tmp88} ${tmp6}.merged ${tmp10}.merged ${tmp1422}.merged ${tmp12}.merged ${tmp20}.merged ${tmp2844}.merged ${tmp1824}.merged ${tmp3040}.merged ${tmp426656}.merged ${tmp88}.merged
