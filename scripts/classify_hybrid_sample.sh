@@ -23,13 +23,13 @@ classTmp=classifications/sample/${ID}_tmpSampleClass.txt
 joinTmp=classifications/sample/${ID}_tmpSampleJoin.txt
 
 # tmp class files
-tmp6101422=classifications/comparison/${ID}_tmp6101422.txt
-tmp12=classifications/comparison/${ID}_tmp12.txt
-tmp20=classifications/comparison/${ID}_tmp20.txt
-tmp18=classifications/comparison/${ID}_tmp18.txt
-tmp30=classifications/comparison/${ID}_tmp30.txt
-tmp284244=classifications/comparison/${ID}_tmp284244.txt
-tmp66=classifications/comparison/${ID}_tmp66.txt
+tmp6101422=classifications/sample/${ID}_tmp6101422.txt
+tmp12=classifications/sample/${ID}_tmp12.txt
+tmp20=classifications/sample/${ID}_tmp20.txt
+tmp18=classifications/sample/${ID}_tmp18.txt
+tmp30=classifications/sample/${ID}_tmp30.txt
+tmp284244=classifications/sample/${ID}_tmp284244.txt
+tmp66=classifications/sample/${ID}_tmp66.txt
 
 # Initial intersection
 ${PATH_TO_BEDTOOLS} multiinter \
@@ -79,7 +79,6 @@ done
 
 # Combine and sort in preparation for joining with the table
 cat ${tmp6101422}.merged ${tmp12}.merged ${tmp20}.merged ${tmp18}.merged ${tmp30}.merged ${tmp284244}.merged ${tmp66}.merged | sort -T . -k1,1 -k2,2n > ${classTmp}
-
 
 # Join on the classification code
 # NOTE: Files must be sorted on the join field (code)

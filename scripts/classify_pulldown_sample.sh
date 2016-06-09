@@ -22,11 +22,11 @@ classTmp=classifications/sample/${ID}_tmpSampleClass.txt
 joinTmp=classifications/sample/${ID}_tmpSampleJoin.txt
 
 # tmp class files
-tmp6=classifications/comparison/${ID}_tmp6.txt
-tmp1014=classifications/comparison/${ID}_tmp1014.txt
-tmp1218=classifications/comparison/${ID}_tmp1218.txt
-tmp202830=classifications/comparison/${ID}_tmp202830.txt
-tmp42=classifications/comparison/${ID}_tmp42.txt
+tmp6=classifications/sample/${ID}_tmp6.txt
+tmp1014=classifications/sample/${ID}_tmp1014.txt
+tmp1218=classifications/sample/${ID}_tmp1218.txt
+tmp202830=classifications/sample/${ID}_tmp202830.txt
+tmp42=classifications/sample/${ID}_tmp42.txt
 
 # Initial intersection
 ${PATH_TO_BEDTOOLS} multiinter \
