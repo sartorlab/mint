@@ -25,12 +25,12 @@ joinTmp=classifications/comparison/${ID}_tmpCompareJoin.txt
 
 # Create tmp class and merged files
 classesTmp=tmp6,tmp10,tmp1422,tmp12,tmp20,tmp2844,tmp1824,tmp3040,tmp426656,tmp88
-filesTmp=`eval echo /classifications/comparison/${ID}_{$classesTmp}.txt`
-mergesTmp=`eval echo /classifications/comparison/${ID}_{$classesTmp}.txt.merged`
+filesTmp=`eval echo classifications/comparison/${ID}_{$classesTmp}.txt`
+mergesTmp=`eval echo classifications/comparison/${ID}_{$classesTmp}.txt.merged`
 # Create empty files
 for file in ${filesTmp}
 do
-	> $file
+ 	touch $file
 done
 
 # Initial intersection

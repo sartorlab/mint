@@ -24,8 +24,8 @@ joinTmp=classifications/sample/${ID}_tmpSampleJoin.txt
 
 # Create tmp class and merged files
 classesTmp=tmp6101422,tmp12,tmp20,tmp18,tmp30,tmp284244,tmp66
-filesTmp=`eval echo /classifications/sample/${ID}_{$classesTmp}.txt`
-mergesTmp=`eval echo /classifications/sample/${ID}_{$classesTmp}.txt.merged`
+filesTmp=`eval echo classifications/sample/${ID}_{$classesTmp}.txt`
+mergesTmp=`eval echo classifications/sample/${ID}_{$classesTmp}.txt.merged`
 # Create empty files
 for file in ${filesTmp}
 do
