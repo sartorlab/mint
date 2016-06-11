@@ -23,17 +23,15 @@ intTmp=classifications/comparison/${ID}_tmpIntersect.txt
 classTmp=classifications/comparison/${ID}_tmpSampleClass.txt
 joinTmp=classifications/comparison/${ID}_tmpSampleJoin.txt
 
-# tmp class files
-tmp6=classifications/comparison/${ID}_tmp6.txt
-tmp10=classifications/comparison/${ID}_tmp10.txt
-tmp1422=classifications/comparison/${ID}_tmp1422.txt
-tmp12=classifications/comparison/${ID}_tmp12.txt
-tmp20=classifications/comparison/${ID}_tmp20.txt
-tmp2844=classifications/comparison/${ID}_tmp2844.txt
-tmp1824=classifications/comparison/${ID}_tmp1824.txt
-tmp3040=classifications/comparison/${ID}_tmp3040.txt
-tmp426656=classifications/comparison/${ID}_tmp426656.txt
-tmp88=classifications/comparison/${ID}_tmp88.txt
+# Create tmp class and merged files
+classesTmp=tmp6,tmp10,tmp1422,tmp12,tmp20,tmp2844,tmp1824,tmp3040,tmp426656,tmp88
+filesTmp=`eval echo /classifications/sample/${ID}_{$classesTmp}.txt`
+mergesTmp=`eval echo /classifications/sample/${ID}_{$classesTmp}.txt.merged`
+# Create empty files
+for file in ${filesTmp}
+do
+	> $file
+done
 
 # Initial intersection
 ${PATH_TO_BEDTOOLS} multiinter \
@@ -84,14 +82,19 @@ ${PATH_TO_AWK} -v OFS="\t" 'NR > 1 { \
 }' ${intTmp}
 
 # Bedtools merge each of the files
-tmpClassFiles=( ${tmp6} ${tmp10} ${tmp1422} ${tmp12} ${tmp20} ${tmp2844} ${tmp1824} ${tmp3040} ${tmp426656} ${tmp88} )
-for file in "${tmpClassFiles[@]}"
+for file in ${filesTmp}
 do
-	bedtools merge -i <(sort -T . -k1,1 -k2,2n ${file}) -c 4,5,6 -o first,first,first > ${file}.merged
+	# Check that the file exists and has a size greater than 0
+	if [ -s ${file} ]
+	then
+		bedtools merge -i <(sort -T . -k1,1 -k2,2n ${file}) -c 4,5,6 -o first,first,first > ${file}.merged
+	else
+		> ${file}.merged
+	fi
 done
 
 # Combine and sort in preparation for joining with the table
-cat ${tmp6}.merged ${tmp10}.merged ${tmp1422}.merged ${tmp12}.merged ${tmp20}.merged ${tmp2844}.merged ${tmp1824}.merged ${tmp3040}.merged ${tmp426656}.merged ${tmp88}.merged | sort -T . -k1,1 -k2,2n > ${classTmp}
+cat ${mergesTmp} | sort -T . -k1,1 -k2,2n > ${classTmp}
 
 # Join on the classification code
 # NOTE: Files must be sorted on the join field (code)
@@ -108,4 +111,4 @@ ${PATH_TO_AWK} -v OFS="\t" '{
 }' ${joinTmp} | sort -T . -k1,1 -k2,2n > ${outFile}
 
 # Cleanup
-rm -f ${intTmp} ${classTmp} ${joinTmp} ${tmp6} ${tmp10} ${tmp1422} ${tmp12} ${tmp20} ${tmp2844} ${tmp1824} ${tmp3040} ${tmp426656} ${tmp88} ${tmp6}.merged ${tmp10}.merged ${tmp1422}.merged ${tmp12}.merged ${tmp20}.merged ${tmp2844}.merged ${tmp1824}.merged ${tmp3040}.merged ${tmp426656}.merged ${tmp88}.merged
+rm -f ${intTmp} ${classTmp} ${joinTmp} ${filesTmp} ${mergesTmp}

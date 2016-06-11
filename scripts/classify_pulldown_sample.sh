@@ -21,12 +21,15 @@ intTmp=classifications/sample/${ID}_tmpIntersect.txt
 classTmp=classifications/sample/${ID}_tmpSampleClass.txt
 joinTmp=classifications/sample/${ID}_tmpSampleJoin.txt
 
-# tmp class files
-tmp6=classifications/sample/${ID}_tmp6.txt
-tmp1014=classifications/sample/${ID}_tmp1014.txt
-tmp1218=classifications/sample/${ID}_tmp1218.txt
-tmp202830=classifications/sample/${ID}_tmp202830.txt
-tmp42=classifications/sample/${ID}_tmp42.txt
+# Create tmp class and merged files
+classesTmp=tmp6,tmp1014,tmp1218,tmp202830,tmp42
+filesTmp=`eval echo /classifications/sample/${ID}_{$classesTmp}.txt`
+mergesTmp=`eval echo /classifications/sample/${ID}_{$classesTmp}.txt.merged`
+# Create empty files
+for file in ${filesTmp}
+do
+	> $file
+done
 
 # Initial intersection
 ${PATH_TO_BEDTOOLS} multiinter \
@@ -62,14 +65,19 @@ ${PATH_TO_AWK} -v OFS="\t" 'NR > 1 { \
 }' ${intTmp}
 
 # Bedtools merge each of the files
-tmpClassFiles=( ${tmp6} ${tmp1014} ${tmp1218} ${tmp202830} ${tmp42} )
-for file in "${tmpClassFiles[@]}"
+for file in ${filesTmp}
 do
-	bedtools merge -i <(sort -T . -k1,1 -k2,2n ${file}) -c 4,5,6 -o first,first,first > ${file}.merged
+	# Check that the file exists and has a size greater than 0
+	if [ -s ${file} ]
+	then
+		bedtools merge -i <(sort -T . -k1,1 -k2,2n ${file}) -c 4,5,6 -o first,first,first > ${file}.merged
+	else
+		> ${file}.merged
+	fi
 done
 
 # Combine and sort in preparation for joining with the table
-cat ${tmp6}.merged ${tmp1014}.merged ${tmp1218}.merged ${tmp202830}.merged ${tmp42}.merged | sort -T . -k1,1 -k2,2n > ${classTmp}
+cat ${mergesTmp} | sort -T . -k1,1 -k2,2n > ${classTmp}
 
 # Join on the classification code
 # NOTE: Files must be sorted on the join field (code)
@@ -86,4 +94,4 @@ ${PATH_TO_AWK} -v OFS="\t" '{
 }' ${joinTmp} | sort -T . -k1,1 -k2,2n > ${outFile}
 
 # Cleanup
-rm -f ${intTmp} ${classTmp} ${joinTmp} ${tmp6} ${tmp1014} ${tmp1218} ${tmp202830} ${tmp42} ${tmp6}.merged ${tmp1014}.merged ${tmp1218}.merged ${tmp202830}.merged ${tmp42}.merged
+rm -f ${intTmp} ${classTmp} ${joinTmp} ${filesTmp} ${mergesTmp}

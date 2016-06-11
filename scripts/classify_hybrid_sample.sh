@@ -22,14 +22,15 @@ intTmp=classifications/sample/${ID}_tmpIntersect.txt
 classTmp=classifications/sample/${ID}_tmpSampleClass.txt
 joinTmp=classifications/sample/${ID}_tmpSampleJoin.txt
 
-# tmp class files
-tmp6101422=classifications/sample/${ID}_tmp6101422.txt
-tmp12=classifications/sample/${ID}_tmp12.txt
-tmp20=classifications/sample/${ID}_tmp20.txt
-tmp18=classifications/sample/${ID}_tmp18.txt
-tmp30=classifications/sample/${ID}_tmp30.txt
-tmp284244=classifications/sample/${ID}_tmp284244.txt
-tmp66=classifications/sample/${ID}_tmp66.txt
+# Create tmp class and merged files
+classesTmp=tmp6101422,tmp12,tmp20,tmp18,tmp30,tmp284244,tmp66
+filesTmp=`eval echo /classifications/sample/${ID}_{$classesTmp}.txt`
+mergesTmp=`eval echo /classifications/sample/${ID}_{$classesTmp}.txt.merged`
+# Create empty files
+for file in ${filesTmp}
+do
+	> $file
+done
 
 # Initial intersection
 ${PATH_TO_BEDTOOLS} multiinter \
@@ -71,14 +72,19 @@ ${PATH_TO_AWK} -v OFS="\t" 'NR > 1 { \
 }' ${intTmp}
 
 # Bedtools merge each of the files
-tmpClassFiles=( ${tmp6101422} ${tmp12} ${tmp20} ${tmp18} ${tmp30} ${tmp284244} ${tmp66} )
-for file in "${tmpClassFiles[@]}"
+for file in ${filesTmp}
 do
-	bedtools merge -i <(sort -T . -k1,1 -k2,2n ${file}) -c 4,5,6 -o first,first,first > ${file}.merged
+	# Check that the file exists and has a size greater than 0
+	if [ -s ${file} ]
+	then
+		bedtools merge -i <(sort -T . -k1,1 -k2,2n ${file}) -c 4,5,6 -o first,first,first > ${file}.merged
+	else
+		> ${file}.merged
+	fi
 done
 
 # Combine and sort in preparation for joining with the table
-cat ${tmp6101422}.merged ${tmp12}.merged ${tmp20}.merged ${tmp18}.merged ${tmp30}.merged ${tmp284244}.merged ${tmp66}.merged | sort -T . -k1,1 -k2,2n > ${classTmp}
+cat ${mergesTmp} | sort -T . -k1,1 -k2,2n > ${classTmp}
 
 # Join on the classification code
 # NOTE: Files must be sorted on the join field (code)
@@ -95,4 +101,4 @@ ${PATH_TO_AWK} -v OFS="\t" '{
 }' ${joinTmp} | sort -T . -k1,1 -k2,2n > ${outFile}
 
 # Cleanup
-rm -f ${intTmp} ${classTmp} ${joinTmp} ${tmp6101422} ${tmp12} ${tmp20} ${tmp18} ${tmp30} ${tmp284244} ${tmp66} ${tmp6101422}.merged ${tmp12}.merged ${tmp20}.merged ${tmp18}.merged ${tmp30}.merged ${tmp284244}.merged ${tmp66}.merged
+rm -f ${intTmp} ${classTmp} ${joinTmp} ${filesTmp} ${mergesTmp}
