@@ -1,7 +1,9 @@
 ### Versions
 
-This file gives the current version of software used in the pipeline as of May 15, 2016.
+This file gives the current version of software used in the pipeline as of June 11, 2016.
 
+* [`bedGraphToBigWig`](https://www.encodeproject.org/software/bedgraphtobigwig/)
+* [`bedToBigBed`](https://www.encodeproject.org/software/bedToBigBed/)
 * [`bedtools` v2.25.0](https://github.com/arq5x/bedtools2/releases/tag/v2.25.0)
 * [`bedops` v2.4.14](https://github.com/bedops/bedops/releases/tag/v2.4.14)
 * [`bismark` v0.16.1](https://github.com/FelixKrueger/Bismark/releases/tag/0.16.1)

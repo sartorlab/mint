@@ -59,6 +59,8 @@ The `mint` pipeline is executed with `make` and includes configurable steps for:
 
 The `mint` pipeline is dependent on several software packages to carry out its analysis, integration, annotation, and visualization. Links to appropriate versions are included in the list below.
 
+* [`bedGraphToBigWig`](https://www.encodeproject.org/software/bedgraphtobigwig/)
+* [`bedToBigBed`](https://www.encodeproject.org/software/bedToBigBed/)
 * [`bedtools` v2.25.0](https://github.com/arq5x/bedtools2/releases/tag/v2.25.0)
 * [`bedops` v2.4.14](https://github.com/bedops/bedops/releases/tag/v2.4.14)
 * [`bismark` v0.16.1](https://github.com/FelixKrueger/Bismark/releases/tag/0.16.1)
