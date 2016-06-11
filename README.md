@@ -218,7 +218,7 @@ At minimum, paths to reference genome information must be provided in the `Genom
 ```{make}
 # Configuration for mint pipeline analyses
 
-# This makefile was generated using mint v0.1.2
+# This makefile was generated using mint v0.1.4
 
 ################################################################################
 # Project and experimental information
@@ -257,10 +257,10 @@ PATH_TO_BDG2BW := $(shell which bedGraphToBigWig)
 PATH_TO_BDG2BB := $(shell which bedToBigBed)
 
 ################################################################################
-################################################################################
 # bisulfite_align configuration options
 
 # trim_galore bisulfite
+# NOTE: IS YOUR DATA RRBS? If not, remove the --rrbs flag
 # For trim_galore parameters see http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_User_Guide_v0.4.1.pdf
 OPTS_TRIMGALORE_BISULFITE = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 25 --rrbs
 
@@ -275,7 +275,7 @@ OPT_MIN_COV = 5
 
 # bismark_methylation_extractor
 # For methylation extractor parameters see http://www.bioinformatics.babraham.ac.uk/projects/bismark/Bismark_User_Guide_v0.15.0.pdf
-OPTS_EXTRACTOR = --single-end --gzip --bedGraph --cutoff $(OPT_MIN_COV) --cytosine_report --genome_folder $(GENOME_PATH) --multicore 5
+OPTS_EXTRACTOR = --single-end --gzip --bedGraph --cutoff $(OPT_MIN_COV) --cytosine_report --genome_folder $(GENOME_PATH) --multicore 1
 
 ################################################################################
 # pulldown_align configuration options
@@ -292,8 +292,10 @@ OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
 # pulldown_sample configuration options
 
 # macs2
+# NOTE: Please ensure the genome size matches the organism in the study
+# hg19, hg38, mm9, and mm10 are automatically populated.
 # For documentation about parameters see https://github.com/taoliu/MACS
-OPTS_MACS = --gsize hs --qvalue 0.01 --mfold 5,50
+OPTS_MACS = --gsize hs --qvalue 0.01 --mfold 5 50
 
 ################################################################################
 # bisulfite_compare configuration options
@@ -308,14 +310,35 @@ OPT_MSIG_DM_FDR_THRESHOLD = 0.05
 # Desired absolute value of methylation difference
 OPT_MSIG_DM_DIFF_THRESHOLD = 10
 
-# See ?methylSig::methylSigReadData and ?methylSig::methylSigCalc after installing methylSig in R for parameter information
-OPTS_METHYLSIG_IDH2mut_v_NBM_mc_hmc_bisulfite = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --dmtype $(OPT_DM_TYPE) --winsize.tile 50 --dispersion both --local.disp FALSE --winsize.disp 200 --local.meth FALSE --winsize.meth 200 --minpergroup 2,2 --T.approx TRUE --ncores 4 --quiet FALSE
+########################################
+# bisulfite_compare_1 configuration options
+
+# Informative names for group1 and group0
+# GROUP1_NAME should be the group with higher group number in the project annotation
+# file and GROUP0_NAME should be the group with the lower group number
+# If unsure, check the "workflow for bisulfite_compare_1" section of the makefile
+GROUP1_NAME_1 := group1
+GROUP0_NAME_1 := group0
+
+# For methylSig parameters, in R, after installing methylSig do:
+# ?methylSig::methylSigReadData and ?methylSig::methylSigCalc
+OPTS_METHYLSIG_IDH2mut_v_NBM_mc_hmc_bisulfite = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --dmtype $(OPT_DM_TYPE) --winsize.tile 50 --dispersion both --local.disp FALSE --winsize.disp 200 --local.meth FALSE --winsize.meth 200 --minpergroup 2,2 --T.approx TRUE --ncores 1 --quiet FALSE
 
 ################################################################################
 # pulldown_compare configuration options
 
+########################################
+# pulldown_compare_1 configuration options
+
+# Informative names for chip1 and chip2 groups
+# CHIP1_NAME should be for the group with higher group number in the project annotation
+# file and CHIP2_NAME should be for the group with the lower group number
+# If unsure, check the "workflow for pulldown_compare_1" section of the makefile
+CHIP1_NAME_1 := chip1
+CHIP2_NAME_1 := chip2
+
 # For PePr parameters see https://ones.ccmb.med.umich.edu/wiki/PePr/
-OPTS_PEPR_IDH2mut_v_NBM_hmc_pulldown = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=8
+OPTS_PEPR_IDH2mut_v_NBM_hmc_pulldown = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=1
 ```
 
 #### Running a project
@@ -358,43 +381,44 @@ In the case of the `test_hybrid` project the following directory structure is cr
 
 ```{bash}
 test_hybrid
-test_hybrid/bisulfite
-test_hybrid/bisulfite/trim_fastqcs
-test_hybrid/bisulfite/methylsig_calls
-test_hybrid/bisulfite/raw_fastqcs
-test_hybrid/bisulfite/trim_fastqs
-test_hybrid/bisulfite/raw_fastqs
-test_hybrid/bisulfite/bismark
-test_hybrid/config.mk
-test_hybrid/test_hybrid_hub
-test_hybrid/test_hybrid_hub/test_hybrid_hub.html
-test_hybrid/test_hybrid_hub/hub.txt
-test_hybrid/test_hybrid_hub/genomes.txt
-test_hybrid/test_hybrid_hub/hg19
-test_hybrid/RData
-test_hybrid/summary
-test_hybrid/summary/tables
-test_hybrid/summary/figures
-test_hybrid/summary/reports
-test_hybrid/makefile
-test_hybrid/narrowPeak.as
-test_hybrid/pulldown
-test_hybrid/pulldown/bowtie2_bams
-test_hybrid/pulldown/trim_fastqcs
-test_hybrid/pulldown/raw_fastqcs
-test_hybrid/pulldown/trim_fastqs
-test_hybrid/pulldown/raw_fastqs
-test_hybrid/pulldown/pepr_peaks
-test_hybrid/pulldown/macs2_peaks
-test_hybrid/pulldown/pulldown_coverages
 test_hybrid/tmp
+test_hybrid/pbs_jobs
 test_hybrid/data
-test_hybrid/data/test_hybrid_annotation.txt
 test_hybrid/data/raw_fastqs
+test_hybrid/data/test_hybrid_annotation.txt
+test_hybrid/summary
+test_hybrid/summary/figures
+test_hybrid/summary/tables
+test_hybrid/summary/reports
+test_hybrid/test_hybrid_hub
+test_hybrid/test_hybrid_hub/hg19
+test_hybrid/test_hybrid_hub/genomes.txt
+test_hybrid/test_hybrid_hub/hub.txt
+test_hybrid/test_hybrid_hub/test_hybrid_hub.html
 test_hybrid/classifications
+test_hybrid/classifications/simple
 test_hybrid/classifications/sample
 test_hybrid/classifications/comparison
-test_hybrid/classifications/simple
+test_hybrid/RData
+test_hybrid/bisulfite
+test_hybrid/bisulfite/raw_fastqs
+test_hybrid/bisulfite/raw_fastqcs
+test_hybrid/bisulfite/trim_fastqs
+test_hybrid/bisulfite/trim_fastqcs
+test_hybrid/bisulfite/bismark
+test_hybrid/bisulfite/methylsig_calls
+test_hybrid/pulldown
+test_hybrid/pulldown/raw_fastqs
+test_hybrid/pulldown/raw_fastqcs
+test_hybrid/pulldown/trim_fastqs
+test_hybrid/pulldown/trim_fastqcs
+test_hybrid/pulldown/bowtie2_bams
+test_hybrid/pulldown/pulldown_coverages
+test_hybrid/pulldown/macs2_peaks
+test_hybrid/pulldown/pepr_peaks
+test_hybrid/makefile
+test_hybrid/config.mk
+test_hybrid/narrowPeak.as
 ```
 
 ### FastQC
