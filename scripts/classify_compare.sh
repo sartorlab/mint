@@ -20,13 +20,13 @@ ID=`basename $outFile _compare_classification.bed`
 
 # tmp files
 intTmp=classifications/comparison/${ID}_tmpIntersect.txt
-classTmp=classifications/comparison/${ID}_tmpSampleClass.txt
-joinTmp=classifications/comparison/${ID}_tmpSampleJoin.txt
+classTmp=classifications/comparison/${ID}_tmpCompareClass.txt
+joinTmp=classifications/comparison/${ID}_tmpCompareJoin.txt
 
 # Create tmp class and merged files
 classesTmp=tmp6,tmp10,tmp1422,tmp12,tmp20,tmp2844,tmp1824,tmp3040,tmp426656,tmp88
-filesTmp=`eval echo /classifications/sample/${ID}_{$classesTmp}.txt`
-mergesTmp=`eval echo /classifications/sample/${ID}_{$classesTmp}.txt.merged`
+filesTmp=`eval echo /classifications/comparison/${ID}_{$classesTmp}.txt`
+mergesTmp=`eval echo /classifications/comparison/${ID}_{$classesTmp}.txt.merged`
 # Create empty files
 for file in ${filesTmp}
 do
