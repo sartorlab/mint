@@ -76,6 +76,7 @@ if(suffix == 'bismark') {
 		universe = cpgs_gr,
 		per.chromosome = TRUE)
 	r_rand = sort(r_rand)
+	r_rand$name = paste('random:',1:length(r_rand),sep='')
 } else {
 	r_rand = randomize_regions(
 		regions = r,
