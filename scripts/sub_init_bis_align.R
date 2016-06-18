@@ -79,12 +79,12 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz $(DIR_BIS_BISMARK)/%_trimme
 # Rule for annotatr input
 .INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz
-	$(PATH_TO_AWK) -f ../../scripts/extractor_to_annotatr.awk <(gunzip -c $<) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -f ../../scripts/extractor_to_annotatr.awk <(gunzip -c $<) > $@
 
 # Rule for annotatr CpG universe intput
 .INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_CpGs.txt
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_CpGs.txt : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz
-	$(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$2}\' <(gunzip -c $<) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$2}\' <(gunzip -c $<) > $@
 
 # Rule for annotatr of extractor results
 $(DIR_RDATA)/%_trimmed_bismark_annotatr_analysis.RData : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_CpGs.txt
