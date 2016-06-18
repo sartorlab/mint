@@ -59,7 +59,7 @@ if(suffix == 'methylSig') {
 ###############################################################
 # Make random regions
 
-if(suffix = 'bismark') {
+if(suffix == 'bismark') {
 	# Read in the universe of CpGs for resampling
 	cpgs = readr::read_tsv(file = cpg_file, col_names=c('chr','start','end'))
 
