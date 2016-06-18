@@ -71,13 +71,14 @@ The `mint` pipeline is dependent on several software packages to carry out its a
 * [`multiqc` v0.6.0](https://github.com/ewels/MultiQC/releases/tag/v0.6)
 * [`PePr` v1.1.10](https://github.com/shawnzhangyx/PePr/releases/tag/1.1.10)
 * [`R` >= v3.2.5](https://cran.r-project.org)
-	* [`annotatr` v0.7.3](https://github.com/rcavalcante/annotatr/releases/tag/v0.7.3)
+	* [`annotatr` v0.7.4](https://github.com/rcavalcante/annotatr/releases/tag/v0.7.4)
 	* `devtools`
 	* `dplyr`
 	* `ggplot2`
 	* [`methylSig` v0.4.3](https://github.com/sartorlab/methylSig/releases/tag/v0.4.3)
 	* `optparse`
 	* `readr`
+	* `regioneR`
 * [`samtools` v0.1.19](https://github.com/samtools/samtools/releases/tag/0.1.19)
 * [`trim_galore` v0.4.1](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_v0.4.1.zip)
 
@@ -89,10 +90,10 @@ install.packages(c('devtools','optparse','readr','dplyr','ggplot2'), repos='http
 
 # Install Bioconductor packages
 source("http://bioconductor.org/biocLite.R")
-biocLite(c("BiocStyle","GenomeInfoDb","IRanges","GenomicRanges"))
+biocLite(c("BiocStyle","GenomeInfoDb","GenomicRanges","IRanges","regioneR"))
 
 # Install GitHub packages
-install_github('rcavalcante/annotatr@v0.7.3')
+install_github('rcavalcante/annotatr@v0.7.4')
 install_github('sartorlab/methylSig@v0.4.3')
 ```
 

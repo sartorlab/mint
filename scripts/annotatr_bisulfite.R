@@ -1,6 +1,7 @@
 library(annotatr)
 library(readr)
 library(ggplot2)
+library(regioneR)
 library(optparse)
 
 option_list = list(
@@ -36,6 +37,8 @@ if(grepl('_bismark_bt2.CpG_report_for_annotatr.txt', file)) {
 if(suffix == 'bismark') {
 	column_names = c('chr','start','end','name','coverage','strand','perc_meth')
 	strand = TRUE
+
+	cpg_file = gsub('_for_annotatr.txt','_CpGs.txt', file)
 } else if (suffix == 'methylSig') {
 	column_names = c('chr','start','end','DM_status','pvalue','strand','meth_diff','mu1','mu0')
 	strand = FALSE
@@ -56,9 +59,28 @@ if(suffix == 'methylSig') {
 ###############################################################
 # Make random regions
 
-r_rand = randomize_regions(
-	regions = r,
-	genome = genome,)
+if(suffix = 'bismark') {
+	# Read in the universe of CpGs for resampling
+	cpgs = readr::read_tsv(file = cpg_file, col_names=c('chr','start','end'))
+
+	# Pre-construct the GRanges to use for universe and remove cpgs for memory
+	cpgs_gr = GenomicRanges::GRanges(
+			seqnames = cpgs[['chr']],
+			ranges = IRanges::IRanges(start = cpgs[['start']], end = cpgs[['end']]),
+			strand = '*')
+	rm(cpgs)
+
+	# Resample the regions based on the CpG universe and sort it
+	r_rand = regioneR::resampleRegions(
+		A = r,
+		universe = cpgs_gr,
+		per.chromosome = TRUE)
+	r_rand = sort(r_rand)
+} else {
+	r_rand = randomize_regions(
+		regions = r,
+		genome = genome)
+}
 
 ###############################################################
 # Pick annotations
