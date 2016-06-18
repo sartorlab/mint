@@ -37,8 +37,6 @@ if(grepl('_bismark_bt2.CpG_report_for_annotatr.txt', file)) {
 if(suffix == 'bismark') {
 	column_names = c('chr','start','end','name','coverage','strand','perc_meth')
 	strand = TRUE
-
-	cpg_file = gsub('_for_annotatr.txt','_CpGs.txt', file)
 } else if (suffix == 'methylSig') {
 	column_names = c('chr','start','end','DM_status','pvalue','strand','meth_diff','mu1','mu0')
 	strand = FALSE
@@ -61,6 +59,7 @@ if(suffix == 'methylSig') {
 
 if(suffix == 'bismark') {
 	# Read in the universe of CpGs for resampling
+	cpg_file = gsub('_for_annotatr.txt','_CpGs.txt', file)
 	cpgs = readr::read_tsv(file = cpg_file, col_names=c('chr','start','end'))
 
 	# Pre-construct the GRanges to use for universe and remove cpgs for memory

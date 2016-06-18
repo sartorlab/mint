@@ -1,8 +1,10 @@
 library(annotatr)
 library(readr)
 library(ggplot2)
-library(optparse)
 library(GenomicRanges)
+library(regioneR)
+library(optparse)
+
 
 option_list = list(
   make_option('--file', type='character'),
@@ -76,9 +78,31 @@ if(class_type == 'macs2' || class_type == 'PePr') {
 ###############################################################
 # Make random regions
 
-r_rand = randomize_regions(
-	regions = r,
-	genome = genome)
+if(grepl('bisulfite',file)) {
+	# Read in the universe of CpGs for resampling
+	cpg_file = gsub('classifications/simple/','bisulfite/bismark/', file)
+	cpg_file = gsub('_simple_class_for_annotatr.txt','_trimmed_bismark_bt2.CpG_report_CpGs.txt', cpg_file)
+	cpgs = readr::read_tsv(file = cpg_file, col_names=c('chr','start','end'))
+
+	# Pre-construct the GRanges to use for universe and remove cpgs for memory
+	cpgs_gr = GenomicRanges::GRanges(
+			seqnames = cpgs[['chr']],
+			ranges = IRanges::IRanges(start = cpgs[['start']], end = cpgs[['end']]),
+			strand = '*')
+	rm(cpgs)
+
+	# Resample the regions based on the CpG universe and sort it
+	r_rand = regioneR::resampleRegions(
+		A = r,
+		universe = cpgs_gr,
+		per.chromosome = TRUE)
+	r_rand = sort(r_rand)
+	r_rand$name = paste('random:',1:length(r_rand),sep='')
+} else {
+	r_rand = randomize_regions(
+		regions = r,
+		genome = genome)
+}
 
 ###############################################################
 # Pick annotations
