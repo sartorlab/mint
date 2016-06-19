@@ -1,6 +1,7 @@
 library(annotatr)
 library(readr)
 library(ggplot2)
+library(regioneR)
 library(optparse)
 
 option_list = list(
@@ -56,9 +57,30 @@ if(suffix == 'methylSig') {
 ###############################################################
 # Make random regions
 
-r_rand = randomize_regions(
-	regions = r,
-	genome = genome,)
+if(suffix == 'bismark') {
+	# Read in the universe of CpGs for resampling
+	cpg_file = gsub('_for_annotatr.txt','_CpGs.txt', file)
+	cpgs = readr::read_tsv(file = cpg_file, col_names=c('chr','start','end'))
+
+	# Pre-construct the GRanges to use for universe and remove cpgs for memory
+	cpgs_gr = GenomicRanges::GRanges(
+			seqnames = cpgs[['chr']],
+			ranges = IRanges::IRanges(start = cpgs[['start']], end = cpgs[['end']]),
+			strand = '*')
+	rm(cpgs)
+
+	# Resample the regions based on the CpG universe and sort it
+	r_rand = regioneR::resampleRegions(
+		A = r,
+		universe = cpgs_gr,
+		per.chromosome = TRUE)
+	r_rand = sort(r_rand)
+	r_rand$name = paste('random:',1:length(r_rand),sep='')
+} else {
+	r_rand = randomize_regions(
+		regions = r,
+		genome = genome)
+}
 
 ###############################################################
 # Pick annotations
