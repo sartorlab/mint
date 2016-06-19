@@ -8,7 +8,7 @@ This file gives the current version of software used in the pipeline as of June 
 * [`bedops` v2.4.14](https://github.com/bedops/bedops/releases/tag/v2.4.14)
 * [`bismark` v0.16.1](https://github.com/FelixKrueger/Bismark/releases/tag/0.16.1)
 * [`bowtie2` v2.2.4](https://github.com/BenLangmead/bowtie2/releases/tag/v2.2.4)
-* [`cutadapt` v1.9.1](https://pypi.python.org/pypi/cutadapt/1.9.1)
+* [`cutadapt` v1.10](https://pypi.python.org/pypi/cutadapt/1.10)
 * [`FastQC` v0.11.5](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5_source.zip)
 * [`macs2` v2.1.0.20140616](https://pypi.python.org/pypi/MACS2/2.1.0.20140616)
 * [`multiqc` v0.6.0](https://github.com/ewels/MultiQC/releases/tag/v0.6)
