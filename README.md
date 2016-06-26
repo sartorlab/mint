@@ -66,12 +66,12 @@ The `mint` pipeline is dependent on several software packages to carry out its a
 * [`bismark` v0.16.1](https://github.com/FelixKrueger/Bismark/releases/tag/0.16.1)
 * [`bowtie2` v2.2.4](https://github.com/BenLangmead/bowtie2/releases/tag/v2.2.4)
 * [`cutadapt` v1.10](https://pypi.python.org/pypi/cutadapt/1.10)
-* [`FastQC` v0.11.5](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5_source.zip)
+* [`FastQC` v0.11.5](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip)
 * [`macs2` v2.1.0.20140616](https://pypi.python.org/pypi/MACS2/2.1.0.20140616)
 * [`multiqc` v0.6.0](https://github.com/ewels/MultiQC/releases/tag/v0.6)
-* [`PePr` v1.1.10](https://github.com/shawnzhangyx/PePr/releases/tag/1.1.10)
+* [`PePr` v1.1.11](https://github.com/shawnzhangyx/PePr/releases/tag/1.1.11)
 * [`R` >= v3.2.5](https://cran.r-project.org)
-	* [`annotatr` v0.7.4](https://github.com/rcavalcante/annotatr/releases/tag/v0.7.4)
+	* [`annotatr` v0.7.5](https://github.com/rcavalcante/annotatr/releases/tag/v0.7.5)
 	* `devtools`
 	* `dplyr`
 	* `ggplot2`
@@ -93,7 +93,7 @@ source("http://bioconductor.org/biocLite.R")
 biocLite(c("BiocStyle","GenomeInfoDb","GenomicRanges","IRanges","regioneR"))
 
 # Install GitHub packages
-install_github('rcavalcante/annotatr@v0.7.4')
+install_github('rcavalcante/annotatr@v0.7.5')
 install_github('sartorlab/methylSig@v0.4.3')
 ```
 
