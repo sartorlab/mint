@@ -1,15 +1,5 @@
 
 ################################################################################
-# Genome paths
-# Genomes, like as downloaded from iGenomes, will also contain bisulfite
-# converted genomes for
-GENOME_PATH := /path/to/genome
-# Location of bowtie2 indexes
-BOWTIE2_GENOME_PATH := /path/to/bowtie2/indices
-# Location of chromosome length file
-CHROM_PATH := /path/to/chromosome/length/file
-
-################################################################################
 # Path to tools
 
 PATH_TO_FASTQC := $(shell which fastqc)
