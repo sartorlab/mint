@@ -7,13 +7,13 @@ library(optparse)
 option_list = list(
 	make_option('--project', type='character',
 		help='[Required] The name for the project. Corresponding to projects/[project]_annotation.txt file.'),
-	make_option('--genome', type='character'
+	make_option('--genome', type='character',
 		help='[Required] The genome to be used for analyses.'),
-	make_option('--genomepath', type='character'
+	make_option('--genomepath', type='character',
 		help='[Required] The absolute path to the reference genome.'),
-	make_option('--chrompath', type='character'
+	make_option('--chrompath', type='character',
 		help='[Required] The absolute path to the chromosome length file.'),
-	make_option('--datapath', type='character'
+	make_option('--datapath', type='character',
 		help='[Required] The absolute path to the .fastq.gz sequencing data whose filenames match those in the sampleID column of the projects/[project]_annotation.txt file.')
 )
 option_parser = OptionParser(
