@@ -205,7 +205,7 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 		'# Rule for methylSig filtering for annotatr and bigWig',
 		sprintf('.INTERMEDIATE : %s', msig_tmp_results),
 		sprintf('%s : %s', msig_tmp_results, msig_results), # THIS IS CUSTOMIZABLE
-		"	$(PATH_TO_AWK) -v OFS='\\t' -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) 'NR > 1 && $$6 < FDR && sqrt($$7^2) > DIFF { print $$1, $$2, $$3, $$7 }' $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@",
+		"	$(PATH_TO_AWK) -v OFS='\\t' -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) '$$6 < FDR && sqrt($$7^2) > DIFF { print $$1, $$2, $$3, $$7 }' $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@",
 		'',
 		'# Rule for annotatr input of methylSig filtered results',
 		sprintf('.INTERMEDIATE : %s', annotatr_bed),
