@@ -9,7 +9,7 @@ make_var_bis_align_prefix = sprintf('
 
 BISULFITE_ALIGN_PREFIXES := %s', paste(bisulfite_samples$fullHumanID, collapse=' '))
 
-make_var_bis_align_clean_tmp = 'BISFULITE_ALIGN_CLEAN_TMP := $(patsubst %,$(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
+make_var_bis_align_clean_tmp = 'BISFULITE_ALIGN_CLEAN_TMP := $(patsubst %,$(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_class_for_annotatr.txt,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_annotatr.txt,$(BISULFITE_ALIGN_PREFIXES))
 '
@@ -26,9 +26,9 @@ bisulfite_align : 	$(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_RDATA)/%_trimmed_bismark_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES))\\
 					$(patsubst %,$(DIR_TRACK)/%_trimmed_bismark_bt2.bw,$(BISULFITE_ALIGN_PREFIXES)) \\
-					$(patsubst %,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
-					$(patsubst %,$(DIR_RDATA)/%_simple_class_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
-					$(patsubst %,$(DIR_TRACK)/%_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_RDATA)/%_bisulfite_bismark_simple_class_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_TRACK)/%_bisulfite_bismark_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(DIR_MULTIQC)/bisulfite/multiqc_report.html
 
 ########################################
@@ -101,25 +101,25 @@ $(DIR_TRACK)/%_trimmed_bismark_bt2.bw : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2
 
 ########################################
 .PHONY : bisulfite_simple_classification
-bisulfite_simple_classification : 	$(patsubst %,$(DIR_CLASS_SIMPLE)/%_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
-									$(patsubst %,$(DIR_RDATA)/%_simple_class_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
-									$(patsubst %,$(DIR_TRACK)/%_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
+bisulfite_simple_classification : 	$(patsubst %,$(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
+									$(patsubst %,$(DIR_RDATA)/%_bisulfite_bismark_simple_class_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
+									$(patsubst %,$(DIR_TRACK)/%_bisulfite_bismark_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
 
 # Simple classification for percent methylation
 $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.bedGraph.gz
 	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
 
 # Rule for annotatr input of bisulfite simple classification
-.INTERMEDIATE : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt
-$(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed
+.INTERMEDIATE : $(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_class_for_annotatr.txt
+$(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_class_for_annotatr.txt : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed
 	$(PATH_TO_AWK) -v OFS="\\t" \'{ print $$1, $$2, $$3, $$4 }\' $< > $@
 
 # Rule for annotatr of simple classification
-$(DIR_RDATA)/%_bisulfite_simple_class_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_class_for_annotatr.txt $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.CpG_report_CpGs.txt
+$(DIR_RDATA)/%_bisulfite_bismark_simple_class_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_class_for_annotatr.txt $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.CpG_report_CpGs.txt
 	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME) --group1 NULL --group2 NULL
 
 # Rule for UCSC bigBed track of simple classifiation
-$(DIR_TRACK)/%_bisulfite_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed
+$(DIR_TRACK)/%_bisulfite_bismark_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed
 	$(PATH_TO_BDG2BB) $< $(CHROM_PATH) $@
 
 ########################################
