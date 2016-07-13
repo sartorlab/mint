@@ -90,6 +90,27 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 		annotatr_rdata = sprintf('$(DIR_RDATA)/%s_$(OPT_DM_TYPE)_methylSig_annotatr_analysis.RData', var_comparison)
 		msig_bigwig = sprintf('$(DIR_TRACK)/%s_methylSig.bw', var_comparison)
 
+		########################################################################
+		# Variables for the makefile
+
+		# Write the bisulfite_compare variables for this comparison
+		make_vars_bis_compare = c(
+			'########################################',
+			sprintf('# Workflow for bisulfite_compare_%s', i),
+			'',
+			sprintf('BISULFITE_COMPARE_%s_PREREQS := %s %s %s', i, msig_results, annotatr_rdata, msig_bigwig))
+
+		########################################################################
+		# Rules for the makefile
+
+		# Write the bisulfite_compare rule for this comparison
+		make_rule_bis_compare = c(
+			'',
+			'########################################',
+			sprintf('.PHONY : bisulfite_compare_%s', i),
+			sprintf('bisulfite_compare_%s : $(BISULFITE_COMPARE_%s_PREREQS)', i, i),
+			'')
+
 		# Containers to track
 		msig_chr_results = c()
 		bisulfite_chr_compares = c()
@@ -168,15 +189,13 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 				make_vars_bis_compare_chr,
 				make_rule_bis_compare_chr)
 
-			bisulfite_chr_compares = c(bisulfite_chr_compares, sprintf('bisulfite_compare_%s_%s', i, chr))
-
 			# Track all files to be cleaned
 			bisulfite_chr_clean_tmps = c(bisulfite_chr_clean_tmps, sprintf('clean_bisulfite_compare_tmp_%s_%s', i, chr))
 		}
 
 		# Out of the chromosome-wise rules
 		# Back into the genome-wide methylSig comparison
-		make_rule_bis_compare = c(
+		make_rule_bis_compare_combine = c(
 		'',
 		'################################################################################',
 		'# Rule for combining the chromosome-wise methylSig results',
@@ -212,9 +231,11 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 
 		# Track all the rules for the bisulfite compares
 		bisulfite_compare_rules = c(
-			bisulfite_chr_compare_rules,
 			bisulfite_compare_rules,
-			make_rule_bis_compare)
+			make_vars_bis_compare,
+			make_rule_bis_compare,
+			bisulfite_chr_compare_rules,
+			make_rule_bis_compare_combine)
 
 		########################################################################
 		# OPTS for config.mk
@@ -255,7 +276,7 @@ OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount
 		cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
 		# Track the number of bisulfite compares and bisulfite clean tmps
-		bisulfite_compares = c(bisulfite_compares, bisulfite_chr_compares)
+		bisulfite_compares = c(bisulfite_compares, sprintf('bisulfite_compare_%s', i))
 		bisulfite_clean_tmps = c(bisulfite_clean_tmps, sprintf('clean_bisulfite_compare_tmp_%s', i))
 	}
 
