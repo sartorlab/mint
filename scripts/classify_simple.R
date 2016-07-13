@@ -60,10 +60,10 @@ if(platform == 'pulldown') {
 
 		if(mark == 'mc') {
 			colors = c('255,102,102','255,0,0','102,0,0')
-			classes = c('diff_mc_low','diff_mc_med','diff_mc_high')
+			classes = c('diff_mc_weak','diff_mc_mod','diff_mc_strong')
 		} else if (mark == 'hmc') {
 			colors = c('102,102,255','0,0,255','0,0,102')
-			classes = c('diff_hmc_low','diff_hmc_med','diff_hmc_high')
+			classes = c('diff_hmc_weak','diff_hmc_mod','diff_hmc_strong')
 		}
 	}
 
