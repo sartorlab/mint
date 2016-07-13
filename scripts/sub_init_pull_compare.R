@@ -110,6 +110,9 @@ if(bool_pull_comp) {
 		bigBed_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_for_bigBed.bed', var_name)
 		annotatr_rdata = sprintf('$(DIR_RDATA)/%s_PePr_annotatr_analysis.RData', var_name)
 		bigbed = sprintf('$(DIR_TRACK)/%s_PePr_peaks.bb', var_name)
+		simple_bed = sprintf('$(DIR_CLASS_SIMPLE)/%s_pulldown_PePr_simple_classification.bed', var_name)
+		simple_bb = sprintf('$(DIR_TRACK)/%s_pulldown_PePr_simple_classification.bb', var_name)
+		simple_rdata = sprintf('$(DIR_RDATA)/%s_pulldown_PePr_simple_class_annotatr_analysis.RData', var_name)
 
 		########################################################################
 		# Variables for the makefile
@@ -120,6 +123,7 @@ if(bool_pull_comp) {
 			sprintf('# Workflow for pulldown_compare_%s', i),
 			'',
 			sprintf('PULLDOWN_COMPARE_%s_PREREQS := %s %s %s %s', i, chip1_bed, bigbed, input_signal, annotatr_rdata),
+			sprintf('PULLDOWN_COMPARE_SIMPLE_%s_PREREQS := %s %s %s', i, simple_bed, simple_bb, simple_rdata),
 			sprintf('PULLDOWN_COMPARE_%s_INPUT1 := %s', i, var_input1),
 			sprintf('PULLDOWN_COMPARE_%s_INPUT2 := %s', i, var_input2),
 			sprintf('PULLDOWN_COMPARE_%s_CHIP1 := %s', i, var_chip1),
@@ -162,6 +166,22 @@ if(bool_pull_comp) {
 			'# Rule for UCSC bigBed track of PePr peaks',
 			sprintf('%s : %s', bigbed, bigBed_bed),
 			'	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@',
+			'',
+			'########################################',
+			sprintf('.PHONY : pulldown_compare_simple_classification_%s', i),
+			sprintf('pulldown_compare_simple_classification_%s : $(PULLDOWN_COMPARE_SIMPLE_%s_PREREQS)', i, i),
+			'',
+			'# Rule for simple classification of combined PePr peaks',
+			sprintf('%s : %s', simple_bed, combined_bed),
+			'	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@',
+			'',
+			'# Rule for annotatr of PePr simple classifications',
+			sprintf('%s : %s', simple_rdata, combined_bed),
+			'	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME) --group1 NULL --group2 NULL',
+			'',
+			'# Rule for UCSC bigBed track',
+			sprintf('%s : %s', simple_bb, simple_bed),
+			'	$(PATH_TO_BDG2BB) $< $(CHROM_PATH) $@',
 			'',
 			'########################################',
 			sprintf('# Rule to delete all temporary files from make pulldown_compare_%s',i),
@@ -212,7 +232,7 @@ OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num
 		cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
 		# Track the pulldown compares
-		pulldown_compares = c(pulldown_compares, sprintf('pulldown_compare_%s', i))
+		pulldown_compares = c(pulldown_compares, sprintf('pulldown_compare_%s', i), sprintf('pulldown_compare_simple_classification_%s', i))
 		pulldown_clean_tmps = c(pulldown_clean_tmps, sprintf('clean_pulldown_compare_tmp_%s', i))
 	}
 

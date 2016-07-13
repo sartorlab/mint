@@ -17,9 +17,16 @@ outFile = opt$outFile	# Is the bed file with *_mark_pulldown_simple_classificati
 
 # Interpret platform
 if(grepl('pulldown', inFile)) {
-  platform = 'pulldown'
+	platform = 'pulldown'
+
+	# Interpret macs2 or PePr peaks
+	if(grepl('PePr', inFile)) {
+		peak_type = 'PePr'
+	} else if (grepl('macs2', inFile)) {
+		peak_type = 'macs2'
+	}
 } else if (grepl('bisulfite', inFile)) {
-  platform = 'bisulfite'
+	platform = 'bisulfite'
 }
 
 # Interpret mark
@@ -35,22 +42,37 @@ if(grepl('mc_hmc', inFile)) {
 # Set the colors and classes according to platform and mark
 # and then construct the classification table for joining
 if(platform == 'pulldown') {
-	if(mark == 'mc') {
-	    colors = c('255,102,102','255,0,0','102,0,0')
-	    classes = c('mc_low','mc_med','mc_high')
-	} else if (mark == 'hmc') {
-	    colors = c('102,102,255','0,0,255','0,0,102')
-	    classes = c('hmc_low','hmc_med','hmc_high')
+
+	if(peak_type == 'macs2') {
+		column_names = c('chr','start','end','name','score','strand','fold','pval','qval','summit')
+		skip = 0
+
+		if(mark == 'mc') {
+			colors = c('255,102,102','255,0,0','102,0,0')
+			classes = c('mc_low','mc_med','mc_high')
+		} else if (mark == 'hmc') {
+			colors = c('102,102,255','0,0,255','0,0,102')
+			classes = c('hmc_low','hmc_med','hmc_high')
+		}
+	} else if (peak_type == 'PePr') {
+		column_names = c('chr','start','end','DM_status','fold','strand','pval')
+		skip = 0
+
+		if(mark == 'mc') {
+			colors = c('255,102,102','255,0,0','102,0,0')
+			classes = c('diff_mc_low','diff_mc_med','diff_mc_high')
+		} else if (mark == 'hmc') {
+			colors = c('102,102,255','0,0,255','0,0,102')
+			classes = c('diff_hmc_low','diff_hmc_med','diff_hmc_high')
+		}
 	}
 
 	classification = data.frame(
-	    code = c(1,2,3),
-	    class = classes,
-	    color = colors,
-	    stringsAsFactors=F)
+		code = c(1,2,3),
+		class = classes,
+		color = colors,
+		stringsAsFactors=F)
 
-	column_names = c('chrom','start','end','name','score','strand','fold','pval','qval','summit')
-	skip = 0
 } else if (platform == 'bisulfite') {
 	if(mark == 'mc_hmc') {
 		colors = c('0,0,0', '255,153,255', '255,0,255', '102,0,102')
@@ -79,7 +101,9 @@ peaks = readr::read_tsv(inFile, col_names = column_names, skip = skip)
 # Create the code column in the appropriate manner
 if(platform == 'pulldown') {
 
-	peaks[which(peaks$score > 1000),'score'] = 1000
+	if(peak_type == 'macs2') {
+		peaks[which(peaks$score > 1000),'score'] = 1000
+	}
 
 	# Rather than doing 'tertiles' where the groups have equal number of members,
 	# split the range of fold change into three equal parts
