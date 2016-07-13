@@ -107,7 +107,7 @@ if(bool_pull_comp) {
 		chip1_bed = sprintf('$(DIR_PULL_PEPR)/%s__PePr_chip1_peaks.bed', var_name)
 		chip2_bed = sprintf('$(DIR_PULL_PEPR)/%s__PePr_chip2_peaks.bed', var_name)
 		combined_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_combined.bed', var_name)
-		annotatr_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_for_annotatr.txt', var_name)
+		bigBed_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_for_bigBed.bed', var_name)
 		annotatr_rdata = sprintf('$(DIR_RDATA)/%s_PePr_annotatr_analysis.RData', var_name)
 		bigbed = sprintf('$(DIR_TRACK)/%s_PePr_peaks.bb', var_name)
 
@@ -125,7 +125,7 @@ if(bool_pull_comp) {
 			sprintf('PULLDOWN_COMPARE_%s_CHIP1 := %s', i, var_chip1),
 			sprintf('PULLDOWN_COMPARE_%s_CHIP2 := %s', i, var_chip2),
 			sprintf('PULLDOWN_COMPARE_%s_NAME := %s', i, var_name),
-			sprintf('PULLDOWN_COMPARE_%s_CLEAN_TMP := %s', i, annotatr_bed))
+			sprintf('PULLDOWN_COMPARE_%s_CLEAN_TMP := %s', i, bigBed_bed))
 
 		# Write the pulldown_compare rule for this comparison
 		make_rule_pull_compare = c(
@@ -142,17 +142,17 @@ if(bool_pull_comp) {
 			'# Rule to combine PePr peaks',
 			'# NOTE: This script ensures chip1 and chip2 peaks do not overlap',
 			'# and then combines the peaks and keeps track of their source',
-			sprintf('%s : %s %s', combined_bed, chip1_bed, chip2_bed),
+			sprintf('.INTERMEDIATE : %s', bigBed_bed),
+			sprintf('%s : %s %s', bigBed_bed, chip1_bed, chip2_bed),
 			sprintf('	bash ../../scripts/pepr_combine.sh $(word 1,$^) $(word 2,$^) $@ $(CHIP1_NAME_%s) $(CHIP2_NAME_%s)', i, i),
 			'',
 			'# Rule for annotatr input of PePr peaks',
 			'# NOTE: Using fold change ($7) and p-value ($8)',
-			sprintf('.INTERMEDIATE : %s', annotatr_bed),
-			sprintf('%s : %s %s', annotatr_bed, chip1_bed, chip2_bed),
+			sprintf('%s : %s %s', combined_bed, chip1_bed, chip2_bed),
 			sprintf('	cat <(awk -v OFS="\\t" -v CHIP1=$(CHIP1_NAME_%s) \'{print $$1, $$2, $$3, CHIP1, $$7, "*", $$8}\' $(word 1,$^)) <(awk -v OFS="\\t" -v CHIP2=$(CHIP2_NAME_%s) \'{print $$1, $$2, $$3, CHIP2, $$7, "*", $$8}\' $(word 2,$^)) > $@', i, i),
 			'',
 			'# Rule for annotatr of PePr peaks',
-			sprintf('%s : %s', annotatr_rdata, annotatr_bed),
+			sprintf('%s : %s', annotatr_rdata, combined_bed),
 			sprintf('	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME) --group1 $(CHIP1_NAME_%s) --group2 $(CHIP2_NAME_%s)', i, i),
 			'',
 			'# Rule to merge input signals from the two groups',
@@ -160,7 +160,7 @@ if(bool_pull_comp) {
 			'	cat $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n | bedtools merge -d 20 | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@',
 			'',
 			'# Rule for UCSC bigBed track of PePr peaks',
-			sprintf('%s : %s', bigbed, combined_bed),
+			sprintf('%s : %s', bigbed, bigBed_bed),
 			'	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@',
 			'',
 			'########################################',
