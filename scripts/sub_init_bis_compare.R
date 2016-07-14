@@ -214,7 +214,7 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 		'',
 		'# Rule for annotatr of methylSig filtered results',
 		sprintf('%s : %s', annotatr_rdata, annotatr_bed),
-		sprintf('	$(PATH_TO_R) ../../scripts/annotatr_bisulfite.R --file $< --genome $(GENOME) --group1 $(GROUP1_NAME_%s) --group0 $(GROUP0_NAME_%s)', i, i),
+		sprintf('	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type methylSig --group1 $(GROUP1_NAME_%s) --group0 $(GROUP0_NAME_%s)', i, i),
 		'',
 		'# Rule for UCSC bigWig of filtered methylSig results',
 		sprintf('%s : %s', msig_bigwig, msig_tmp_results),

@@ -9,9 +9,7 @@ make_var_pull_samp_prefix = sprintf('
 
 PULLDOWN_SAMPLE_PREFIXES := %s', paste(pulldown_samples_noinput$fullHumanID, collapse=' '))
 
-make_var_pull_samp_clean_tmp = 'PULLDOWN_SAMPLE_CLEAN_TMP := $(patsubst %,$(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_class_for_annotatr.txt,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-						$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-						$(patsubst %,$(DIR_PULL_MACS)/%_pulldown_macs2_peaks_for_annotatr.txt,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+make_var_pull_samp_clean_tmp = 'PULLDOWN_SAMPLE_CLEAN_TMP := $(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES))
 '
 
 # NOTE: This cannot be indented because they would mess up the makefile
@@ -45,15 +43,9 @@ $(DIR_PULL_MACS)/%_pulldown_macs2_model.pdf : $(DIR_PULL_MACS)/%_pulldown_macs2_
 	cd $(DIR_PULL_MACS); \\
 	Rscript $(<F)
 
-# Rule for annotatr input of macs2 peaks
-# NOTE: Using fold change ($7) and p-value ($8)
-.INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks_for_annotatr.txt
-$(DIR_PULL_MACS)/%_pulldown_macs2_peaks_for_annotatr.txt : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
-	$(PATH_TO_AWK) -v OFS="\\t" \'{ print $$1, $$2, $$3, $$4, $$7, "*", $$8 }\' $< > $@
-
 # Rule for annotatr of macs2 narrowPeak
-$(DIR_RDATA)/%_pulldown_macs2_peaks_annotatr_analysis.RData : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks_for_annotatr.txt
-	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME) --group1 NULL --group2 NULL
+$(DIR_RDATA)/%_pulldown_macs2_peaks_annotatr_analysis.RData : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
+	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type macs2 --group1 NULL --group2 NULL
 
 # Rule to cap macs2 narrowPeaks at 1000 for bigBed
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
@@ -74,14 +66,9 @@ pulldown_simple_classification : 	$(patsubst %,$(DIR_CLASS_SIMPLE)/%_pulldown_ma
 $(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_classification.bed : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
 	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
 
-# Rule for annotatr input of simple classification
-.INTERMEDIATE : $(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_class_for_annotatr.txt
-$(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_class_for_annotatr.txt : $(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_classification.bed
-	$(PATH_TO_AWK) -v OFS="\\t" \'{ print $$1, $$2, $$3, $$4 }\' $< > $@
-
 # Rule for annotatr of simple classification
-$(DIR_RDATA)/%_pulldown_macs2_simple_class_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_class_for_annotatr.txt
-	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME) --group1 NULL --group2 NULL
+$(DIR_RDATA)/%_pulldown_macs2_simple_class_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_classification.bed
+	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type simple_pulldown_macs2 --group1 NULL --group2 NULL
 
 # Rule for UCSC bigBed track of simple classifiation
 $(DIR_TRACK)/%_pulldown_macs2_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_classification.bed
