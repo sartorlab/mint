@@ -121,7 +121,7 @@ make_rule_class_sample = sprintf('
 # Master rule
 .PHONY : sample_classification
 sample_classification : 	$(patsubst %%,$(DIR_TRACK)/%%_sample_classification.bb,$(SAMPLE_CLASS_PREFIXES)) \\
-		$(patsubst %%,$(DIR_RDATA)/%%_sample_class_annotatr_analysis.RData,$(SAMPLE_CLASS_PREFIXES)) \\
+		$(patsubst %%,$(DIR_RDATA)/%%_sample_classification_annotatr_analysis.RData,$(SAMPLE_CLASS_PREFIXES)) \\
 		$(patsubst %%,$(DIR_CLASS_SAMPLE)/%%_sample_classification.bed,$(SAMPLE_CLASS_PREFIXES))
 
 # Rule for sample classification bigBed
@@ -129,7 +129,7 @@ $(DIR_TRACK)/%%_sample_classification.bb : $(DIR_CLASS_SAMPLE)/%%_sample_classif
 	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@
 
 # Rule for annotatr of sample classification
-$(DIR_RDATA)/%%_sample_class_annotatr_analysis.RData : $(DIR_CLASS_SAMPLE)/%%_sample_classification.bed
+$(DIR_RDATA)/%%_sample_classification_annotatr_analysis.RData : $(DIR_CLASS_SAMPLE)/%%_sample_classification.bed
 	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type sample_class --group1 NULL --group0 NULL
 
 # Classification BED

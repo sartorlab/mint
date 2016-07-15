@@ -19,10 +19,10 @@ make_rule_pull_samp = '########################################
 pulldown_sample : 	$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 					$(patsubst %,$(DIR_PULL_MACS)/%_macs2_model.r,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 					$(patsubst %,$(DIR_PULL_MACS)/%_macs2_model.pdf,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-					$(patsubst %,$(DIR_RDATA)/%_macs2_peaks_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+					$(patsubst %,$(DIR_RDATA)/%_macs2_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 					$(patsubst %,$(DIR_TRACK)/%_macs2_peaks.bb,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 					$(patsubst %,$(DIR_CLASS_SIMPLE)/%_macs2_simple_classification.bed,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-					$(patsubst %,$(DIR_RDATA)/%_macs2_simple_class_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+					$(patsubst %,$(DIR_RDATA)/%_macs2_simple_classification_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 					$(patsubst %,$(DIR_TRACK)/%_macs2_simple_classification.bb,$(PULLDOWN_SAMPLE_PREFIXES))
 
 ########################################
@@ -30,7 +30,7 @@ pulldown_sample : 	$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak,$(PULL
 pulldown_macs2 : 	$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 					$(patsubst %,$(DIR_PULL_MACS)/%_macs2_model.r,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 					$(patsubst %,$(DIR_PULL_MACS)/%_macs2_model.pdf,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-					$(patsubst %,$(DIR_RDATA)/%_macs2_peaks_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+					$(patsubst %,$(DIR_RDATA)/%_macs2_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 					$(patsubst %,$(DIR_TRACK)/%_macs2_peaks.bb,$(PULLDOWN_SAMPLE_PREFIXES))
 
 # Rule for macs2 peaks
@@ -44,7 +44,7 @@ $(DIR_PULL_MACS)/%_pulldown_macs2_model.pdf : $(DIR_PULL_MACS)/%_pulldown_macs2_
 	Rscript $(<F)
 
 # Rule for annotatr of macs2 narrowPeak
-$(DIR_RDATA)/%_pulldown_macs2_peaks_annotatr_analysis.RData : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
+$(DIR_RDATA)/%_pulldown_macs2_annotatr_analysis.RData : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
 	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type macs2 --group1 NULL --group0 NULL
 
 # Rule to cap macs2 narrowPeaks at 1000 for bigBed
@@ -59,7 +59,7 @@ $(DIR_TRACK)/%_macs2_peaks.bb : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
 ########################################
 .PHONY : pulldown_simple_classification
 pulldown_simple_classification : 	$(patsubst %,$(DIR_CLASS_SIMPLE)/%_macs2_simple_classification.bed,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-									$(patsubst %,$(DIR_RDATA)/%_macs2_simple_class_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+									$(patsubst %,$(DIR_RDATA)/%_macs2_simple_classification_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 									$(patsubst %,$(DIR_TRACK)/%_macs2_simple_classification.bb,$(PULLDOWN_SAMPLE_PREFIXES))
 
 # Rule for simple classification of macs2 peaks
@@ -67,7 +67,7 @@ $(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_classification.bed : $(DIR_PULL_MACS
 	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
 
 # Rule for annotatr of simple classification
-$(DIR_RDATA)/%_pulldown_macs2_simple_class_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_classification.bed
+$(DIR_RDATA)/%_pulldown_macs2_simple_classification_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_classification.bed
 	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type simple_pulldown_macs2 --group1 NULL --group0 NULL
 
 # Rule for UCSC bigBed track of simple classifiation

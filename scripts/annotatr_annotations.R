@@ -63,7 +63,7 @@ if(annot_type == 'bismark') {
 	# BARPLOT + CATEGORICALS
 	# Random for barplot and categoricals
 
-	# head ./classifications/simple/IDH2mut_1_mc_hmc_bisulfite_simple_classification.bed
+	# head ./classifications/simple/IDH2mut_1_mc_hmc_bisulfite_bismark_simple_classification.bed
 	# chr1	249239097	249239098	mc_hmc_high	1000	.	249239097	249239098	102,0,102
 	# chr1	249239100	249239101	mc_hmc_high	1000	.	249239100	249239101	102,0,102
 	# chr1	249239104	249239105	mc_hmc_high	1000	.	249239104	249239105	102,0,102
@@ -109,7 +109,7 @@ if(annot_type == 'bismark') {
 	# BARPLOT + CATEGORICALS
 	# Random for barplot and categoricals
 
-	# head ./classifications/simple/IDH2mut_1_hmc_pulldown_simple_classification.bed
+	# head ./classifications/simple/IDH2mut_1_hmc_pulldown_macs2_simple_classification.bed
 	# chr21	9944160	9944341	hmc_low	1000	.	9944160	9944341	102,102,255
 	# chr21	9999539	9999701	hmc_low	1000	.	9999539	9999701	102,102,255
 	# chr21	10132638	10133209	hmc_low	1000	.	10132638	10133209	102,102,255
@@ -171,7 +171,7 @@ if(annot_type == 'bismark') {
 	classifier_flag = FALSE
 	log10p_flag = TRUE
 	resolution = 'region'
-	prefix = gsub('.txt','', basename(file))
+	prefix = gsub('_for_annotatr.txt','', basename(file))
 
 	# Categories are the group1 and group0 command line parameters
 	cats_order = c(group1, group0, 'noDM')
@@ -183,7 +183,7 @@ if(annot_type == 'bismark') {
 	# BARPLOT + NUMERICALS + CATEGORICALS
 	# Random for barplot and categoricals
 
-	# head ./pulldown/pepr_peaks/INTpos_v_INTneg_hmc_pulldown__PePr_chip1_peaks.bed
+	# head ./pulldown/pepr_peaks/INTpos_v_INTneg_hmc_pulldown_PePr_combined.bed
 	# chr1	70760670	70761490	INTpos	245.943822054	.	6.5588413905	7.4943442631e-16	1.41424309192e-09
 	# chr14	68731580	68732810	INTneg	333.178100172	.	8.8852092139	2.11278442242e-15	2.6579961895e-09
 	# chr19	49923650	49924470	INTpos	167.462258567	.	4.4658913717	8.00430994576e-15	7.5523886073e-09
@@ -194,7 +194,7 @@ if(annot_type == 'bismark') {
 	classifier_flag = FALSE
 	log10p_flag = TRUE
 	resolution = 'region'
-	prefix = gsub('.bed','', basename(file))
+	prefix = gsub('_combined.bed','', basename(file))
 
 	# Categories are the group1 and group0 command line parameters
 	cats_order = c(group1, group0)
@@ -206,7 +206,7 @@ if(annot_type == 'bismark') {
 	# BARPLOT + CATEGORICALS
 	# Random for barplot and categoricals
 
-	# head ./classifications/simple/IDH2mut_1_hmc_pulldown_simple_classification.bed
+	# head ./classifications/simple/IDH2mut_1_hmc_pulldown_PePr_simple_classification.bed
 	# chr21	9944160	9944341	diff_hmc_weak	1000	.	9944160	9944341	102,102,255
 	# chr21	9999539	9999701	diff_hmc_weak	1000	.	9999539	9999701	102,102,255
 	# chr21	10132638	10133209	diff_hmc_weak	1000	.	10132638	10133209	102,102,255
