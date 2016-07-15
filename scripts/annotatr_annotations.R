@@ -368,7 +368,7 @@ if (annot_type == 'sample_class') {
 ################################################################################
 # For strict macs2 and PePr output, create dplyr::tbl_df on which to create
 # overall distributions of fold change
-if(annot_type == 'macs2')
+if(annot_type == 'macs2') {
 	regions_tbl = dplyr::tbl_df(data.frame(
 		'chrom' = seqnames(regions),
 		'start' = start(regions),
@@ -381,7 +381,7 @@ if(annot_type == 'macs2')
 		'chrom' = seqnames(regions),
 		'start' = start(regions),
 		'end' = end(regions),
-		'group' = mcols(regions)$group
+		'group' = mcols(regions)$group,
 		'fold' = mcols(regions)$fold,
 		'pval' = mcols(regions)$pval,
 		stringsAsFactors=F))
