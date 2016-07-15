@@ -14,6 +14,7 @@ option_list = list(
   make_option('--group1', type='character', help='[Required] A character indicating the name of group1 or NULL.'),
   make_option('--group0', type='character', help='[Required] A character indicating the name of group2 or NULL.')
 )
+opt = parse_args(OptionParser(option_list=option_list))
 
 file = opt$file
 genome = opt$genome
