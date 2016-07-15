@@ -370,7 +370,7 @@ if (annot_type == 'sample_class') {
 # overall distributions of fold change
 if(annot_type == 'macs2') {
 	regions_tbl = dplyr::tbl_df(data.frame(
-		'chrom' = seqnames(regions),
+		'chr' = seqnames(regions),
 		'start' = start(regions),
 		'end' = end(regions),
 		'fold' = mcols(regions)$fold,
@@ -378,7 +378,7 @@ if(annot_type == 'macs2') {
 		stringsAsFactors=F))
 } else if (annot_type == 'PePr') {
 	regions_tbl = dplyr::tbl_df(data.frame(
-		'chrom' = seqnames(regions),
+		'chr' = seqnames(regions),
 		'start' = start(regions),
 		'end' = end(regions),
 		'group' = mcols(regions)$group,
