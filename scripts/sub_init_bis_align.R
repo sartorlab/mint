@@ -100,7 +100,7 @@ $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed : $(DIR_BIS_BISMARK)/%
 
 # Rule for annotatr of simple classification
 $(DIR_RDATA)/%_bisulfite_bismark_simple_class_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed
-	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type simple_bisulfite_bismark --group1 NULL --group2 NULL
+	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type simple_bisulfite_bismark --group1 NULL --group0 NULL
 
 # Rule for UCSC bigBed track of simple classifiation
 $(DIR_TRACK)/%_bisulfite_bismark_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed
