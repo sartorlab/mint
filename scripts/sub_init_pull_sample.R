@@ -21,9 +21,9 @@ pulldown_sample : 	$(patsubst %,$(DIR_PULL_MACS)/%_macs2_peaks.narrowPeak,$(PULL
 					$(patsubst %,$(DIR_PULL_MACS)/%_macs2_model.pdf,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 					$(patsubst %,$(DIR_RDATA)/%_macs2_peaks_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
 					$(patsubst %,$(DIR_TRACK)/%_macs2_peaks.bb,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-					$(patsubst %,$(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_classification.bed,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-					$(patsubst %,$(DIR_RDATA)/%_pulldown_macs2_simple_class_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-					$(patsubst %,$(DIR_TRACK)/%_pulldown_macs2_simple_classification.bb,$(PULLDOWN_SAMPLE_PREFIXES))
+					$(patsubst %,$(DIR_CLASS_SIMPLE)/%_macs2_simple_classification.bed,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+					$(patsubst %,$(DIR_RDATA)/%_macs2_simple_class_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+					$(patsubst %,$(DIR_TRACK)/%_macs2_simple_classification.bb,$(PULLDOWN_SAMPLE_PREFIXES))
 
 ########################################
 .PHONY : pulldown_macs2
@@ -58,9 +58,9 @@ $(DIR_TRACK)/%_macs2_peaks.bb : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
 
 ########################################
 .PHONY : pulldown_simple_classification
-pulldown_simple_classification : 	$(patsubst %,$(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_classification.bed,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-									$(patsubst %,$(DIR_RDATA)/%_pulldown_macs2_simple_class_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
-									$(patsubst %,$(DIR_TRACK)/%_pulldown_macs2_simple_classification.bb,$(PULLDOWN_SAMPLE_PREFIXES))
+pulldown_simple_classification : 	$(patsubst %,$(DIR_CLASS_SIMPLE)/%_macs2_simple_classification.bed,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+									$(patsubst %,$(DIR_RDATA)/%_macs2_simple_class_annotatr_analysis.RData,$(PULLDOWN_SAMPLE_PREFIXES)) \\
+									$(patsubst %,$(DIR_TRACK)/%_macs2_simple_classification.bb,$(PULLDOWN_SAMPLE_PREFIXES))
 
 # Rule for simple classification of macs2 peaks
 $(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_classification.bed : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
