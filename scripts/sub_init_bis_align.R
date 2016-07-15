@@ -24,9 +24,9 @@ bisulfite_align : 	$(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_RDATA)/%_trimmed_bismark_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES))\\
 					$(patsubst %,$(DIR_TRACK)/%_trimmed_bismark_bt2.bw,$(BISULFITE_ALIGN_PREFIXES)) \\
-					$(patsubst %,$(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
-					$(patsubst %,$(DIR_RDATA)/%_bisulfite_bismark_simple_class_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
-					$(patsubst %,$(DIR_TRACK)/%_bisulfite_bismark_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_CLASS_SIMPLE)/%_bismark_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_RDATA)/%_bismark_simple_class_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_TRACK)/%_bismark_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(DIR_MULTIQC)/bisulfite/multiqc_report.html
 
 ########################################
@@ -91,8 +91,8 @@ $(DIR_TRACK)/%_trimmed_bismark_bt2.bw : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2
 ########################################
 .PHONY : bisulfite_simple_classification
 bisulfite_simple_classification : 	$(patsubst %,$(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
-									$(patsubst %,$(DIR_RDATA)/%_bisulfite_bismark_simple_class_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
-									$(patsubst %,$(DIR_TRACK)/%_bisulfite_bismark_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
+									$(patsubst %,$(DIR_RDATA)/%_bismark_simple_class_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
+									$(patsubst %,$(DIR_TRACK)/%_bismark_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
 
 # Simple classification for percent methylation
 $(DIR_CLASS_SIMPLE)/%_bisulfite_simple_classification.bed : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.bedGraph.gz
