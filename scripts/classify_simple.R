@@ -91,7 +91,7 @@ if(platform == 'pulldown') {
 	    color = colors,
 	    stringsAsFactors=F)
 
-	column_names = c('chrom','start','end','perc_meth')
+	column_names = c('chr','start','end','perc_meth')
 	skip = 1
 }
 
@@ -149,7 +149,7 @@ merged$thickEnd = merged$end
 merged$score = 1000
 merged$strand = '.'
 
-merged_final = merged[,c('chrom','start','end','class','score','strand','thickStart','thickEnd','color')]
-merged_final = merged_final[order(merged_final$chrom, merged_final$start),]
+merged_final = merged[,c('chr','start','end','class','score','strand','thickStart','thickEnd','color')]
+merged_final = merged_final[order(merged_final$chr, merged_final$start),]
 
 readr::write_tsv(merged_final, path=outFile, col_names=F)
