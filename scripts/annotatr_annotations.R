@@ -290,7 +290,7 @@ if(log10p_flag) {
 if(resolution == 'region' && annot_type != 'sample_class' && annot_type != 'compare_class') {
 	regions_rnd = randomize_regions(regions = regions, genome = genome)
 } else if (resolution == 'base' && genome == 'hg19') {
-	regions_rnd = read.table(file = 'path/to/CpG_annots', header=TRUE, sep='\t', stringsAsFactors=F)
+	regions_rnd = NULL
 } else {
 	regions_rnd = NULL
 }
