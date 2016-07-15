@@ -183,13 +183,13 @@ if(annot_type == 'bismark') {
 	# BARPLOT + NUMERICALS + CATEGORICALS
 	# Random for barplot and categoricals
 
-	# head ./pulldown/pepr_peaks/INTpos_v_INTneg_hmc_pulldown_PePr_combined.bed
-	# chr1	70760670	70761490	INTpos	245.943822054	.	6.5588413905	7.4943442631e-16	1.41424309192e-09
-	# chr14	68731580	68732810	INTneg	333.178100172	.	8.8852092139	2.11278442242e-15	2.6579961895e-09
-	# chr19	49923650	49924470	INTpos	167.462258567	.	4.4658913717	8.00430994576e-15	7.5523886073e-09
-	# chr10	32465030	32466260	INTneg	117.736116164	.	3.13979227207	1.16899565361e-14	8.82395561008e-09
+	# head pulldown/pepr_peaks/IDH2mut_v_NBM_hmc_pulldown_PePr_combined.bed
+	# chr21	46387680	46388640	IDH2mut	2.80016862356	*	2.28100636773e-165
+	# chr21	36207120	36208800	IDH2mut	3.36810346155	*	2.74839325284e-143
+	# chr21	39810080	39810880	IDH2mut	4.23550374893	*	1.25690543952e-142
+	# chr21	46902720	46904640	IDH2mut	5.45917702717	*	1.27951073684e-106
 	col_names = c('chr','start','end','group','fold','pval')
-	col_types = 'ciic--dd-'
+	col_types = 'ciicd-d'
 	stranded = FALSE
 	classifier_flag = FALSE
 	log10p_flag = TRUE
