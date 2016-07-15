@@ -12,7 +12,7 @@ option_list = list(
   make_option('--genome', type='character', help='[Required] The shortname for the genome used, e.g. hg19, mm9, rn4.'),
   make_option('--annot_type', type='character', help='[Required] One of bismark, simple_bisulfite_bismark, macs2, simple_pulldown_macs2, sample_class, methylSig, PePr, simple_pulldown_PePr, or compare_class. Indicates what type of data is being annotated.'),
   make_option('--group1', type='character', help='[Required] A character indicating the name of group1 or NULL.'),
-  make_option('--group0', type='character', help='[Required] A character indicating the name of group2 or NULL.')
+  make_option('--group2', type='character', help='[Required] A character indicating the name of group2 or NULL.')
 )
 opt = parse_args(OptionParser(option_list=option_list))
 
@@ -25,9 +25,9 @@ if(!is.null(opt$group1)) {
 	group1 = opt$group1
 	chip1 = group1
 }
-if(!is.null(opt$group0)) {
-	group0 = opt$group0
-	chip2 = group0
+if(!is.null(opt$group2)) {
+	group2 = opt$group2
+	chip2 = group2
 }
 
 # Interpret mark
@@ -486,7 +486,7 @@ if(annot_type == 'methylSig') {
 		facet_order = annot_all_order,
 		bin_width = 5,
 		plot_title = sprintf('%s meth. diff. over annotations', prefix),
-		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0))
+		x_label = sprintf('Methylation Difference (%s - %s)', group1, group2))
 	ggplot2::ggsave(filename = file_png, plot = plot_methdiff, width = 8, height = 8)
 
 	##############################
@@ -499,7 +499,7 @@ if(annot_type == 'methylSig') {
 		facet = 'annot_type',
 		facet_order = annot_all_order,
 		plot_title = sprintf('%s meth. diff. vs -log10(pval)', prefix),
-		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
+		x_label = sprintf('Methylation Difference (%s - %s)', group1, group2),
 		y_label = '-log10(pvalue)')
 	ggplot2::ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
 }
