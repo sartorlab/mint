@@ -212,7 +212,7 @@ if(annot_type == 'bismark') {
 	# chr21	10132638	10133209	diff_hmc_weak	1000	.	10132638	10133209	102,102,255
 	# chr21	10135234	10135504	diff_hmc_weak	1000	.	10135234	10135504	102,102,255
 	col_names = c('chr','start','end','class')
-	col_types = 'ciic----'
+	col_types = 'ciic-----'
 	stranded = FALSE
 	classifier_flag = TRUE
 	log10p_flag = FALSE
