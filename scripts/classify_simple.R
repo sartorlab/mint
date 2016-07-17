@@ -144,7 +144,7 @@ if(platform == 'pulldown') {
 
 	# Direction
 	direction = sapply(peaks$DM_status, function(dm) {
-		if(dm == group0) {
+		if(dm == group1) {
 			return(1)
 		} else if (dm == group0){
 			return(5)
