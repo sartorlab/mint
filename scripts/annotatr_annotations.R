@@ -222,9 +222,13 @@ if(annot_type == 'bismark') {
 
 	# Make the correct category ordering
 	if (mark == 'hmc') {
-		cats_order = c('diff_hmc_strong','diff_hmc_mod','diff_hmc_weak')
+		cats_order = c(
+			paste('diff', chip1, c('hmc_strong','hmc_mod','hmc_weak'), sep='_'),
+			paste('diff', chip2, c('hmc_strong','hmc_mod','hmc_weak'), sep='_'))
 	} else if (mark == 'mc') {
-		cats_order = c('diff_mc_strong','diff_mc_mod','diff_mc_weak')
+		cats_order = c(
+			paste('diff', chip1, c('mc_strong','mc_mod','mc_weak'), sep='_'),
+			paste('diff', chip2, c('mc_strong','mc_mod','mc_weak'), sep='_'))
 	}
 
 	# Variables for plot_categorical usage
