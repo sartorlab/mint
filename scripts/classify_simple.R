@@ -80,7 +80,7 @@ if(platform == 'pulldown') {
 				paste('diff', chip1, c('mc_weak','mc_mod','mc_strong'), sep='_'),
 				paste('diff', chip2, c('mc_weak','mc_mod','mc_strong'), sep='_'))
 		} else if (mark == 'hmc') {
-			colors = c('102,102,255','0,0,255','0,0,102','102,255,255','0,204,204','0','102','102')
+			colors = c('102,102,255','0,0,255','0,0,102','102,255,255','0,204,204','0,102,102')
 			classes = c(
 				paste('diff', chip1, c('hmc_weak','hmc_mod','hmc_strong'), sep='_'),
 				paste('diff', chip2, c('hmc_weak','hmc_mod','hmc_strong'), sep='_'))
