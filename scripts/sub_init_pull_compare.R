@@ -173,7 +173,7 @@ if(bool_pull_comp) {
 			'',
 			'# Rule for simple classification of combined PePr peaks',
 			sprintf('%s : %s', simple_bed, combined_bed),
-			'	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@',
+			'	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@ --group1 $(CHIP1_NAME_%s) --group0 $(CHIP2_NAME_%s)',
 			'',
 			'# Rule for annotatr of PePr simple classifications',
 			sprintf('%s : %s', simple_rdata, simple_bed),

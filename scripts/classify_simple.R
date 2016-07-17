@@ -5,15 +5,24 @@ library(optparse)
 option_list = list(
     make_option('--project', type='character'),
     make_option('--inFile', type='character'),
-	make_option('--outFile', type='character')
+	make_option('--outFile', type='character'),
+	make_option('--group1', type='character'),
+	make_option('--group0', type='character')
 )
 opt = parse_args(OptionParser(option_list=option_list))
 project = opt$project
 inFile = opt$inFile		# Can be macs2 peaks or bismark bedGraphs
 outFile = opt$outFile	# Is the bed file with *_mark_pulldown_simple_classification.bed
 
-# Set working directory
-# Working directory should be projects/project
+# If the group names are not NULL, use them
+if(!is.null(opt$group1)) {
+	group1 = opt$group1
+	chip1 = group1
+}
+if(!is.null(opt$group0)) {
+	group0 = opt$group0
+	chip2 = group0
+}
 
 # Interpret platform
 if(grepl('pulldown', inFile)) {
@@ -54,24 +63,35 @@ if(platform == 'pulldown') {
 			colors = c('102,102,255','0,0,255','0,0,102')
 			classes = c('hmc_low','hmc_med','hmc_high')
 		}
+
+		classification = data.frame(
+			code = c(1,2,3),
+			class = classes,
+			color = colors,
+			stringsAsFactors=F)
+
 	} else if (peak_type == 'PePr') {
 		column_names = c('chr','start','end','DM_status','fold','strand','pval')
 		skip = 0
 
 		if(mark == 'mc') {
-			colors = c('255,102,102','255,0,0','102,0,0')
-			classes = c('diff_mc_weak','diff_mc_mod','diff_mc_strong')
+			colors = c('255,102,102','255,0,0','102,0,0','255,255,102','204,204,0','102,102,0')
+			classes = c(
+				paste('diff', chip1, c('mc_weak','mc_mod','mc_strong'), sep='_'),
+				paste('diff', chip2, c('mc_weak','mc_mod','mc_strong'), sep='_'))
 		} else if (mark == 'hmc') {
-			colors = c('102,102,255','0,0,255','0,0,102')
-			classes = c('diff_hmc_weak','diff_hmc_mod','diff_hmc_strong')
+			colors = c('102,102,255','0,0,255','0,0,102','102,255,255','0,204,204','0','102','102')
+			classes = c(
+				paste('diff', chip1, c('hmc_weak','hmc_mod','hmc_strong'), sep='_'),
+				paste('diff', chip2, c('hmc_weak','hmc_mod','hmc_strong'), sep='_'))
 		}
-	}
 
-	classification = data.frame(
-		code = c(1,2,3),
-		class = classes,
-		color = colors,
-		stringsAsFactors=F)
+		classification = data.frame(
+			code = c(1,2,3,5,10,15),
+			class = classes,
+			color = colors,
+			stringsAsFactors=F)
+	}
 
 } else if (platform == 'bisulfite') {
 	if(mark == 'mc_hmc') {
@@ -122,10 +142,22 @@ if(platform == 'pulldown') {
 	second_third = which(peaks$fold >= fold_thirds[2] & peaks$fold < fold_thirds[3])
 	third_third = which(peaks$fold >= fold_thirds[3])
 
+	# Direction
+	direction = sapply(peaks$DM_status, function(dm) {
+		if(dm == group0) {
+			return(1)
+		} else if (dm == group0){
+			return(5)
+		}
+	})
+
 	# Encode the peaks
 	peaks$code = 1
 	peaks$code[second_third] = 2
 	peaks$code[third_third] = 3
+
+	# Encode the peaks with Direction
+	peaks$code = peaks$code * direction
 
 } else if (platform == 'bisulfite') {
 

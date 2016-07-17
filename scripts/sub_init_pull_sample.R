@@ -64,7 +64,7 @@ pulldown_simple_classification : 	$(patsubst %,$(DIR_CLASS_SIMPLE)/%_macs2_simpl
 
 # Rule for simple classification of macs2 peaks
 $(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_classification.bed : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.narrowPeak
-	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
+	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@ --group1 NULL --group0 NULL
 
 # Rule for annotatr of simple classification
 $(DIR_RDATA)/%_pulldown_macs2_simple_classification_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_classification.bed

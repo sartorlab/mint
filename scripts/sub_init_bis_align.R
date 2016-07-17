@@ -96,7 +96,7 @@ bisulfite_simple_classification : 	$(patsubst %,$(DIR_CLASS_SIMPLE)/%_bisulfite_
 
 # Simple classification for percent methylation
 $(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.bedGraph.gz
-	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@
+	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@ --group1 NULL --group0 NULL
 
 # Rule for annotatr of simple classification
 $(DIR_RDATA)/%_bisulfite_bismark_simple_classification_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed

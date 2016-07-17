@@ -206,11 +206,12 @@ if(annot_type == 'bismark') {
 	# BARPLOT + CATEGORICALS
 	# Random for barplot and categoricals
 
-	# head ./classifications/simple/IDH2mut_1_hmc_pulldown_PePr_simple_classification.bed
-	# chr21	9944160	9944341	diff_hmc_weak	1000	.	9944160	9944341	102,102,255
-	# chr21	9999539	9999701	diff_hmc_weak	1000	.	9999539	9999701	102,102,255
-	# chr21	10132638	10133209	diff_hmc_weak	1000	.	10132638	10133209	102,102,255
-	# chr21	10135234	10135504	diff_hmc_weak	1000	.	10135234	10135504	102,102,255
+	# head classifications/simple/HPVpos_v_HPVneg_hmc_pulldown_pulldown_PePr_simple_classification.bed
+	# chr1	565250	565350	diff_hmc_weak	1000	.	565250	565350	102,102,255
+	# chr1	565700	565800	diff_hmc_weak	1000	.	565700	565800	102,102,255
+	# chr1	565900	566000	diff_hmc_weak	1000	.	565900	566000	102,102,255
+	# chr1	565950	566100	diff_hmc_strong	1000	.	565950	566100	0,0,102
+	# chr1	567350	567450	diff_hmc_strong	1000	.	567350	567450	0,0,102
 	col_names = c('chr','start','end','class')
 	col_types = 'ciic-----'
 	stranded = FALSE
