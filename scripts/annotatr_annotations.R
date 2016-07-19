@@ -486,7 +486,7 @@ if(annot_type == 'methylSig') {
 	# Methylation difference over annotations
 	file_png = sprintf('summary/figures/%s_methdiff.png', prefix)
 	plot_methdiff = plot_numerical(
-		tbl = annotated_regions,
+		tbl = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
 		x = 'meth_diff',
 		facet = 'annot_type',
 		facet_order = annot_all_order,
@@ -499,7 +499,7 @@ if(annot_type == 'methylSig') {
 	# Volcano plots over annotations
 	file_png = sprintf('summary/figures/%s_volcano.png', prefix)
 	plot_volcano = plot_numerical(
-		tbl = annotated_regions,
+		tbl = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
 		x = 'meth_diff',
 		y = 'pvalue',
 		facet = 'annot_type',
