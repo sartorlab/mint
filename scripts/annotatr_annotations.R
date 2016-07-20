@@ -501,12 +501,12 @@ if(annot_type == 'methylSig') {
 	plot_volcano = plot_numerical(
 		tbl = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
 		x = 'meth_diff',
-		y = 'pvalue',
+		y = 'pval',
 		facet = 'annot_type',
 		facet_order = annot_all_order,
 		plot_title = sprintf('%s meth. diff. vs -log10(pval)', prefix),
 		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
-		y_label = '-log10(pvalue)')
+		y_label = '-log10(pval)')
 	ggplot2::ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
 }
 
