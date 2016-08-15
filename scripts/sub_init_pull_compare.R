@@ -245,7 +245,7 @@ OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num
 		'########################################',
 		'',
 		'.PHONY : pulldown_compare',
-		sprintf('pulldown_compare : pulldown_align %s', paste(pulldown_compares, collapse=' ')),
+		sprintf('pulldown_compare : %s', paste(pulldown_compares, collapse=' ')),
 		'',
 		pulldown_compare_rules,
 		'',

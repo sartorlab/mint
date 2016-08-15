@@ -289,7 +289,7 @@ OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount
 		'########################################',
 		'',
 		'.PHONY : bisulfite_compare',
-		sprintf('bisulfite_compare : bisulfite_align %s', paste(bisulfite_compares, collapse=' ')),
+		sprintf('bisulfite_compare : %s', paste(bisulfite_compares, collapse=' ')),
 		'',
 		bisulfite_compare_rules,
 		'',
