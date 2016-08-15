@@ -102,7 +102,7 @@ OPTS_TRIMGALORE_PULLDOWN = --quality 20 --illumina --stringency 6 -e 0.2 --gzip 
 
 # bowtie2
 # For bowtie2 parameters see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml
-OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
+OPTS_BOWTIE2 = -q --no-unal -x $(BOWTIE2_GENOME_PATH) -U
 '
 cat(config_pull_align, file = file_config, sep='\n', append=T)
 
