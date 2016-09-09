@@ -351,7 +351,7 @@ if(genome %in% c('hg19','hg38','mm9','mm10')) {
 # Must have read in the file to deduce the classes
 # Created variables: cats_order
 if (annot_type == 'sample_class') {
-	cats = unique(r$name)
+	cats = unique(regions$name)
 	if('mc_or_hmc' %in% cats) {
 		# hybrid sample
 		cats_order = c(
