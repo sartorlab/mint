@@ -144,7 +144,7 @@ if(annot_type == 'bismark') {
 	# chr1	10488	10490	unclassifiable	1000	.	10488	10490	192,192,192
 	# chr1	10492	10494	unclassifiable	1000	.	10492	10494	192,192,192
 	col_names = c('chr','start','end','class')
-	col_types = 'ciic----'
+	col_types = 'ciic-----'
 	stranded = FALSE
 	classifier_flag = TRUE
 	log10p_flag = FALSE
@@ -244,7 +244,7 @@ if(annot_type == 'bismark') {
 	# chr1	10162	10185	unclassifiable	1000	.	10162	10185	192,192,192
 	# chr1	10185	10276	no_DM	1000	.	10185	10276	0,0,0
 	col_names = c('chr','start','end','class')
-	col_types = 'ciic----'
+	col_types = 'ciic-----'
 	stranded = FALSE
 	classifier_flag = TRUE
 	log10p_flag = FALSE
