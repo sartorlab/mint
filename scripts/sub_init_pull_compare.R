@@ -112,7 +112,7 @@ if(bool_pull_comp) {
 		bigbed = sprintf('$(DIR_TRACK)/%s_PePr_peaks.bb', var_name)
 		simple_bed = sprintf('$(DIR_CLASS_SIMPLE)/%s_PePr_simple_classification.bed', var_name)
 		simple_bb = sprintf('$(DIR_TRACK)/%s_PePr_simple_classification.bb', var_name)
-		simple_rdata = sprintf('$(DIR_RDATA)/%s_PePr_simple_class_annotatr_analysis.RData', var_name)
+		simple_rdata = sprintf('$(DIR_RDATA)/%s_PePr_simple_classification_annotatr_analysis.RData', var_name)
 
 		########################################################################
 		# Variables for the makefile
