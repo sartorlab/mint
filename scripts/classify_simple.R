@@ -121,6 +121,7 @@ peaks = readr::read_tsv(inFile, col_names = column_names, skip = skip)
 # Create the code column in the appropriate manner
 if(platform == 'pulldown') {
 
+	# Cap the macs2 scores at 1000 until Tao Liu fixes this
 	if(peak_type == 'macs2') {
 		peaks[which(peaks$score > 1000),'score'] = 1000
 	}
@@ -135,29 +136,32 @@ if(platform == 'pulldown') {
 	minimum_fold = min(peaks$fold)
 	maximum_fold = min(peaks$fold[which(fold_percentiles==100)])
 	fold_range = c(minimum_fold, maximum_fold)
-	fold_thirds = seq(floor(min(fold_range)), ceiling(max(fold_range)), by=(ceiling(max(fold_range))-floor(min(fold_range)))/3 )
+	fold_thirds = seq(floor(min(fold_range)), ceiling(max(fold_range)), by = (ceiling(max(fold_range)) - floor(min(fold_range)))/3 )
 
 	# Find the indices of peaks in the first, second, and third thirds
 	first_third = which(peaks$fold < fold_thirds[2])
 	second_third = which(peaks$fold >= fold_thirds[2] & peaks$fold < fold_thirds[3])
 	third_third = which(peaks$fold >= fold_thirds[3])
 
-	# Direction
-	direction = sapply(peaks$DM_status, function(dm) {
-		if(dm == group1) {
-			return(1)
-		} else if (dm == group0){
-			return(5)
-		}
-	})
-
 	# Encode the peaks
 	peaks$code = 1
 	peaks$code[second_third] = 2
 	peaks$code[third_third] = 3
 
-	# Encode the peaks with Direction
-	peaks$code = peaks$code * direction
+	# If the peak_type is PePr, need to add directional status
+	if(peak_type == 'PePr') {
+		# Direction
+		direction = sapply(peaks$DM_status, function(dm) {
+			if(dm == group1) {
+				return(1)
+			} else if (dm == group0){
+				return(5)
+			}
+		})
+
+		# Encode the peaks with Direction
+		peaks$code = peaks$code * direction
+	}
 
 } else if (platform == 'bisulfite') {
 
