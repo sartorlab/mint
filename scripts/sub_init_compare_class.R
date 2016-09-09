@@ -157,7 +157,7 @@ $(DIR_TRACK)/%%_compare_classification.bb : $(DIR_CLASS_COMPARE)/%%_compare_clas
 
 # Rule for annotatr of compare classification
 $(DIR_RDATA)/%%_compare_classification_annotatr_analysis.RData : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
-	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type compare_class --group1 NULL --group2 NULL
+	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type compare_class --group1 NULL --group0 NULL
 
 # Classification BED
 .PRECIOUS : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
