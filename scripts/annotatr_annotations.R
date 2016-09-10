@@ -318,6 +318,8 @@ if(genome %in% c('hg19','hg38','mm9','mm10')) {
 			'knownGenes_5UTRs',
 			'knownGenes_exons',
 			'knownGenes_introns',
+			'knownGenes_exonintronboundaries',
+			'knownGenes_intronexonboundaries',
 			'knownGenes_3UTRs',
 			'knownGenes_intergenic'), sep='_')
 		annot_all_order = c(
@@ -335,6 +337,8 @@ if(genome %in% c('hg19','hg38','mm9','mm10')) {
 			'knownGenes_5UTRs',
 			'knownGenes_exons',
 			'knownGenes_introns',
+			'knownGenes_exonintronboundaries',
+			'knownGenes_intronexonboundaries',
 			'knownGenes_3UTRs',
 			'knownGenes_intergenic'), sep='_')
 		annot_all_order = c(
