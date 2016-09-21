@@ -1,7 +1,7 @@
 # Configuration header
 config_header = sprintf('# Configuration for mint pipeline analyses
 
-# This makefile was generated using mint v0.1.5
+# This makefile was generated using mint v0.2.0
 
 ################################################################################
 # Project and experimental information
@@ -9,7 +9,18 @@ config_header = sprintf('# Configuration for mint pipeline analyses
 # Project name
 PROJECT = %s
 # Genome
-GENOME = %s', project, genome)
+GENOME = %s
+
+################################################################################
+# Genome paths
+# Genomes, like as downloaded from iGenomes, will also contain bisulfite
+# converted genomes for
+GENOME_PATH := %s
+# Location of bowtie2 indexes
+BOWTIE2_GENOME_PATH := %s/genome
+# Location of chromosome length file
+CHROM_PATH := %s',
+	project, genome, genomepath, genomepath, chrompath)
 cat(config_header, file = 'config_header.mk', sep='\n')
 
 ################################################################################

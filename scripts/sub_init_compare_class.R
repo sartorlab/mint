@@ -148,7 +148,7 @@ make_rule_class_compare = sprintf('
 # Master rule
 .PHONY : compare_classification
 compare_classification : $(patsubst %%,$(DIR_TRACK)/%%_compare_classification.bb,$(COMPARE_CLASS_PREFIXES)) \\
-		$(patsubst %%,$(DIR_RDATA)/%%_compare_class_annotatr_analysis.RData,$(COMPARE_CLASS_PREFIXES)) \\
+		$(patsubst %%,$(DIR_RDATA)/%%_compare_classification_annotatr_analysis.RData,$(COMPARE_CLASS_PREFIXES)) \\
 		$(patsubst %%,$(DIR_CLASS_COMPARE)/%%_compare_classification.bed,$(COMPARE_CLASS_PREFIXES))
 
 # Rule for compare classification bigBed
@@ -156,12 +156,8 @@ $(DIR_TRACK)/%%_compare_classification.bb : $(DIR_CLASS_COMPARE)/%%_compare_clas
 	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@
 
 # Rule for annotatr of compare classification
-$(DIR_RDATA)/%%_compare_class_annotatr_analysis.RData : $(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt
-	$(PATH_TO_R) ../../scripts/annotatr_classification.R --file $< --genome $(GENOME) --group1 NULL --group2 NULL
-
-.INTERMEDIATE : $(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt
-$(DIR_CLASS_COMPARE)/%%_compare_class_for_annotatr.txt : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
-	cut -f 1-4 $< > $@
+$(DIR_RDATA)/%%_compare_classification_annotatr_analysis.RData : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
+	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type compare_class --group1 NULL --group0 NULL
 
 # Classification BED
 .PRECIOUS : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed

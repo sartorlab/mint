@@ -91,7 +91,8 @@ if(opt$dmtype == 'DMR') {
 		T.approx = opt$T.approx,
         num.cores= opt$ncores)
 
-    write.methylSigDiff(diff_meth, file=sprintf('bisulfite/methylsig_calls/%s.txt', prefix), row.names=F,quote=F,sep='\t')
+    write.methylSigDiff(diff_meth, file=sprintf('bisulfite/methylsig_calls/%s.txt', prefix),
+		row.names=F, col.names=F, quote=F, sep='\t')
 
 } else {
 	stop('Error in methylSig run. Invalid OPT_DM_TYPE in config.mk. Must be DMC for CpG resolution or DMR for regions of winsize.tile resolution.')
