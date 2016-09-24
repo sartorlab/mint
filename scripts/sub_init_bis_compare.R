@@ -200,7 +200,7 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 		'################################################################################',
 		'# Rule for combining the chromosome-wise methylSig results',
 		sprintf('%s : %s', msig_results, paste(msig_chr_results, collapse=' ')),
-		'	cat $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@',
+		"	cat $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n | awk -v OFS='\\t' '$$2 != \"start\" { print $$0 }' > $@",
 		'',
 		'# Rule for methylSig filtering for annotatr and bigWig',
 		sprintf('.INTERMEDIATE : %s', msig_tmp_results),
