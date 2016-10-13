@@ -126,7 +126,7 @@ sample_classification :     $(patsubst %%,$(DIR_TRACK)/%%_sample_classification.
 
 # Rule for sample classification bigBed
 $(DIR_TRACK)/%%_sample_classification.bb : $(DIR_CLASS_SAMPLE)/%%_sample_classification.bed
-    $(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@
+    $(PATH_TO_BED2BB) $^ $(CHROM_PATH) $@
 
 # Rule for annotatr of sample classification
 $(DIR_RDATA)/%%_sample_classification_annotatr_analysis.RData : $(DIR_CLASS_SAMPLE)/%%_sample_classification.bed

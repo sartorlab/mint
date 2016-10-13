@@ -54,7 +54,7 @@ $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak : $(DIR_PULL_MACS)/%_macs2_peaks.n
 
 # Rule for UCSC bigBed track
 $(DIR_TRACK)/%_macs2_peaks.bb : $(DIR_PULL_MACS)/%_macs2_peaks_tmp.narrowPeak
-    $(PATH_TO_BDG2BB) -type=bed6+4 -as=narrowPeak.as $^ $(CHROM_PATH) $@
+    $(PATH_TO_BED2BB) -type=bed6+4 -as=narrowPeak.as $^ $(CHROM_PATH) $@
 
 ########################################
 .PHONY : pulldown_simple_classification
@@ -72,7 +72,7 @@ $(DIR_RDATA)/%_pulldown_macs2_simple_classification_annotatr_analysis.RData : $(
 
 # Rule for UCSC bigBed track of simple classifiation
 $(DIR_TRACK)/%_pulldown_macs2_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_pulldown_macs2_simple_classification.bed
-    $(PATH_TO_BDG2BB) $< $(CHROM_PATH) $@
+    $(PATH_TO_BED2BB) $< $(CHROM_PATH) $@
 
 ########################################
 # Rule to delete all temporary files from make pulldown_sample

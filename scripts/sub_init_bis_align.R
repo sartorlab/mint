@@ -104,7 +104,7 @@ $(DIR_RDATA)/%_bisulfite_bismark_simple_classification_annotatr_analysis.RData :
 
 # Rule for UCSC bigBed track of simple classifiation
 $(DIR_TRACK)/%_bisulfite_bismark_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed
-    $(PATH_TO_BDG2BB) $< $(CHROM_PATH) $@
+    $(PATH_TO_BED2BB) $< $(CHROM_PATH) $@
 
 ########################################
 # Rule to do multiqc on the bisulfite_align results

@@ -153,7 +153,7 @@ compare_classification : $(patsubst %%,$(DIR_TRACK)/%%_compare_classification.bb
 
 # Rule for compare classification bigBed
 $(DIR_TRACK)/%%_compare_classification.bb : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
-    $(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@
+    $(PATH_TO_BED2BB) $^ $(CHROM_PATH) $@
 
 # Rule for annotatr of compare classification
 $(DIR_RDATA)/%%_compare_classification_annotatr_analysis.RData : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
