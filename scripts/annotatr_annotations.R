@@ -43,24 +43,29 @@ if(grepl('mc_hmc', file)) {
 ################################################################################
 # Deal with the annot_type
 if(annot_type == 'bismark') {
-
+    # bis_align
     # BARPLOT + NUMERICALS
     # Random for barplot
 
-    # gunzip -c ./bisulfite/bismark/IDH2mut_2_mc_hmc_bisulfite_trimmed_bismark_bt2.bismark.cov.gz | head
-    # chr21    9437517    9437517    86.241610738255    257    41
-    # chr21    9437519    9437519    75.503355704698    225    73
-    # chr21    9437531    9437531    58.9225589225589    175    122
-    # chr21    9437533    9437533    86.5771812080537    258    40
-    col_names = c('chr','start','perc_meth','coverage')
-    col_types = 'ci-di-'
-    stranded = FALSE
+    # head ./bisulfite/bismark/IDH2mut_2_mc_hmc_bisulfite_trimmed_bismark_bt2.bismark.cov
+    # chr21    9437517    9437517    86.241610738255    .   .    257
+    # chr21    9437519    9437519    75.503355704698    .   .    225
+    # chr21    9437531    9437531    58.9225589225589   .   .    175
+    # chr21    9437533    9437533    86.5771812080537   .   .    258
+    extraCols = c(coverage = 'integer')
+    rename_score = 'perc_meth'
+    rename_name = NULL
+    keepCols = c('perc_meth','coverage')
+    # col_names = c('chr','start','perc_meth','coverage')
+    # col_types = 'ci-di-'
+    # stranded = FALSE
     classifier_flag = FALSE
     log10p_flag = FALSE
     resolution = 'base'
-    prefix = gsub('_bt2.bismark.cov.gz','', basename(file))
+    prefix = gsub('_bt2.bismark.cov','', basename(file))
     # No categories
 } else if (annot_type == 'simple_bisulfite_bismark') {
+    # bis_align
     # BARPLOT + CATEGORICALS
     # Random for barplot and categoricals
 
@@ -69,9 +74,13 @@ if(annot_type == 'bismark') {
     # chr1    249239100    249239101    mc_hmc_high    1000    .    249239100    249239101    102,0,102
     # chr1    249239104    249239105    mc_hmc_high    1000    .    249239104    249239105    102,0,102
     # chr1    249239117    249239118    mc_hmc_high    1000    .    249239117    249239118    102,0,102
-    col_names = c('chr','start','end','class')
-    col_types = 'ciic-----'
-    stranded = FALSE
+    extraCols = NULL
+    rename_score = NULL
+    rename_name = 'class'
+    keepCols = c('class')
+    # col_names = c('chr','start','end','class')
+    # col_types = 'ciic-----'
+    # stranded = FALSE
     classifier_flag = TRUE
     log10p_flag = FALSE
     resolution = 'base'
@@ -90,6 +99,7 @@ if(annot_type == 'bismark') {
     x_str = 'class'
     x_desc = 'Bisulfite Simple Classification'
 } else if (annot_type == 'macs2') {
+    # pulldown_sample
     # BARPLOT + NUMERICALS
     # Random for barplot
 
@@ -98,15 +108,20 @@ if(annot_type == 'bismark') {
     # chr21    15471800    15472211    IDH2mut_2_hmc_pulldown_macs2_peak_2    146    .    7.33008    18.53385    14.66105    186
     # chr21    15855465    15855886    IDH2mut_2_hmc_pulldown_macs2_peak_3    77    .    4.05129    11.47467    7.78926    178
     # chr21    15865175    15865647    IDH2mut_2_hmc_pulldown_macs2_peak_4    322    .    6.33401    36.40632    32.21310    240
-    col_names = c('chr','start','end','name','fold','pval')
-    col_types = 'ciic--dd--'
-    stranded = FALSE
+    extraCols = c(fold = 'numeric', pval = 'numeric', qval = 'numeric', summit = 'numeric')
+    rename_score = NULL
+    rename_name = NULL
+    keepCols = c('fold','pval')
+    # col_names = c('chr','start','end','name','fold','pval')
+    # col_types = 'ciic--dd--'
+    # stranded = FALSE
     classifier_flag = FALSE
     log10p_flag = FALSE
     resolution = 'region'
     prefix = gsub('_peaks.narrowPeak','', basename(file))
     # No categories
 } else if (annot_type == 'simple_pulldown_macs2') {
+    # pulldown_sample
     # BARPLOT + CATEGORICALS
     # Random for barplot and categoricals
 
@@ -115,9 +130,13 @@ if(annot_type == 'bismark') {
     # chr21    9999539    9999701    hmc_low    1000    .    9999539    9999701    102,102,255
     # chr21    10132638    10133209    hmc_low    1000    .    10132638    10133209    102,102,255
     # chr21    10135234    10135504    hmc_low    1000    .    10135234    10135504    102,102,255
-    col_names = c('chr','start','end','class')
-    col_types = 'ciic-----'
-    stranded = FALSE
+    extraCols = NULL
+    rename_name = 'class'
+    rename_score = NULL
+    keepCols = c('class')
+    # col_names = c('chr','start','end','class')
+    # col_types = 'ciic-----'
+    # stranded = FALSE
     classifier_flag = TRUE
     log10p_flag = FALSE
     resolution = 'region'
@@ -134,6 +153,7 @@ if(annot_type == 'bismark') {
     x_str = 'class'
     x_desc = 'macs2 Simple Classification'
 } else if (annot_type == 'sample_class') {
+    # sample_classification
     # BARPLOT + CATEGORICALS
     # Random for barplot and categoricals
     # NOTE: In the hybrid case there are so many regions that the All bar could
@@ -144,9 +164,13 @@ if(annot_type == 'bismark') {
     # chr1    10483    10485    unclassifiable    1000    .    10483    10485    192,192,192
     # chr1    10488    10490    unclassifiable    1000    .    10488    10490    192,192,192
     # chr1    10492    10494    unclassifiable    1000    .    10492    10494    192,192,192
-    col_names = c('chr','start','end','class')
-    col_types = 'ciic-----'
-    stranded = FALSE
+    extraCols = NULL
+    rename_name = 'class'
+    rename_score = NULL
+    keepCols = c('class')
+    # col_names = c('chr','start','end','class')
+    # col_types = 'ciic-----'
+    # stranded = FALSE
     classifier_flag = TRUE
     log10p_flag = FALSE
     resolution = 'region'
@@ -159,16 +183,21 @@ if(annot_type == 'bismark') {
     x_str = 'class'
     x_desc = 'Sample Classification'
 } else if (annot_type == 'methylSig') {
+    # bis_compare
     # BARPLOT + NUMERICALS + CATEGORICALS
     # Random for barplot and categoricals
     # NOTE: Randoms will lack the CpG bias of methylSig regions...
 
     # head ./bisulfite/methylsig_calls/IDH2mut_v_NBM_mc_hmc_bisulfite_DMR_methylSig_for_annotatr.txt
-    # chr21    9437472    9437521    0.000228579898882106    IDH2mut    28.6754246208103    81.4241341438466    52.7487095230364
-    # chr21    9437522    9437571    0.0208553163921381    NBM    22.738738618692    85.8751984050635    63.1364597863715
-    col_names = c('chr','start','end','pval','DM_status','meth_diff','mu1','mu0')
-    col_types = 'ciidcddd'
-    stranded = FALSE
+    # chr21    9437472    9437521   IDH2mut 0.00022857   .   28.675   81.424    52.748
+    # chr21    9437522    9437571   NBM     0.02085531   .   22.738   85.875    63.136
+    extraCols = c(meth_diff = 'numeric', mu1 = 'numeric', mu0 = 'numeric')
+    rename_score = 'pval'
+    rename_name = 'DM_status'
+    keepCols = c('pval','DM_status','meth_diff','mu1','mu0')
+    # col_names = c('chr','start','end','pval','DM_status','meth_diff','mu1','mu0')
+    # col_types = 'ciidcddd'
+    # stranded = FALSE
     classifier_flag = FALSE
     log10p_flag = TRUE
     resolution = 'region'
@@ -181,6 +210,7 @@ if(annot_type == 'bismark') {
     x_str = 'DM_status'
     x_desc = sprintf('Differential %s', mark)
 } else if (annot_type == 'PePr') {
+    # pulldown_compare
     # BARPLOT + NUMERICALS + CATEGORICALS
     # Random for barplot and categoricals
 
@@ -189,9 +219,13 @@ if(annot_type == 'bismark') {
     # chr21    36207120    36208800    IDH2mut    3.36810346155    *    2.74839325284e-143
     # chr21    39810080    39810880    IDH2mut    4.23550374893    *    1.25690543952e-142
     # chr21    46902720    46904640    IDH2mut    5.45917702717    *    1.27951073684e-106
-    col_names = c('chr','start','end','group','fold','pval')
-    col_types = 'ciicd-d'
-    stranded = FALSE
+    extraCols = c(pval = 'numeric')
+    rename_score = 'fold'
+    rename_name = 'group'
+    keepCols = c('pval','group','fold')
+    # col_names = c('chr','start','end','group','fold','pval')
+    # col_types = 'ciicd-d'
+    # stranded = FALSE
     classifier_flag = FALSE
     log10p_flag = TRUE
     resolution = 'region'
@@ -204,6 +238,7 @@ if(annot_type == 'bismark') {
     x_str = 'group'
     x_desc = sprintf('Differential %s', mark)
 } else if (annot_type == 'simple_pulldown_PePr') {
+    # pulldown_compare
     # BARPLOT + CATEGORICALS
     # Random for barplot and categoricals
 
@@ -213,9 +248,13 @@ if(annot_type == 'bismark') {
     # chr1    565900    566000    diff_hmc_weak    1000    .    565900    566000    102,102,255
     # chr1    565950    566100    diff_hmc_strong    1000    .    565950    566100    0,0,102
     # chr1    567350    567450    diff_hmc_strong    1000    .    567350    567450    0,0,102
-    col_names = c('chr','start','end','class')
-    col_types = 'ciic-----'
-    stranded = FALSE
+    extraCols = NULL
+    rename_name = 'class'
+    rename_score = NULL
+    keepCols = c('class')
+    # col_names = c('chr','start','end','class')
+    # col_types = 'ciic-----'
+    # stranded = FALSE
     classifier_flag = TRUE
     log10p_flag = FALSE
     resolution = 'region'
@@ -236,6 +275,7 @@ if(annot_type == 'bismark') {
     x_str = 'class'
     x_desc = 'PePr Simple Classification'
 } else if (annot_type == 'compare_class') {
+    # compare_classification
     # BARPLOT + CATEGORICALS
     # NOTE: There are so many regions that the All bar serves as the background
 
@@ -244,9 +284,13 @@ if(annot_type == 'bismark') {
     # chr1    10000    10162    no_DM    1000    .    10000    10162    0,0,0
     # chr1    10162    10185    unclassifiable    1000    .    10162    10185    192,192,192
     # chr1    10185    10276    no_DM    1000    .    10185    10276    0,0,0
-    col_names = c('chr','start','end','class')
-    col_types = 'ciic-----'
-    stranded = FALSE
+    extraCols = NULL
+    rename_name = 'class'
+    rename_score = NULL
+    keepCols = c('class')
+    # col_names = c('chr','start','end','class')
+    # col_types = 'ciic-----'
+    # stranded = FALSE
     classifier_flag = TRUE
     log10p_flag = FALSE
     resolution = 'region'
@@ -274,12 +318,11 @@ if(annot_type == 'bismark') {
 ################################################################################
 # Read the data and do some filtering / transformations as necessary
 regions = read_regions(
-    file = file,
+    con = file,
     genome = genome,
-    stranded = stranded,
-    col_names = col_names,
-    col_types = col_types,
-    quiet = FALSE)
+    extraCols = extraCols,
+    rename_name = rename_name,
+    rename_score = rename_score)
 
 # Filter out unclassifiable classification
 if(classifier_flag) {
@@ -306,50 +349,42 @@ if(resolution == 'region' && annot_type != 'sample_class' && annot_type != 'comp
 # Pick annotations and order them
 # Created variables: annot_cpg_order, annot_gene_order, annot_all_order
 if(genome %in% c('hg19','hg38','mm9','mm10')) {
-    if(genome == 'hg19') {
-        annot_cpg_order = paste(genome, c(
-            'cpg_islands',
-            'cpg_shores',
-            'cpg_shelves',
-            'cpg_inter'), sep='_')
-        annot_gene_order = paste(genome, c(
-            'enhancers_fantom',
-            'knownGenes_1to5kb',
-            'knownGenes_promoters',
-            'knownGenes_5UTRs',
-            'knownGenes_exons',
-            'knownGenes_introns',
-            'knownGenes_exonintronboundaries',
-            'knownGenes_intronexonboundaries',
-            'knownGenes_3UTRs',
-            'knownGenes_intergenic'), sep='_')
-        annot_all_order = c(
-            annot_cpg_order,
-            annot_gene_order)
-    } else {
-        annot_cpg_order = paste(genome, c(
-            'cpg_islands',
-            'cpg_shores',
-            'cpg_shelves',
-            'cpg_inter'), sep='_')
-        annot_gene_order = paste(genome, c(
-            'knownGenes_1to5kb',
-            'knownGenes_promoters',
-            'knownGenes_5UTRs',
-            'knownGenes_exons',
-            'knownGenes_introns',
-            'knownGenes_exonintronboundaries',
-            'knownGenes_intronexonboundaries',
-            'knownGenes_3UTRs',
-            'knownGenes_intergenic'), sep='_')
-        annot_all_order = c(
-            annot_cpg_order,
-            annot_gene_order)
+    annot_cpg_order = paste(genome, c(
+        'cpg_islands',
+        'cpg_shores',
+        'cpg_shelves',
+        'cpg_inter'), sep='_')
+    annot_gene_order = paste(genome, c(
+        'genes_1to5kb',
+        'genes_promoters',
+        'genes_5UTRs',
+        'genes_exons',
+        'genes_introns',
+        'genes_exonintronboundaries',
+        'genes_intronexonboundaries',
+        'genes_3UTRs',
+        'genes_intergenic'), sep='_')
+    annot_all_order = c(
+        annot_cpg_order,
+        annot_gene_order)
+
+    if(genome == 'hg19' || genome == 'mm9') {
+        annot_gene_order = c(annot_gene_order, paste(genome, 'enhancers_fantom', sep='_'))
+        annot_all_order = c(annot_all_order, paste(genome, 'enhancers_fantom', sep='_'))
+    }
+
+    if(genome == 'hg19' || genome == 'hg38' || genome == 'mm10') {
+        annot_gene_order = c(annot_gene_order, paste(genome, 'lncrna_gencode', sep='_'))
+        annot_all_order = c(annot_all_order, paste(genome, 'lncrna_gencode', sep='_'))
     }
 } else {
     # TODO: Add support for insertion of custom annotation path via command line
     stop('Only hg19, hg38, mm9, and mm10 annotations are supported for this part of mint at the moment.')
 }
+
+################################################################################
+# Build the annotations
+annotations = build_annotations(genome = genome, annotations = annot_all_order)
 
 ################################################################################
 # Order categories for sample classification case (others are above)
@@ -403,11 +438,11 @@ if(annot_type == 'macs2') {
 ################################################################################
 # Do the annotation of the regions
 
-annotated_regions = annotate_regions(regions = regions, annotations = annot_all_order)
+annotated_regions = annotate_regions(regions = regions, annotations = annotations)
 
 # If regions_rnd has GRanges class, then annotate, otherwise you read in the CpG annotation table
 if('GRanges' %in% is(regions_rnd)) {
-    annotated_regions_rnd = annotate_regions(regions = regions_rnd, annotations = annot_all_order)
+    annotated_regions_rnd = annotate_regions(regions = regions_rnd, annotations = annotations)
 } else {
     annotated_regions_rnd = NULL
 }

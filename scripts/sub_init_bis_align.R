@@ -75,6 +75,11 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov.gz $(DIR_BIS_BISMARK)/%_tri
     cd $(DIR_BIS_BISMARK); \\
     $(PATH_TO_EXTRACTOR) $(OPTS_EXTRACTOR) $(<F)
 
+# Rule for temporary extractor results for annotatr
+.INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov
+$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov.gz
+    gunzip -c $< | $(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3, $$4, ".", ".", $$5 + $$6}\' > $@
+
 # Rule for annotatr of extractor results
 $(DIR_RDATA)/%_trimmed_bismark_annotatr_analysis.RData : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov.gz
     $(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type bismark --group1 NULL --group0 NULL
