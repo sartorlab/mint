@@ -17,14 +17,14 @@ option_list = list(
     make_option('--ncores', type='integer', default=1),
     make_option('--quiet', type='logical', default=FALSE),
     make_option('--dmtype', type='character'),
-	make_option('--winsize.tile', type='integer'),
+    make_option('--winsize.tile', type='integer'),
     make_option('--dispersion', type='character'),
-	make_option('--local.disp', type='logical'),
-	make_option('--winsize.disp', type='integer'),
-	make_option('--local.meth', type='logical'),
-	make_option('--winsize.meth', type='integer'),
+    make_option('--local.disp', type='logical'),
+    make_option('--winsize.disp', type='integer'),
+    make_option('--local.meth', type='logical'),
+    make_option('--winsize.meth', type='integer'),
     make_option('--minpergroup', type='character'),
-	make_option('--T.approx', type='logical'),
+    make_option('--T.approx', type='logical'),
     make_option('--outprefix', type='character')
 )
 
@@ -68,12 +68,12 @@ if(opt$dmtype == 'DMR') {
         meth_tiled,
         group = c('Treatment' = max(treatment),'Control' = min(treatment)),
         dispersion = opt$dispersion,
-		local.disp = opt$local.disp,
-		winsize.disp = opt$winsize.disp,
-		local.meth = opt$local.meth,
-		winsize.meth = opt$winsize.meth,
+        local.disp = opt$local.disp,
+        winsize.disp = opt$winsize.disp,
+        local.meth = opt$local.meth,
+        winsize.meth = opt$winsize.meth,
         min.per.group = min_per_group,
-		T.approx = opt$T.approx,
+        T.approx = opt$T.approx,
         num.cores= opt$ncores)
 
     write.methylSigDiff(diff_meth, file=sprintf('bisulfite/methylsig_calls/%s.txt', prefix), row.names=F,quote=F,sep='\t')
@@ -82,20 +82,20 @@ if(opt$dmtype == 'DMR') {
     diff_meth = methylSigCalc(
         meth,
         group = c('Treatment' = max(treatment),'Control' = min(treatment)),
-		dispersion = opt$dispersion,
-		local.disp = opt$local.disp,
-		winsize.disp = opt$winsize.disp,
-		local.meth = opt$local.meth,
-		winsize.meth = opt$winsize.meth,
+        dispersion = opt$dispersion,
+        local.disp = opt$local.disp,
+        winsize.disp = opt$winsize.disp,
+        local.meth = opt$local.meth,
+        winsize.meth = opt$winsize.meth,
         min.per.group = min_per_group,
-		T.approx = opt$T.approx,
+        T.approx = opt$T.approx,
         num.cores= opt$ncores)
 
     write.methylSigDiff(diff_meth, file=sprintf('bisulfite/methylsig_calls/%s.txt', prefix),
-		row.names=F, col.names=F, quote=F, sep='\t')
+        row.names=F, col.names=F, quote=F, sep='\t')
 
 } else {
-	stop('Error in methylSig run. Invalid OPT_DM_TYPE in config.mk. Must be DMC for CpG resolution or DMR for regions of winsize.tile resolution.')
+    stop('Error in methylSig run. Invalid OPT_DM_TYPE in config.mk. Must be DMC for CpG resolution or DMR for regions of winsize.tile resolution.')
 }
 
 save.image(file=sprintf('RData/%s_analysis.RData', prefix))
