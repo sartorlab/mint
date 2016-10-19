@@ -16,25 +16,25 @@ make_var_bis_align_clean_tmp = 'BISFULITE_ALIGN_CLEAN_TMP := $(patsubst %,$(DIR_
 make_rule_bis_align = '########################################
 
 .PHONY : bisulfite_align
-bisulfite_align :     $(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
-                    $(patsubst %,$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
-                    $(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
-                    $(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam,$(BISULFITE_ALIGN_PREFIXES)) \\
-                    $(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
-                    $(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
-                    $(patsubst %,$(DIR_RDATA)/%_trimmed_bismark_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES))\\
-                    $(patsubst %,$(DIR_TRACK)/%_trimmed_bismark_bt2.bw,$(BISULFITE_ALIGN_PREFIXES)) \\
-                    $(patsubst %,$(DIR_CLASS_SIMPLE)/%_bismark_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
-                    $(patsubst %,$(DIR_RDATA)/%_bismark_simple_classification_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
-                    $(patsubst %,$(DIR_TRACK)/%_bismark_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
-                    $(DIR_MULTIQC)/bisulfite/multiqc_report.html
+bisulfite_align :	 $(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_RDATA)/%_trimmed_bismark_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES))\\
+					$(patsubst %,$(DIR_TRACK)/%_trimmed_bismark_bt2.bw,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_CLASS_SIMPLE)/%_bismark_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_RDATA)/%_bismark_simple_classification_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(patsubst %,$(DIR_TRACK)/%_bismark_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
+					$(DIR_MULTIQC)/bisulfite/multiqc_report.html
 
 ########################################
 .PHONY : bisulfite_raw_fastqc
 bisulfite_raw_fastqc : $(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES))
 
 $(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip :
-    $(PATH_TO_FASTQC) --format fastq --noextract --outdir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
+	$(PATH_TO_FASTQC) --format fastq --noextract --outdir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
 
 ########################################
 .PHONY : bisulfite_trim
@@ -42,7 +42,7 @@ bisulfite_trim : $(patsubst %,$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE
 
 # Rule for trim_galore
 $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz :
-    $(PATH_TO_TRIMGALORE) $(OPTS_TRIMGALORE_BISULFITE) --output_dir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
+	$(PATH_TO_TRIMGALORE) $(OPTS_TRIMGALORE_BISULFITE) --output_dir $(@D) $(DIR_BIS_RAW_FASTQS)/$*.fastq.gz
 
 ########################################
 .PHONY : bisulfite_trim_fastqc
@@ -50,7 +50,7 @@ bisulfite_trim_fastqc : $(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zi
 
 # Rule for FastQC on trimmed
 $(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz
-    $(PATH_TO_FASTQC) --format fastq --noextract --outdir $(@D) $<
+	$(PATH_TO_FASTQC) --format fastq --noextract --outdir $(@D) $<
 
 ########################################
 .PHONY : bisulfite_bismark
@@ -58,74 +58,74 @@ bisulfite_bismark : $(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam,$(
 
 # Rule for bismark alignment
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz
-    $(PATH_TO_BISMARK) $(OPTS_BISMARK) --output_dir $(@D) --temp_dir $(@D) $<
-    $(PATH_TO_SAMTOOLS) sort $@ $(patsubst %.bam,%,$@)
-    $(PATH_TO_SAMTOOLS) index $@
+	$(PATH_TO_BISMARK) $(OPTS_BISMARK) --output_dir $(@D) --temp_dir $(@D) $<
+	$(PATH_TO_SAMTOOLS) sort $@ $(patsubst %.bam,%,$@)
+	$(PATH_TO_SAMTOOLS) index $@
 
 ########################################
 .PHONY : bisulfite_extractor
-bisulfite_extractor :     $(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
-                        $(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
-                        $(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
-                        $(patsubst %,$(DIR_RDATA)/%_trimmed_bismark_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES))\\
-                        $(patsubst %,$(DIR_TRACK)/%_trimmed_bismark_bt2.bw,$(BISULFITE_ALIGN_PREFIXES)) \\
+bisulfite_extractor :	 $(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
+						$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
+						$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
+						$(patsubst %,$(DIR_RDATA)/%_trimmed_bismark_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES))\\
+						$(patsubst %,$(DIR_TRACK)/%_trimmed_bismark_bt2.bw,$(BISULFITE_ALIGN_PREFIXES)) \\
 
 # Rule for bismark methylation extractor
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov.gz $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam
-    cd $(DIR_BIS_BISMARK); \\
-    $(PATH_TO_EXTRACTOR) $(OPTS_EXTRACTOR) $(<F)
+	cd $(DIR_BIS_BISMARK); \\
+	$(PATH_TO_EXTRACTOR) $(OPTS_EXTRACTOR) $(<F)
 
 # Rule for temporary extractor results for annotatr
 .INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov.gz
-    gunzip -c $< | $(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3, $$4, ".", ".", $$5 + $$6}\' > $@
+	gunzip -c $< | $(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3, $$4, ".", ".", $$5 + $$6}\' > $@
 
 # Rule for annotatr of extractor results
 $(DIR_RDATA)/%_trimmed_bismark_annotatr_analysis.RData : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov.gz
-    $(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type bismark --group1 NULL --group0 NULL
+	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type bismark --group1 NULL --group0 NULL
 
 # Rule for temporary unzipping of extractor bedGraph
 .INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz
-    gunzip -c $< | $(PATH_TO_AWK) \'NR > 1 {print $$0}\' | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	gunzip -c $< | $(PATH_TO_AWK) \'NR > 1 {print $$0}\' | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 
 # Rules for UCSC bigWig track of extractor
 $(DIR_TRACK)/%_trimmed_bismark_bt2.bw : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph
-    $(PATH_TO_BDG2BW) $< $(CHROM_PATH) $@
+	$(PATH_TO_BDG2BW) $< $(CHROM_PATH) $@
 
 ########################################
 .PHONY : bisulfite_simple_classification
-bisulfite_simple_classification :     $(patsubst %,$(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
-                                    $(patsubst %,$(DIR_RDATA)/%_bismark_simple_classification_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
-                                    $(patsubst %,$(DIR_TRACK)/%_bismark_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
+bisulfite_simple_classification :	 $(patsubst %,$(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed,$(BISULFITE_ALIGN_PREFIXES)) \\
+									$(patsubst %,$(DIR_RDATA)/%_bismark_simple_classification_annotatr_analysis.RData,$(BISULFITE_ALIGN_PREFIXES)) \\
+									$(patsubst %,$(DIR_TRACK)/%_bismark_simple_classification.bb,$(BISULFITE_ALIGN_PREFIXES)) \\
 
 # Simple classification for percent methylation
 $(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.bedGraph.gz
-    $(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@ --group1 NULL --group0 NULL
+	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@ --group1 NULL --group0 NULL
 
 # Rule for annotatr of simple classification
 $(DIR_RDATA)/%_bisulfite_bismark_simple_classification_annotatr_analysis.RData : $(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed
-    $(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type simple_bisulfite_bismark --group1 NULL --group0 NULL
+	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type simple_bisulfite_bismark --group1 NULL --group0 NULL
 
 # Rule for UCSC bigBed track of simple classifiation
 $(DIR_TRACK)/%_bisulfite_bismark_simple_classification.bb : $(DIR_CLASS_SIMPLE)/%_bisulfite_bismark_simple_classification.bed
-    $(PATH_TO_BED2BB) $< $(CHROM_PATH) $@
+	$(PATH_TO_BED2BB) $< $(CHROM_PATH) $@
 
 ########################################
 # Rule to do multiqc on the bisulfite_align results
 .PHONY : bisulfite_multiqc
 bisulfite_multiqc : $(DIR_MULTIQC)/bisulfite/multiqc_report.html
 
-$(DIR_MULTIQC)/bisulfite/multiqc_report.html :     $(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
-                                                $(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
-                                                $(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES))
-    multiqc ./bisulfite --outdir $(@D)
+$(DIR_MULTIQC)/bisulfite/multiqc_report.html :	 $(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
+												$(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
+												$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_ALIGN_PREFIXES))
+	multiqc ./bisulfite --outdir $(@D)
 
 ########################################
 # Rule to delete all temporary files from make bis_align
 .PHONY : clean_bisulfite_align_tmp
 clean_bisulfite_align_tmp :
-    rm -f $(BISFULITE_ALIGN_CLEAN_TMP)
+	rm -f $(BISFULITE_ALIGN_CLEAN_TMP)
 
 ################################################################################
 '
@@ -163,50 +163,50 @@ cat(config_bis_align, file = file_config, sep='\n', append=T)
 #######################################
 # PBS script
 # bisulfite_align_q = c(
-#     '#!/bin/bash',
-#     '#### Begin PBS preamble',
-#     '#PBS -N bis_align',
-#     '#PBS -l nodes=1:ppn=15,walltime=24:00:00,pmem=8gb',
-#     '#PBS -A sartor_lab',
-#     '#PBS -q first',
-#     '#PBS -M rcavalca@umich.edu',
-#     '#PBS -m abe',
-#     '#PBS -j oe',
-#     '#PBS -V',
-#     '#### End PBS preamble',
-#     '# Put your job commands after this line',
-#     sprintf('cd ~/latte/mint/projects/%s/',project),
-#     'make -j 3 bisulfite_align')
+#	 '#!/bin/bash',
+#	 '#### Begin PBS preamble',
+#	 '#PBS -N bis_align',
+#	 '#PBS -l nodes=1:ppn=15,walltime=24:00:00,pmem=8gb',
+#	 '#PBS -A sartor_lab',
+#	 '#PBS -q first',
+#	 '#PBS -M rcavalca@umich.edu',
+#	 '#PBS -m abe',
+#	 '#PBS -j oe',
+#	 '#PBS -V',
+#	 '#### End PBS preamble',
+#	 '# Put your job commands after this line',
+#	 sprintf('cd ~/latte/mint/projects/%s/',project),
+#	 'make -j 3 bisulfite_align')
 # cat(bisulfite_align_q, file=sprintf('projects/%s/pbs_jobs/bisulfite_align.q', project), sep='\n')
 
 for(i in 1:nrow(bisulfite_samples)) {
-    # trackDb.txt entry for Bismark methylation calls
-    trackEntry = c(
-        sprintf('track %s_pct_meth', bisulfite_samples[i,'fullHumanID']),
-        sprintf('parent %s_sample', bisulfite_samples[i,'humanID']),
-        sprintf('bigDataUrl %s_trimmed_bismark_bt2.bw', bisulfite_samples[i,'fullHumanID']),
-        sprintf('shortLabel %s_pct_meth', bisulfite_samples[i,'fullHumanID']),
-        sprintf('longLabel %s_percent_methylation', bisulfite_samples[i,'fullHumanID']),
-        'visibility full',
-        'viewLimits 0:100',
-        'type bigWig',
-        'priority 1.4',
-        ' ')
-    cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+	# trackDb.txt entry for Bismark methylation calls
+	trackEntry = c(
+		sprintf('track %s_pct_meth', bisulfite_samples[i,'fullHumanID']),
+		sprintf('parent %s_sample', bisulfite_samples[i,'humanID']),
+		sprintf('bigDataUrl %s_trimmed_bismark_bt2.bw', bisulfite_samples[i,'fullHumanID']),
+		sprintf('shortLabel %s_pct_meth', bisulfite_samples[i,'fullHumanID']),
+		sprintf('longLabel %s_percent_methylation', bisulfite_samples[i,'fullHumanID']),
+		'visibility full',
+		'viewLimits 0:100',
+		'type bigWig',
+		'priority 1.4',
+		' ')
+	cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
-    # trackDb.txt entry for bisulfite simple classification results
-    trackEntry = c(
-        sprintf('track %s_simple_class', bisulfite_samples[i,'fullHumanID']),
-        sprintf('parent %s_sample', bisulfite_samples[i,'humanID']),
-        sprintf('bigDataUrl %s_simple_classification.bb', bisulfite_samples[i,'fullHumanID']),
-        sprintf('shortLabel %s_simp_class', bisulfite_samples[i,'fullHumanID']),
-        sprintf('longLabel %s_simple_classification', bisulfite_samples[i,'fullHumanID']),
-        'visibility pack',
-        'itemRgb on',
-        'type bigBed 9 .',
-        'priority 1.2',
-        ' ')
-    cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
+	# trackDb.txt entry for bisulfite simple classification results
+	trackEntry = c(
+		sprintf('track %s_simple_class', bisulfite_samples[i,'fullHumanID']),
+		sprintf('parent %s_sample', bisulfite_samples[i,'humanID']),
+		sprintf('bigDataUrl %s_simple_classification.bb', bisulfite_samples[i,'fullHumanID']),
+		sprintf('shortLabel %s_simp_class', bisulfite_samples[i,'fullHumanID']),
+		sprintf('longLabel %s_simple_classification', bisulfite_samples[i,'fullHumanID']),
+		'visibility pack',
+		'itemRgb on',
+		'type bigBed 9 .',
+		'priority 1.2',
+		' ')
+	cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 }
 
 }
