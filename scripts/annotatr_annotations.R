@@ -467,7 +467,7 @@ if(annot_type == 'macs2') {
 annotated_regions = annotate_regions(regions = regions, annotations = annotations)
 
 # If regions_rnd has GRanges class, then annotate, otherwise you read in the CpG annotation table
-if('GRanges' %in% is(regions_rnd)) {
+if(!is.null(regions_rnd)) {
 	annotated_regions_rnd = annotate_regions(regions = regions_rnd, annotations = annotations)
 } else {
 	annotated_regions_rnd = NULL
@@ -475,7 +475,13 @@ if('GRanges' %in% is(regions_rnd)) {
 
 ################################################################################
 # Summarize annotations
-count_annots = summarize_annotations(annotated_regions = annotated_regions, annotated_random = annotated_regions_rnd)
+if(!is.null(annotated_regions_rnd)) {
+	# Use randomized regions
+	count_annots = summarize_annotations(annotated_regions = annotated_regions, annotated_random = annotated_regions_rnd)
+} else {
+	# Do not use randomized regions
+	count_annots = summarize_annotations(annotated_regions = annotated_regions)
+}
 
 # Write it
 readr::write_tsv(x = count_annots, path = sprintf('summary/tables/%s_annotation_counts.txt', prefix))
@@ -523,7 +529,7 @@ if(annot_type == 'bismark') {
 	plot_coverage = plot_numerical(
 		annotated_regions = annotated_regions,
 		x = 'coverage',
-		facet = 'annot_type',
+		facet = 'annot.type',
 		facet_order = annot_all_order,
 		bin_width = 10,
 		plot_title = sprintf('%s coverage over annotations', prefix),
@@ -537,7 +543,7 @@ if(annot_type == 'bismark') {
 	plot_percmeth = plot_numerical(
 		annotated_regions = annotated_regions,
 		x = 'perc_meth',
-		facet = 'annot_type',
+		facet = 'annot.type',
 		facet_order = annot_all_order,
 		bin_width = 5,
 		plot_title = sprintf('%s perc. meth. over annotations', prefix),
@@ -554,7 +560,7 @@ if(annot_type == 'methylSig') {
 	plot_methdiff = plot_numerical(
 		annotated_regions = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
 		x = 'meth_diff',
-		facet = 'annot_type',
+		facet = 'annot.type',
 		facet_order = annot_all_order,
 		bin_width = 5,
 		plot_title = sprintf('%s meth. diff. over annotations', prefix),
@@ -568,7 +574,7 @@ if(annot_type == 'methylSig') {
 		annotated_regions = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
 		x = 'meth_diff',
 		y = 'pval',
-		facet = 'annot_type',
+		facet = 'annot.type',
 		facet_order = annot_all_order,
 		plot_title = sprintf('%s meth. diff. vs -log10(pval)', prefix),
 		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
@@ -625,7 +631,7 @@ if(annot_type == 'macs2') {
 	plot_foldchg = plot_numerical(
 		annotated_regions = annotated_regions,
 		x = 'fold',
-		facet = 'annot_type',
+		facet = 'annot.type',
 		facet_order = annot_all_order,
 		bin_width = 5,
 		plot_title = sprintf('%s fold change over annotations', prefix),
@@ -639,7 +645,7 @@ if(annot_type == 'macs2') {
 		annotated_regions = annotated_regions,
 		x = 'fold',
 		y = 'pval',
-		facet = 'annot_type',
+		facet = 'annot.type',
 		facet_order = annot_all_order,
 		plot_title = sprintf('%s fold change vs -log10(pval)', prefix),
 		x_label = 'Fold change IP / input',
@@ -683,7 +689,7 @@ if(annot_type == 'PePr') {
 	plot_foldchg = plot_numerical(
 		annotated_regions = subset(annotated_regions, group == chip1),
 		x = 'fold',
-		facet = 'annot_type',
+		facet = 'annot.type',
 		facet_order = annot_all_order,
 		bin_width = 5,
 		plot_title = sprintf('%s %s fold change over annotations', prefix, chip1),
@@ -697,7 +703,7 @@ if(annot_type == 'PePr') {
 		annotated_regions = subset(annotated_regions, group == chip1),
 		x = 'fold',
 		y = 'pval',
-		facet = 'annot_type',
+		facet = 'annot.type',
 		facet_order = annot_all_order,
 		plot_title = sprintf('%s %s fold change vs -log10(pval)', prefix, chip1),
 		x_label = sprintf('%s fold change', chip1),
@@ -710,7 +716,7 @@ if(annot_type == 'PePr') {
 	plot_foldchg = plot_numerical(
 		annotated_regions = subset(annotated_regions, group == chip2),
 		x = 'fold',
-		facet = 'annot_type',
+		facet = 'annot.type',
 		facet_order = annot_all_order,
 		bin_width = 5,
 		plot_title = sprintf('%s %s fold change over annotations', prefix, chip2),
@@ -724,7 +730,7 @@ if(annot_type == 'PePr') {
 		annotated_regions = subset(annotated_regions, group == chip2),
 		x = 'fold',
 		y = 'pval',
-		facet = 'annot_type',
+		facet = 'annot.type',
 		facet_order = annot_all_order,
 		plot_title = sprintf('%s %s fold change vs -log10(pval)', prefix, chip2),
 		x_label = sprintf('%s fold change', chip2),
@@ -742,7 +748,7 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 	plot_cat_count_cpgs = plot_categorical(
 		annotated_regions = annotated_regions,
 		annotated_random = annotated_regions_rnd,
-		x=x_str, fill='annot_type',
+		x=x_str, fill='annot.type',
 		x_order = cats_order, fill_order = annot_cpg_order, position='stack',
 		plot_title = prefix,
 		legend_title = 'CpG annots.',
@@ -756,7 +762,7 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 	plot_cat_count_genes = plot_categorical(
 		annotated_regions = annotated_regions,
 		annotated_random = annotated_regions_rnd,
-		x=x_str, fill='annot_type',
+		x=x_str, fill='annot.type',
 		x_order = cats_order, fill_order = annot_gene_order, position='stack',
 		plot_title = prefix,
 		legend_title = 'knownGene annots.',
@@ -770,7 +776,7 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 	plot_cat_prop_cpgs = plot_categorical(
 		annotated_regions = annotated_regions,
 		annotated_random = annotated_regions_rnd,
-		x=x_str, fill='annot_type',
+		x=x_str, fill='annot.type',
 		x_order = cats_order, fill_order = annot_cpg_order, position='fill',
 		plot_title = prefix,
 		legend_title = 'CpG annots.',
@@ -784,7 +790,7 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 	plot_cat_prop_genes = plot_categorical(
 		annotated_regions = annotated_regions,
 		annotated_random = annotated_regions_rnd,
-		x=x_str, fill='annot_type',
+		x=x_str, fill='annot.type',
 		x_order = cats_order, fill_order = annot_gene_order, position='fill',
 		plot_title = prefix,
 		legend_title = 'knownGene annots.',
