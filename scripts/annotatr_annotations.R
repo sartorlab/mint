@@ -316,13 +316,39 @@ if(annot_type == 'bismark') {
 
 ################################################################################
 # Read the data and do some filtering / transformations as necessary
-regions = read_regions(
-	con = file,
-	genome = genome,
-    format = 'bed',
-	extraCols = extraCols,
-	rename_name = rename_name,
-	rename_score = rename_score)
+if(all(is.null(rename_name), is.null(rename_score))) {
+	# Both rename_name and rename_score are NULL
+	regions = read_regions(
+    	con = file,
+    	genome = genome,
+        format = 'bed',
+    	extraCols = extraCols)
+} else if (all(!is.null(rename_name), !is.null(rename_score))) {
+	# Neither rename_name nor rename_score are NULL
+    regions = read_regions(
+    	con = file,
+    	genome = genome,
+        format = 'bed',
+    	extraCols = extraCols,
+		rename_name = rename_name,
+		rename_score = rename_score)
+} else if (!is.null(rename_name)) {
+	# Just rename_name is NULL
+    regions = read_regions(
+    	con = file,
+    	genome = genome,
+        format = 'bed',
+    	extraCols = extraCols,
+		rename_name = rename_name)
+} else {
+	# Just rename_score is NULL
+	regions = read_regions(
+    	con = file,
+    	genome = genome,
+        format = 'bed',
+    	extraCols = extraCols,
+		rename_score = rename_score)
+}
 
 # Filter out unclassifiable classification
 if(classifier_flag) {
