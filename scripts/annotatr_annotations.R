@@ -1,5 +1,4 @@
 library(annotatr)
-library(readr)
 library(ggplot2)
 library(regioneR)
 library(optparse)
@@ -320,6 +319,7 @@ if(annot_type == 'bismark') {
 regions = read_regions(
 	con = file,
 	genome = genome,
+    format = 'bed',
 	extraCols = extraCols,
 	rename_name = rename_name,
 	rename_score = rename_score)
