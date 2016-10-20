@@ -521,7 +521,7 @@ if(annot_type == 'bismark') {
 	# When there are coverages exceeding the x limits
 	file_png = sprintf('summary/figures/%s_coverage.png', prefix)
 	plot_coverage = plot_numerical(
-		tbl = annotated_regions,
+		annotated_regions = annotated_regions,
 		x = 'coverage',
 		facet = 'annot_type',
 		facet_order = annot_all_order,
@@ -535,7 +535,7 @@ if(annot_type == 'bismark') {
 	# Percent methylation over annotations
 	file_png = sprintf('summary/figures/%s_percmeth.png', prefix)
 	plot_percmeth = plot_numerical(
-		tbl = annotated_regions,
+		annotated_regions = annotated_regions,
 		x = 'perc_meth',
 		facet = 'annot_type',
 		facet_order = annot_all_order,
@@ -552,7 +552,7 @@ if(annot_type == 'methylSig') {
 	# Methylation difference over annotations
 	file_png = sprintf('summary/figures/%s_methdiff.png', prefix)
 	plot_methdiff = plot_numerical(
-		tbl = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
+		annotated_regions = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
 		x = 'meth_diff',
 		facet = 'annot_type',
 		facet_order = annot_all_order,
@@ -565,7 +565,7 @@ if(annot_type == 'methylSig') {
 	# Volcano plots over annotations
 	file_png = sprintf('summary/figures/%s_volcano.png', prefix)
 	plot_volcano = plot_numerical(
-		tbl = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
+		annotated_regions = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
 		x = 'meth_diff',
 		y = 'pval',
 		facet = 'annot_type',
@@ -623,7 +623,7 @@ if(annot_type == 'macs2') {
 	# Fold change over annotations
 	file_png = sprintf('summary/figures/%s_foldchg_annots.png', prefix)
 	plot_foldchg = plot_numerical(
-		tbl = annotated_regions,
+		annotated_regions = annotated_regions,
 		x = 'fold',
 		facet = 'annot_type',
 		facet_order = annot_all_order,
@@ -636,7 +636,7 @@ if(annot_type == 'macs2') {
 	# Volcano plots over annotations
 	file_png = sprintf('summary/figures/%s_volcano_annots.png', prefix)
 	plot_volcano = plot_numerical(
-		tbl = annotated_regions,
+		annotated_regions = annotated_regions,
 		x = 'fold',
 		y = 'pval',
 		facet = 'annot_type',
@@ -654,7 +654,7 @@ if(annot_type == 'PePr') {
 	# Fold change with facet over group (chip1/chip2)
 	file_png = sprintf('summary/figures/%s_foldchg_groups.png', prefix)
 	plot_foldchg = plot_numerical(
-		tbl = regions_tbl,
+		annotated_regions = regions_tbl,
 		x = 'fold',
 		facet = 'group',
 		facet_order = cats_order,
@@ -667,7 +667,7 @@ if(annot_type == 'PePr') {
 	# Volcano plots with facet over group (chip1/chip2)
 	file_png = sprintf('summary/figures/%s_volcano_groups.png', prefix)
 	plot_volcano = plot_numerical(
-		tbl = regions_tbl,
+		annotated_regions = regions_tbl,
 		x = 'fold',
 		y = 'pval',
 		facet = 'group',
@@ -681,7 +681,7 @@ if(annot_type == 'PePr') {
 	# Fold change in chip1 with facet over annots
 	file_png = sprintf('summary/figures/%s_foldchg_%s_annots.png', prefix, chip1)
 	plot_foldchg = plot_numerical(
-		tbl = subset(annotated_regions, group == chip1),
+		annotated_regions = subset(annotated_regions, group == chip1),
 		x = 'fold',
 		facet = 'annot_type',
 		facet_order = annot_all_order,
@@ -694,7 +694,7 @@ if(annot_type == 'PePr') {
 	# Volcano in chip1 with facet over annots
 	file_png = sprintf('summary/figures/%s_volcano_%s_annots.png', prefix, chip1)
 	plot_volcano = plot_numerical(
-		tbl = subset(annotated_regions, group == chip1),
+		annotated_regions = subset(annotated_regions, group == chip1),
 		x = 'fold',
 		y = 'pval',
 		facet = 'annot_type',
@@ -708,7 +708,7 @@ if(annot_type == 'PePr') {
 	# Fold change in chip2 with facet over annots
 	file_png = sprintf('summary/figures/%s_foldchg_%s_annots.png', prefix, chip2)
 	plot_foldchg = plot_numerical(
-		tbl = subset(annotated_regions, group == chip2),
+		annotated_regions = subset(annotated_regions, group == chip2),
 		x = 'fold',
 		facet = 'annot_type',
 		facet_order = annot_all_order,
@@ -721,7 +721,7 @@ if(annot_type == 'PePr') {
 	# Volcano in chip2 with facet over annots
 	file_png = sprintf('summary/figures/%s_volcano_%s_annots.png', prefix, chip2)
 	plot_volcano = plot_numerical(
-		tbl = subset(annotated_regions, group == chip2),
+		annotated_regions = subset(annotated_regions, group == chip2),
 		x = 'fold',
 		y = 'pval',
 		facet = 'annot_type',
