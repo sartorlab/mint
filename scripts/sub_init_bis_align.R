@@ -81,7 +81,7 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov : $(DIR_BIS_BISMARK)/%_trim
 	gunzip -c $< | $(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3, $$4, ".", ".", $$5 + $$6}\' > $@
 
 # Rule for annotatr of extractor results
-$(DIR_RDATA)/%_trimmed_bismark_annotatr_analysis.RData : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov.gz
+$(DIR_RDATA)/%_trimmed_bismark_annotatr_analysis.RData : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov
 	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type bismark --group1 NULL --group0 NULL
 
 # Rule for temporary unzipping of extractor bedGraph
