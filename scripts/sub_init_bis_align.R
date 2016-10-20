@@ -76,9 +76,11 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov.gz $(DIR_BIS_BISMARK)/%_tri
 	$(PATH_TO_EXTRACTOR) $(OPTS_EXTRACTOR) $(<F)
 
 # Rule for temporary extractor results for annotatr
+# NOTE: bismark.cov.gz file is 1-based start and end, need to subtract
+# 1 from start in order for annotatr to properly interpret it
 .INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov.gz
-	gunzip -c $< | $(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3, ".", $$4, ".", $$5 + $$6}\' > $@
+	gunzip -c $< | $(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2 - 1, $$3, ".", $$4, ".", $$5 + $$6}\' > $@
 
 # Rule for annotatr of extractor results
 $(DIR_RDATA)/%_trimmed_bismark_annotatr_analysis.RData : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bismark.cov
