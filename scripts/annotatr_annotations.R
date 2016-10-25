@@ -350,6 +350,13 @@ if(all(is.null(rename_name), is.null(rename_score))) {
 		rename_score = rename_score)
 }
 
+# Use the keepCols
+# NOTE: Due to some weird issue in GenomicRanges, doing this column subsetting
+# causes the columns to be renamed, so we need to rename them. Fortunately,
+# the subsetting will give the order of keepCols so we can just rename them.
+mcols(regions) = mcols(regions)[, keepCols]
+colnames(mcols(regions)) = keepCols
+
 # Filter out unclassifiable classification
 if(classifier_flag) {
 	regions = regions[regions$class != 'unclassifiable']
@@ -364,7 +371,7 @@ if(log10p_flag) {
 # Deal with random regions depending on resolution
 # NOTE: Do not do random regions for methylSig at the moment, uses too much RAM
 if(resolution == 'region' && annot_type != 'sample_class' && annot_type != 'compare_class' && annot_type != 'methylSig') {
-	regions_rnd = randomize_regions(regions = regions, genome = genome)
+	regions_rnd = randomize_regions(regions = regions)
 } else if (resolution == 'base' && genome == 'hg19') {
 	regions_rnd = NULL
 } else {
@@ -742,61 +749,115 @@ if(annot_type == 'PePr') {
 # plot_categorical specific to PePr, methylSig, simple, sample, and compare classifications
 # Use x_str and x_desc variables determined near the top of this file when determining annot_type
 if(annot_type != 'bismark' && annot_type != 'macs2') {
-	##############################
-	# Regions split by category and stacked by CpG annotations (count)
-	file_png = sprintf('summary/figures/%s_cat_count_cpgs.png', prefix)
-	plot_cat_count_cpgs = plot_categorical(
-		annotated_regions = annotated_regions,
-		annotated_random = annotated_regions_rnd,
-		x=x_str, fill='annot.type',
-		x_order = cats_order, fill_order = annot_cpg_order, position='stack',
-		plot_title = prefix,
-		legend_title = 'CpG annots.',
-		x_label = x_desc,
-		y_label = 'Count')
-	ggsave(filename = file_png, plot = plot_cat_count_cpgs, width = 8, height = 8)
+	if(!is.null(annotated_regions_rnd)) {
+		##############################
+		# Regions split by category and stacked by CpG annotations (count)
+		file_png = sprintf('summary/figures/%s_cat_count_cpgs.png', prefix)
+		plot_cat_count_cpgs = plot_categorical(
+			annotated_regions = annotated_regions,
+			annotated_random = annotated_regions_rnd,
+			x=x_str, fill='annot.type',
+			x_order = cats_order, fill_order = annot_cpg_order, position='stack',
+			plot_title = prefix,
+			legend_title = 'CpG annots.',
+			x_label = x_desc,
+			y_label = 'Count')
+		ggsave(filename = file_png, plot = plot_cat_count_cpgs, width = 8, height = 8)
 
-	##############################
-	# Regions split by category and stacked by knownGene annotations (count)
-	file_png = sprintf('summary/figures/%s_cat_count_genes.png', prefix)
-	plot_cat_count_genes = plot_categorical(
-		annotated_regions = annotated_regions,
-		annotated_random = annotated_regions_rnd,
-		x=x_str, fill='annot.type',
-		x_order = cats_order, fill_order = annot_gene_order, position='stack',
-		plot_title = prefix,
-		legend_title = 'knownGene annots.',
-		x_label = x_desc,
-		y_label = 'Count')
-	ggsave(filename = file_png, plot = plot_cat_count_genes, width = 8, height = 8)
+		##############################
+		# Regions split by category and stacked by knownGene annotations (count)
+		file_png = sprintf('summary/figures/%s_cat_count_genes.png', prefix)
+		plot_cat_count_genes = plot_categorical(
+			annotated_regions = annotated_regions,
+			annotated_random = annotated_regions_rnd,
+			x=x_str, fill='annot.type',
+			x_order = cats_order, fill_order = annot_gene_order, position='stack',
+			plot_title = prefix,
+			legend_title = 'knownGene annots.',
+			x_label = x_desc,
+			y_label = 'Count')
+		ggsave(filename = file_png, plot = plot_cat_count_genes, width = 8, height = 8)
 
-	##############################
-	# Regions split by category and filled by CpG annotations (prop)
-	file_png = sprintf('summary/figures/%s_cat_prop_cpgs.png', prefix)
-	plot_cat_prop_cpgs = plot_categorical(
-		annotated_regions = annotated_regions,
-		annotated_random = annotated_regions_rnd,
-		x=x_str, fill='annot.type',
-		x_order = cats_order, fill_order = annot_cpg_order, position='fill',
-		plot_title = prefix,
-		legend_title = 'CpG annots.',
-		x_label = x_desc,
-		y_label = 'Proportion')
-	ggsave(filename = file_png, plot = plot_cat_prop_cpgs, width = 8, height = 8)
+		##############################
+		# Regions split by category and filled by CpG annotations (prop)
+		file_png = sprintf('summary/figures/%s_cat_prop_cpgs.png', prefix)
+		plot_cat_prop_cpgs = plot_categorical(
+			annotated_regions = annotated_regions,
+			annotated_random = annotated_regions_rnd,
+			x=x_str, fill='annot.type',
+			x_order = cats_order, fill_order = annot_cpg_order, position='fill',
+			plot_title = prefix,
+			legend_title = 'CpG annots.',
+			x_label = x_desc,
+			y_label = 'Proportion')
+		ggsave(filename = file_png, plot = plot_cat_prop_cpgs, width = 8, height = 8)
 
-	##############################
-	# Regions split by category and filled by knownGene annotations (prop)
-	file_png = sprintf('summary/figures/%s_cat_prop_genes.png', prefix)
-	plot_cat_prop_genes = plot_categorical(
-		annotated_regions = annotated_regions,
-		annotated_random = annotated_regions_rnd,
-		x=x_str, fill='annot.type',
-		x_order = cats_order, fill_order = annot_gene_order, position='fill',
-		plot_title = prefix,
-		legend_title = 'knownGene annots.',
-		x_label = x_desc,
-		y_label = 'Proportion')
-	ggsave(filename = file_png, plot = plot_cat_prop_genes, width = 8, height = 8)
+		##############################
+		# Regions split by category and filled by knownGene annotations (prop)
+		file_png = sprintf('summary/figures/%s_cat_prop_genes.png', prefix)
+		plot_cat_prop_genes = plot_categorical(
+			annotated_regions = annotated_regions,
+			annotated_random = annotated_regions_rnd,
+			x=x_str, fill='annot.type',
+			x_order = cats_order, fill_order = annot_gene_order, position='fill',
+			plot_title = prefix,
+			legend_title = 'knownGene annots.',
+			x_label = x_desc,
+			y_label = 'Proportion')
+		ggsave(filename = file_png, plot = plot_cat_prop_genes, width = 8, height = 8)
+	} else {
+		##############################
+		# Regions split by category and stacked by CpG annotations (count)
+		file_png = sprintf('summary/figures/%s_cat_count_cpgs.png', prefix)
+		plot_cat_count_cpgs = plot_categorical(
+			annotated_regions = annotated_regions,
+			x=x_str, fill='annot.type',
+			x_order = cats_order, fill_order = annot_cpg_order, position='stack',
+			plot_title = prefix,
+			legend_title = 'CpG annots.',
+			x_label = x_desc,
+			y_label = 'Count')
+		ggsave(filename = file_png, plot = plot_cat_count_cpgs, width = 8, height = 8)
+
+		##############################
+		# Regions split by category and stacked by knownGene annotations (count)
+		file_png = sprintf('summary/figures/%s_cat_count_genes.png', prefix)
+		plot_cat_count_genes = plot_categorical(
+			annotated_regions = annotated_regions,
+			x=x_str, fill='annot.type',
+			x_order = cats_order, fill_order = annot_gene_order, position='stack',
+			plot_title = prefix,
+			legend_title = 'knownGene annots.',
+			x_label = x_desc,
+			y_label = 'Count')
+		ggsave(filename = file_png, plot = plot_cat_count_genes, width = 8, height = 8)
+
+		##############################
+		# Regions split by category and filled by CpG annotations (prop)
+		file_png = sprintf('summary/figures/%s_cat_prop_cpgs.png', prefix)
+		plot_cat_prop_cpgs = plot_categorical(
+			annotated_regions = annotated_regions,
+			x=x_str, fill='annot.type',
+			x_order = cats_order, fill_order = annot_cpg_order, position='fill',
+			plot_title = prefix,
+			legend_title = 'CpG annots.',
+			x_label = x_desc,
+			y_label = 'Proportion')
+		ggsave(filename = file_png, plot = plot_cat_prop_cpgs, width = 8, height = 8)
+
+		##############################
+		# Regions split by category and filled by knownGene annotations (prop)
+		file_png = sprintf('summary/figures/%s_cat_prop_genes.png', prefix)
+		plot_cat_prop_genes = plot_categorical(
+			annotated_regions = annotated_regions,
+			x=x_str, fill='annot.type',
+			x_order = cats_order, fill_order = annot_gene_order, position='fill',
+			plot_title = prefix,
+			legend_title = 'knownGene annots.',
+			x_label = x_desc,
+			y_label = 'Proportion')
+		ggsave(filename = file_png, plot = plot_cat_prop_genes, width = 8, height = 8)
+	}
 }
 
 ################################################################################
