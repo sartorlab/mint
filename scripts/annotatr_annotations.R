@@ -449,7 +449,7 @@ if (annot_type == 'sample_class') {
 # overall distributions of fold change
 if(annot_type == 'macs2') {
 	regions_tbl = dplyr::tbl_df(data.frame(
-		'chr' = seqnames(regions),
+		'seqnames' = seqnames(regions),
 		'start' = start(regions),
 		'end' = end(regions),
 		'fold' = mcols(regions)$fold,
@@ -457,7 +457,7 @@ if(annot_type == 'macs2') {
 		stringsAsFactors=F))
 } else if (annot_type == 'PePr') {
 	regions_tbl = dplyr::tbl_df(data.frame(
-		'chr' = seqnames(regions),
+		'seqnames' = seqnames(regions),
 		'start' = start(regions),
 		'end' = end(regions),
 		'group' = mcols(regions)$group,
@@ -663,32 +663,32 @@ if(annot_type == 'macs2') {
 #############################################################
 # plot_numerical specific to PePr
 if(annot_type == 'PePr') {
-	##############################
-	# Fold change with facet over group (chip1/chip2)
-	file_png = sprintf('summary/figures/%s_foldchg_groups.png', prefix)
-	plot_foldchg = plot_numerical(
-		annotated_regions = regions_tbl,
-		x = 'fold',
-		facet = 'group',
-		facet_order = cats_order,
-		bin_width = 5,
-		plot_title = sprintf('%s fold change over annotations', prefix),
-		x_label = 'Fold Change')
-	ggsave(filename = file_png, plot = plot_foldchg, width = 12, height = 6)
-
-	##############################
-	# Volcano plots with facet over group (chip1/chip2)
-	file_png = sprintf('summary/figures/%s_volcano_groups.png', prefix)
-	plot_volcano = plot_numerical(
-		annotated_regions = regions_tbl,
-		x = 'fold',
-		y = 'pval',
-		facet = 'group',
-		facet_order = cats_order,
-		plot_title = sprintf('%s fold change vs -log10(pval)', prefix),
-		x_label = 'Fold change',
-		y_label = '-log10(pval)')
-	ggsave(filename = file_png, plot = plot_volcano, width = 12, height = 6)
+	# ##############################
+	# # Fold change with facet over group (chip1/chip2)
+	# file_png = sprintf('summary/figures/%s_foldchg_groups.png', prefix)
+	# plot_foldchg = plot_numerical(
+	# 	annotated_regions = regions_tbl,
+	# 	x = 'fold',
+	# 	facet = 'group',
+	# 	facet_order = cats_order,
+	# 	bin_width = 5,
+	# 	plot_title = sprintf('%s fold change over annotations', prefix),
+	# 	x_label = 'Fold Change')
+	# ggsave(filename = file_png, plot = plot_foldchg, width = 12, height = 6)
+	#
+	# ##############################
+	# # Volcano plots with facet over group (chip1/chip2)
+	# file_png = sprintf('summary/figures/%s_volcano_groups.png', prefix)
+	# plot_volcano = plot_numerical(
+	# 	annotated_regions = regions_tbl,
+	# 	x = 'fold',
+	# 	y = 'pval',
+	# 	facet = 'group',
+	# 	facet_order = cats_order,
+	# 	plot_title = sprintf('%s fold change vs -log10(pval)', prefix),
+	# 	x_label = 'Fold change',
+	# 	y_label = '-log10(pval)')
+	# ggsave(filename = file_png, plot = plot_volcano, width = 12, height = 6)
 
 	##############################
 	# Fold change in chip1 with facet over annots
