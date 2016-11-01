@@ -9,8 +9,21 @@ $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.CpG_report.txt : $(DIR_BIS_BI
 	gunzip -c $< > $@
 
 # Intermediates for the bisulfite piece
-$(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal.txt : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.CpG_report.txt
+$(DIR_BIS_BISMARK)/%_bisulfite_highmeth_tmp.txt $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth_tmp.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal_tmp.txt $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal_tmp.txt : $(DIR_BIS_BISMARK)/%_bisulfite_trimmed_bismark_bt2.CpG_report.txt
 	$(PATH_TO_AWK) -v MIN_COV=$(OPT_MIN_COV) -f ../../scripts/classify_prepare_bisulfite_sample.awk $<
+
+# Sort the bisulfite pieces (NOTE: They are in a slightly different order from pulldown results)
+$(DIR_BIS_BISMARK)/%_bisulfite_highmeth.txt : $(DIR_BIS_BISMARK)/%_bisulfite_highmeth_tmp.txt
+	sort -T $(DIR_TMP) -k1,1 -k2,2n $< > $@
+
+$(DIR_BIS_BISMARK)/%_bisulfite_lowmeth.txt : $(DIR_BIS_BISMARK)/%_bisulfite_lowmeth_tmp.txt
+	sort -T $(DIR_TMP) -k1,1 -k2,2n $< > $@
+
+$(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal.txt : $(DIR_BIS_BISMARK)/%_bisulfite_nometh_signal_tmp.txt
+	sort -T $(DIR_TMP) -k1,1 -k2,2n $< > $@
+
+$(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal.txt : $(DIR_BIS_BISMARK)/%_bisulfite_nometh_nosignal_tmp.txt
+	sort -T $(DIR_TMP) -k1,1 -k2,2n $< > $@
 '
 
 make_rule_sample_class_pull_module = '
@@ -67,7 +80,11 @@ if(bool_bis_samp && bool_pull_samp) {
 								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_nosignal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_peak.txt,$(SAMPLE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
-								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt,$(SAMPLE_CLASS_PREFIXES))'
+								$(patsubst %,$(DIR_PULL_MACS)/%_hmc_pulldown_nopeak_nosignal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_highmeth_tmp.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_lowmeth_tmp.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_signal_tmp.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_nosignal_tmp.txt,$(SAMPLE_CLASS_PREFIXES))'
 	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed :	 $(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_highmeth.txt \\
 								$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_lowmeth.txt \\
 								$(DIR_BIS_BISMARK)/%_mc_hmc_bisulfite_nometh_signal.txt \\
@@ -89,7 +106,15 @@ if(bool_bis_samp && bool_pull_samp) {
 								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_highmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_lowmeth.txt,$(SAMPLE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_signal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
-								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_nosignal.txt,$(SAMPLE_CLASS_PREFIXES))'
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_nosignal.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_highmeth_tmp.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_lowmeth_tmp.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_signal_tmp.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_nosignal_tmp.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_highmeth_tmp.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_lowmeth_tmp.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_signal_tmp.txt,$(SAMPLE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_BIS_BISMARK)/%_hmc_bisulfite_nometh_nosignal_tmp.txt,$(SAMPLE_CLASS_PREFIXES))'
 	sample_class_target = '$(DIR_CLASS_SAMPLE)/%_sample_classification.bed :	 $(DIR_BIS_BISMARK)/%_mc_bisulfite_highmeth.txt \\
 								$(DIR_BIS_BISMARK)/%_mc_bisulfite_lowmeth.txt \\
 								$(DIR_BIS_BISMARK)/%_mc_bisulfite_nometh_signal.txt \\

@@ -29,7 +29,7 @@ mergesTmp=`eval echo classifications/sample/${ID}_{$classesTmp}.txt.merged`
 # Create empty files
 for file in ${filesTmp}
 do
-	> $file
+	touch $file
 done
 
 # Initial intersection
