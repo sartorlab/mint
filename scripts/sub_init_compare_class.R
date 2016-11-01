@@ -52,7 +52,7 @@ $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt : $(DIR_PULL_PEPR)/%_pulldown_DM
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt
 $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt: $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt
 	$(PATH_TO_BEDTOOLS) complement -i $< -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) \\
-	| $(PATH_TO_AWK) -v OFS="\\t" \'$$2 != $$3 {print $0}\' \\
+	| $(PATH_TO_AWK) -v OFS="\\t" \'$$2 != $$3 {print $$0}\' \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
@@ -62,7 +62,7 @@ $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt : $(DIR_PULL_PEPR)/%_pulldown_merged_
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt
 $(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
 	$(PATH_TO_BEDTOOLS) complement -i $< -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) \\
-	| $(PATH_TO_AWK) -v OFS="\\t" \'$$2 != $$3 {print $0}\' \\
+	| $(PATH_TO_AWK) -v OFS="\\t" \'$$2 != $$3 {print $$0}\' \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_noDM_signal.txt
