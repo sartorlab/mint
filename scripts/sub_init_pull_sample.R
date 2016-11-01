@@ -145,7 +145,7 @@ for(i in 1:nrow(pulldown_samples_noinput)) {
 	trackEntry = c(
 		sprintf('track %s_simple_class', pulldown_samples_noinput[i,'fullHumanID']),
 		sprintf('parent %s_sample', pulldown_samples_noinput[i,'humanID']),
-		sprintf('bigDataUrl %s_pulldown_macs2_simple_classification.bb', pulldown_samples_noinput[i,'fullHumanID']),
+		sprintf('bigDataUrl %s_macs2_simple_classification.bb', pulldown_samples_noinput[i,'fullHumanID']),
 		sprintf('shortLabel %s_macs2_simp_class', pulldown_samples_noinput[i,'fullHumanID']),
 		sprintf('longLabel %s_macs2_simple_classification', pulldown_samples_noinput[i,'fullHumanID']),
 		'visibility pack',
