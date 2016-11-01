@@ -25,6 +25,7 @@ $(DIR_PULL_MACS)/%_pulldown_peak.txt : $(DIR_PULL_MACS)/%_pulldown_macs2_peaks.n
 $(DIR_PULL_MACS)/%_pulldown_nopeak.txt : $(DIR_PULL_MACS)/%_pulldown_peak.txt
 	$(PATH_TO_BEDTOOLS) complement -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) -i $< \\
 	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
+	| $(PATH_TO_AWK) -v OFS="\\t" \'$$2 != $$3 {print $0}\' \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_signal.txt
@@ -35,6 +36,7 @@ $(DIR_PULL_MACS)/%_pulldown_signal.txt : $(DIR_PULL_COVERAGES)/%_input_pulldown_
 $(DIR_PULL_MACS)/%_pulldown_nosignal.txt : $(DIR_PULL_MACS)/%_pulldown_signal.txt
 	$(PATH_TO_BEDTOOLS) complement -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) -i $< \\
 	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
+	| $(PATH_TO_AWK) -v OFS="\\t" \'$$2 != $$3 {print $0}\' \\
 	> $@
 
 .INTERMEDIATE : $(DIR_PULL_MACS)/%_pulldown_nopeak_signal.txt
