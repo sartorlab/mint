@@ -199,7 +199,7 @@ for(i in 1:nrow(bisulfite_samples)) {
 	# trackDb.txt entry for bisulfite simple classification results
 	trackEntry = c(
 		sprintf('track %s_bismark_simple_class', bisulfite_samples[i,'fullHumanID']),
-		sprintf('parent %s_bismark_sample', bisulfite_samples[i,'humanID']),
+		sprintf('parent %s_sample', bisulfite_samples[i,'humanID']),
 		sprintf('bigDataUrl %s_bismark_simple_classification.bb', bisulfite_samples[i,'fullHumanID']),
 		sprintf('shortLabel %s_bismark_simp_class', bisulfite_samples[i,'fullHumanID']),
 		sprintf('longLabel %s_bismark_simple_classification', bisulfite_samples[i,'fullHumanID']),
