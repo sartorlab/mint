@@ -375,6 +375,12 @@ if(all(is.null(rename_name), is.null(rename_score))) {
 mcols(regions) = mcols(regions)[, keepCols]
 colnames(mcols(regions)) = keepCols
 
+# Fix resolution='base' to make start = end
+# This is a new and fun addition to rtracklayer::import()
+if(resolution == 'base') {
+	start(regions) = end(regions)
+}
+
 # Filter out unclassifiable classification
 if(classifier_flag) {
 	regions = regions[regions$class != 'unclassifiable']
