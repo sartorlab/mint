@@ -46,7 +46,7 @@ if(annot_type == 'bismark') {
 	# BARPLOT + NUMERICALS
 	# Random for barplot
 
-	# head ./bisulfite/bismark/IDH2mut_2_mc_hmc_bisulfite_trimmed_bismark_bt2.bismark.cov
+	# head ./bisulfite/bismark/IDH2mut_2_mc_hmc_bisulfite_trimmed_bismark_bt2.bismark.cov.gz
 	# chr21	9437517	9437517	86.241610738255	.   .	257
 	# chr21	9437519	9437519	75.503355704698	.   .	225
 	# chr21	9437531	9437531	58.9225589225589   .   .	175
@@ -61,7 +61,7 @@ if(annot_type == 'bismark') {
 	classifier_flag = FALSE
 	log10p_flag = FALSE
 	resolution = 'base'
-	prefix = gsub('_bt2.bismark.cov','', basename(file))
+	prefix = gsub('_bt2.bismark.cov.gz','', basename(file))
 	# No categories
 } else if (annot_type == 'simple_bisulfite_bismark') {
 	# bis_align
