@@ -97,6 +97,9 @@ if(annot_type == 'bismark') {
 	# Variables for plot_categorical usage
 	x_str = 'class'
 	x_desc = 'Bisulfite Simple Classification'
+
+	# Variable for summarize_categorical usage
+	by_vec = c('class','annot.type')
 } else if (annot_type == 'macs2') {
 	# pulldown_sample
 	# BARPLOT + NUMERICALS
@@ -151,6 +154,9 @@ if(annot_type == 'bismark') {
 	# Variables for plot_categorical usage
 	x_str = 'class'
 	x_desc = 'macs2 Simple Classification'
+
+	# Variable for summarize_categorical usage
+	by_vec = c('class','annot.type')
 } else if (annot_type == 'sample_class') {
 	# sample_classification
 	# BARPLOT + CATEGORICALS
@@ -181,6 +187,9 @@ if(annot_type == 'bismark') {
 	# Variables for plot_categorical usage
 	x_str = 'class'
 	x_desc = 'Sample Classification'
+
+	# Variable for summarize_categorical usage
+	by_vec = c('class','annot.type')
 } else if (annot_type == 'methylSig') {
 	# bis_compare
 	# BARPLOT + NUMERICALS + CATEGORICALS
@@ -208,6 +217,9 @@ if(annot_type == 'bismark') {
 	# Variables for plot_categorical usage
 	x_str = 'DM_status'
 	x_desc = sprintf('Differential %s', mark)
+
+	# Variable for summarize_categorical usage
+	by_vec = c('DM_status','annot.type')
 } else if (annot_type == 'PePr') {
 	# pulldown_compare
 	# BARPLOT + NUMERICALS + CATEGORICALS
@@ -273,6 +285,9 @@ if(annot_type == 'bismark') {
 	# Variables for plot_categorical usage
 	x_str = 'class'
 	x_desc = 'PePr Simple Classification'
+
+	# Variable for summarize_categorical usage
+	by_vec = c('class','annot.type')
 } else if (annot_type == 'compare_class') {
 	# compare_classification
 	# BARPLOT + CATEGORICALS
@@ -310,6 +325,9 @@ if(annot_type == 'bismark') {
 	# Variables for plot_categorical usage
 	x_str = 'class'
 	x_desc = 'Compare Classification'
+
+	# Variable for summarize_categorical usage
+	by_vec = c('class','annot.type')
 } else {
 	stop('annot_type is invalid. Must be one of bismark, simple_bisulfite_bismark, macs2, simple_pulldown_macs2, sample_class, methylSig, PePr, simple_pulldown_PePr, or compare_class.')
 }
@@ -562,31 +580,39 @@ if(annot_type == 'bismark') {
 # plot_numerical specific to methylSig
 if(annot_type == 'methylSig') {
 	##############################
-	# Methylation difference over annotations
-	file_png = sprintf('summary/figures/%s_methdiff.png', prefix)
-	plot_methdiff = plot_numerical(
-		annotated_regions = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
-		x = 'meth_diff',
-		facet = 'annot.type',
-		facet_order = annot_all_order,
-		bin_width = 5,
-		plot_title = sprintf('%s meth. diff. over annotations', prefix),
-		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0))
-	ggplot2::ggsave(filename = file_png, plot = plot_methdiff, width = 8, height = 8)
+	# Annotation counts by categorical
+	sum_cat = summarize_categorical(annotated_regions = annotated_regions, by = by_vec)
+	readr::write_tsv(x = sum_cat, path = sprintf('summary/tables/%s_annotation_counts_by_category.txt', prefix))
 
-	##############################
-	# Volcano plots over annotations
-	file_png = sprintf('summary/figures/%s_volcano.png', prefix)
-	plot_volcano = plot_numerical(
-		annotated_regions = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
-		x = 'meth_diff',
-		y = 'pval',
-		facet = 'annot.type',
-		facet_order = annot_all_order,
-		plot_title = sprintf('%s meth. diff. vs -log10(pval)', prefix),
-		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
-		y_label = '-log10(pval)')
-	ggplot2::ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
+	# Do these only if there are statuses other than noDM
+	if(!dplyr::setequal(sum_cat$DM_status, c('noDM'))) {
+		##############################
+		# Methylation difference over annotations
+		file_png = sprintf('summary/figures/%s_methdiff.png', prefix)
+		plot_methdiff = plot_numerical(
+			annotated_regions = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
+			x = 'meth_diff',
+			facet = 'annot.type',
+			facet_order = annot_all_order,
+			bin_width = 5,
+			plot_title = sprintf('%s meth. diff. over annotations', prefix),
+			x_label = sprintf('Methylation Difference (%s - %s)', group1, group0))
+		ggplot2::ggsave(filename = file_png, plot = plot_methdiff, width = 8, height = 8)
+
+		##############################
+		# Volcano plots over annotations
+		file_png = sprintf('summary/figures/%s_volcano.png', prefix)
+		plot_volcano = plot_numerical(
+			annotated_regions = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
+			x = 'meth_diff',
+			y = 'pval',
+			facet = 'annot.type',
+			facet_order = annot_all_order,
+			plot_title = sprintf('%s meth. diff. vs -log10(pval)', prefix),
+			x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
+			y_label = '-log10(pval)')
+		ggplot2::ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
+	}
 }
 
 #############################################################
@@ -749,6 +775,11 @@ if(annot_type == 'PePr') {
 # plot_categorical specific to PePr, methylSig, simple, sample, and compare classifications
 # Use x_str and x_desc variables determined near the top of this file when determining annot_type
 if(annot_type != 'bismark' && annot_type != 'macs2') {
+	##############################
+	# Annotation counts by categorical
+	sum_cat = summarize_categorical(annotated_regions = annotated_regions, by = by_vec)
+	readr::write_tsv(x = sum_cat, path = sprintf('summary/tables/%s_annotation_counts_by_category.txt', prefix))
+
 	if(!is.null(annotated_regions_rnd)) {
 		##############################
 		# Regions split by category and stacked by CpG annotations (count)
