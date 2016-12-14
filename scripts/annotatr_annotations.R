@@ -248,6 +248,9 @@ if(annot_type == 'bismark') {
 	# Variables for plot_categorical usage
 	x_str = 'group'
 	x_desc = sprintf('Differential %s', mark)
+
+	# Variable for summarize_categorical usage
+	by_vec = c('group','annot.type')
 } else if (annot_type == 'simple_pulldown_PePr') {
 	# pulldown_compare
 	# BARPLOT + CATEGORICALS
