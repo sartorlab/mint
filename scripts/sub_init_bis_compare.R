@@ -51,7 +51,12 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 		}
 
 		# Sorting this ensures that the lower group number is A
-		groups = sort(as.integer(unlist(strsplit(group, ','))))
+		# From scripts/methylSig_run.R, the bigger number is considered
+		# the treatment and the smaller is considered the control
+		# And meth.diff is always treatment - control
+		# group = c('Treatment' = max(treatment),'Control' = min(treatment))
+		# So hyper and hypo is with respect to the higher group number
+		groups = sort(as.integer(unlist(strsplit(group, ','))), decreasing=TRUE)
 
 		# Create a list
 		sample_groups = lapply(bisulfite_samples$group, function(g){
@@ -80,6 +85,12 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 			bisulfite_samples$mc == mc_stat &
 			bisulfite_samples$hmc == hmc_stat &
 			bisulfite_samples$input == 0)
+		groupAname = subset(group_names, group == groups[1])$name
+		groupBname = subset(group_names, group == groups[2])$name
+
+		if(groupAname == '' || groupBname == '') {
+			stop('Groups used for comparisons must be named. Check your _groups.txt file.')
+		}
 
 		var_comparison = fullHumanID
 
@@ -250,14 +261,14 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 # GROUP1_NAME should be the group with higher group number in the project annotation
 # file and GROUP0_NAME should be the group with the lower group number
 # If unsure, check the "workflow for bisulfite_compare_%s" section of the makefile
-GROUP1_NAME_%s := group1
-GROUP0_NAME_%s := group0
+GROUP1_NAME_%s := %s
+GROUP0_NAME_%s := %s
 
 # For methylSig parameters, in R, after installing methylSig do:
 # ?methylSig::methylSigReadData and ?methylSig::methylSigCalc
 OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --dmtype $(OPT_DM_TYPE) --winsize.tile 50 --dispersion both --local.disp FALSE --winsize.disp 200 --local.meth FALSE --winsize.meth 200 --minpergroup 2,2 --T.approx TRUE --ncores 1 --quiet FALSE
 ',
-			i, i, i, i, var_comparison)
+			i, i, i, groupAname, i, groupBname, var_comparison)
 
 		bisulfite_compare_configs = c(
 			bisulfite_compare_configs,

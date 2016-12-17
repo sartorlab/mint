@@ -34,11 +34,13 @@ if(bool_pull_comp) {
 		  mark = "hmc"
 		}
 
-		# Sorting this way ensures the higher group number is groupB
+		# Sorting this way ensures the higher group number is groupA
 		# NOTE: This makes the PePr DM test match that of methylSig,
 		# where control is the lower number (often 0) and the treatment
-		# is the higher number (often 1). PePr up peaks mean up in chip1/input1
-		# with respect to chip2/input2.
+		# is the higher number (often 1). PePr chip1 peaks mean differential binding
+		# in chip1 vs chip2 and chip2 peaks mean differential binding in chip2 vs chip1
+		# Later, chip1 goes to DMup and chip2 goes to DMdown so
+		# hyper and hypo and with respect to groupA, or the larger group number
 		groups = sort(as.integer(unlist(strsplit(group, ','))), decreasing = TRUE)
 
 		# Create a list
@@ -68,6 +70,12 @@ if(bool_pull_comp) {
 			pulldown_samples$mc == mc_stat &
 			pulldown_samples$hmc == hmc_stat &
 			pulldown_samples$input == 0)
+		groupAname = subset(group_names, group == groups[1])$name
+		groupBname = subset(group_names, group == groups[2])$name
+
+		if(groupAname == '' || groupBname == '') {
+			stop('Groups used for comparisons must be named. Check your _groups.txt file.')
+		}
 
 		inputGroupA = subset(pulldown_samples,
 			groupAindices &
@@ -204,13 +212,13 @@ if(bool_pull_comp) {
 # CHIP1_NAME should be for the group with higher group number in the project annotation
 # file and CHIP2_NAME should be for the group with the lower group number
 # If unsure, check the "workflow for pulldown_compare_%s" section of the makefile
-CHIP1_NAME_%s := chip1
-CHIP2_NAME_%s := chip2
+CHIP1_NAME_%s := %s
+CHIP2_NAME_%s := %s
 
 # For PePr parameters see https://ones.ccmb.med.umich.edu/wiki/PePr/
 OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=1
 ',
-			i, i, i, i, var_name)
+			i, i, i, groupAname, i, groupBname, var_name)
 
 		# Track all the configs for the pulldown compares
 		pulldown_compare_configs = c(

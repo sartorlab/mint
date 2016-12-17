@@ -99,6 +99,17 @@ bool_pull_samp = nrow(pulldown_samples) > 0
 bool_bis_comp = nrow(bisulfite_comparisons) > 0
 bool_pull_comp = nrow(pulldown_comparisons) > 0
 
+################################################################################
+# READ group names
+if(bool_bis_comp || bool_pull_comp) {
+    group_file = sprintf('projects/%s_groups.txt', project)
+    if(!file.exists(group_file)) {
+        stop(sprintf('You must include a tab-delimited file named %s_groups.txt in the projects/ folder. It should have two columns, named group and name, giving the group number and the name of the group.', project))
+    } else {
+        group_names = read.table(group_file, sep='\t', header = TRUE, quote = '', comment.char = '', stringsAsFactors= FALSE)
+    }
+}
+
 # NOTE: ADD ERROR CHECKING
 # 1. Are there input samples for pulldowns?
 # 2. If there are comparisons, do the group numbers correspond to the groups assigned to the samples?
