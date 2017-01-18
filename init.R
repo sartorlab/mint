@@ -128,6 +128,8 @@ source('scripts/sub_init_bis_align.R')
 
 source('scripts/sub_init_pull_align.R')
 
+source('scripts/sub_init_bis_sample.R')
+
 source('scripts/sub_init_pull_sample.R')
 
 source('scripts/sub_init_sample_class.R')
