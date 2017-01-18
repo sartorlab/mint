@@ -78,8 +78,8 @@ $(DIR_TRACK)/%_bisulfite_bismark_simple_classification.bb : $(DIR_CLASS_SIMPLE)/
 
 ########################################
 # Rule to do multiqc on the bisulfite_sample results
-.PHONY : bisulfite_multiqc
-bisulfite_multiqc : $(DIR_MULTIQC)/bisulfite_sample/multiqc_report.html
+.PHONY : bisulfite_sample_multiqc
+bisulfite_sample_multiqc : $(DIR_MULTIQC)/bisulfite_sample/multiqc_report.html
 
 $(DIR_MULTIQC)/bisulfite_sample/multiqc_report.html :	 $(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_SAMPLE_PREFIXES)) \\
 												$(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(BISULFITE_SAMPLE_PREFIXES)) \\
