@@ -23,7 +23,7 @@ bisulfite_sample :	$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGrap
 					$(patsubst %,$(DIR_CLASS_SIMPLE)/%_bismark_simple_classification.bed,$(BISULFITE_SAMPLE_PREFIXES)) \\
 					$(patsubst %,$(DIR_RDATA)/%_bismark_simple_classification_annotatr_analysis.RData,$(BISULFITE_SAMPLE_PREFIXES)) \\
 					$(patsubst %,$(DIR_TRACK)/%_bismark_simple_classification.bb,$(BISULFITE_SAMPLE_PREFIXES)) \\
-					$(DIR_MULTIQC)/bisulfite/multiqc_report.html
+					$(DIR_MULTIQC)/bisulfite_sample/multiqc_report.html
 
 ########################################
 .PHONY : bisulfite_extractor
@@ -79,9 +79,9 @@ $(DIR_TRACK)/%_bisulfite_bismark_simple_classification.bb : $(DIR_CLASS_SIMPLE)/
 ########################################
 # Rule to do multiqc on the bisulfite_sample results
 .PHONY : bisulfite_multiqc
-bisulfite_multiqc : $(DIR_MULTIQC)/bisulfite/multiqc_report.html
+bisulfite_multiqc : $(DIR_MULTIQC)/bisulfite_sample/multiqc_report.html
 
-$(DIR_MULTIQC)/bisulfite/multiqc_report.html :	 $(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_SAMPLE_PREFIXES)) \\
+$(DIR_MULTIQC)/bisulfite_sample/multiqc_report.html :	 $(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_SAMPLE_PREFIXES)) \\
 												$(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(BISULFITE_SAMPLE_PREFIXES)) \\
 												$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_SAMPLE_PREFIXES))
 	multiqc --force ./bisulfite --outdir $(@D)

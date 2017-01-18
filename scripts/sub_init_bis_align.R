@@ -17,7 +17,7 @@ bisulfite_align :	 $(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_
 					$(patsubst %,$(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
 					$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam,$(BISULFITE_ALIGN_PREFIXES)) \\
-					$(DIR_MULTIQC)/bisulfite/multiqc_report.html
+					$(DIR_MULTIQC)/bisulfite_align/multiqc_report.html
 
 ########################################
 .PHONY : bisulfite_raw_fastqc
@@ -55,9 +55,9 @@ $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.
 ########################################
 # Rule to do multiqc on the bisulfite_align results
 .PHONY : bisulfite_multiqc
-bisulfite_multiqc : $(DIR_MULTIQC)/bisulfite/multiqc_report.html
+bisulfite_multiqc : $(DIR_MULTIQC)/bisulfite_align/multiqc_report.html
 
-$(DIR_MULTIQC)/bisulfite/multiqc_report.html :	 $(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
+$(DIR_MULTIQC)/bisulfite_align/multiqc_report.html :	 $(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
 												$(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(BISULFITE_ALIGN_PREFIXES)) \\
 	multiqc --force ./bisulfite --outdir $(@D)
 
