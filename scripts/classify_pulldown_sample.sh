@@ -58,9 +58,6 @@ ${PATH_TO_AWK} -v OFS="\t" 'NR > 1 { \
 	} else if (group1 * group2 == 20 || group1 * group2 == 28 || group1 * group2 == 30) { \
 		sub(/tmpIntersect/, "tmp202830", outFile); \
 		print $1, $2, $3, group1, group2, group1 * group2 > outFile; \
-	} else if (group1 * group2 == 42) { \
-		sub(/tmpIntersect/, "tmp42", outFile); \
-		print $1, $2, $3, group1, group2, group1 * group2 > outFile; \
 	} \
 }' ${intTmp}
 
