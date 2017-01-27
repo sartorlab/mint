@@ -144,7 +144,10 @@ virtualenv mint_env
 set +u
 source ${APP_DIR}/mint_env/bin/activate
 set -u
-pip install --requirement ../install/pip_packages.txt
+pip install cutadapt
+pip install MACS2==2.1.0.20140616
+pip install multiqc==0.9
+pip install PePr==1.1.14
 
 deactivate
 
