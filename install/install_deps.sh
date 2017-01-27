@@ -9,10 +9,11 @@ INSTALL_DIR=$1
 APP_DIR=${INSTALL_DIR}/apps
 BIN_DIR=${APP_DIR}/bin
 
+rm -rf ${APP_DIR}
+
 # Setup apps folder
-mkdir ${APP_DIR}
-mkdir ${BIN_DIR}
-export PATH=${BIN_DIR}:$PATH
+mkdir -p ${APP_DIR}
+mkdir -p ${BIN_DIR}
 
 cd ${APP_DIR}
 
