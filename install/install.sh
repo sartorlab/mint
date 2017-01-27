@@ -10,10 +10,10 @@ APP_DIR=${INSTALL_DIR}/apps
 BIN_DIR=${APP_DIR}/bin
 
 # # Setup apps folder
-# mkdir ${APP_DIR}
-# mkdir ${BIN_DIR}
-# export PATH=${BIN_DIR}:$PATH
-#
+mkdir ${APP_DIR}
+mkdir ${BIN_DIR}
+export PATH=${BIN_DIR}:$PATH
+
 cd ${APP_DIR}
 
 ##############################################
