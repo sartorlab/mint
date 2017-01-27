@@ -9,7 +9,7 @@ INSTALL_DIR=/path/to/mint
 APP_DIR=${INSTALL_DIR}/apps
 BIN_DIR=${APP_DIR}/bin
 
-# # Setup apps folder
+# Setup apps folder
 mkdir ${APP_DIR}
 mkdir ${BIN_DIR}
 export PATH=${BIN_DIR}:$PATH
@@ -117,8 +117,9 @@ pip install --user virtualenv
 virtualenv mint_env
 
 # NOTE: On macOS this fails within the script, so virtualenv has to be built interactively
+set +u
 source ${APP_DIR}/mint_env/bin/activate
-
+set -u
 pip install --requirement ../install/pip_packages.txt
 
 deactivate
@@ -126,4 +127,4 @@ deactivate
 ##############################################
 # Install R packages
 # NOTE: R >= 3.3.0 is required
-Rscript r_packages.R
+Rscript ../install/r_packages.R
