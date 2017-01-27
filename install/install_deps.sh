@@ -144,11 +144,11 @@ virtualenv mint_env
 # NOTE: On macOS this fails within the script, so virtualenv has to be built interactively
 set +u
 source ${APP_DIR}/mint_env/bin/activate
-set -u
 pip install cutadapt
-pip install MACS2==2.1.0.20140616
 pip install multiqc==0.9
+pip install MACS2==2.1.0.20140616
 pip install PePr==1.1.14
+set -u
 
 deactivate
 
