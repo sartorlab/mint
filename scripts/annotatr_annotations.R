@@ -398,7 +398,7 @@ if(log10p_flag) {
 # Deal with random regions depending on resolution
 # NOTE: Do not do random regions for methylSig at the moment, uses too much RAM
 if(resolution == 'region' && annot_type != 'sample_class' && annot_type != 'compare_class' && annot_type != 'methylSig') {
-	regions_rnd = randomize_regions(regions = regions)
+	regions_rnd = NULL
 } else if (resolution == 'base' && genome == 'hg19') {
 	regions_rnd = NULL
 } else {
