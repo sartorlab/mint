@@ -23,9 +23,11 @@ tar -jxvf samtools-1.3.1.tar.bz2
 cd samtools-1.3.1
 make
 make prefix=${APP_DIR}/samtools install
-export PATH=${APP_DIR}/samtools/bin:$PATH
 
 cd ${APP_DIR}
+
+# Create symlinks in bin
+ln -s ${APP_DIR}/samtools/bin/* ${BIN_DIR}
 
 # Cleanup
 rm samtools-1.3.1.tar.bz2
@@ -37,9 +39,11 @@ curl -L "https://github.com/arq5x/bedtools2/releases/download/v2.26.0/bedtools-2
 tar -zxvf bedtools-2.26.0.tar.gz
 cd bedtools2
 make
-export PATH=${APP_DIR}/bedtools2/bin:$PATH
 
 cd ${APP_DIR}
+
+# Create symlinks in bin
+ln -s ${APP_DIR}/bedtools2/bin/* ${BIN_DIR}
 
 # Cleanup
 rm bedtools-2.26.0.tar.gz
@@ -49,7 +53,12 @@ rm bedtools-2.26.0.tar.gz
 curl -L "https://github.com/BenLangmead/bowtie2/releases/download/v2.2.9/bowtie2-2.2.9-linux-x86_64.zip" > bowtie2-2.2.9-linux-x86_64.zip
 unzip bowtie2-2.2.9-linux-x86_64.zip
 mv ${APP_DIR}/bowtie2-2.2.9 ${APP_DIR}/bowtie2
-export PATH=${APP_DIR}/bowtie2:$PATH
+
+# Create symlinks in bin
+for file in `ls ${APP_DIR}/bowtie2/bowtie2*`;
+do
+    ln -s $file ${BIN_DIR}
+done
 
 # Cleanup
 rm bowtie2-2.2.9-linux-x86_64.zip
@@ -59,7 +68,16 @@ rm bowtie2-2.2.9-linux-x86_64.zip
 curl -L "https://github.com/FelixKrueger/Bismark/archive/0.16.1.zip" > Bismark-0.16.1.zip
 unzip Bismark-0.16.1.zip
 mv ${APP_DIR}/Bismark-0.16.1 ${APP_DIR}/bismark
-export PATH=${APP_DIR}/bismark:$PATH
+
+# Create symlinks in bin
+ln -s ${APP_DIR}/bismark/bam2nuc ${BIN_DIR}
+ln -s ${APP_DIR}/bismark/bismark ${BIN_DIR}
+ln -s ${APP_DIR}/bismark/bismark2bedGraph ${BIN_DIR}
+ln -s ${APP_DIR}/bismark/bismark2report ${BIN_DIR}
+ln -s ${APP_DIR}/bismark/bismark2summary ${BIN_DIR}
+ln -s ${APP_DIR}/bismark/bismark_methylation_extractor ${BIN_DIR}
+ln -s ${APP_DIR}/bismark/coverage2cytosine ${BIN_DIR}
+ln -s ${APP_DIR}/bismark/deduplicate_bismark ${BIN_DIR}
 
 # Cleanup
 rm Bismark-0.16.1.zip
@@ -76,6 +94,8 @@ chmod 755 bin/bedToBigBed
 curl -L "https://github.com/bedops/bedops/releases/download/v2.4.14/bedops_linux_x86_64-v2.4.14.tar.bz2" > bedops_linux_x86_64-v2.4.14.tar.bz2
 tar -jxvf bedops_linux_x86_64-v2.4.14.tar.bz2
 
+# Extracts into bin
+
 # Cleanup
 rm bedops_linux_x86_64-v2.4.14.tar.bz2
 
@@ -84,7 +104,9 @@ rm bedops_linux_x86_64-v2.4.14.tar.bz2
 curl -L "http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip" > fastqc_v0.11.5.zip
 unzip fastqc_v0.11.5.zip
 chmod 755 FastQC/fastqc
-export PATH=${APP_DIR}/FastQC:$PATH
+
+# Create symlinks in bin
+ln -s ${APP_DIR}/FastQC/fastqc ${BIN_DIR}
 
 # Cleanup
 rm fastqc_v0.11.5.zip
@@ -94,7 +116,9 @@ rm fastqc_v0.11.5.zip
 curl -L "http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_v0.4.1.zip" > trim_galore_v0.4.1.zip
 unzip trim_galore_v0.4.1.zip
 mv trim_galore_zip trim_galore
-export PATH=${APP_DIR}/trim_galore:$PATH
+
+# Create symlinks in bin
+ln -s ${APP_DIR}/trim_galore/trim_galore ${BIN_DIR}
 
 # Cleanup
 rm trim_galore_v0.4.1.zip
@@ -123,6 +147,9 @@ set -u
 pip install --requirement ../install/pip_packages.txt
 
 deactivate
+
+# Make sure permissions are right for everything in mint/apps
+chmod -R 755 ${APP_DIR}
 
 ##############################################
 # Install R packages
