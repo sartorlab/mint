@@ -1,6 +1,5 @@
 cutadapt
 MACS2==2.1.0.20140616
 multiqc
-numpy
 PePr
 pysam
