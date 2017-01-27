@@ -84,7 +84,7 @@ bisulfite_sample_multiqc : $(DIR_MULTIQC)/bisulfite_sample/multiqc_report.html
 $(DIR_MULTIQC)/bisulfite_sample/multiqc_report.html :	 $(patsubst %,$(DIR_BIS_RAW_FASTQCS)/%_fastqc.zip,$(BISULFITE_SAMPLE_PREFIXES)) \\
 												$(patsubst %,$(DIR_BIS_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(BISULFITE_SAMPLE_PREFIXES)) \\
 												$(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bedGraph.gz,$(BISULFITE_SAMPLE_PREFIXES))
-	multiqc --force ./bisulfite --outdir $(@D)
+	$(PATH_TO_MULTIQC) --force ./bisulfite --outdir $(@D)
 
 ########################################
 # Rule to delete all temporary files from make bis_sample

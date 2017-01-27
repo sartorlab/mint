@@ -83,7 +83,7 @@ pulldown_multiqc : $(DIR_MULTIQC)/pulldown/multiqc_report.html
 $(DIR_MULTIQC)/pulldown/multiqc_report.html :	 $(patsubst %,$(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES)) \\
 												$(patsubst %,$(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES)) \\
 												$(patsubst %,$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam,$(PULLDOWN_ALIGN_PREFIXES))
-	multiqc --force ./pulldown --outdir $(@D)
+	$(PATH_TO_MULTIQC) --force ./pulldown --outdir $(@D)
 
 ################################################################################
 '
