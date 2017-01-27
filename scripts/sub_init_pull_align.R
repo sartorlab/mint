@@ -53,7 +53,7 @@ pulldown_bowtie2 : $(patsubst %,$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam,
 # Rule for bowtie2 alignment
 $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip
 	$(PATH_TO_BOWTIE2) $(OPTS_BOWTIE2) $< 2> $(@D)/$(@F).txt | $(PATH_TO_SAMTOOLS) view -bS - > $@
-	$(PATH_TO_SAMTOOLS) sort $@ $(patsubst %.bam,%,$@)
+	$(PATH_TO_SAMTOOLS) sort -o $@ $@
 	$(PATH_TO_SAMTOOLS) index $@
 
 ########################################

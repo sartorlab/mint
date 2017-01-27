@@ -49,7 +49,7 @@ bisulfite_bismark : $(patsubst %,$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam,$(
 # Rule for bismark alignment
 $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.bam : $(DIR_BIS_TRIM_FASTQS)/%_trimmed.fq.gz
 	$(PATH_TO_BISMARK) $(OPTS_BISMARK) --output_dir $(@D) --temp_dir $(@D) $<
-	$(PATH_TO_SAMTOOLS) sort $@ $(patsubst %.bam,%,$@)
+	$(PATH_TO_SAMTOOLS) sort -o $@ $@
 	$(PATH_TO_SAMTOOLS) index $@
 
 ########################################
