@@ -66,10 +66,12 @@ The following steps will install `mint` and its dependencies on a Linux or macOS
 
 1. `cd` into the directory you'd like `mint` installed.
 2. Clone the `mint` repository with:
+  
   ```
   git clone https://github.com/sartorlab/mint.git
   ```
 3. `cd` into the `mint` directory and install the dependencies to `mint/apps` with:
+  
   ```
   bash install/install_deps.sh
   ```
@@ -81,15 +83,18 @@ The following steps will install `mint` and its dependencies on a Linux or macOS
   * Python packages are installed in a `virtualenv` in `mint/apps/mint_env`, ensuring existing Python packages remain untouched.
   * The install script expects a version of `R >= 3.3.0` to be installed on the system.
 4. Add `/path/to/mint/apps/bin` to your `$PATH` variable in `~/.bashrc` or `~/.bash_profile` (whichever exists), by adding the corrected version of this line:
+  
   ```
   export PATH=/path/to/mint/apps/bin:$PATH
   ```
   NOTE: Adding the `/path/to/mint/apps/bin` *before* `$PATH` ensures that the versions installed in `mint/apps` are used rather than previous installations.
 5. Source the `~/.bashrc` or `~/.bash_profile` to update your path in your current terminal session.
+  
   ```
   source ~/.bashrc
   ```
 6. In `/path/to/mint` do:
+  
   ```
   mkdir projects
   ```
