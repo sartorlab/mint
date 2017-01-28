@@ -67,12 +67,12 @@ The following steps will install `mint` and its dependencies on a Linux or macOS
 
 1. `cd` into the directory you'd like `mint` installed.
 2. Clone the `mint` repository with:
-  
+
   ```
   git clone https://github.com/sartorlab/mint.git
   ```
 3. `cd` into the `mint` directory and install the dependencies to `mint/apps` with:
-  
+
   ```
   bash install/install_deps.sh
   ```
@@ -82,20 +82,21 @@ The following steps will install `mint` and its dependencies on a Linux or macOS
   * Users may already have some dependencies installed. In which case, the `install/install_deps.sh` script can be modified to suit those situations.
   * The install script checks for a `pip` installation and installs it with the `--user` flag if it is not present.
   * Python packages are installed in a `virtualenv` in `mint/apps/mint_env`, ensuring existing Python packages remain untouched.
+  * The `virtualenv` activation binary is symlinked in `/mint/apps/bin` as `mint_venv` for convenience.
   * The install script expects a version of `R >= 3.3.0` to be installed on the system.
 4. Add `/path/to/mint/apps/bin` to your `$PATH` variable in `~/.bashrc` or `~/.bash_profile` (whichever exists), by adding the corrected version of this line:
-  
+
   ```
-  export PATH=/path/to/mint/apps/bin:$PATH
+  export PATH=/path/to/mint/apps/bin:~/.local/bin:$PATH
   ```
   NOTE: Adding the `/path/to/mint/apps/bin` *before* `$PATH` ensures that the versions installed in `mint/apps` are used rather than previous installations.
 5. Source the `~/.bashrc` or `~/.bash_profile` to update your path in your current terminal session.
-  
+
   ```
   source ~/.bashrc
   ```
 6. In `/path/to/mint` do:
-  
+
   ```
   mkdir projects
   ```
@@ -110,8 +111,10 @@ which bowtie2
 
 It is also worthwhile to try loading the `virtualenv` and testing `which` on a Python package:
 ```
-# Activate the virtualenv with
-source /path/to/mint/apps/mint_env/bin/activate
+# Activate the virtualenv
+# NOTE: Running install/install_deps.sh creates a symlink for mint/apps/mint_env/bin/activate
+# as mint/apps/mint_venv
+source mint_venv
 which PePr
 # Should return /path/to/mint/apps/mint_env/bin/PePr
 ```
@@ -184,7 +187,7 @@ After following the [installation instructions](#installation), we recommend tes
   cd /path/to/mint/projects/test_hybrid_small
 
   # Activate the virtualenv
-  source /path/to/mint/apps/mint_env/bin/activate
+  source mint_venv
 
   make pulldown_align
   make bisulfite_align
@@ -206,7 +209,7 @@ After following the [installation instructions](#installation), we recommend tes
   cd /path/to/mint/projects/test_hybrid_small
 
   # Activate the virtualenv
-  source /path/to/mint/apps/mint_env/bin/activate
+  source mint_venv
 
   # Here we use nohup to write the stdout to a file
   # These can be run simultaneously
@@ -332,7 +335,13 @@ Once a project is instantiated and configured, the analysis steps can begin. The
 For example, the following commands will analyze the test hybrid data:
 
 ```
+# Go to the project root
 cd /path/to/mint/projects/test_hybrid_small
+
+# Activate the python virtualenv
+source mint_venv
+
+# Run modules
 make pulldown_align
 make bisulfite_align
 make pulldown_sample

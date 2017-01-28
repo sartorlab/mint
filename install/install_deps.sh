@@ -131,7 +131,6 @@ which pip
 if [ $? -ne 0 ]; then
     curl -L "https://bootstrap.pypa.io/get-pip.py" > get-pip.py
     python get-pip.py --user
-    export PATH=~/.local/bin:$PATH
 fi
 
 # Install virtualenv
@@ -151,6 +150,9 @@ pip install PePr==1.1.14
 set -u
 
 deactivate
+
+# Make a mint_env/bin/activate symlink in /mint/apps/bin
+ln -s ${APP_DIR}/mint_env/bin/activate ${BIN_DIR}/mint_venv
 
 # Make sure permissions are right for everything in mint/apps
 chmod -R 755 ${APP_DIR}
