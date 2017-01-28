@@ -16,6 +16,7 @@ v0.3.0
 	* [Supported Experiments and Designs](#supported-experiments-and-designs)
 	* [Setting up a project](#setting-up-a-project)
 		* [Annotation file](#annotation-file)
+		* [Group file](#group-file)
 		* [Instantiating a project](#instantiating-a-project)
 		* [Configuring a project](#configuring-a-project)
 	* [Running a project](#running-a-project)
@@ -313,25 +314,20 @@ After creating an appropriate annotation file for your project, within the `mint
 3. In `mint/` do:
 
 ```
-Rscript init.R --project projectID --genome hg19 --genomepath /path/to/hg19 --chrompath /path/to/hg19/chromInfo_hg19.txt --datapath /path/to/mint_test/hybrid/
+Rscript init.R --project projectID --genome genome_build --genomepath /path/to/genome --chrompath /path/to/genome/chromInfo_file.txt --datapath /path/to/data/
 ```
 
-The `init.R` script creates an appropriate directory structure in `mint/projects/test_hybrid_small/`, creates symlinks to the `.fastq.gz` files in `/path/to/data`, and creates the `makefile` and `config.mk` files that control the analysis of your project.
+The `init.R` script creates an appropriate directory structure in `mint/projects/projectID/`, creates symlinks to the `.fastq.gz` files in `/path/to/data`, and creates the `makefile` and `config.mk` files that control the analysis of your project.
 
 #### Configuring a project
 
-The `mint/projects/test_hybrid_small/config.mk` file contains options for analysis implied in the project annotation file.
+The `mint/projects/projectID/config.mk` file contains options for analysis implied in the project annotation file. As appropriate, links to documentation for each software tool is provided at the corresponding section fo the `config.mk` file.
 
-Below is an example of the `config.mk` file for the `test_hybrid_small` data. In this file, the `PROJECT` and `GENOME` variables have been automatically populated from the `Rscript init.R` call.
-
-At minimum, paths to reference genome information must be provided in the `Genome paths` block. Optionally, specific paths to any of the software used for analysis can be given. Options for software used and cutoffs for classification are considered reasonable defaults, but these can be changed as desired.
-
-**NOTE:** The documentation for each program should be consulted before adding or removing parameters.
-
+**NOTE:** Default parameters may not be correct for your project, so check them carefully!
 
 #### Running a project
 
-Once a project is instantiated and configured, the analysis steps can begin. The `mint` pipeline is controlled by `make` and there are up to 7 simple commands to run the modules, depending on the analyses implied by the project annotation file. In general, the bisulfite and pulldown commands are independent of each other until classification, and the `*_sample` and `*_compare` commands rely on the corresponding `*_align` steps.
+Once a project is instantiated and configured, the analysis steps can begin. The `mint` pipeline is controlled by `make` and there are up to 8 simple commands to run the modules, depending on the analyses implied by the project annotation file. In general, the bisulfite and pulldown commands are independent of each other until classification, and the `*_sample` and `*_compare` commands rely on the corresponding `*_align` steps.
 
 For example, the following commands will analyze the test hybrid data:
 
@@ -340,17 +336,18 @@ cd /path/to/mint/projects/test_hybrid_small
 make pulldown_align
 make bisulfite_align
 make pulldown_sample
+make bisulfite_sample
 make bisulfite_compare
 make pulldown_compare
 make sample_classification
 make compare_classification
 ```
 
-To see what will be run by the pipeline without *actually* running anything, you can `make -n pulldown_align`, etc. for each of the commands.
+To see what will be run by the pipeline without *actually* running anything, you can `make -n pulldown_align`, etc. for each of the commands. *NOTE:* This is also a way to check that a module completed without problem. If you run `make -n pulldown_align` after the module finishes, `make` will report that nothing is to be done for that rule.
 
 Depending on the computing hardware used, projects can be run with the `make -j n` command where `n` is a positive integer. The `-j` flag specifies how many commands `make` is allowed to run simultaneously. When it is not present, the default is to run commands in serial.
 
-**NOTE:** Some software in the `mint` pipeline have options for the number of processors to use, so some care should be taken not to exceed the computing limitations of the hardware. For example, `bismark` tends to use 5 cores per instantiation, so using `make -j 5` would really use 25 cores.
+**NOTE:** Some software in the `mint` pipeline have options for the number of processors to use, so some care should be taken not to exceed the computing limitations of the hardware. Tools that have parameters for the user of multiple processors are: `bismark_methylation_extractor`, `methylSig`, and `PePr`. By default, the number of processors to use is set to 1.
 
 ## Outputs
 
@@ -359,7 +356,6 @@ In the case of the `test_hybrid_small` project the following directory structure
 ```
 test_hybrid_small
 test_hybrid_small/tmp
-test_hybrid_small/pbs_jobs
 test_hybrid_small/data
 test_hybrid_small/data/raw_fastqs
 test_hybrid_small/data/test_hybrid_small_annotation.txt
@@ -528,7 +524,7 @@ chr21   16429700        16429850        hyper_hmc       1000    .       16429700
 
 ### Annotations and Visualizations
 
-The genomic regions given by `bismark_methylation_extractor`, `methylSig`, `PePr`, and the classifications are annotated to genomic annotations using `annotatr`, a fast and flexible `R` package designed for exactly this task. As with `methylSig`, every `annotatr` session is saved as an `.RData` file in `test_hybrid_small/RData` to enable users to quickly go back to the annotations, investigate further, alter plots, or create new plots.
+The genomic regions given by `bismark_methylation_extractor`, [`methylSig`](https://github.com/sartorlab/methylSig), [`PePr`](https://github.com/shawnzhangyx/PePr), and the classifications are annotated to genomic annotations using [`annotatr`](https://github.com/rcavalcante/annotatr), a fast and flexible `R` package designed for exactly this task. As with `methylSig`, every `annotatr` session is saved as an `.RData` file in `test_hybrid_small/RData` to enable users to quickly go back to the annotations, investigate further, alter plots, or create new plots.
 
 Only the hg19, hg38, mm9, or mm10 genomes are currently supported for annotation in the `mint` pipeline. We plan to implement the use of custom annotations *within the pipeline* in the future (`annotatr` already supports custom annotations). All files are annotated against CpG features (islands, shores, shelves, and inter CGI) and genic features based on UCSC knownGene transcripts (1-5kb upstream of promoter, promoter (\<1kb upstream of TSS), 5'UTR, exons, introns, and 3'UTR). In the case of hg19, the FANTOM5 robust enhancers are also included. Annotations include UCSC transcript IDs, Entrez Gene IDs, and gene symbols.
 
