@@ -146,22 +146,31 @@ bismark_genome_preparation [options] <path_to_genome_folder>
 After following the [installation instructions](#installation), we recommend testing the pipeline on a small dataset to ensure everything is working properly. We have created a repository with test data at <https://github.com/sartorlab/mint_test> based on data from [GSE52945](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE52945). Follow these steps to test the entire pipeline:
 
 1. Clone the test data repository in a folder **outside the `mint` installation** ():
+
   ```
   git clone https://github.com/sartorlab/mint_test.git
   ```
+
 2. Copy the metadata files into `/path/to/mint/projects`:
+
   ```
   cp /path/to/mint_test/hybrid/*txt /path/to/mint/projects/
   ```
+
 3. `cd` to `mint`:
+
   ```
   cd /path/to/mint
   ```
+
 4. Initialize the `test_hybrid_small` project:
+
   ```
   Rscript init.R --project test_hybrid_small --genome hg19 --genomepath /path/to/hg19 --chrompath /path/to/hg19/chromInfo_hg19.txt --datapath /path/to/mint_test/hybrid/
   ```
+
 5. Run the modules. In the simplest form, the following would run in series with all output to `stdout`:
+
   ```
   # Assumes an interactive server session, and NOT a cluster with queueing
 
@@ -180,7 +189,9 @@ After following the [installation instructions](#installation), we recommend tes
   make compare_classification
   make sample_classification
   ```
+
   To help the tests run faster, you can use the `-j` flag of make to run operations in parallel, and use `&` to run operations in the background:
+
   ```
   # Assumes an interactive server session where the server has ample resources
   # For example, a server with 20 cores and 128GB RAM will be fine
@@ -295,6 +306,7 @@ After creating an appropriate annotation file for your project, within the `mint
 1. `mkdir projects`
 2. Put the `test_hybrid_small_annotation.txt` file in `mint/projects/`.
 3. In `mint/` do:
+
 ```
 Rscript init.R --project projectID --genome hg19 --genomepath /path/to/hg19 --chrompath /path/to/hg19/chromInfo_hg19.txt --datapath /path/to/mint_test/hybrid/
 ```
