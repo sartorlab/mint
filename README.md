@@ -59,6 +59,8 @@ The `mint` pipeline is executed with `make` and includes configurable steps for:
 
 The mint pipeline is also implemented for [Galaxy](https://usegalaxy.org), and the repository for setting up the Galaxy version of mint is <https://github.com/sartorlab/mint_galaxy>.
 
+[Top](#contents)
+
 ## Installation
 
 ### `mint` and Dependencies
@@ -101,6 +103,8 @@ The following steps will install `mint` and its dependencies on a Linux or macOS
   mkdir projects
   ```
 
+[Top](#contents)
+
 ### Checking Dependency Installation
 
 At this point using `which` with one of the dependencies should return a path in `mint/apps`:
@@ -120,9 +124,13 @@ which PePr
 # Should return /path/to/mint/apps/mint_env/bin/PePr
 ```
 
+[Top](#contents)
+
 ### Reference Genomes
 
 As with any high-throughput sequencing analysis, the correct reference genome is required to align reads. The most convenient resource for reference genomes is the [Illumina iGenomes](http://support.illumina.com/sequencing/sequencing_software/igenome.html) page.
+
+[Top](#contents)
 
 #### Symlinks
 
@@ -147,12 +155,16 @@ ln -s ./Sequence/Bowtie2Index/genome.rev.2.bt2 genome.rev.2.bt2
 ln -s ./Annotation/Archives/archive-2013-03-06-11-23-03/Genes/ChromInfo.txt chromInfo_hg19.txt
 ```
 
+[Top](#contents)
+
 #### Bisulfite-converted Reference Genome
 
 If you download a reference genome from iGenomes, it is possible that a bisulfite-converted reference genome is already included. If not, in order to use the [`bismark`](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) aligner on WGBS or RRBS data you must create your own. For more information [see the documentation](https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html#i-running-bismark-genome-preparation). In short the following will build it:
 ```
 bismark_genome_preparation [options] <path_to_genome_folder>
 ```
+
+[Top](#contents)
 
 ## Testing `mint`
 
@@ -243,6 +255,8 @@ As documented in <https://github.com/sartorlab/mint_test>, the test data contain
 * chr7:36074781-36102780 (hyper_hmc)
 * chr8:35090385-35095384 (hyper_mc)
 
+[Top](#contents)
+
 ## Details
 
 ### Supported Experiments and Designs
@@ -257,6 +271,8 @@ And the `mint` pipeline can analyze:
 * **sample-wise**, where no groups are present for comparison, and 5mc / 5hmc integration is done per-sample, **and/or**
 * **comparison-wise**, where two or more groups are tested for differential methylation, and 5mc / 5hmc differential methylation integration is done per-group.
 
+[Top](#contents)
+
 ### Setting up a project
 
 Taking the example in [Testing `mint`](#testing-mint) as a guide, setting up a project requires the following:
@@ -264,6 +280,8 @@ Taking the example in [Testing `mint`](#testing-mint) as a guide, setting up a p
 1. A project [annotation file](#annotation-file) describing the samples, and any group comparisons to make. Put this in `/path/to/mint/projects`.
 2. A [group file](#group-file) mapping group numbers to group names, if any comparisons are made. Put this in `/path/to/mint/projects`.
 3. The location of the raw sequencing reads corresponding to the samples, and the relevant reference genome.
+
+[Top](#contents)
 
 #### Annotation file
 
@@ -303,6 +321,8 @@ test_hybrid_small	comparison	IDH2mut_v_NBM	0	1	1	1	0	"0,1"
 
 Note the comparison columns that indicate whether to test the pulldown or bisulfite samples, and which two groups are involved in the comparison.
 
+[Top](#contents)
+
 #### Group file
 
 The group file is a tab-delimeted file named `[projectID]_groups.txt` in `/path/to/mint/projects`, and contains two columns labelled `group` and `name`. In particular, for the [test](#testing-mint) data the group file looks like:
@@ -314,6 +334,8 @@ group	name
 ```
 
 This file enables the `config.mk` file to be auto-filled so that results are labeled with the correct group names.
+
+[Top](#contents)
 
 #### Instantiating a project
 
@@ -329,11 +351,15 @@ Rscript init.R --project projectID --genome genome_build --genomepath /path/to/g
 
 The `init.R` script creates an appropriate directory structure in `mint/projects/projectID/`, creates symlinks to the `.fastq.gz` files in `/path/to/data`, and creates the `makefile` and `config.mk` files that control the analysis of your project.
 
+[Top](#contents)
+
 #### Configuring a project
 
 The `mint/projects/projectID/config.mk` file contains options for analysis implied in the project annotation file. As appropriate, links to documentation for each software tool is provided at the corresponding section fo the `config.mk` file.
 
 **NOTE:** Default parameters may not be correct for your project, so check them carefully!
+
+[Top](#contents)
 
 #### Running a project
 
@@ -364,6 +390,8 @@ To see what will be run by the pipeline without *actually* running anything, you
 Depending on the computing hardware used, projects can be run with the `make -j n` command where `n` is a positive integer. The `-j` flag specifies how many commands `make` is allowed to run simultaneously. When it is not present, the default is to run commands in serial.
 
 **NOTE:** Some software in the `mint` pipeline have options for the number of processors to use, so some care should be taken not to exceed the computing limitations of the hardware. Tools that have parameters for the user of multiple processors are: `bismark_methylation_extractor`, `methylSig`, and `PePr`. By default, the number of processors to use is set to 1.
+
+[Top](#contents)
 
 ## Outputs
 
@@ -410,6 +438,8 @@ test_hybrid_small/config.mk
 test_hybrid_small/narrowPeak.as
 ```
 
+[Top](#contents)
+
 ### FastQC
 
 The `FastQC` output is by default not extracted, so the `.zip` files and `.html` files for the raw reads are located in `test_hybrid_small/bisulfite/raw_fastqcs` and `test_hybrid_small/pulldown/raw_fastqcs`. The output `FastQC` done after trimming are located in `test_hybrid_small/bisulfite/trim_fastqcs` and `test_hybrid_small/pulldown/trim_fastqcs`.
@@ -446,6 +476,8 @@ The `.narrowPeak` files resulting from `macs2` peak calling go in `test_hybrid_s
 
 The `*_chip1_peaks.bed` and `*_chip2_peaks.bed` files resulting from `PePr`'s test for differentially methylated regions go in `test_hybrid_small/pulldown/pepr_peaks`.
 
+[Top](#contents)
+
 ### Classifications
 
 #### Simple classification
@@ -468,6 +500,8 @@ chr21	15198928	15199092	hmc_low	1000	.	15198928	15199092	102,102,255
 chr21	15200122	15200346	hmc_low	1000	.	15200122	15200346	102,102,255
 chr21	15353077	15353463	hmc_med	1000	.	15353077	15353463	0,0,255
 ```
+
+[Top](#contents)
 
 #### Sample classification
 
@@ -504,6 +538,8 @@ chr21   9826899 9826901 mc_low  1000    .       9826899 9826901 255,165,0
 chr21   9826903 9826905 mc_low  1000    .       9826903 9826905 255,165,0
 ```
 
+[Top](#contents)
+
 #### Comparison classification
 
 Comparison classifications are done when data is available measuring 5mc + 5hmc (WGBS, RRBS, etc.) and 5hmc (hMeDIP-seq, hMeSeal, etc.), or 5mc (MeDIP-seq, etc.) and 5hmc (hMeDIP-seq, etc.), and there are groups of samples compared against each other for differential methylation (DM). The inputs into the classifier are sites/regions of 5mc + 5hmc DM and regions of 5hmc DM or regions of 5mc DM and 5hmc DM. The tables below determine how the data is integrated into classifications.
@@ -538,6 +574,8 @@ chr21   16427900        16429700        no_DM   1000    .       16427900        
 chr21   16429700        16429850        hyper_hmc       1000    .       16429700        16429850        0,0,255
 ```
 
+[Top](#contents)
+
 ### Annotations and Visualizations
 
 The genomic regions given by `bismark_methylation_extractor`, [`methylSig`](https://github.com/sartorlab/methylSig), [`PePr`](https://github.com/shawnzhangyx/PePr), and the classifications are annotated to genomic annotations using [`annotatr`](https://github.com/rcavalcante/annotatr), a fast and flexible `R` package designed for exactly this task. As with `methylSig`, every `annotatr` session is saved as an `.RData` file in `test_hybrid_small/RData` to enable users to quickly go back to the annotations, investigate further, alter plots, or create new plots.
@@ -548,6 +586,8 @@ All annotation sessions output a table of all genomic annotations intersecting t
 
 For details on the general features of `annotatr`, visit the [GitHub repository](https://github.com/rcavalcante/annotatr).
 
+[Top](#contents)
+
 #### Table: Complete annotations
 
 ```
@@ -557,6 +597,8 @@ chr21	9909515	9909759	*	hg19_cpg_islands	island:17089	NA	NA	chr21	9909661	990978
 chr21	9909759	9912040	*	hg19_cpg_shores	shore:30779	NA	NA	chr21	9909661	9909789	*	hmc_low
 chr21	9909278	9966321	-	hg19_knownGenes_introns	uc002zka.2,uc021wgx.1	100132288	TEKT4P2	chr21	9944159	9944343	*	hmc_low
 ```
+
+[Top](#contents)
 
 #### Table: Annotation summaries
 
@@ -590,35 +632,51 @@ Random Regions  hg19_knownGenes_promoters       66
 
 Additionally, a variety of plots are output to help interpret the output of `bismark_methylation_extractor`, `methylSig`, `PePr`, and the classifications.
 
+[Top](#contents)
+
 #### Plot: Number of regions per annotation
 
 ![Regions per annotation type](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_hmc_pulldown_PePr_counts.png)
+
+[Top](#contents)
 
 #### Plot: Distribution of % methylation in annotations
 
 ![Distribution of perc. meth. in annotations](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_1_mc_hmc_bisulfite_bismark_percmeth.png)
 
+[Top](#contents)
+
 #### Plot: Distribution of coverage in annotations
 
 ![Distribution of coverage in annotations](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_1_mc_hmc_bisulfite_bismark_coverage.png)
+
+[Top](#contents)
 
 #### Plot: Distribution of peak widths
 
 ![Distribution of peak widths](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_1_hmc_pulldown_simple_class_peak_widths.png)
 
+[Top](#contents)
+
 #### Plot: Volcano plots of DM
 
 ![Volcano plots from methylSig results](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_mc_hmc_bisulfite_DMR_methylSig_volcano.png)
 
+[Top](#contents)
+
 #### Plot: Distribution of methylSig calls in annotations
 
 ![Distribution of methylSig calls in annots](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_mc_hmc_bisulfite_DMR_methylSig_DMstatus_prop_genes.png)
+
+[Top](#contents)
 
 #### Plot: Distribution of chip1/chip2 peaks in annotations
 
 ![Counts of DM type in annots](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_hmc_pulldown_PePr_cat_count_genes.png)
 
 ![Prop. of DM type in annots](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_hmc_pulldown_PePr_cat_prop_genes.png)
+
+[Top](#contents)
 
 #### Plot: Distribution of classifications in annotations
 
@@ -629,6 +687,8 @@ Additionally, a variety of plots are output to help interpret the output of `bis
 ![Sample classification](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_2_sample_class_cat_prop_genes.png)
 
 ![Comparison classification](https://github.com/sartorlab/mint/blob/master/docs/IDH2mut_v_NBM_compare_class_cat_prop_genes.png)
+
+[Top](#contents)
 
 ### UCSC Browser track hub
 
@@ -643,3 +703,5 @@ Included in each track hub, where applicable, are:
 * Differential methylation from `methylSig`
 * Sample classifications
 * Comparison classifications
+
+[Top](#contents)
