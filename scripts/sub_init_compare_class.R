@@ -5,21 +5,22 @@ if(bool_bis_comp || bool_pull_comp) {
 
 make_rule_compare_class_bis_module = '
 # Intermediates for the bisulfite piece
+# Each needs 0-based start and 1-based end to match other files
 .INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_DMup.txt
 $(DIR_BIS_MSIG)/%_bisulfite_DMup.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OPT_DM_TYPE)_methylSig.txt
-	$(PATH_TO_AWK) -v OFS="\\t" -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) \'NR > 1 && $$6 < FDR && $$7 > DIFF { print $$1, $$2, $$3 }\' $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -v OFS="\\t" -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) \'NR > 1 && $$6 < FDR && $$7 > DIFF { print $$1, $$2 - 1, $$3 }\' $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 
 .INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_DMdown.txt
 $(DIR_BIS_MSIG)/%_bisulfite_DMdown.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OPT_DM_TYPE)_methylSig.txt
-	$(PATH_TO_AWK) -v OFS="\\t" -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) \'NR > 1 && $$6 < FDR && $$7 < DIFF*(-1) { print $$1, $$2, $$3 }\' $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -v OFS="\\t" -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) \'NR > 1 && $$6 < FDR && $$7 < DIFF*(-1) { print $$1, $$2 - 1, $$3 }\' $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 
 .INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_noDM_signal.txt
 $(DIR_BIS_MSIG)/%_bisulfite_noDM_signal.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OPT_DM_TYPE)_methylSig.txt
-	$(PATH_TO_AWK) -v OFS="\\t" -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) \'NR > 1 && $$6 > FDR { print $$1, $$2, $$3 }\' $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -v OFS="\\t" -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) \'NR > 1 && $$6 > FDR { print $$1, $$2 - 1, $$3 }\' $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 
 .INTERMEDIATE : $(DIR_BIS_MSIG)/%_bisulfite_noDM_nosignal.txt
 $(DIR_BIS_MSIG)/%_bisulfite_noDM_nosignal.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OPT_DM_TYPE)_methylSig.txt
-	$(PATH_TO_BEDTOOLS) complement -i <($(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2, $$3 }\' $<) -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) complement -i <($(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2 - 1, $$3 }\' $<) -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 '
 
 make_rule_compare_class_pull_module = '
@@ -50,7 +51,9 @@ $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt : $(DIR_PULL_PEPR)/%_pulldown_DM
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt
 $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt: $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt
-	$(PATH_TO_BEDTOOLS) complement -i $< -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) > $@
+	$(PATH_TO_BEDTOOLS) complement -i $< -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) \\
+	| $(PATH_TO_AWK) -v OFS="\\t" \'$$2 != $$3 {print $$0}\' \\
+	> $@
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
 $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt : $(DIR_PULL_PEPR)/%_pulldown_merged_signal.bed
@@ -58,7 +61,9 @@ $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt : $(DIR_PULL_PEPR)/%_pulldown_merged_
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt
 $(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
-	$(PATH_TO_BEDTOOLS) complement -i $< -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) > $@
+	$(PATH_TO_BEDTOOLS) complement -i $< -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) \\
+	| $(PATH_TO_AWK) -v OFS="\\t" \'$$2 != $$3 {print $$0}\' \\
+	> $@
 
 .INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_noDM_signal.txt
 $(DIR_PULL_PEPR)/%_pulldown_noDM_signal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
@@ -88,7 +93,7 @@ if(bool_bis_comp && bool_pull_comp) {
 								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\'
-	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed : 	$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMup.txt \\
+	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed :	 $(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMup.txt \\
 								$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMdown.txt \\
 								$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_signal.txt \\
 								$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_nosignal.txt \\
@@ -111,7 +116,7 @@ if(bool_bis_comp && bool_pull_comp) {
 								$(patsubst %,$(DIR_BIS_MSIG)/%_hmc_bisulfite_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_MSIG)/%_hmc_bisulfite_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_MSIG)/%_hmc_bisulfite_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\'
-	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed : 	$(DIR_BIS_MSIG)/%_mc_bisulfite_DMup.txt \\
+	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed :	 $(DIR_BIS_MSIG)/%_mc_bisulfite_DMup.txt \\
 								$(DIR_BIS_MSIG)/%_mc_bisulfite_DMdown.txt \\
 								$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_signal.txt \\
 								$(DIR_BIS_MSIG)/%_mc_bisulfite_noDM_nosignal.txt \\
@@ -131,7 +136,7 @@ if(bool_bis_comp && bool_pull_comp) {
 								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\'
-	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed : 	$(DIR_PULL_PEPR)/%_mc_pulldown_DMup.txt \\
+	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed :	 $(DIR_PULL_PEPR)/%_mc_pulldown_DMup.txt \\
 								$(DIR_PULL_PEPR)/%_mc_pulldown_DMdown.txt \\
 								$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_signal.txt \\
 								$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_nosignal.txt \\
@@ -153,7 +158,7 @@ compare_classification : $(patsubst %%,$(DIR_TRACK)/%%_compare_classification.bb
 
 # Rule for compare classification bigBed
 $(DIR_TRACK)/%%_compare_classification.bb : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
-	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@
+	$(PATH_TO_BED2BB) $^ $(CHROM_PATH) $@
 
 # Rule for annotatr of compare classification
 $(DIR_RDATA)/%%_compare_classification_annotatr_analysis.RData : $(DIR_CLASS_COMPARE)/%%_compare_classification.bed
@@ -179,35 +184,35 @@ cat(make_rule_class_compare, file = file_make, sep = '\n', append = TRUE)
 #######################################
 # PBS script
 # bisulfite_compare_q = c(
-# 	'#!/bin/bash',
-# 	'#### Begin PBS preamble',
-# 	'#PBS -N class_compare',
-# 	'#PBS -l nodes=1:ppn=4,walltime=24:00:00,pmem=16gb',
-# 	'#PBS -A sartor_lab',
-# 	'#PBS -q first',
-# 	'#PBS -M rcavalca@umich.edu',
-# 	'#PBS -m abe',
-# 	'#PBS -j oe',
-# 	'#PBS -V',
-# 	'#### End PBS preamble',
-# 	'# Put your job commands after this line',
-# 	sprintf('cd ~/latte/mint/projects/%s/',project),
-# 	'make -j 4 compare_classification')
+#	 '#!/bin/bash',
+#	 '#### Begin PBS preamble',
+#	 '#PBS -N class_compare',
+#	 '#PBS -l nodes=1:ppn=4,walltime=24:00:00,pmem=16gb',
+#	 '#PBS -A sartor_lab',
+#	 '#PBS -q first',
+#	 '#PBS -M rcavalca@umich.edu',
+#	 '#PBS -m abe',
+#	 '#PBS -j oe',
+#	 '#PBS -V',
+#	 '#### End PBS preamble',
+#	 '# Put your job commands after this line',
+#	 sprintf('cd ~/latte/mint/projects/%s/',project),
+#	 'make -j 4 compare_classification')
 # cat(bisulfite_compare_q, file=sprintf('projects/%s/pbs_jobs/classify_compare.q', project), sep='\n')
 
 for(comparison in unique(comparisons$humanID)) {
 	# trackDb.txt entry for comparison classification
 	trackEntry = c(
-	  sprintf('track %s_compare_classification', comparison),
-	  sprintf('parent %s_group_comparison', comparison),
-	  sprintf('bigDataUrl %s_compare_classification.bb', comparison),
-	  sprintf('shortLabel %s_comp_class', comparison),
-	  sprintf('longLabel %s_compare_classification', comparison),
-	  'visibility pack',
-	  'itemRgb on',
-	  'type bigBed 9 .',
-	  'priority 1.1',
-	  ' ')
+		sprintf('track %s_compare_classification', comparison),
+		sprintf('parent %s_group_comparison', comparison),
+		sprintf('bigDataUrl %s_compare_classification.bb', comparison),
+		sprintf('shortLabel %s_comp_class', comparison),
+		sprintf('longLabel %s_compare_classification', comparison),
+		'visibility pack',
+		'itemRgb on',
+		'type bigBed 9 .',
+		'priority 1.1',
+		' ')
 	cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 }
 

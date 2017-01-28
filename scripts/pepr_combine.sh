@@ -28,8 +28,8 @@ bedops --difference \
 > $disChip2
 
 cat \
-  <(awk -v OFS="\t" -v CHIP1=${chip1Name} '{ print $1, $2, $3, CHIP1, "1000", ".", $2, $3, "0,0,255" }' ${disChip1}) \
-  <(awk -v OFS="\t" -v CHIP2=${chip2Name} '{ print $1, $2, $3, CHIP2, "1000", ".", $2, $3, "102,102,255" }' ${disChip2}) \
+	<(awk -v OFS="\t" -v CHIP1=${chip1Name} '{ print $1, $2, $3, CHIP1, "1000", ".", $2, $3, "0,0,255" }' ${disChip1}) \
+	<(awk -v OFS="\t" -v CHIP2=${chip2Name} '{ print $1, $2, $3, CHIP2, "1000", ".", $2, $3, "102,102,255" }' ${disChip2}) \
 | sort -T . -k1,1 -k2,2n > ${peprCombined}
 
 # Clean up

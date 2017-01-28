@@ -53,7 +53,7 @@ pulldown_bowtie2 : $(patsubst %,$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam,
 # Rule for bowtie2 alignment
 $(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam : $(DIR_PULL_TRIM_FASTQS)/%_trimmed.fq.gz $(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip
 	$(PATH_TO_BOWTIE2) $(OPTS_BOWTIE2) $< 2> $(@D)/$(@F).txt | $(PATH_TO_SAMTOOLS) view -bS - > $@
-	$(PATH_TO_SAMTOOLS) sort $@ $(patsubst %.bam,%,$@)
+	$(PATH_TO_SAMTOOLS) sort -o $@ $@
 	$(PATH_TO_SAMTOOLS) index $@
 
 ########################################
@@ -80,10 +80,10 @@ $(DIR_PULL_COVERAGES)/%_coverage_merged.bdg : $(DIR_PULL_COVERAGES)/%_coverage.b
 .PHONY : pulldown_multiqc
 pulldown_multiqc : $(DIR_MULTIQC)/pulldown/multiqc_report.html
 
-$(DIR_MULTIQC)/pulldown/multiqc_report.html : 	$(patsubst %,$(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES)) \\
+$(DIR_MULTIQC)/pulldown/multiqc_report.html :	 $(patsubst %,$(DIR_PULL_RAW_FASTQCS)/%_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES)) \\
 												$(patsubst %,$(DIR_PULL_TRIM_FASTQCS)/%_trimmed_fastqc.zip,$(PULLDOWN_ALIGN_PREFIXES)) \\
 												$(patsubst %,$(DIR_PULL_BOWTIE2)/%_trimmed.fq.gz_aligned.bam,$(PULLDOWN_ALIGN_PREFIXES))
-	multiqc ./pulldown --outdir $(@D)
+	$(PATH_TO_MULTIQC) --force ./pulldown --outdir $(@D)
 
 ################################################################################
 '
@@ -110,35 +110,35 @@ cat(config_pull_align, file = file_config, sep='\n', append=T)
 #######################################
 # PBS script
 # pulldown_align_q = c(
-# 	'#!/bin/bash',
-# 	'#### Begin PBS preamble',
-# 	'#PBS -N pull_align',
-# 	'#PBS -l nodes=1:ppn=8,walltime=24:00:00,pmem=16gb',
-# 	'#PBS -A sartor_lab',
-# 	'#PBS -q first',
-# 	'#PBS -M rcavalca@umich.edu',
-# 	'#PBS -m abe',
-# 	'#PBS -j oe',
-# 	'#PBS -V',
-# 	'#### End PBS preamble',
-# 	'# Put your job commands after this line',
-# 	sprintf('cd ~/latte/mint/projects/%s/',project),
-# 	'make -j 8 pulldown_align')
+#	 '#!/bin/bash',
+#	 '#### Begin PBS preamble',
+#	 '#PBS -N pull_align',
+#	 '#PBS -l nodes=1:ppn=8,walltime=24:00:00,pmem=16gb',
+#	 '#PBS -A sartor_lab',
+#	 '#PBS -q first',
+#	 '#PBS -M rcavalca@umich.edu',
+#	 '#PBS -m abe',
+#	 '#PBS -j oe',
+#	 '#PBS -V',
+#	 '#### End PBS preamble',
+#	 '# Put your job commands after this line',
+#	 sprintf('cd ~/latte/mint/projects/%s/',project),
+#	 'make -j 8 pulldown_align')
 # cat(pulldown_align_q, file=sprintf('projects/%s/pbs_jobs/pulldown_align.q', project), sep='\n')
 
 for(i in 1:nrow(pulldown_samples)) {
 	# trackDb.txt entry for chip/input pulldown coverages
 	trackEntry = c(
-	  sprintf('track %s_cov', pulldown_samples[i,'fullHumanID']),
-	  sprintf('parent %s_sample', pulldown_samples[i,'humanID']),
-	  sprintf('bigDataUrl %s_coverage.bw', pulldown_samples[i,'fullHumanID']),
-	  sprintf('shortLabel %s_cov', pulldown_samples[i,'fullHumanID']),
-	  sprintf('longLabel %s_coverage', pulldown_samples[i,'fullHumanID']),
-	  'visibility full',
-	  'autoScale on',
-	  'type bigWig',
-	  'priority 1.6',
-	  ' ')
+		sprintf('track %s_cov', pulldown_samples[i,'fullHumanID']),
+		sprintf('parent %s_sample', pulldown_samples[i,'humanID']),
+		sprintf('bigDataUrl %s_coverage.bw', pulldown_samples[i,'fullHumanID']),
+		sprintf('shortLabel %s_cov', pulldown_samples[i,'fullHumanID']),
+		sprintf('longLabel %s_coverage', pulldown_samples[i,'fullHumanID']),
+		'visibility full',
+		'autoScale on',
+		'type bigWig',
+		'priority 1.6',
+		' ')
 	cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
 }

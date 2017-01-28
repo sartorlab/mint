@@ -30,7 +30,7 @@ mergesTmp=`eval echo classifications/comparison/${ID}_{$classesTmp}.txt.merged`
 # Create empty files
 for file in ${filesTmp}
 do
- 	touch $file
+	touch $file
 done
 
 # Initial intersection
@@ -74,9 +74,6 @@ ${PATH_TO_AWK} -v OFS="\t" 'NR > 1 { \
 		print $1, $2, $3, group1, group2, group1 * group2 > outFile; \
 	} else if (group1 * group2 == 42 || group1 * group2 == 66 || group1 * group2 == 56) { \
 		sub(/tmpIntersect/, "tmp426656", outFile); \
-		print $1, $2, $3, group1, group2, group1 * group2 > outFile; \
-	} else if (group1 * group2 == 88) { \
-		sub(/tmpIntersect/, "tmp88", outFile); \
 		print $1, $2, $3, group1, group2, group1 * group2 > outFile; \
 	} \
 }' ${intTmp}

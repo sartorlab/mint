@@ -3,8 +3,8 @@ library(readr)
 library(optparse)
 
 option_list = list(
-    make_option('--project', type='character'),
-    make_option('--inFile', type='character'),
+	make_option('--project', type='character'),
+	make_option('--inFile', type='character'),
 	make_option('--outFile', type='character'),
 	make_option('--group1', type='character'),
 	make_option('--group0', type='character')
@@ -106,10 +106,10 @@ if(platform == 'pulldown') {
 	}
 
 	classification = data.frame(
-	    code = c(1,2,3,4),
-	    class = classes,
-	    color = colors,
-	    stringsAsFactors=F)
+		code = c(1,2,3,4),
+		class = classes,
+		color = colors,
+		stringsAsFactors=F)
 
 	column_names = c('chr','start','end','perc_meth')
 	skip = 1

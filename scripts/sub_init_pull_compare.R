@@ -34,11 +34,13 @@ if(bool_pull_comp) {
 		  mark = "hmc"
 		}
 
-		# Sorting this way ensures the higher group number is groupB
+		# Sorting this way ensures the higher group number is groupA
 		# NOTE: This makes the PePr DM test match that of methylSig,
 		# where control is the lower number (often 0) and the treatment
-		# is the higher number (often 1). PePr up peaks mean up in chip1/input1
-		# with respect to chip2/input2.
+		# is the higher number (often 1). PePr chip1 peaks mean differential binding
+		# in chip1 vs chip2 and chip2 peaks mean differential binding in chip2 vs chip1
+		# Later, chip1 goes to DMup and chip2 goes to DMdown so
+		# hyper and hypo and with respect to groupA, or the larger group number
 		groups = sort(as.integer(unlist(strsplit(group, ','))), decreasing = TRUE)
 
 		# Create a list
@@ -68,6 +70,12 @@ if(bool_pull_comp) {
 			pulldown_samples$mc == mc_stat &
 			pulldown_samples$hmc == hmc_stat &
 			pulldown_samples$input == 0)
+		groupAname = subset(group_names, group == groups[1])$name
+		groupBname = subset(group_names, group == groups[2])$name
+
+		if(groupAname == '' || groupBname == '') {
+			stop('Groups used for comparisons must be named. Check your _groups.txt file.')
+		}
 
 		inputGroupA = subset(pulldown_samples,
 			groupAindices &
@@ -165,7 +173,7 @@ if(bool_pull_comp) {
 			'',
 			'# Rule for UCSC bigBed track of PePr peaks',
 			sprintf('%s : %s', bigbed, bigBed_bed),
-			'	$(PATH_TO_BDG2BB) $^ $(CHROM_PATH) $@',
+			'	$(PATH_TO_BED2BB) $^ $(CHROM_PATH) $@',
 			'',
 			'########################################',
 			sprintf('.PHONY : pulldown_compare_simple_classification_%s', i),
@@ -181,7 +189,7 @@ if(bool_pull_comp) {
 			'',
 			'# Rule for UCSC bigBed track',
 			sprintf('%s : %s', simple_bb, simple_bed),
-			'	$(PATH_TO_BDG2BB) $< $(CHROM_PATH) $@',
+			'	$(PATH_TO_BED2BB) $< $(CHROM_PATH) $@',
 			'',
 			'########################################',
 			sprintf('# Rule to delete all temporary files from make pulldown_compare_%s',i),
@@ -204,13 +212,13 @@ if(bool_pull_comp) {
 # CHIP1_NAME should be for the group with higher group number in the project annotation
 # file and CHIP2_NAME should be for the group with the lower group number
 # If unsure, check the "workflow for pulldown_compare_%s" section of the makefile
-CHIP1_NAME_%s := chip1
-CHIP2_NAME_%s := chip2
+CHIP1_NAME_%s := %s
+CHIP2_NAME_%s := %s
 
 # For PePr parameters see https://ones.ccmb.med.umich.edu/wiki/PePr/
 OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=1
 ',
-			i, i, i, i, var_name)
+			i, i, i, groupAname, i, groupBname, var_name)
 
 		# Track all the configs for the pulldown compares
 		pulldown_compare_configs = c(
@@ -219,16 +227,16 @@ OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num
 
 		# trackDb.txt entry for PePr output
 		trackEntry = c(
-		  sprintf('track %s_DM', fullHumanID),
-		  sprintf('parent %s_group_comparison', humanID),
-		  sprintf('bigDataUrl %s_PePr_peaks.bb', fullHumanID),
-		  sprintf('shortLabel %s_DM', fullHumanID),
-		  sprintf('longLabel %s_DM_PePr_peaks', fullHumanID),
-		  'visibility pack',
-		  'itemRgb on',
-		  'type bigBed 9 .',
-		  'priority 1.3',
-		  ' ')
+			sprintf('track %s_DM', fullHumanID),
+			sprintf('parent %s_group_comparison', humanID),
+			sprintf('bigDataUrl %s_PePr_peaks.bb', fullHumanID),
+			sprintf('shortLabel %s_DM', fullHumanID),
+			sprintf('longLabel %s_DM_PePr_peaks', fullHumanID),
+			'visibility pack',
+			'itemRgb on',
+			'type bigBed 9 .',
+			'priority 1.3',
+			' ')
 		cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
 		# Track the pulldown compares
@@ -269,20 +277,20 @@ OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num
 	#######################################
 	# PBS script
 	# pulldown_compare_q = c(
-	# 	'#!/bin/bash',
-	# 	'#### Begin PBS preamble',
-	# 	'#PBS -N pull_compare',
-	# 	'#PBS -l nodes=1:ppn=8,pmem=16gb,walltime=24:00:00',
-	# 	'#PBS -A sartor_lab',
-	# 	'#PBS -q first',
-	# 	'#PBS -M rcavalca@umich.edu',
-	# 	'#PBS -m abe',
-	# 	'#PBS -j oe',
-	# 	'#PBS -V',
-	# 	'#### End PBS preamble',
-	# 	'# Put your job commands after this line',
-	# 	sprintf('cd ~/latte/mint/projects/%s/',project),
-	# 	'make pulldown_compare')
+	#	 '#!/bin/bash',
+	#	 '#### Begin PBS preamble',
+	#	 '#PBS -N pull_compare',
+	#	 '#PBS -l nodes=1:ppn=8,pmem=16gb,walltime=24:00:00',
+	#	 '#PBS -A sartor_lab',
+	#	 '#PBS -q first',
+	#	 '#PBS -M rcavalca@umich.edu',
+	#	 '#PBS -m abe',
+	#	 '#PBS -j oe',
+	#	 '#PBS -V',
+	#	 '#### End PBS preamble',
+	#	 '# Put your job commands after this line',
+	#	 sprintf('cd ~/latte/mint/projects/%s/',project),
+	#	 'make pulldown_compare')
 	# cat(pulldown_compare_q, file=sprintf('projects/%s/pbs_jobs/pulldown_compare.q', project), sep='\n')
 
 }

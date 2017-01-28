@@ -1,0 +1,105 @@
+###### KEEP
+
+### bisulfite_align
+_fastqc.zip
+_trimmed.fq.gz
+_trimmed_fastqc.zip
+_trimmed_bismark_bt2.bam
+_trimmed_bismark_bt2.bedGraph.gz
+_trimmed_bismark_bt2.CpG_report.txt.gz
+_trimmed_bismark_annotatr_analysis.RData
+_trimmed_bismark_bt2.bw
+_bismark_simple_classification.bed
+_bismark_simple_classification_annotatr_analysis.RData
+_bismark_simple_classification.bb
+
+### bisulfite_compare
+_$(OPT_DM_TYPE)_methylSig.txt
+_$(OPT_DM_TYPE)_methylSig_annotatr_analysis.RData
+_methylSig.bw
+
+### pulldown_align
+_fastqc.zip
+_trimmed.fq.gz
+_trimmed_fastqc.zip
+_trimmed.fq.gz_aligned.bam
+_coverage_merged.bdg
+_coverage.bw
+
+### pulldown_sample
+_macs2_peaks.narrowPeak
+_macs2_model.r
+_macs2_model.pdf
+_macs2_annotatr_analysis.RData
+_macs2_peaks.bb
+_macs2_simple_classification.bed
+_macs2_simple_classification_annotatr_analysis.RData
+_macs2_simple_classification.bb
+
+### pulldown_compare
+_merged_signal.bed
+__PePr_chip1_peaks.bed
+__PePr_chip2_peaks.bed
+_PePr_annotatr_analysis.RData
+_PePr_peaks.bb
+_PePr_simple_classification.bed
+_PePr_simple_classification.bb
+_PePr_simple_classification_annotatr_analysis.RData
+
+### sample_classification
+_sample_classification.bed
+_sample_classification.bb
+_sample_classification_annotatr_analysis.RData
+
+### compare_classification
+_compare_classification.bed
+_compare_classification.bb
+_compare_classification_annotatr_analysis.RData
+
+###### INTERMEDIATE
+
+### bisulfite_align
+_trimmed_bismark_bt2.bedGraph
+
+### bisulfite_compare
+_$(OPT_DM_TYPE)_methylSig_tmp.txt
+_$(OPT_DM_TYPE)_methylSig_for_annotatr.txt
+
+### pulldown_align
+_coverage.bdg
+
+### pulldown_sample
+_macs2_peaks_tmp.narrowPeak
+
+### pulldown_compare
+_PePr_combined.bed
+_PePr_for_bigBed.bed
+
+### sample_classification
+_bisulfite_trimmed_bismark_bt2.CpG_report.txt
+_bisulfite_highmeth.txt
+_bisulfite_lowmeth.txt
+_bisulfite_nometh_signal.txt
+_bisulfite_nometh_nosignal.txt
+_pulldown_peak.txt
+_pulldown_nopeak.txt
+_pulldown_signal.txt
+_pulldown_nosignal.txt
+_pulldown_nopeak_signal.txt
+_pulldown_nopeak_nosignal.txt
+
+### compare_classification
+_bisulfite_DMup.txt
+_bisulfite_DMdown.txt
+_bisulfite_noDM_signal.txt
+_bisulfite_noDM_nosignal.txt
+_pulldown_tmp_up.txt
+_pulldown_tmp_down.txt
+_pulldown_DMup.txt
+_pulldown_DMdown.txt
+_pulldown_tmp_disjoint_DM.txt
+_pulldown_tmp_disjoint_noDM.txt
+_pulldown_tmp_signal.txt
+_pulldown_tmp_nosignal.txt
+_pulldown_noDM_signal.txt
+_pulldown_noDM_nosignal.txt

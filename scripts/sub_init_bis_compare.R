@@ -51,7 +51,12 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 		}
 
 		# Sorting this ensures that the lower group number is A
-		groups = sort(as.integer(unlist(strsplit(group, ','))))
+		# From scripts/methylSig_run.R, the bigger number is considered
+		# the treatment and the smaller is considered the control
+		# And meth.diff is always treatment - control
+		# group = c('Treatment' = max(treatment),'Control' = min(treatment))
+		# So hyper and hypo is with respect to the higher group number
+		groups = sort(as.integer(unlist(strsplit(group, ','))), decreasing=TRUE)
 
 		# Create a list
 		sample_groups = lapply(bisulfite_samples$group, function(g){
@@ -80,6 +85,12 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 			bisulfite_samples$mc == mc_stat &
 			bisulfite_samples$hmc == hmc_stat &
 			bisulfite_samples$input == 0)
+		groupAname = subset(group_names, group == groups[1])$name
+		groupBname = subset(group_names, group == groups[2])$name
+
+		if(groupAname == '' || groupBname == '') {
+			stop('Groups used for comparisons must be named. Check your _groups.txt file.')
+		}
 
 		var_comparison = fullHumanID
 
@@ -91,6 +102,25 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 		msig_bigwig = sprintf('$(DIR_TRACK)/%s_methylSig.bw', var_comparison)
 
 		########################################################################
+		# Setup variables to put into the makefile
+
+		# NOTE: The collapse here is a comma
+		var_cytfiles = paste(c(
+			paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed_bismark_bt2.CpG_report_for_methylSig.txt', groupA$fullHumanID), sep=''),
+			paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed_bismark_bt2.CpG_report_for_methylSig.txt', groupB$fullHumanID), sep='')), collapse=',')
+		var_sampleids = paste(c(
+			groupA$fullHumanID,
+			groupB$fullHumanID), collapse=',')
+		var_treatment = paste(c(
+			rep.int(groups[1],nrow(groupA)),
+			rep.int(groups[2],nrow(groupB))), collapse=',')
+
+		# NOTE: The collapse here is a space
+		var_cytfiles_pre = paste(c(
+			paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed_bismark_bt2.CpG_report_for_methylSig.txt', groupA$fullHumanID), sep=''),
+			paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed_bismark_bt2.CpG_report_for_methylSig.txt', groupB$fullHumanID), sep='')), collapse=' ')
+
+		########################################################################
 		# Variables for the makefile
 
 		# Write the bisulfite_compare variables for this comparison
@@ -98,7 +128,12 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 			'########################################',
 			sprintf('# Workflow for bisulfite_compare_%s', i),
 			'',
-			sprintf('BISULFITE_COMPARE_%s_PREREQS := %s %s %s', i, msig_results, annotatr_rdata, msig_bigwig))
+			sprintf('BISULFITE_COMPARE_%s_PREREQS := %s %s %s', i, msig_results, annotatr_rdata, msig_bigwig),
+			sprintf('BISULFITE_COMPARE_%s_CYTFILES := %s', i, var_cytfiles),
+			sprintf('BISULFITE_COMPARE_%s_SAMPLEIDS := %s', i, var_sampleids),
+			sprintf('BISULFITE_COMPARE_%s_TREATMENT := %s', i, var_treatment),
+			sprintf('BISULFITE_COMPARE_%s_COMPARISON := %s_$(OPT_DM_TYPE)_methylSig', i, var_comparison),
+			sprintf('BISULFITE_COMPARE_%s_CLEAN_TMP := %s', i, var_cytfiles_pre))
 
 		########################################################################
 		# Rules for the makefile
@@ -109,133 +144,56 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 			'########################################',
 			sprintf('.PHONY : bisulfite_compare_%s', i),
 			sprintf('bisulfite_compare_%s : $(BISULFITE_COMPARE_%s_PREREQS)', i, i),
+			'',
+			'# Rule for methylSig input of bismark CpG report',
+			'.INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt',
+			'$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_methylSig.txt : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz',
+			'	$(PATH_TO_AWK) -f ../../scripts/extractor_to_methylSig.awk <(gunzip -c $<) | sort -T $(DIR_TMP) -k2,2 -k3,3n > $@',
+			'',
+			'# Rule for methylSig',
+			sprintf('%s : %s', msig_results, var_cytfiles_pre),
+			sprintf('	$(PATH_TO_R) ../../scripts/methylSig_run.R --project $(PROJECT) --cytfiles $(BISULFITE_COMPARE_%s_CYTFILES) --sampleids $(BISULFITE_COMPARE_%s_SAMPLEIDS) --treatment $(BISULFITE_COMPARE_%s_TREATMENT) --assembly $(GENOME) --pipeline mint --outprefix $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_METHYLSIG_%s)', i, i, i, i, var_comparison))
+
+		make_rule_bis_compare_post = c(
+			'',
+			'# Rule for methylSig filtering for annotatr and bigWig',
+			'# NOTE: Files used for methylSig are 1-based start and end',
+			'# subtract 1 from start in order for annotatr to properly interpret it',
+			sprintf('.INTERMEDIATE : %s', msig_tmp_results),
+			sprintf('%s : %s', msig_tmp_results, msig_results), # THIS IS CUSTOMIZABLE
+			"	$(PATH_TO_AWK) -v OFS='\\t' -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) '$$6 < FDR && sqrt($$7^2) > DIFF { print $$1, $$2 - 1, $$3, $$7 }' $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@",
+			'',
+			'# Rule for annotatr input of methylSig filtered results',
+			'# NOTE: Files used for methylSig are 1-based start and end',
+			'# subtract 1 from start (in awk script) in order for annotatr to properly interpret it',
+			sprintf('.INTERMEDIATE : %s', annotatr_bed),
+			sprintf('%s : %s', annotatr_bed, msig_results),
+			sprintf('	$(PATH_TO_AWK) -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) -v GROUP1=$(GROUP1_NAME_%s) -v GROUP0=$(GROUP0_NAME_%s) -f ../../scripts/methylSig_to_annotatr.awk $< > $@', i, i),
+			'',
+			'# Rule for annotatr of methylSig filtered results',
+			sprintf('%s : %s', annotatr_rdata, annotatr_bed),
+			sprintf('	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type methylSig --group1 $(GROUP1_NAME_%s) --group0 $(GROUP0_NAME_%s)', i, i),
+			'',
+			'# Rule for UCSC bigWig of filtered methylSig results',
+			sprintf('%s : %s', msig_bigwig, msig_tmp_results),
+			'	$(PATH_TO_BDG2BW) $^ $(CHROM_PATH) $@',
+			'',
+			'########################################',
+			sprintf('# Rule to delete all temporary files from make bisulfite_compare_%s',i),
+			sprintf('BISULFITE_COMPARE_%s_CLEAN_TMP := %s', i, annotatr_bed),
+			'',
+			sprintf('.PHONY : clean_bisulfite_compare_tmp_%s', i),
+			sprintf('clean_bisulfite_compare_tmp_%s :
+				rm -f $(BISULFITE_COMPARE_%s_CLEAN_TMP)', i, i),
 			'')
-
-		# Containers to track
-		msig_chr_results = c()
-		bisulfite_chr_compares = c()
-		bisulfite_chr_compare_rules = c()
-		bisulfite_chr_clean_tmps = c()
-
-		# Determine which chromosomes are possible for splitting methylSig analysis
-		# using the chromosome length file (chrompath)
-		chrom_lengths = read.table(file = chrompath, header=FALSE, sep='\t', col.names = c('chr','length'), stringsAsFactors=F)
-		for(chr in chrom_lengths$chr) {
-
-			########################################################################
-			# Setup variables to put into the makefile
-
-			var_cytfiles = paste(c(
-				paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed_bismark_bt2.CpG_report_for_methylSig_%s.txt', groupA$fullHumanID, chr), sep=''),
-				paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed_bismark_bt2.CpG_report_for_methylSig_%s.txt', groupB$fullHumanID, chr), sep='')), collapse=',')
-			var_sampleids = paste(c(
-				groupA$fullHumanID,
-				groupB$fullHumanID), collapse=',')
-			var_treatment = paste(c(
-				rep.int(groups[1],nrow(groupA)),
-				rep.int(groups[2],nrow(groupB))), collapse=',')
-
-			var_cytfiles_pre = paste(c(
-				paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed_bismark_bt2.CpG_report_for_methylSig_%s.txt', groupA$fullHumanID, chr), sep=''),
-				paste(sprintf('$(DIR_BIS_BISMARK)/%s_trimmed_bismark_bt2.CpG_report_for_methylSig_%s.txt', groupB$fullHumanID, chr), sep='')), collapse=' ')
-
-			# Targets and track the results
-			msig_chr_result = sprintf('$(DIR_BIS_MSIG)/%s_$(OPT_DM_TYPE)_methylSig_%s.txt', var_comparison, chr)
-			msig_chr_results = c(msig_chr_results, msig_chr_result)
-
-			########################################################################
-			# Variables for the makefile
-
-			# Write the bisulfite_compare variables for this comparison
-			make_vars_bis_compare_chr = c(
-				'########################################',
-				sprintf('# Workflow for bisulfite_compare_%s_%s', i, chr),
-				'',
-				sprintf('BISULFITE_COMPARE_%s_%s_PREREQS := %s', i, chr, msig_chr_result),
-				sprintf('BISULFITE_COMPARE_%s_%s_CYTFILES := %s', i, chr, var_cytfiles),
-				sprintf('BISULFITE_COMPARE_%s_%s_SAMPLEIDS := %s', i, chr, var_sampleids),
-				sprintf('BISULFITE_COMPARE_%s_%s_TREATMENT := %s', i, chr, var_treatment),
-				sprintf('BISULFITE_COMPARE_%s_%s_COMPARISON := %s_$(OPT_DM_TYPE)_methylSig_%s', i, chr, var_comparison, chr),
-				sprintf('BISULFITE_COMPARE_%s_%s_CLEAN_TMP := %s %s', i, chr, msig_chr_result, var_cytfiles_pre))
-
-			########################################################################
-			# Rules for the makefile
-
-			# Write the bisulfite_compare rule for this comparison
-			make_rule_bis_compare_chr = c(
-				'',
-				'########################################',
-				sprintf('.PHONY : bisulfite_compare_%s_%s', i, chr),
-				sprintf('bisulfite_compare_%s_%s : $(BISULFITE_COMPARE_%s_%s_PREREQS)', i, chr, i, chr),
-				'',
-				'# Rule for methylSig input of bismark CpG report',
-				sprintf('.INTERMEDIATE : $(DIR_BIS_BISMARK)/%%_trimmed_bismark_bt2.CpG_report_for_methylSig_%s.txt', chr),
-				sprintf('$(DIR_BIS_BISMARK)/%%_trimmed_bismark_bt2.CpG_report_for_methylSig_%s.txt : $(DIR_BIS_BISMARK)/%%_trimmed_bismark_bt2.CpG_report.txt.gz', chr),
-				sprintf('	$(PATH_TO_AWK) -f ../../scripts/extractor_to_methylSig.awk <(gunzip -c $< | grep -w %s) | sort -T $(DIR_TMP) -k2,2 -k3,3n > $@', chr),
-				'',
-				'# Rule for methylSig',
-				sprintf('%s : %s', msig_chr_result, var_cytfiles_pre),
-				sprintf('	$(PATH_TO_R) ../../scripts/methylSig_run.R --project $(PROJECT) --cytfiles $(BISULFITE_COMPARE_%s_%s_CYTFILES) --sampleids $(BISULFITE_COMPARE_%s_%s_SAMPLEIDS) --treatment $(BISULFITE_COMPARE_%s_%s_TREATMENT) --assembly $(GENOME) --pipeline mint --outprefix $(BISULFITE_COMPARE_%s_%s_COMPARISON) $(OPTS_METHYLSIG_%s)', i, chr, i, chr, i, chr, i, chr, var_comparison),
-				'',
-				'########################################',
-				sprintf('# Rule to delete all temporary files from make bisulfite_compare_%s_%s', i, chr),
-				sprintf('.PHONY : clean_bisulfite_compare_tmp_%s_%s', i, chr),
-				sprintf('clean_bisulfite_compare_tmp_%s_%s :', i, chr),
-				sprintf('	rm -f $(BISULFITE_COMPARE_%s_%s_CLEAN_TMP)', i, chr))
-
-			# Track all the rules for the bisulfite compares for each chr
-			bisulfite_chr_compare_rules = c(
-				bisulfite_chr_compare_rules,
-				make_vars_bis_compare_chr,
-				make_rule_bis_compare_chr)
-
-			# Track all files to be cleaned
-			bisulfite_chr_clean_tmps = c(bisulfite_chr_clean_tmps, sprintf('clean_bisulfite_compare_tmp_%s_%s', i, chr))
-		}
-
-		# Out of the chromosome-wise rules
-		# Back into the genome-wide methylSig comparison
-		make_rule_bis_compare_combine = c(
-		'',
-		'################################################################################',
-		'# Rule for combining the chromosome-wise methylSig results',
-		sprintf('%s : %s', msig_results, paste(msig_chr_results, collapse=' ')),
-		"	cat $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n | awk -v OFS='\\t' '$$2 != \"start\" { print $$0 }' > $@",
-		'',
-		'# Rule for methylSig filtering for annotatr and bigWig',
-		sprintf('.INTERMEDIATE : %s', msig_tmp_results),
-		sprintf('%s : %s', msig_tmp_results, msig_results), # THIS IS CUSTOMIZABLE
-		"	$(PATH_TO_AWK) -v OFS='\\t' -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) '$$6 < FDR && sqrt($$7^2) > DIFF { print $$1, $$2, $$3, $$7 }' $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@",
-		'',
-		'# Rule for annotatr input of methylSig filtered results',
-		sprintf('.INTERMEDIATE : %s', annotatr_bed),
-		sprintf('%s : %s', annotatr_bed, msig_results),
-		sprintf('	$(PATH_TO_AWK) -v FDR=$(OPT_MSIG_DM_FDR_THRESHOLD) -v DIFF=$(OPT_MSIG_DM_DIFF_THRESHOLD) -v GROUP1=$(GROUP1_NAME_%s) -v GROUP0=$(GROUP0_NAME_%s) -f ../../scripts/methylSig_to_annotatr.awk $< > $@', i, i),
-		'',
-		'# Rule for annotatr of methylSig filtered results',
-		sprintf('%s : %s', annotatr_rdata, annotatr_bed),
-		sprintf('	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type methylSig --group1 $(GROUP1_NAME_%s) --group0 $(GROUP0_NAME_%s)', i, i),
-		'',
-		'# Rule for UCSC bigWig of filtered methylSig results',
-		sprintf('%s : %s', msig_bigwig, msig_tmp_results),
-		'	$(PATH_TO_BDG2BW) $^ $(CHROM_PATH) $@',
-		'',
-		'########################################',
-		sprintf('# Rule to delete all temporary files from make bisulfite_compare_%s',i),
-		sprintf('BISULFITE_COMPARE_%s_CLEAN_TMP := %s', i, annotatr_bed),
-		'',
-		sprintf('.PHONY : clean_bisulfite_compare_tmp_%s', i),
-		sprintf('clean_bisulfite_compare_tmp_%s :
-			rm -f $(BISULFITE_COMPARE_%s_CLEAN_TMP)', i, i),
-		'')
 
 		# Track all the rules for the bisulfite compares
 		bisulfite_compare_rules = c(
 			bisulfite_compare_rules,
 			make_vars_bis_compare,
 			make_rule_bis_compare,
-			bisulfite_chr_compare_rules,
-			make_rule_bis_compare_combine)
+			bisulfite_compare_rules,
+			make_rule_bis_compare_post)
 
 		########################################################################
 		# OPTS for config.mk
@@ -246,14 +204,14 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 # GROUP1_NAME should be the group with higher group number in the project annotation
 # file and GROUP0_NAME should be the group with the lower group number
 # If unsure, check the "workflow for bisulfite_compare_%s" section of the makefile
-GROUP1_NAME_%s := group1
-GROUP0_NAME_%s := group0
+GROUP1_NAME_%s := %s
+GROUP0_NAME_%s := %s
 
 # For methylSig parameters, in R, after installing methylSig do:
 # ?methylSig::methylSigReadData and ?methylSig::methylSigCalc
 OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --dmtype $(OPT_DM_TYPE) --winsize.tile 50 --dispersion both --local.disp FALSE --winsize.disp 200 --local.meth FALSE --winsize.meth 200 --minpergroup 2,2 --T.approx TRUE --ncores 1 --quiet FALSE
 ',
-			i, i, i, i, var_comparison)
+			i, i, i, groupAname, i, groupBname, var_comparison)
 
 		bisulfite_compare_configs = c(
 			bisulfite_compare_configs,
@@ -261,18 +219,18 @@ OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount
 
 		# trackDb.txt entry for methylSig result
 		trackEntry = c(
-		  sprintf('track %s_DM', fullHumanID),
-		  sprintf('parent %s_group_comparison', humanID),
-		  sprintf('bigDataUrl %s_methylSig.bw', fullHumanID),
-		  sprintf('shortLabel %s_DM', fullHumanID),
-		  sprintf('longLabel %s_DM_methylSig', fullHumanID),
-		  'visibility full',
-		  'autoScale on',
-		  'alwaysZero on',
-		  'at y=0.0 on',
-		  'type bigWig',
-		  'priority 1.2',
-		  ' ')
+			sprintf('track %s_DM', fullHumanID),
+			sprintf('parent %s_group_comparison', humanID),
+			sprintf('bigDataUrl %s_methylSig.bw', fullHumanID),
+			sprintf('shortLabel %s_DM', fullHumanID),
+			sprintf('longLabel %s_DM_methylSig', fullHumanID),
+			'visibility full',
+			'autoScale on',
+			'alwaysZero on',
+			'at y=0.0 on',
+			'type bigWig',
+			'priority 1.2',
+			' ')
 		cat(trackEntry, file=hubtrackdbfile, sep='\n', append=T)
 
 		# Track the number of bisulfite compares and bisulfite clean tmps
@@ -296,7 +254,7 @@ OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount
 		'########################################',
 		'# Rule to delete all temporary files from make bisulfite_compare',
 		'.PHONY : clean_bisulfite_compare_tmp',
-		sprintf('clean_bisulfite_compare_tmp : %s', paste(c(bisulfite_chr_clean_tmps, bisulfite_clean_tmps), collapse=' ')),
+		sprintf('clean_bisulfite_compare_tmp : %s', bisulfite_clean_tmps),
 		'',
 		'################################################################################',
 		'',
@@ -311,19 +269,19 @@ OPTS_METHYLSIG_%s = --context CpG --resolution base --destranded TRUE --maxcount
 	#######################################
 	# PBS script
 	# bisulfite_compare_q = c(
-	# 	'#!/bin/bash',
-	# 	'#### Begin PBS preamble',
-	# 	'#PBS -N bis_compare',
-	# 	'#PBS -l nodes=1:ppn=4,walltime=24:00:00,pmem=8gb',
-	# 	'#PBS -A sartor_lab',
-	# 	'#PBS -q first',
-	# 	'#PBS -M rcavalca@umich.edu',
-	# 	'#PBS -m abe',
-	# 	'#PBS -j oe',
-	# 	'#PBS -V',
-	# 	'#### End PBS preamble',
-	# 	'# Put your job commands after this line',
-	# 	sprintf('cd ~/latte/mint/projects/%s/',project),
-	# 	'make -j 4 bisulfite_compare')
+	#	 '#!/bin/bash',
+	#	 '#### Begin PBS preamble',
+	#	 '#PBS -N bis_compare',
+	#	 '#PBS -l nodes=1:ppn=4,walltime=24:00:00,pmem=8gb',
+	#	 '#PBS -A sartor_lab',
+	#	 '#PBS -q first',
+	#	 '#PBS -M rcavalca@umich.edu',
+	#	 '#PBS -m abe',
+	#	 '#PBS -j oe',
+	#	 '#PBS -V',
+	#	 '#### End PBS preamble',
+	#	 '# Put your job commands after this line',
+	#	 sprintf('cd ~/latte/mint/projects/%s/',project),
+	#	 'make -j 4 bisulfite_compare')
 	# cat(bisulfite_compare_q, file=sprintf('projects/%s/pbs_jobs/bisulfite_compare.q', project), sep='\n')
 }
