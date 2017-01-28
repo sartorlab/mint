@@ -1,15 +1,18 @@
 ## mint: Analysis, integration, classification, and annotation of DNA methylation and hydroxymethylation data
 
-v0.2.0
+v0.3.0
 
 ## Contents
 
 * [Overview](#overview)
 * [Installation](#installation)
-	* [Dependencies](#dependencies)
-	* [Getting mint](#getting-mint)
-	* [Testing mint](#testing-mint)
-* [Usage](#usage)
+	* [`mint` and Dependencies](#mint-and-dependencies)
+	* [Checking Dependency Installation](#checking-dependency-installation)
+	* [Reference Genomes](#reference-genomes)
+	  * [Symlinks](#symlinks)
+	  * [Bisulfite-converted Reference Genome](#bisulfite-converted-reference-genome)
+* [Testing `mint`](#testing-mint)
+* [Details](#details)
 	* [Supported Experiments and Designs](#supported-experiments-and-designs)
 	* [Setting up a project](#setting-up-a-project)
 		* [Annotation file](#annotation-file)
@@ -36,7 +39,7 @@ v0.2.0
 
 ## Overview
 
-The `mint` pipeline analyzes single-end reads coming from sequencing assays measuring DNA methylation. The pipeline analyzes reads from both bisulfite-conversion assays such as WGBS and RRBS, and from pulldown assays such as MeDIP-seq, hMeDIP-seq, and hMeSeal. Moreover, with data measuring both 5-methylcytosine (5mc) and 5-hydroxymethylcytosine (5hmc), the `mint` pipeline integrates the two data types to classify genomic regions of 5mc, 5hmc, a mixture, or neither.
+The `mint` pipeline analyzes single-end reads coming from sequencing assays measuring DNA methylation and hydroxymethylation. The pipeline analyzes reads from both bisulfite-conversion assays such as WGBS and RRBS, and from pulldown assays such as MeDIP-seq, hMeDIP-seq, and hMeSeal. Moreover, with data measuring both 5-methylcytosine (5mc) and 5-hydroxymethylcytosine (5hmc), the `mint` pipeline integrates the two data types to classify genomic regions of 5mc, 5hmc, a mixture, or neither.
 
 The `mint` pipeline is executed with `make` and includes configurable steps for:
 
@@ -53,65 +56,167 @@ The `mint` pipeline is executed with `make` and includes configurable steps for:
 * Genomic annotation and visualization of methylation quantifications and classifications (`annotatr`)
 * Visualization in the UCSC Genome Browser
 
+The mint pipeline is also implemented for [Galaxy](https://usegalaxy.org), and the repository for setting up the Galaxy version of mint is <https://github.com/sartorlab/mint_galaxy>.
+
 ## Installation
 
-### Dependencies
+### `mint` and Dependencies
 
-The `mint` pipeline is dependent on several software packages to carry out its analysis, integration, annotation, and visualization. Links to appropriate versions are included in the list below.
+The following steps will install `mint` and its dependencies on a Linux or macOS system.
 
-* [`bedGraphToBigWig`](https://www.encodeproject.org/software/bedgraphtobigwig/)
-* [`bedToBigBed`](https://www.encodeproject.org/software/bedToBigBed/)
-* [`bedtools` v2.25.0](https://github.com/arq5x/bedtools2/releases/tag/v2.25.0)
-* [`bedops` v2.4.14](https://github.com/bedops/bedops/releases/tag/v2.4.14)
-* [`bismark` v0.16.1](https://github.com/FelixKrueger/Bismark/releases/tag/0.16.1)
-* [`bowtie2` v2.2.4](https://github.com/BenLangmead/bowtie2/releases/tag/v2.2.4)
-* [`cutadapt` v1.10](https://pypi.python.org/pypi/cutadapt/1.10)
-* [`FastQC` v0.11.5](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip)
-* [`macs2` v2.1.0.20140616](https://pypi.python.org/pypi/MACS2/2.1.0.20140616)
-* [`multiqc` v0.6.0](https://github.com/ewels/MultiQC/releases/tag/v0.6)
-* [`PePr` v1.1.11](https://github.com/shawnzhangyx/PePr/releases/tag/1.1.11)
-* [`R` >= v3.2.5](https://cran.r-project.org)
-	* [`annotatr` v0.7.5](https://github.com/rcavalcante/annotatr/releases/tag/v0.7.5)
-	* `devtools`
-	* `dplyr`
-	* `ggplot2`
-	* [`methylSig` v0.4.3](https://github.com/sartorlab/methylSig/releases/tag/v0.4.3)
-	* `optparse`
-	* `readr`
-	* `regioneR`
-* [`samtools` v0.1.19](https://github.com/samtools/samtools/releases/tag/0.1.19)
-* [`trim_galore` v0.4.1](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_v0.4.1.zip)
+1. `cd` into the directory you'd like `mint` installed.
+2. Clone the `mint` repository with:
+  ```
+  git clone https://github.com/sartorlab/mint.git
+  ```
+3. `cd` into the `mint` directory and install the dependencies to `mint/apps` with:
+  ```
+  bash install/install_deps.sh
+  ```
+  Some NOTES on the dependencies:
+  * A complete list of dependencies with links to corresponding versions can be found in [VERSIONS.md](https://github.com/sartorlab/mint/blob/master/VERSIONS.md).
+  * All dependencies are installed in `mint/apps` and should not interfere with any preexisting installs of the dependencies on the system.
+  * Users may already have some dependencies installed. In which case, the `install/install_deps.sh` script can be modified to suit those situations.
+  * The install script checks for a `pip` installation and installs it with the `--user` flag if it is not present.
+  * Python packages are installed in a `virtualenv` in `mint/apps/mint_env`, ensuring existing Python packages remain untouched.
+  * The install script expects a version of `R >= 3.3.0` to be installed on the system.
+4. Add `/path/to/mint/apps/bin` to your `$PATH` variable in `~/.bashrc` or `~/.bash_profile` (whichever exists), by adding the corrected version of this line:
+  ```
+  export PATH=/path/to/mint/apps/bin:$PATH
+  ```
+  NOTE: Adding the `/path/to/mint/apps/bin` *before* `$PATH` ensures that the versions installed in `mint/apps` are used rather than previous installations.
+5. Source the `~/.bashrc` or `~/.bash_profile` to update your path in your current terminal session.
+  ```
+  source ~/.bashrc
+  ```
+6. In `/path/to/mint` do:
+  ```
+  mkdir projects
+  ```
 
-The following `R` code will install the necessary packages:
+### Checking Dependency Installation
 
-```{r}
-# Install CRAN packages
-install.packages(c('devtools','optparse','readr','dplyr','ggplot2'), repos='http://cran.rstudio.com')
-
-# Install Bioconductor packages
-source("http://bioconductor.org/biocLite.R")
-biocLite(c("BiocStyle","GenomeInfoDb","GenomicRanges","IRanges","regioneR"))
-
-# Install GitHub packages
-install_github('rcavalcante/annotatr@v0.7.5')
-install_github('sartorlab/methylSig@v0.4.3')
+At this point using `which` with one of the dependencies should return a path in `mint/apps`:
+```
+which bowtie2
+# Should return /path/to/mint/apps/bin/bowtie2
 ```
 
-### Getting `mint`
-
-The easiest way to install `mint` is to `cd` into the directory you'd like to place the `mint` folder and do:
-
-```{bash}
-git clone https://github.com/sartorlab/mint.git
+It is also worthwhile to try loading the `virtualenv` and testing `which` on a Python package:
+```
+# Activate the virtualenv with
+source /path/to/mint/apps/mint_env/bin/activate
+which PePr
+# Should return /path/to/mint/apps/mint_env/bin/PePr
 ```
 
-Cloning `mint` makes getting updates easy with `git pull` from within `mint/`. Updating `mint` will never erase existing analyses.
+### Reference Genomes
 
-### Testing `mint`
+As with any high-throughput sequencing analysis, the correct reference genome is required to align reads. The most convenient resource for reference genomes is the [Illumina iGenomes](http://support.illumina.com/sequencing/sequencing_software/igenome.html).
 
-After installing the dependencies and cloning `mint`, there are two datasets totalling `996M` available for testing at [LINK COMING](http://sartorlab.ccmb.med.umich.edu/software/). The tests consist of one hybrid experiment (based on [GSE52945](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE52945)) and one pulldown experiment (based on [GSE63743](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63743)). The examples in the Usage section below are for these two test datasets.
+#### Symlinks
 
-## Usage
+The following symlinks at the root of the reference genome folder are needed for the `config.mk` file `mint` creates for a project.
+```
+cd /path/to/reference/genome/
+ln -s ./Sequence/WholeGenomeFasta/Bisulfite_Genome Bisulfite_Genome
+ln -s ./Annotation/Genes/genes.gtf genes.gtf
+ln -s ./Sequence/Bowtie2Index/genome.1.bt2 genome.1.bt2
+ln -s ./Sequence/Bowtie2Index/genome.2.bt2 genome.2.bt2
+ln -s ./Sequence/Bowtie2Index/genome.3.bt2 genome.3.bt2
+ln -s ./Sequence/Bowtie2Index/genome.4.bt2 genome.4.bt2
+ln -s ./Sequence/Bowtie2Index/genome.fa genome.fa
+ln -s ./Sequence/Bowtie2Index/genome.fa.fai genome.fa.fai
+ln -s ./Sequence/Bowtie2Index/genome.rev.1.bt2 genome.rev.1.bt2
+ln -s ./Sequence/Bowtie2Index/genome.rev.2.bt2 genome.rev.2.bt2
+# NOTE: mint requires a chromosome length file for many operations this particular
+# line of code is specific to the hg19 reference genome from iGenomes
+ln -s ./Annotation/Archives/archive-2013-03-06-11-23-03/Genes/ChromInfo.txt chromInfo_hg19.txt
+```
+
+#### Bisulfite-converted Reference Genome
+
+If you download a reference genome from iGenomes, it is possible that a bisulfite-converted reference genome is already included. If not, in order to use the [`bismark`](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) aligner on WGBS or RRBS you must create your own. For more information [see the documentation](https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html#i-running-bismark-genome-preparation), but in short the following will build it:
+```
+bismark_genome_preparation [options] <path_to_genome_folder>
+```
+
+## Testing `mint`
+
+After following the [installation instructions](#installation), we recommend testing the pipeline on a small dataset to ensure everything is working properly. We have created a repository with test data at <https://github.com/sartorlab/mint_test> based on data from [GSE52945](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE52945). Follow these steps to test the entire pipeline:
+
+1. Clone the test data repository in a folder **outside the `mint` installation** ():
+  ```
+  git clone https://github.com/sartorlab/mint_test.git
+  ```
+2. Copy the metadata files into `/path/to/mint/projects`:
+  ```
+  cp /path/to/mint_test/hybrid/*txt /path/to/mint/projects/
+  ```
+3. `cd` to `mint`:
+  ```
+  cd /path/to/mint
+  ```
+4. Initialize the `test_hybrid_small` project:
+  ```
+  Rscript init.R --project test_hybrid_small --genome hg19 --genomepath /path/to/hg19 --chrompath /path/to/hg19/chromInfo_hg19.txt --datapath /path/to/mint_test/hybrid/
+  ```
+5. Run the modules. In the simplest form, the following would run in series with all output to `stdout`:
+  ```
+  # Assumes an interactive server session, and NOT a cluster with queueing
+
+  # cd into test_hybrid_small
+  cd /path/to/mint/projects/test_hybrid_small
+
+  # Activate the virtualenv
+  source /path/to/mint/apps/mint_env/bin/activate
+
+  make pulldown_align
+  make bisulfite_align
+  make pulldown_sample
+  make bisulfite_sample
+  make pulldown_compare
+  make bisulfite_compare
+  make compare_classification
+  make sample_classification
+  ```
+  To help the tests run faster, you can use the `-j` flag of make to run operations in parallel, and use `&` to run operations in the background:
+  ```
+  # Assumes an interactive server session where the server has ample resources
+  # For example, a server with 20 cores and 128GB RAM will be fine
+
+  # cd into test_hybrid_small
+  cd /path/to/mint/projects/test_hybrid_small
+
+  # Activate the virtualenv
+  source /path/to/mint/apps/mint_env/bin/activate
+
+  # Here we use nohup to write the stdout to a file
+  # These can be run simultaneously
+  nohup make -j 4 pulldown_align > nohup_pulldown_align.out &
+  nohup make -j 4 bisulfite_align > nohup_bisulfite_align.out &
+  # After the above two are finished these can be run simultaneously
+  nohup make -j 4 pulldown_sample > nohup_pulldown_sample.out &
+  nohup make -j 4 bisulfite_sample > nohup_bisulfite_sample.out &
+  # After the above two are finished these can be run simultaneously
+  nohup make pulldown_compare > nohup_pulldown_compare.out &
+  nohup make bisulfite_compare > nohup_bisulfite_compare.out &
+  # After teh above two are finished, these should be run serially
+  nohup make compare_classification > nohup_compare_classification.out &
+  nohup make -j 4 sample_classification > nohup_sample_classification.out &
+  ```
+
+As documented in <https://github.com/sartorlab/mint_test>, the test data contains reads drawn from the following regions, and have the following resulting features:
+
+* chr1:2220910-2270909 (hyper_mc_hyper_hmc)
+* chr16:3046564-3096563 (hyper_mc_hyper_hmc)
+* chr11:67046158-67096157 (hypo_mc_hypo_hmc)
+* chr2:71942840-72005839 (hypo_mc_hyper_hmc)
+* chr19:39702429-39752428 (hyper_mc_hypo_hmc)
+* chr7:36074781-36102780 (hyper_hmc)
+* chr8:35090385-35095384 (hyper_mc)
+
+## Details
 
 ### Supported Experiments and Designs
 
@@ -127,220 +232,85 @@ And the `mint` pipeline can analyze:
 
 ### Setting up a project
 
-After setting up the [dependencies](https://github.com/sartorlab/mint#dependencies) and [getting `mint`](https://github.com/sartorlab/mint#getting-mint), you're ready to start a project. In the two examples below, we'll use the [test data](https://github.com/sartorlab/mint#testing-mint) to setup and run a project. To set up a project in `mint`, the pipeline needs the following three things:
+Taking the example in [Testing `mint`](#testing-mint) as a guide, setting up a project requires the following:
 
-1. A project annotation file describing the samples, and any group comparisons to make.
-2. The location of the raw sequencing reads corresponding to the samples.
-3. The specific parameters desired for the tools in the pipeline.
+1. A project [annotation file](#annotation-file) describing the samples, and any group comparisons to make. Put this in `/path/to/mint/projects`.
+2. A [group file](#group-file) mapping group numbers to group names, if any comparisons are made. Put this in `/path/to/mint/projects`.
+3. The location of the raw sequencing reads corresponding to the samples, and the relevant reference genome.
 
 #### Annotation file
 
-The annotation file is a tab-delimited text file named `projectID_annotation.txt`, and contains the following 9 columns (with headers):
+The annotation file is a tab-delimited text file named `[projectID]_annotation.txt` in `/path/to/mint/projects`, and contains the following 9 columns (with headers):
 
 1. `projectID`: The name of the project.
 2. `sampleID`: Often an alphanumeric ID (perhaps from SRA, GEO, a sequencing core, etc.). These will be the names of the `.fastq.gz` files containing the raw reads.
 3. `humanID`: An ID that makes the `sampleID`s easier to understand. For example, instead of a `sampleID` from the SRA like 'SRA876549', use 'IDH2mut_1' to indicate what kind of mutant and what replicate the sample is. **NOTE:** The `humanID` may not be unique if a particular condition has a corresponding input sample (e.g., pulldown) or a corresponding sample on a different platform (e.g., WGBS). *See examples below*.
 4. `pulldown`: A binary indicating whether the sample is the result of a pulldown experiment (1) or not (0).
 5. `bisulfite`: A binary indicating whether the sample is the result of a bisulfite-conversion experiment (1) or not (0).
-6. `mc`: A binary indicating whether the sample represents 5mc methylation (1) or not (0).
-7. `hmc`: A binary indicating whether the sample represents 5hmc methylation (1) or not (0).
+6. `mc`: A binary indicating whether the sample represents 5mc methylation (1) or not (0). If a sample was run on WGBS, this column and the `hmc` column would both be 1.
+7. `hmc`: A binary indicating whether the sample represents 5hmc methylation (1) or not (0). If a sample was run on WGBS, this column and the `mc` column would both be 1.
 8. `input`: A binary indicating whether the sample represents an input (1) or not (0).
-9. `group`: A comma-separated string of integers where each integer collects all samples belonging to a particular group. **NOTE:** When testing for differential methylation in `PePr`, the group with the higher number will be `chip1` and the lower number will be `chip2`. When testing for differential methylation in `methylSig`, the group with the higher number will be `group 1` and the group with lower number will be `group 0`. Hypermethylation is then higher methylation in `group 1`, and hypomethylation is then lower methylation in `group 1`.
+9. `group`: A comma-separated string denoting the group numbers the sample belongs to for comparisons.
 
 Additional columns can be included, but their heading cannot be one of the above 9 headings.
 
-In particular, for the hybrid test data we have:
+In particular, for the [test](#testing-mint) data the annotation file looks like:
 
-```{bash}
+```
 projectID	sampleID	humanID	pulldown	bisulfite	mc	hmc	input	group
-test_hybrid	IDH2mut_1_hmc_pulldown	IDH2mut_1	1	0	0	1	0	1
-test_hybrid	IDH2mut_2_hmc_pulldown	IDH2mut_2	1	0	0	1	0	1
-test_hybrid	IDH2mut_1_hmc_input_pulldown	IDH2mut_1	1	0	0	1	1	1
-test_hybrid	IDH2mut_2_hmc_input_pulldown	IDH2mut_2	1	0	0	1	1	1
-test_hybrid	IDH2mut_1_mc_hmc_bisulfite	IDH2mut_1	0	1	1	1	0	1
-test_hybrid	IDH2mut_2_mc_hmc_bisulfite	IDH2mut_2	0	1	1	1	0	1
-test_hybrid	NBM_1_hmc_pulldown	NBM_1	1	0	0	1	0	0
-test_hybrid	NBM_2_hmc_pulldown	NBM_2	1	0	0	1	0	0
-test_hybrid	NBM_1_hmc_input_pulldown	NBM_1	1	0	0	1	1	0
-test_hybrid	NBM_2_hmc_input_pulldown	NBM_2	1	0	0	1	1	0
-test_hybrid	NBM_2_mc_hmc_bisulfite	NBM_2	0	1	1	1	0	0
-test_hybrid	NBM_1_mc_hmc_bisulfite	NBM_1	0	1	1	1	0	0
-test_hybrid	comparison	IDH2mut_v_NBM	1	0	0	1	0	0,1
-test_hybrid	comparison	IDH2mut_v_NBM	0	1	1	1	0	0,1
+test_hybrid_small	IDH2mut_1_hmeseal	IDH2mut_1	1	0	0	1	0	1
+test_hybrid_small	IDH2mut_2_hmeseal	IDH2mut_2	1	0	0	1	0	1
+test_hybrid_small	IDH2mut_1_hmeseal_input	IDH2mut_1	1	0	0	1	1	1
+test_hybrid_small	IDH2mut_2_hmeseal_input	IDH2mut_2	1	0	0	1	1	1
+test_hybrid_small	IDH2mut_1_errbs	IDH2mut_1	0	1	1	1	0	1
+test_hybrid_small	IDH2mut_2_errbs	IDH2mut_2	0	1	1	1	0	1
+test_hybrid_small	NBM_1_hmeseal	NBM_1	1	0	0	1	0	0
+test_hybrid_small	NBM_2_hmeseal	NBM_2	1	0	0	1	0	0
+test_hybrid_small	NBM_1_hmeseal_input	NBM_1	1	0	0	1	1	0
+test_hybrid_small	NBM_2_hmeseal_input	NBM_2	1	0	0	1	1	0
+test_hybrid_small	NBM_1_errbs	NBM_1	0	1	1	1	0	0
+test_hybrid_small	NBM_2_errbs	NBM_2	0	1	1	1	0	0
+test_hybrid_small	comparison	IDH2mut_v_NBM	1	0	0	1	0	"0,1"
+test_hybrid_small	comparison	IDH2mut_v_NBM	0	1	1	1	0	"0,1"
 ```
 
-And for the pulldown test data we have:
+Note the comparison columns that indicate whether to test the pulldown or bisulfite samples, and which two groups are involved in the comparison.
 
-```{bash}
-projectID	sampleID	humanID	pulldown	bisulfite	mc	hmc	input	group
-test_pulldown	preeclamptic_1_hmc_pulldown	preeclamptic_1	1	0	0	1	0	1
-test_pulldown	preeclamptic_2_hmc_pulldown	preeclamptic_2	1	0	0	1	0	1
-test_pulldown	normal_1_hmc_pulldown	normal_1	1	0	0	1	0	0
-test_pulldown	normal_2_hmc_pulldown	normal_2	1	0	0	1	0	0
-test_pulldown	preeclamptic_1_mc_pulldown	preeclamptic_1	1	0	1	0	0	1
-test_pulldown	preeclamptic_2_mc_pulldown	preeclamptic_2	1	0	1	0	0	1
-test_pulldown	normal_1_mc_pulldown	normal_1	1	0	1	0	0	0
-test_pulldown	normal_2_mc_pulldown	normal_2	1	0	1	0	0	0
-test_pulldown	preeclamptic_1_input_pulldown	preeclamptic_1	1	0	0	1	1	1
-test_pulldown	preeclamptic_2_input_pulldown	preeclamptic_2	1	0	0	1	1	1
-test_pulldown	normal_1_input_pulldown	normal_1	1	0	0	1	1	0
-test_pulldown	normal_2_input_pulldown	normal_2	1	0	0	1	1	0
-test_pulldown	preeclamptic_1_input_pulldown	preeclamptic_1	1	0	1	0	1	1
-test_pulldown	preeclamptic_2_input_pulldown	preeclamptic_2	1	0	1	0	1	1
-test_pulldown	normal_1_input_pulldown	normal_1	1	0	1	0	1	0
-test_pulldown	normal_2_input_pulldown	normal_2	1	0	1	0	1	0
-test_pulldown	comparison	preeclamptic_v_normal	1	0	1	0	0	0,1
-test_pulldown	comparison	preeclamptic_v_normal	1	0	0	1	0	0,1
+#### Group file
+
+The group file is a tab-delimeted file named `[projectID]_groups.txt` in `/path/to/mint/projects`, and contains two columns labelled `group` and `name`. In particular, for the [test](#testing-mint) data the group file looks like:
+
 ```
+group	name
+0	NBM
+1	IDH2mut
+```
+
+This file enables the `config.mk` file to be auto-filled so that results are labeled with the correct group names.
 
 #### Instantiating a project
 
 After creating an appropriate annotation file for your project, within the `mint/` folder do the following:
 
 1. `mkdir projects`
-2. Put the `test_hybrid_annotation.txt` file in `mint/projects/`.
+2. Put the `test_hybrid_small_annotation.txt` file in `mint/projects/`.
 3. In `mint/` do:
-```{bash}
-Rscript init.R --project test_hybrid --genome hg19 --datapath /path/to/data
+```
+Rscript init.R --project projectID --genome hg19 --genomepath /path/to/hg19 --chrompath /path/to/hg19/chromInfo_hg19.txt --datapath /path/to/mint_test/hybrid/
 ```
 
-The `init.R` script creates an appropriate directory structure in `mint/projects/test_hybrid/`, creates symlinks to the `.fastq.gz` files in `/path/to/data`, and creates the `makefile` and `config.mk` files that control the analysis of your project.
+The `init.R` script creates an appropriate directory structure in `mint/projects/test_hybrid_small/`, creates symlinks to the `.fastq.gz` files in `/path/to/data`, and creates the `makefile` and `config.mk` files that control the analysis of your project.
 
 #### Configuring a project
 
-The `mint/projects/test_hybrid/config.mk` file contains options for analysis implied in the project annotation file.
+The `mint/projects/test_hybrid_small/config.mk` file contains options for analysis implied in the project annotation file.
 
-Below is an example of the `config.mk` file for the `test_hybrid` data. In this file, the `PROJECT` and `GENOME` variables have been automatically populated from the `Rscript init.R` call.
+Below is an example of the `config.mk` file for the `test_hybrid_small` data. In this file, the `PROJECT` and `GENOME` variables have been automatically populated from the `Rscript init.R` call.
 
 At minimum, paths to reference genome information must be provided in the `Genome paths` block. Optionally, specific paths to any of the software used for analysis can be given. Options for software used and cutoffs for classification are considered reasonable defaults, but these can be changed as desired.
 
 **NOTE:** The documentation for each program should be consulted before adding or removing parameters.
 
-```{make}
-# Configuration for mint pipeline analyses
-
-# This makefile was generated using mint v0.1.4
-
-################################################################################
-# Project and experimental information
-
-# Project name
-PROJECT = test_hybrid
-# Genome
-GENOME = hg19
-
-################################################################################
-# Genome paths
-# Genomes, like as downloaded from iGenomes, will also contain bisulfite
-# converted genomes for
-GENOME_PATH := /path/to/genome
-# Location of bowtie2 indexes
-BOWTIE2_GENOME_PATH := /path/to/bowtie2/indices
-# Location of chromosome length file
-CHROM_PATH := /path/to/chromosome/length/file
-
-################################################################################
-# Path to tools
-
-PATH_TO_FASTQC := $(shell which fastqc)
-PATH_TO_TRIMGALORE := $(shell which trim_galore)
-PATH_TO_BISMARK := $(shell which bismark)
-PATH_TO_EXTRACTOR := $(shell which bismark_methylation_extractor)
-PATH_TO_BOWTIE2 := $(shell which bowtie2)
-PATH_TO_R := $(shell which Rscript)
-PATH_TO_MACS := $(shell which macs2)
-PATH_TO_PEPR := $(shell which PePr)
-PATH_TO_SAMTOOLS := $(shell which samtools)
-PATH_TO_BEDTOOLS := $(shell which bedtools)
-PATH_TO_BEDOPS := $(shell which bedops)
-PATH_TO_AWK := $(shell which awk)
-PATH_TO_BDG2BW := $(shell which bedGraphToBigWig)
-PATH_TO_BDG2BB := $(shell which bedToBigBed)
-
-################################################################################
-# bisulfite_align configuration options
-
-# trim_galore bisulfite
-# NOTE: IS YOUR DATA RRBS? If not, remove the --rrbs flag
-# For trim_galore parameters see http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_User_Guide_v0.4.1.pdf
-OPTS_TRIMGALORE_BISULFITE = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 25 --rrbs
-
-# bismark
-# For bismark parameters see http://www.bioinformatics.babraham.ac.uk/projects/bismark/Bismark_User_Guide_v0.15.0.pdf
-OPTS_BISMARK = --bowtie2 $(GENOME_PATH)
-
-# Command line option for minimum coverage required for bismark_methylation_extractor
-# and scripts/classify_prepare_bisulfite_sample.awk in the sample classification module
-# NOTE: This does not affect methylSig runs
-OPT_MIN_COV = 5
-
-# bismark_methylation_extractor
-# For methylation extractor parameters see http://www.bioinformatics.babraham.ac.uk/projects/bismark/Bismark_User_Guide_v0.15.0.pdf
-OPTS_EXTRACTOR = --single-end --gzip --bedGraph --cutoff $(OPT_MIN_COV) --cytosine_report --genome_folder $(GENOME_PATH) --multicore 1
-
-################################################################################
-# pulldown_align configuration options
-
-# trim_galore pulldown
-# For trim_galore parameters see http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_User_Guide_v0.4.1.pdf
-OPTS_TRIMGALORE_PULLDOWN = --quality 20 --illumina --stringency 6 -e 0.2 --gzip --length 25
-
-# bowtie2
-# For bowtie2 parameters see http://bowtie-bio.sourceforge.net/bowtie2/manual.shtml
-OPTS_BOWTIE2 = -q -x $(BOWTIE2_GENOME_PATH) -U
-
-################################################################################
-# pulldown_sample configuration options
-
-# macs2
-# NOTE: Please ensure the genome size matches the organism in the study
-# hg19, hg38, mm9, and mm10 are automatically populated.
-# For documentation about parameters see https://github.com/taoliu/MACS
-OPTS_MACS = --gsize hs --qvalue 0.01 --mfold 5 50
-
-################################################################################
-# bisulfite_compare configuration options
-
-# DMC for CpG resolution, and DMR for region resolution (window size parameter
-# used in the methylSig options below).
-OPT_DM_TYPE = DMR
-
-# Thresholds to use for DMCs or DMRs (above) methylSig output
-# FDR significance level
-OPT_MSIG_DM_FDR_THRESHOLD = 0.05
-# Desired absolute value of methylation difference
-OPT_MSIG_DM_DIFF_THRESHOLD = 10
-
-########################################
-# bisulfite_compare_1 configuration options
-
-# Informative names for group1 and group0
-# GROUP1_NAME should be the group with higher group number in the project annotation
-# file and GROUP0_NAME should be the group with the lower group number
-# If unsure, check the "workflow for bisulfite_compare_1" section of the makefile
-GROUP1_NAME_1 := group1
-GROUP0_NAME_1 := group0
-
-# For methylSig parameters, in R, after installing methylSig do:
-# ?methylSig::methylSigReadData and ?methylSig::methylSigCalc
-OPTS_METHYLSIG_IDH2mut_v_NBM_mc_hmc_bisulfite = --context CpG --resolution base --destranded TRUE --maxcount 500 --mincount 5 --filterSNPs TRUE --dmtype $(OPT_DM_TYPE) --winsize.tile 50 --dispersion both --local.disp FALSE --winsize.disp 200 --local.meth FALSE --winsize.meth 200 --minpergroup 2,2 --T.approx TRUE --ncores 1 --quiet FALSE
-
-################################################################################
-# pulldown_compare configuration options
-
-########################################
-# pulldown_compare_1 configuration options
-
-# Informative names for chip1 and chip2 groups
-# CHIP1_NAME should be for the group with higher group number in the project annotation
-# file and CHIP2_NAME should be for the group with the lower group number
-# If unsure, check the "workflow for pulldown_compare_1" section of the makefile
-CHIP1_NAME_1 := chip1
-CHIP2_NAME_1 := chip2
-
-# For PePr parameters see https://ones.ccmb.med.umich.edu/wiki/PePr/
-OPTS_PEPR_IDH2mut_v_NBM_hmc_pulldown = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=1
-```
 
 #### Running a project
 
@@ -348,23 +318,12 @@ Once a project is instantiated and configured, the analysis steps can begin. The
 
 For example, the following commands will analyze the test hybrid data:
 
-```{bash}
-cd /path/to/mint/projects/test_hybrid
+```
+cd /path/to/mint/projects/test_hybrid_small
 make pulldown_align
 make bisulfite_align
 make pulldown_sample
 make bisulfite_compare
-make pulldown_compare
-make sample_classification
-make compare_classification
-```
-
-And the following commands will analyze the test pulldown data:
-
-```{bash}
-cd /path/to/mint/projects/test_pulldown
-make pulldown_align
-make pulldown_sample
 make pulldown_compare
 make sample_classification
 make compare_classification
@@ -378,85 +337,85 @@ Depending on the computing hardware used, projects can be run with the `make -j 
 
 ## Outputs
 
-In the case of the `test_hybrid` project the following directory structure is created by `Rscript init.R` and the outputs of the `make` commands above are organized within:
+In the case of the `test_hybrid_small` project the following directory structure is created by `Rscript init.R` and the outputs of the `make` commands above are organized within:
 
-```{bash}
-test_hybrid
-test_hybrid/tmp
-test_hybrid/pbs_jobs
-test_hybrid/data
-test_hybrid/data/raw_fastqs
-test_hybrid/data/test_hybrid_annotation.txt
-test_hybrid/summary
-test_hybrid/summary/figures
-test_hybrid/summary/tables
-test_hybrid/summary/reports
-test_hybrid/test_hybrid_hub
-test_hybrid/test_hybrid_hub/hg19
-test_hybrid/test_hybrid_hub/genomes.txt
-test_hybrid/test_hybrid_hub/hub.txt
-test_hybrid/test_hybrid_hub/test_hybrid_hub.html
-test_hybrid/classifications
-test_hybrid/classifications/simple
-test_hybrid/classifications/sample
-test_hybrid/classifications/comparison
-test_hybrid/RData
-test_hybrid/bisulfite
-test_hybrid/bisulfite/raw_fastqs
-test_hybrid/bisulfite/raw_fastqcs
-test_hybrid/bisulfite/trim_fastqs
-test_hybrid/bisulfite/trim_fastqcs
-test_hybrid/bisulfite/bismark
-test_hybrid/bisulfite/methylsig_calls
-test_hybrid/pulldown
-test_hybrid/pulldown/raw_fastqs
-test_hybrid/pulldown/raw_fastqcs
-test_hybrid/pulldown/trim_fastqs
-test_hybrid/pulldown/trim_fastqcs
-test_hybrid/pulldown/bowtie2_bams
-test_hybrid/pulldown/pulldown_coverages
-test_hybrid/pulldown/macs2_peaks
-test_hybrid/pulldown/pepr_peaks
-test_hybrid/makefile
-test_hybrid/config.mk
-test_hybrid/narrowPeak.as
+```
+test_hybrid_small
+test_hybrid_small/tmp
+test_hybrid_small/pbs_jobs
+test_hybrid_small/data
+test_hybrid_small/data/raw_fastqs
+test_hybrid_small/data/test_hybrid_small_annotation.txt
+test_hybrid_small/summary
+test_hybrid_small/summary/figures
+test_hybrid_small/summary/tables
+test_hybrid_small/summary/reports
+test_hybrid_small/test_hybrid_small_hub
+test_hybrid_small/test_hybrid_small_hub/hg19
+test_hybrid_small/test_hybrid_small_hub/genomes.txt
+test_hybrid_small/test_hybrid_small_hub/hub.txt
+test_hybrid_small/test_hybrid_small_hub/test_hybrid_small_hub.html
+test_hybrid_small/classifications
+test_hybrid_small/classifications/simple
+test_hybrid_small/classifications/sample
+test_hybrid_small/classifications/comparison
+test_hybrid_small/RData
+test_hybrid_small/bisulfite
+test_hybrid_small/bisulfite/raw_fastqs
+test_hybrid_small/bisulfite/raw_fastqcs
+test_hybrid_small/bisulfite/trim_fastqs
+test_hybrid_small/bisulfite/trim_fastqcs
+test_hybrid_small/bisulfite/bismark
+test_hybrid_small/bisulfite/methylsig_calls
+test_hybrid_small/pulldown
+test_hybrid_small/pulldown/raw_fastqs
+test_hybrid_small/pulldown/raw_fastqcs
+test_hybrid_small/pulldown/trim_fastqs
+test_hybrid_small/pulldown/trim_fastqcs
+test_hybrid_small/pulldown/bowtie2_bams
+test_hybrid_small/pulldown/pulldown_coverages
+test_hybrid_small/pulldown/macs2_peaks
+test_hybrid_small/pulldown/pepr_peaks
+test_hybrid_small/makefile
+test_hybrid_small/config.mk
+test_hybrid_small/narrowPeak.as
 ```
 
 ### FastQC
 
-The `FastQC` output is by default not extracted, so the `.zip` files and `.html` files for the raw reads are located in `test_hybrid/bisulfite/raw_fastqcs` and `test_hybrid/pulldown/raw_fastqcs`. The output `FastQC` done after trimming are located in `test_hybrid/bisulfite/trim_fastqcs` and `test_hybrid/pulldown/trim_fastqcs`.
+The `FastQC` output is by default not extracted, so the `.zip` files and `.html` files for the raw reads are located in `test_hybrid_small/bisulfite/raw_fastqcs` and `test_hybrid_small/pulldown/raw_fastqcs`. The output `FastQC` done after trimming are located in `test_hybrid_small/bisulfite/trim_fastqcs` and `test_hybrid_small/pulldown/trim_fastqcs`.
 
 ### Trim Galore
 
-The adapter and quality trimmed raw reads, as well as trimming reports, are output in `test_hybrid/bisulfite/trim_fastqs` and `test_hybrid/pulldown/trim_fastqs`. The trimming reports are the normal output of `trim_galore`.
+The adapter and quality trimmed raw reads, as well as trimming reports, are output in `test_hybrid_small/bisulfite/trim_fastqs` and `test_hybrid_small/pulldown/trim_fastqs`. The trimming reports are the normal output of `trim_galore`.
 
 ### Bisulfite
 
 #### bismark
 
-The results of the `bismark` alignment and methylation quantification from `bismark_methylation_extractor` go in `test_hybrid/bisulfite/bismark`. These include sorted and indexed alignment `.bam`s, methylation rate `bedGraph`s, coverage files, CpG reports, M-bias plots, and the splitting reports.
+The results of the `bismark` alignment and methylation quantification from `bismark_methylation_extractor` go in `test_hybrid_small/bisulfite/bismark`. These include sorted and indexed alignment `.bam`s, methylation rate `bedGraph`s, coverage files, CpG reports, M-bias plots, and the splitting reports.
 
 #### methylSig
 
-The results of the tests for differential methylation with `methylSig` go in `test_hybrid/bisulfite/methylsig_calls`. The `R` session image for each `methylSig` run is saved as an `.RData` file in `test_hybrid/RData`. This allows for retesting for differential methylation with different parameters without having to read in all the data again.
+The results of the tests for differential methylation with `methylSig` go in `test_hybrid_small/bisulfite/methylsig_calls`. The `R` session image for each `methylSig` run is saved as an `.RData` file in `test_hybrid_small/RData`. This allows for retesting for differential methylation with different parameters without having to read in all the data again.
 
 ### Pulldown
 
 #### bowtie2
 
-The results of `bowtie2` alignments go in `test_hybrid/pulldown/bowtie2_bams`. All alignments are sorted and indexed after they are aligned, and the mapping efficiencies are output to a text file in the same folder.
+The results of `bowtie2` alignments go in `test_hybrid_small/pulldown/bowtie2_bams`. All alignments are sorted and indexed after they are aligned, and the mapping efficiencies are output to a text file in the same folder.
 
 #### Genome coverage
 
-The read pileups using `bedtools genomecov` go in `test_hybrid/pulldown/pulldown_coverages`. This includes both pulldowns with an antibody and input pulldowns. The corresponding coverage `.bedGraph` files are compressed into `.bigWig`s and placed in `test_hybrid/test_hybrid_hub/hg19`. For downstream use, a 'merged' coverage `.bed` file is created that fills coverage gaps of up to 20bp. These files are used to determine where no signal is present for classifications.
+The read pileups using `bedtools genomecov` go in `test_hybrid_small/pulldown/pulldown_coverages`. This includes both pulldowns with an antibody and input pulldowns. The corresponding coverage `.bedGraph` files are compressed into `.bigWig`s and placed in `test_hybrid_small/test_hybrid_small_hub/hg19`. For downstream use, a 'merged' coverage `.bed` file is created that fills coverage gaps of up to 20bp. These files are used to determine where no signal is present for classifications.
 
 #### macs2
 
-The `.narrowPeak` files resulting from `macs2` peak calling go in `test_hybrid/pulldown/macs2_peaks`. Additionally, the `.pdf` images of the model used for peak calling are in the same folder.
+The `.narrowPeak` files resulting from `macs2` peak calling go in `test_hybrid_small/pulldown/macs2_peaks`. Additionally, the `.pdf` images of the model used for peak calling are in the same folder.
 
 #### PePr
 
-The `*_chip1_peaks.bed` and `*_chip2_peaks.bed` files resulting from `PePr`'s test for differentially methylated regions go in `test_hybrid/pulldown/pepr_peaks`.
+The `*_chip1_peaks.bed` and `*_chip2_peaks.bed` files resulting from `PePr`'s test for differentially methylated regions go in `test_hybrid_small/pulldown/pepr_peaks`.
 
 ### Classifications
 
@@ -471,9 +430,9 @@ Simple classifications are done on the results of `bismark_methylation_extractor
 
 Since `macs2` peaks determines qualitative methylation, we determine if a peak represents low, medium, or high methylation by dividing the fold-changes reported by `macs2` into tertiles based on the range of the fold-changes: The minimum observed fold-change and the minimum observed fold-change among the top 1%-tile of fold changes. Regions with no peaks are considered to have no methylation.
 
-The resulting simple classifications go in `test_hybrid/classifications/simple` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
+The resulting simple classifications go in `test_hybrid_small/classifications/simple` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid_small/test_hybrid_small_hub/hg19`.
 
-```{bash}
+```
 chr2	39812689	39812804	hmc_low	1000	.	39812689	39812804	102,102,255
 chr21	15197751	15198018	hmc_low	1000	.	15197751	15198018	102,102,255
 chr21	15198928	15199092	hmc_low	1000	.	15198928	15199092	102,102,255
@@ -500,11 +459,11 @@ Pulldown sample classification:
 | :---:				| :----------:	| :--------:	| :------:		|
 | **mc peak**		| hmc and mc	| mc			| mc			|
 | **No mc peak**	| hmc			| No methylation| No methylation|
-| **No signal**		| hmc			| No methylation| Unlassifiable	|
+| **No signal**		| hmc			| No methylation| Unclassifiable	|
 
-The sample classifications go in `test_hybrid/classifications/sample` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
+The sample classifications go in `test_hybrid_small/classifications/sample` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid_small/test_hybrid_small_hub/hg19`.
 
-```{bash}
+```
 chr21   9826885 9826886 mc      1000    .       9826885 9826886 255,0,0
 chr21   9826886 9826887 mc_low  1000    .       9826886 9826887 255,165,0
 chr21   9826887 9826888 mc      1000    .       9826887 9826888 255,0,0
@@ -538,9 +497,9 @@ Pulldown comparison classification:
 | **No DM**		| Hyper hmc				| Hypo hmc				| No DM			| No DM			|
 | **No signal**	| Hyper hmc				| Hypo hmc				| No DM			| Unclassifiable|
 
-The comparison classifications go in `test_hybrid/classifications/comparison` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid/test_hybrid_hub/hg19`.
+The comparison classifications go in `test_hybrid_small/classifications/comparison` as `.bed` files which include colors for visualization in the UCSC Genome Browser. The `.bed` files are then compressed into `bigBed` and are located in `test_hybrid_small/test_hybrid_small_hub/hg19`.
 
-```{bash}
+```
 chr21   16423450        16423650        hypo_hmc        1000    .       16423450        16423650        102,102,255
 chr21   16423650        16424400        no_DM   1000    .       16423650        16424400        0,0,0
 chr21   16424400        16424650        hyper_hmc       1000    .       16424400        16424650        0,0,255
@@ -552,17 +511,17 @@ chr21   16429700        16429850        hyper_hmc       1000    .       16429700
 
 ### Annotations and Visualizations
 
-The genomic regions given by `bismark_methylation_extractor`, `methylSig`, `PePr`, and the classifications are annotated to genomic annotations using `annotatr`, a fast and flexible `R` package designed for exactly this task. As with `methylSig`, every `annotatr` session is saved as an `.RData` file in `test_hybrid/RData` to enable users to quickly go back to the annotations, investigate further, alter plots, or create new plots.
+The genomic regions given by `bismark_methylation_extractor`, `methylSig`, `PePr`, and the classifications are annotated to genomic annotations using `annotatr`, a fast and flexible `R` package designed for exactly this task. As with `methylSig`, every `annotatr` session is saved as an `.RData` file in `test_hybrid_small/RData` to enable users to quickly go back to the annotations, investigate further, alter plots, or create new plots.
 
-Only the hg19, hg38, mm9, or mm10 genomes are currently supported for annotation in the `mint` pipeline. We plan to implement the use of custom annotations *within the pipeline* in the future (`annotatr` already supports custom annotations). All files are annotated against CpG features (islands, shores, shelves, and inter CGI) and genic features based on UCSC knownGene transcripts (1-5kb upstream of promoter, promoter (<1kb upstream of TSS), 5'UTR, exons, introns, and 3'UTR). In the case of hg19, the FANTOM5 robust enhancers are also included. Annotations include UCSC transcript IDs, Entrez Gene IDs, and gene symbols.
+Only the hg19, hg38, mm9, or mm10 genomes are currently supported for annotation in the `mint` pipeline. We plan to implement the use of custom annotations *within the pipeline* in the future (`annotatr` already supports custom annotations). All files are annotated against CpG features (islands, shores, shelves, and inter CGI) and genic features based on UCSC knownGene transcripts (1-5kb upstream of promoter, promoter (\<1kb upstream of TSS), 5'UTR, exons, introns, and 3'UTR). In the case of hg19, the FANTOM5 robust enhancers are also included. Annotations include UCSC transcript IDs, Entrez Gene IDs, and gene symbols.
 
-All annotation sessions output a table of all genomic annotations intersecting the input regions in `test_hybrid/summary/tables`. Also output are summary tables indicating the number of regions annotated to a particular type, along with corresponding numbers for a set of random regions.
+All annotation sessions output a table of all genomic annotations intersecting the input regions in `test_hybrid_small/summary/tables`. Also output are summary tables indicating the number of regions annotated to a particular type, along with corresponding numbers for a set of random regions.
 
 For details on the general features of `annotatr`, visit the [GitHub repository](https://github.com/rcavalcante/annotatr).
 
 #### Table: Complete annotations
 
-```{bash}
+```
 annot_chrom	annot_start	annot_end	annot_strand	annot_type	annot_id	entrez_id	symbol	data_chrom	data_start	data_end	data_strand	name
 chr21	9909278	9966321	-	hg19_knownGenes_introns	uc002zka.2,uc021wgx.1	100132288	TEKT4P2	chr21	9909661	9909789	*	hmc_low
 chr21	9909515	9909759	*	hg19_cpg_islands	island:17089	NA	NA	chr21	9909661	9909789	*	hmc_low
@@ -572,7 +531,7 @@ chr21	9909278	9966321	-	hg19_knownGenes_introns	uc002zka.2,uc021wgx.1	100132288	
 
 #### Table: Annotation summaries
 
-```{bash}
+```
 data_type       annot_type      n
 Data    hg19_cpg_inter  2977
 Data    hg19_cpg_islands        134
@@ -644,15 +603,14 @@ Additionally, a variety of plots are output to help interpret the output of `bis
 
 ### UCSC Browser track hub
 
-Each `mint` project has a UCSC Genome Browser track hub autogenerated in `test_hybrid/test_hybrid_hub`. In order to view it on the genome browser, it must be placed in a web-facing folder and the URL should be given under the `My Hubs` tab.
+Each `mint` project has a UCSC Genome Browser track hub autogenerated in `test_hybrid_small/test_hybrid_small_hub`. In order to view it on the genome browser, it must be placed in a web-facing folder and the URL should be given under the `My Hubs` tab.
 
 Included in each track hub, where applicable, are:
 
 * Pulldown coverage pileups from `bedtools genomecov`
 * Percent methylation tracks from `bismark_methylation_extractor`
-* Simple classification tracks
-* `macs2` peaks
-* Combined peaks from `PePr` with chip1/chip2 labels
+* Simple classification tracks for `bismark_methylation_extractor`, `macs2`, and `PePr`
+* Combined peaks from `PePr` with group labels
 * Differential methylation from `methylSig`
 * Sample classifications
 * Comparison classifications
