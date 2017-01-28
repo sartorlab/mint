@@ -115,19 +115,22 @@ It is also worthwhile to try loading the `virtualenv` and testing `which` on a P
 # NOTE: Running install/install_deps.sh creates a symlink for mint/apps/mint_env/bin/activate
 # as mint/apps/mint_venv
 source mint_venv
+
 which PePr
 # Should return /path/to/mint/apps/mint_env/bin/PePr
 ```
 
 ### Reference Genomes
 
-As with any high-throughput sequencing analysis, the correct reference genome is required to align reads. The most convenient resource for reference genomes is the [Illumina iGenomes](http://support.illumina.com/sequencing/sequencing_software/igenome.html).
+As with any high-throughput sequencing analysis, the correct reference genome is required to align reads. The most convenient resource for reference genomes is the [Illumina iGenomes](http://support.illumina.com/sequencing/sequencing_software/igenome.html) page.
 
 #### Symlinks
 
-The following symlinks at the root of the reference genome folder are needed for the `config.mk` file `mint` creates for a project.
+The following symlinks at the root of the reference genome folder are needed for the `config.mk` file `mint` creates for each project.
 ```
+# Go to the reference genome root
 cd /path/to/reference/genome/
+
 ln -s ./Sequence/WholeGenomeFasta/Bisulfite_Genome Bisulfite_Genome
 ln -s ./Annotation/Genes/genes.gtf genes.gtf
 ln -s ./Sequence/Bowtie2Index/genome.1.bt2 genome.1.bt2
@@ -138,6 +141,7 @@ ln -s ./Sequence/Bowtie2Index/genome.fa genome.fa
 ln -s ./Sequence/Bowtie2Index/genome.fa.fai genome.fa.fai
 ln -s ./Sequence/Bowtie2Index/genome.rev.1.bt2 genome.rev.1.bt2
 ln -s ./Sequence/Bowtie2Index/genome.rev.2.bt2 genome.rev.2.bt2
+
 # NOTE: mint requires a chromosome length file for many operations this particular
 # line of code is specific to the hg19 reference genome from iGenomes
 ln -s ./Annotation/Archives/archive-2013-03-06-11-23-03/Genes/ChromInfo.txt chromInfo_hg19.txt
@@ -145,7 +149,7 @@ ln -s ./Annotation/Archives/archive-2013-03-06-11-23-03/Genes/ChromInfo.txt chro
 
 #### Bisulfite-converted Reference Genome
 
-If you download a reference genome from iGenomes, it is possible that a bisulfite-converted reference genome is already included. If not, in order to use the [`bismark`](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) aligner on WGBS or RRBS you must create your own. For more information [see the documentation](https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html#i-running-bismark-genome-preparation), but in short the following will build it:
+If you download a reference genome from iGenomes, it is possible that a bisulfite-converted reference genome is already included. If not, in order to use the [`bismark`](http://www.bioinformatics.babraham.ac.uk/projects/bismark/) aligner on WGBS or RRBS data you must create your own. For more information [see the documentation](https://rawgit.com/FelixKrueger/Bismark/master/Docs/Bismark_User_Guide.html#i-running-bismark-genome-preparation). In short the following will build it:
 ```
 bismark_genome_preparation [options] <path_to_genome_folder>
 ```
@@ -154,13 +158,13 @@ bismark_genome_preparation [options] <path_to_genome_folder>
 
 After following the [installation instructions](#installation), we recommend testing the pipeline on a small dataset to ensure everything is working properly. We have created a repository with test data at <https://github.com/sartorlab/mint_test> based on data from [GSE52945](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE52945). Follow these steps to test the entire pipeline:
 
-1. Clone the test data repository in a folder **outside the `mint` installation** ():
+1. Clone the test data repository in a folder **outside the `mint` installation**:
 
   ```
   git clone https://github.com/sartorlab/mint_test.git
   ```
 
-2. Copy the metadata files into `/path/to/mint/projects`:
+2. Copy the metadata files for the test data into `/path/to/mint/projects`:
 
   ```
   cp /path/to/mint_test/hybrid/*txt /path/to/mint/projects/
@@ -178,7 +182,7 @@ After following the [installation instructions](#installation), we recommend tes
   Rscript init.R --project test_hybrid_small --genome hg19 --genomepath /path/to/hg19 --chrompath /path/to/hg19/chromInfo_hg19.txt --datapath /path/to/mint_test/hybrid/
   ```
 
-5. Run the modules. In the simplest form, the following would run in series with all output to `stdout`:
+5. Run the modules. In the simplest form, the following would run in series with all output going to `stdout`:
 
   ```
   # Assumes an interactive server session, and NOT a cluster with queueing
@@ -215,12 +219,15 @@ After following the [installation instructions](#installation), we recommend tes
   # These can be run simultaneously
   nohup make -j 4 pulldown_align > nohup_pulldown_align.out &
   nohup make -j 4 bisulfite_align > nohup_bisulfite_align.out &
+
   # After the above two are finished these can be run simultaneously
   nohup make -j 4 pulldown_sample > nohup_pulldown_sample.out &
   nohup make -j 4 bisulfite_sample > nohup_bisulfite_sample.out &
+
   # After the above two are finished these can be run simultaneously
   nohup make pulldown_compare > nohup_pulldown_compare.out &
   nohup make bisulfite_compare > nohup_bisulfite_compare.out &
+
   # After teh above two are finished, these should be run serially
   nohup make compare_classification > nohup_compare_classification.out &
   nohup make -j 4 sample_classification > nohup_sample_classification.out &
