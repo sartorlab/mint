@@ -240,7 +240,7 @@ After following the [installation instructions](#installation), we recommend tes
   nohup make pulldown_compare > nohup_pulldown_compare.out &
   nohup make bisulfite_compare > nohup_bisulfite_compare.out &
 
-  # After teh above two are finished, these should be run serially
+  # After the above two are finished, these should be run serially
   nohup make compare_classification > nohup_compare_classification.out &
   nohup make -j 4 sample_classification > nohup_sample_classification.out &
   ```
