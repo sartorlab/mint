@@ -5,7 +5,7 @@ set -o pipefail
 
 # Installation directory
 # INSTALL_DIR should be /path/to/mint/
-INSTALL_DIR=$1
+INSTALL_DIR=${PWD}
 APP_DIR=${INSTALL_DIR}/apps
 BIN_DIR=${APP_DIR}/bin
 
