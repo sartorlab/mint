@@ -215,7 +215,7 @@ After following the [installation instructions](#installation), we recommend tes
   make sample_classification
   ```
 
-  To help the tests run faster, you can use the `-j` flag of make to run operations in parallel, and use `&` to run operations in the background:
+  To help the tests run faster, you can use the `-j` flag of `make` to run operations in parallel, and use `&` to run operations in the background:
 
   ```
   # Assumes an interactive server session where the server has ample resources
