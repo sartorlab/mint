@@ -65,7 +65,7 @@ The mint pipeline is also implemented for [Galaxy](https://usegalaxy.org), and t
 
 ### `mint` and Dependencies
 
-The following steps will install `mint` and its dependencies on a Linux or macOS system.
+The following steps will install `mint` and its dependencies on a Linux or macOS system. **NOTE:** Any references to `/path/to` need to be modified throughout the code below.
 
 1. `cd` into the directory you'd like `mint` installed.
 2. Clone the `mint` repository with:

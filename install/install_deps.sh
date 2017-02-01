@@ -147,9 +147,8 @@ pip install cutadapt
 pip install multiqc==0.9
 pip install MACS2==2.1.0.20140616
 pip install PePr==1.1.14
-set -u
-
 deactivate
+set -u
 
 # Make a mint_env/bin/activate symlink in /mint/apps/bin
 ln -s ${APP_DIR}/mint_env/bin/activate ${BIN_DIR}/mint_venv
