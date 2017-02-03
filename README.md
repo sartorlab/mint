@@ -12,6 +12,7 @@ v0.3.0
 	  * [Symlinks](#symlinks)
 	  * [Bisulfite-converted Reference Genome](#bisulfite-converted-reference-genome)
 * [Testing `mint`](#testing-mint)
+* [Upgrading `mint`](#upgrading-mint)
 * [Details](#details)
 	* [Supported Experiments and Designs](#supported-experiments-and-designs)
 	* [Setting up a project](#setting-up-a-project)
@@ -256,6 +257,12 @@ As documented in <https://github.com/sartorlab/mint_test>, the test data contain
 * chr8:35090385-35095384 (hyper_mc)
 
 [Top](#contents)
+
+## Upgrading `mint`
+
+To upgrade `mint`, all you need to do is `cd /path/to/mint` and do `git pull`. Existing analyses in the `mint/projects/` folder will be unaffected (since this folder isn't tracked by `git`). To use the upgraded version of `mint` on existing projects, you will need to reinitialize a project with `Rscript init.R ...`.
+
+If there are changes to any directories that *are* tracked by `git`, you might need to `git stash` your changes, and then `git pull`.
 
 ## Details
 
