@@ -127,8 +127,10 @@ rm trim_galore_v0.4.1.zip
 ##############################################
 # Install pip
 # Check to see if pip is installed
-which pip
-if [ $? -ne 0 ]; then
+if hash pip 2> /dev/null; then
+    echo 'pip is on system, using existing install.'
+else
+    echo 'No pip found, fetching and installing for user.'
     curl -L "https://bootstrap.pypa.io/get-pip.py" > get-pip.py
     python get-pip.py --user
 fi
@@ -140,6 +142,9 @@ pip install --user virtualenv
 # Setup mint virtual environment
 virtualenv mint_env
 
+# Make a mint_env/bin/activate symlink in /mint/apps/bin
+ln -s ${APP_DIR}/mint_env/bin/activate ${BIN_DIR}/mint_venv
+
 # NOTE: On macOS this fails within the script, so virtualenv has to be built interactively
 set +u
 source ${APP_DIR}/mint_env/bin/activate
@@ -149,9 +154,6 @@ pip install MACS2==2.1.0.20140616
 pip install PePr==1.1.14
 deactivate
 set -u
-
-# Make a mint_env/bin/activate symlink in /mint/apps/bin
-ln -s ${APP_DIR}/mint_env/bin/activate ${BIN_DIR}/mint_venv
 
 # Make sure permissions are right for everything in mint/apps
 chmod -R 755 ${APP_DIR}
