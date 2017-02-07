@@ -1,6 +1,6 @@
 ## mint: Analysis, integration, classification, and annotation of DNA methylation and hydroxymethylation data
 
-v0.3.1
+v0.3.2
 
 ## Contents
 
