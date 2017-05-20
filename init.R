@@ -41,8 +41,9 @@ dir_track = sprintf('%s/%s', dir_hub, genome)
 ################################################################################
 # READ project information
 annots = read.table(file = sprintf('projects/%s_annotation.txt', project), header = T, sep = '\t', stringsAsFactors = F)
+comparisons = read.table(file = sprintf('projects/%s_comparisons.txt', project), header = T, sep = '\t', stringsAsFactors = F)
 
-# Add the fullHumanID column which will be the prefix for all created files
+# Add the fullHumanID column to the annots table, which will be the prefix for all created files
 annots$fullHumanID = NA
 for(i in 1:nrow(annots)) {
     humanID = annots[i,'humanID']
@@ -77,21 +78,52 @@ for(i in 1:nrow(annots)) {
     }
 }
 
+# Add the fullHumanID column to the comparisons table, which will be the prefix for all created files
+comparisons$fullHumanID = NA
+for(i in 1:nrow(comparisons)) {
+    comparison = comparisons[i,'comparison']
+    pull = comparisons[i,'pulldown']
+    bis = comparisons[i,'bisulfite']
+    mc = comparisons[i,'mc']
+    hmc = comparisons[i,'hmc']
+    input = comparisons[i,'input']
+
+    if( pull == 1 ) {
+      platform = "pulldown"
+    } else if ( bis == 1 ) {
+      platform = "bisulfite"
+    } else {
+        stop('Annotation Error: For each row, either the pulldown or the bisulfite column must be 1.')
+    }
+
+    if( mc == 1 && hmc == 1 ) {
+      mark = "mc_hmc"
+    } else if ( mc == 1 && hmc == 0 ) {
+      mark = "mc"
+    } else if ( mc == 0 && hmc == 1 ) {
+      mark = "hmc"
+    } else {
+        stop('Annotation Error: For each row, mc and/or hmc must be 1.')
+    }
+
+    comparisons[i,'fullHumanID'] = sprintf("%s_%s_%s", comparison, mark, platform)
+}
+
 # Split samples by bisulfite and pulldown
 bisulfite = subset(annots, bisulfite == 1)
 pulldown = subset(annots, pulldown == 1)
 
 # Determine the sample
 samples = subset(annots, !grepl('comparison', sampleID))
-comparisons = subset(annots, grepl('comparison', sampleID))
 
 # Split by sample and comparisons
 bisulfite_samples = subset(bisulfite, !grepl('comparison', sampleID))
-bisulfite_comparisons = subset(bisulfite, grepl('comparison', sampleID))
+bisulfite_comparisons = subset(comparisons, bisulfite == 1)
 
 pulldown_samples = subset(pulldown, !grepl('comparison', sampleID))
 pulldown_samples_noinput = subset(pulldown, !grepl('comparison', sampleID) & input == 0)
-pulldown_comparisons = subset(pulldown, grepl('comparison', sampleID))
+pulldown_samples_input = subset(pulldown, !grepl('comparison', sampleID) & input == 1)
+pulldown_comparisons = subset(comparisons, pulldown == 1)
 
 # Control variables
 bool_bis_samp = nrow(bisulfite_samples) > 0
@@ -101,14 +133,14 @@ bool_pull_comp = nrow(pulldown_comparisons) > 0
 
 ################################################################################
 # READ group names
-if(bool_bis_comp || bool_pull_comp) {
-    group_file = sprintf('projects/%s_groups.txt', project)
-    if(!file.exists(group_file)) {
-        stop(sprintf('You must include a tab-delimited file named %s_groups.txt in the projects/ folder. It should have two columns, named group and name, giving the group number and the name of the group.', project))
-    } else {
-        group_names = read.table(group_file, sep='\t', header = TRUE, quote = '', comment.char = '', stringsAsFactors= FALSE)
-    }
-}
+# if(bool_bis_comp || bool_pull_comp) {
+#     group_file = sprintf('projects/%s_comparisons.txt', project)
+#     if(!file.exists(group_file)) {
+#         stop(sprintf('You must include a tab-delimited file named %s_groups.txt in the projects/ folder. It should have two columns, named group and name, giving the group number and the name of the group.', project))
+#     } else {
+#         group_names = read.table(group_file, sep='\t', header = TRUE, quote = '', comment.char = '', stringsAsFactors= FALSE)
+#     }
+# }
 
 # NOTE: ADD ERROR CHECKING
 # 1. Are there input samples for pulldowns?

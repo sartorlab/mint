@@ -2,6 +2,18 @@
 # MAKEFILE: pulldown_compare rules
 
 if(bool_pull_comp) {
+
+	########################################################################
+	# OPTS for config.mk
+	config_pull_compare = '################################################################################
+# pulldown_compare configuration options
+
+# Thresholds to use for DMCs or DMRs (above) methylSig output
+# FDR significance level
+OPT_CSAW_DM_FDR_THRESHOLD = 0.05
+	'
+	cat(config_pull_compare, file = file_config, sep='\n', append=T)
+
 	# Keep track of the compares for the master make rules
 	pulldown_compares = c()
 	pulldown_compare_rules = c()
@@ -10,14 +22,18 @@ if(bool_pull_comp) {
 	for(i in 1:nrow(pulldown_comparisons)) {
 		# Establish row variables
 		projectID = pulldown_comparisons[i,'projectID']
-		sampleID = pulldown_comparisons[i,'sampleID']
-		humanID = pulldown_comparisons[i,'humanID']
+		comparison = pulldown_comparisons[i,'comparison']
 		pull = pulldown_comparisons[i,'pulldown']
 		bis = pulldown_comparisons[i,'bisulfite']
 		mc_stat = pulldown_comparisons[i,'mc']
 		hmc_stat = pulldown_comparisons[i,'hmc']
 		input = pulldown_comparisons[i,'input']
-		group = pulldown_comparisons[i,'group']
+		model = pulldown_comparisons[i,'model']
+		contrast = pulldown_comparisons[i,'contrast']
+		covariates = pulldown_comparisons[i,'covariates']
+		covisnumeric = pulldown_comparisons[i,'covisnumeric']
+		groups = pulldown_comparisons[i,'groups']
+		interpretation = pulldown_comparisons[i,'interpretation']
 		fullHumanID = pulldown_comparisons[i,'fullHumanID']
 
 		if( pull == 1 ) {
@@ -35,17 +51,19 @@ if(bool_pull_comp) {
 		}
 
 		# Sorting this way ensures the higher group number is groupA
-		# NOTE: This makes the PePr DM test match that of methylSig,
+		# NOTE: This makes the csaw DM test match that of methylSig,
 		# where control is the lower number (often 0) and the treatment
-		# is the higher number (often 1). PePr chip1 peaks mean differential binding
-		# in chip1 vs chip2 and chip2 peaks mean differential binding in chip2 vs chip1
-		# Later, chip1 goes to DMup and chip2 goes to DMdown so
+		# is the higher number (often 1). csaw chip1 peaks mean differential binding
+		# in chip1 vs chip0 and chip0 peaks mean differential binding in chip0 vs chip1
+		# Later, chip1 goes to DMup and chip0 goes to DMdown so
 		# hyper and hypo and with respect to groupA, or the larger group number
-		groups = sort(as.integer(unlist(strsplit(group, ','))), decreasing = TRUE)
+		group_order = order(as.integer(unlist(strsplit(groups, ','))), decreasing = TRUE)
+		groups = as.integer(unlist(strsplit(groups, ',')))[group_order]
+		interps = unlist(strsplit(interpretation, ','))[group_order]
 
 		# Create a list
 		sample_groups = lapply(pulldown_samples$group, function(g){
-			as.integer(unlist(strsplit(g, ',')))
+			as.integer(unlist(strsplit(as.character(g), ',')))
 		})
 
 		# Get the correct indices
@@ -70,12 +88,12 @@ if(bool_pull_comp) {
 			pulldown_samples$mc == mc_stat &
 			pulldown_samples$hmc == hmc_stat &
 			pulldown_samples$input == 0)
-		groupAname = subset(group_names, group == groups[1])$name
-		groupBname = subset(group_names, group == groups[2])$name
+		groupAname = interps[1]
+		groupBname = interps[2]
 
-		if(groupAname == '' || groupBname == '') {
-			stop('Groups used for comparisons must be named. Check your _groups.txt file.')
-		}
+		# if(groupAname == '' || groupBname == '') {
+		# 	stop('Groups used for comparisons must be named. Check your _groups.txt file.')
+		# }
 
 		inputGroupA = subset(pulldown_samples,
 			groupAindices &
@@ -95,32 +113,35 @@ if(bool_pull_comp) {
 		########################################################################
 		# Setup variables to put into the makefile
 
-		# For the PePr call from projects/project/pepr_peaks/
-		var_input1 = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', inputGroupA$fullHumanID), sep='', collapse=',')
-		var_input2 = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', inputGroupB$fullHumanID), sep='', collapse=',')
-		var_chip1 = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', groupA$fullHumanID), sep='', collapse=',')
-		var_chip2 = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', groupB$fullHumanID), sep='', collapse=',')
+		# For the csaw call from projects/project/
+		var_projectID = projectID
+		var_input = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', c(inputGroupA$fullHumanID, inputGroupB$fullHumanID)), sep='', collapse=',')
+		var_chip = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', c(groupA$fullHumanID, groupB$fullHumanID)), sep='', collapse=',')
+		var_chipnames = paste(sprintf('%s', c(groupA$humanID, groupB$humanID)), sep='', collapse=',')
+		var_useinput = input
+		var_model = model
+		var_groups = paste(sprintf('%s', c(groupA$group, groupB$group)), sep='', collapse=',')
+		var_interpretation = interpretation
+		var_contrast = contrast
+		var_covariates = covariates
+		var_covisnumeric = covisnumeric
 
 		# For the prerequisites in the make rule
-		var_merged_input1_pre = paste(sprintf('$(DIR_PULL_COVERAGES)/%s_coverage_merged.bdg', inputGroupA$fullHumanID), sep='', collapse=' ')
-		var_merged_input2_pre = paste(sprintf('$(DIR_PULL_COVERAGES)/%s_coverage_merged.bdg', inputGroupB$fullHumanID), sep='', collapse=' ')
-		var_input1_pre = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', inputGroupA$fullHumanID), sep='', collapse=' ')
-		var_input2_pre = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', inputGroupB$fullHumanID), sep='', collapse=' ')
-		var_chip1_pre = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', groupA$fullHumanID), sep='', collapse=' ')
-		var_chip2_pre = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', groupB$fullHumanID), sep='', collapse=' ')
+		var_merged_input_pre = paste(sprintf('$(DIR_PULL_COVERAGES)/%s_coverage_merged.bdg', c(inputGroupA$fullHumanID, inputGroupB$fullHumanID)), sep='', collapse=' ')
+		var_input_pre = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', c(inputGroupA$fullHumanID, inputGroupB$fullHumanID)), sep='', collapse=' ')
+		var_chip_pre = paste(sprintf('$(DIR_PULL_BOWTIE2)/%s_trimmed.fq.gz_aligned.bam', c(groupA$fullHumanID,groupB$fullHumanID)), sep='', collapse=' ')
 		var_name = fullHumanID
 
 		# Targets
-		input_signal = sprintf('$(DIR_PULL_PEPR)/%s_merged_signal.bed', var_name)
-		chip1_bed = sprintf('$(DIR_PULL_PEPR)/%s__PePr_chip1_peaks.bed', var_name)
-		chip2_bed = sprintf('$(DIR_PULL_PEPR)/%s__PePr_chip2_peaks.bed', var_name)
-		combined_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_combined.bed', var_name)
-		bigBed_bed = sprintf('$(DIR_PULL_PEPR)/%s_PePr_for_bigBed.bed', var_name)
-		annotatr_rdata = sprintf('$(DIR_RDATA)/%s_PePr_annotatr_analysis.RData', var_name)
-		bigbed = sprintf('$(DIR_TRACK)/%s_PePr_peaks.bb', var_name)
-		simple_bed = sprintf('$(DIR_CLASS_SIMPLE)/%s_PePr_simple_classification.bed', var_name)
-		simple_bb = sprintf('$(DIR_TRACK)/%s_PePr_simple_classification.bb', var_name)
-		simple_rdata = sprintf('$(DIR_RDATA)/%s_PePr_simple_classification_annotatr_analysis.RData', var_name)
+		input_signal = sprintf('$(DIR_PULL_CSAW)/%s_merged_signal.bed', var_name)
+		csaw_significant = sprintf('$(DIR_PULL_CSAW)/%s_csaw_significant.txt', var_name)
+		annotatr_txt = sprintf('$(DIR_PULL_CSAW)/%s_csaw_for_annotatr.txt', var_name)
+		bigBed_bed = sprintf('$(DIR_PULL_CSAW)/%s_csaw_for_bigBed.bed', var_name)
+		annotatr_rdata = sprintf('$(DIR_RDATA)/%s_csaw_annotatr_analysis.RData', var_name)
+		bigbed = sprintf('$(DIR_TRACK)/%s_csaw_peaks.bb', var_name)
+		simple_bed = sprintf('$(DIR_CLASS_SIMPLE)/%s_csaw_simple_classification.bed', var_name)
+		simple_bb = sprintf('$(DIR_TRACK)/%s_csaw_simple_classification.bb', var_name)
+		simple_rdata = sprintf('$(DIR_RDATA)/%s_csaw_simple_classification_annotatr_analysis.RData', var_name)
 
 		########################################################################
 		# Variables for the makefile
@@ -130,12 +151,10 @@ if(bool_pull_comp) {
 			'########################################',
 			sprintf('# Workflow for pulldown_compare_%s', i),
 			'',
-			sprintf('PULLDOWN_COMPARE_%s_PREREQS := %s %s %s %s', i, chip1_bed, bigbed, input_signal, annotatr_rdata),
+			sprintf('PULLDOWN_COMPARE_%s_PREREQS := %s %s %s %s', i, csaw_significant, bigbed, input_signal, annotatr_rdata),
 			sprintf('PULLDOWN_COMPARE_SIMPLE_%s_PREREQS := %s %s %s', i, simple_bed, simple_bb, simple_rdata),
-			sprintf('PULLDOWN_COMPARE_%s_INPUT1 := %s', i, var_input1),
-			sprintf('PULLDOWN_COMPARE_%s_INPUT2 := %s', i, var_input2),
-			sprintf('PULLDOWN_COMPARE_%s_CHIP1 := %s', i, var_chip1),
-			sprintf('PULLDOWN_COMPARE_%s_CHIP2 := %s', i, var_chip2),
+			sprintf('PULLDOWN_COMPARE_%s_INPUT := %s', i, var_input),
+			sprintf('PULLDOWN_COMPARE_%s_CHIP := %s', i, var_chip),
 			sprintf('PULLDOWN_COMPARE_%s_NAME := %s', i, var_name),
 			sprintf('PULLDOWN_COMPARE_%s_CLEAN_TMP := %s', i, bigBed_bed))
 
@@ -146,32 +165,21 @@ if(bool_pull_comp) {
 			sprintf('.PHONY : pulldown_compare_%s', i),
 			sprintf('pulldown_compare_%s : $(PULLDOWN_COMPARE_%s_PREREQS)', i, i),
 			'',
-			'# Rule for PePr peaks',
-			sprintf('%s : %s %s %s %s', chip1_bed, var_input1_pre, var_input2_pre, var_chip1_pre, var_chip2_pre),
-			sprintf('	$(PATH_TO_PEPR) --input1=$(PULLDOWN_COMPARE_%s_INPUT1) --input2=$(PULLDOWN_COMPARE_%s_INPUT2) --chip1=$(PULLDOWN_COMPARE_%s_CHIP1) --chip2=$(PULLDOWN_COMPARE_%s_CHIP2) --name=$(PULLDOWN_COMPARE_%s_NAME) --output-directory=$(DIR_PULL_PEPR) $(OPTS_PEPR_%s)', i, i, i, i, i, var_name),
-			sprintf('%s : %s', chip2_bed, chip1_bed),
+			'# Rule for csaw peaks',
+			sprintf('%s : %s %s', csaw_significant, var_input_pre, var_chip_pre),
+			sprintf('	$(PATH_TO_R) ../../scripts/csaw_run.R --project %s --chipfiles $(PULLDOWN_COMPARE_%s_CHIP) --inputfiles $(PULLDOWN_COMPARE_%s_INPUT) --chipnames %s --useinput %s --model %s --groups %s --contrast %s --covariates %s --covisnumeric %s --FDRthreshold $(OPT_CSAW_DM_FDR_THRESHOLD) --interpretation %s --quiet FALSE --outprefix $(PULLDOWN_COMPARE_%s_NAME) $(OPTS_CSAW_%s)', var_projectID, i, i, var_chipnames, var_useinput, var_model, var_groups, var_contrast, var_covariates, var_covisnumeric, var_interpretation, i, var_name),
+			sprintf('%s : %s', annotatr_txt, csaw_significant),
+			sprintf('%s : %s', bigBed_bed, csaw_significant),
 			'',
-			'# Rule to combine PePr peaks for bigBed',
-			'# NOTE: This script ensures chip1 and chip2 peaks do not overlap',
-			'# and then combines the peaks and keeps track of their source',
-			sprintf('.INTERMEDIATE : %s', bigBed_bed),
-			sprintf('%s : %s %s', bigBed_bed, chip1_bed, chip2_bed),
-			sprintf('	bash ../../scripts/pepr_combine.sh $(word 1,$^) $(word 2,$^) $@ $(CHIP1_NAME_%s) $(CHIP2_NAME_%s)', i, i),
-			'',
-			'# Rule to combine PePr peaks (to save and for annotatr)',
-			'# NOTE: Using fold change ($7) and p-value ($8)',
-			sprintf('%s : %s %s', combined_bed, chip1_bed, chip2_bed),
-			sprintf('	cat <(awk -v OFS="\\t" -v CHIP1=$(CHIP1_NAME_%s) \'{print $$1, $$2, $$3, CHIP1, $$7, "*", $$8}\' $(word 1,$^)) <(awk -v OFS="\\t" -v CHIP2=$(CHIP2_NAME_%s) \'{print $$1, $$2, $$3, CHIP2, $$7, "*", $$8}\' $(word 2,$^)) > $@', i, i),
-			'',
-			'# Rule for annotatr of PePr peaks',
-			sprintf('%s : %s', annotatr_rdata, combined_bed),
-			sprintf('	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type PePr --group1 $(CHIP1_NAME_%s) --group0 $(CHIP2_NAME_%s)', i, i),
+			'# Rule for annotatr of csaw peaks',
+			sprintf('%s : %s', annotatr_rdata, annotatr_txt),
+			sprintf('	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type csaw --group1 $(CHIP1_NAME_%s) --group0 $(CHIP0_NAME_%s)', i, i),
 			'',
 			'# Rule to merge input signals from the two groups',
-			sprintf('%s : %s %s', input_signal, var_merged_input1_pre, var_merged_input2_pre),
+			sprintf('%s : %s', input_signal, var_input_pre),
 			'	cat $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n | bedtools merge -d 20 | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@',
 			'',
-			'# Rule for UCSC bigBed track of PePr peaks',
+			'# Rule for UCSC bigBed track of csaw peaks',
 			sprintf('%s : %s', bigbed, bigBed_bed),
 			'	$(PATH_TO_BED2BB) $^ $(CHROM_PATH) $@',
 			'',
@@ -179,13 +187,13 @@ if(bool_pull_comp) {
 			sprintf('.PHONY : pulldown_compare_simple_classification_%s', i),
 			sprintf('pulldown_compare_simple_classification_%s : $(PULLDOWN_COMPARE_SIMPLE_%s_PREREQS)', i, i),
 			'',
-			'# Rule for simple classification of combined PePr peaks',
-			sprintf('%s : %s', simple_bed, combined_bed),
-			sprintf('	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@ --group1 $(CHIP1_NAME_%s) --group0 $(CHIP2_NAME_%s)', i, i),
+			'# Rule for simple classification of combined csaw peaks',
+			sprintf('%s : %s', simple_bed, annotatr_txt),
+			sprintf('	$(PATH_TO_R) ../../scripts/classify_simple.R --project $(PROJECT) --inFile $< --outFile $@ --group1 $(CHIP1_NAME_%s) --group0 $(CHIP0_NAME_%s)', i, i),
 			'',
-			'# Rule for annotatr of PePr simple classifications',
+			'# Rule for annotatr of csaw simple classifications',
 			sprintf('%s : %s', simple_rdata, simple_bed),
-			sprintf('	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type simple_pulldown_PePr --group1 $(CHIP1_NAME_%s) --group0 $(CHIP2_NAME_%s)', i, i),
+			sprintf('	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type simple_pulldown_csaw --group1 $(CHIP1_NAME_%s) --group0 $(CHIP0_NAME_%s)', i, i),
 			'',
 			'# Rule for UCSC bigBed track',
 			sprintf('%s : %s', simple_bb, simple_bed),
@@ -205,33 +213,31 @@ if(bool_pull_comp) {
 
 		########################################################################
 		# OPTS for config.mk
-		config_pull_compare = sprintf('########################################
-# pulldown_compare_%s configuration options
-
-# Informative names for chip1 and chip2 groups
-# CHIP1_NAME should be for the group with higher group number in the project annotation
-# file and CHIP2_NAME should be for the group with the lower group number
-# If unsure, check the "workflow for pulldown_compare_%s" section of the makefile
+		config_pull_compare = sprintf('
+# Informative names for interpreting the results of differential binding
+# based on the model provided in the comparisons file. These can correspond
+# to groups if the test is group vs group, or can be something more complicated
+# for more complicated contrasts.
 CHIP1_NAME_%s := %s
-CHIP2_NAME_%s := %s
+CHIP0_NAME_%s := %s
 
-# For PePr parameters see https://ones.ccmb.med.umich.edu/wiki/PePr/
-OPTS_PEPR_%s = --file-format=bam --peaktype=sharp --diff --threshold=1e-05 --num-processors=1
+# For csaw parameters see https://ones.ccmb.med.umich.edu/wiki/csaw/
+OPTS_CSAW_%s = --fraglength 110 --winwidth 100 --winspacing 50 --prior.count 5 --chipfold 2 --mergewithin 500 --maxmerged 2000 --FDRthreshold $(OPT_CSAW_DM_FDR_THRESHOLD)
 ',
-			i, i, i, groupAname, i, groupBname, var_name)
+			i, groupAname, i, groupBname, var_name)
 
 		# Track all the configs for the pulldown compares
 		pulldown_compare_configs = c(
 			pulldown_compare_configs,
 			config_pull_compare)
 
-		# trackDb.txt entry for PePr output
+		# trackDb.txt entry for csaw output
 		trackEntry = c(
 			sprintf('track %s_DM', fullHumanID),
 			sprintf('parent %s_group_comparison', humanID),
-			sprintf('bigDataUrl %s_PePr_peaks.bb', fullHumanID),
+			sprintf('bigDataUrl %s_csaw_peaks.bb', fullHumanID),
 			sprintf('shortLabel %s_DM', fullHumanID),
-			sprintf('longLabel %s_DM_PePr_peaks', fullHumanID),
+			sprintf('longLabel %s_DM_csaw_peaks', fullHumanID),
 			'visibility pack',
 			'itemRgb on',
 			'type bigBed 9 .',

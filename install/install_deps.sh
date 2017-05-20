@@ -149,10 +149,8 @@ ln -s ${APP_DIR}/mint_env/bin/activate ${BIN_DIR}/mint_venv
 set +u
 source ${APP_DIR}/mint_env/bin/activate
 pip install cutadapt
-pip install pysam==0.8.0
 pip install multiqc==0.9
 pip install MACS2==2.1.0.20140616
-pip install PePr==1.1.14
 deactivate
 set -u
 

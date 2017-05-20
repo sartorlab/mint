@@ -28,12 +28,13 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 	for(i in 1:nrow(bisulfite_comparisons)) {
 		# Establish row variables
 		sampleID = bisulfite_comparisons[i,'sampleID']
-		humanID = bisulfite_comparisons[i,'humanID']
+		comparison = pulldown_comparisons[i,'comparison']
 		pull = bisulfite_comparisons[i,'pulldown']
 		bis = bisulfite_comparisons[i,'bisulfite']
 		mc_stat = bisulfite_comparisons[i,'mc']
 		hmc_stat = bisulfite_comparisons[i,'hmc']
-		group = bisulfite_comparisons[i,'group']
+		groups = bisulfite_comparisons[i,'groups']
+		interpretation = pulldown_comparisons[i,'interpretation']
 		fullHumanID = bisulfite_comparisons[i,'fullHumanID']
 
 		if( pull == 1 ) {
@@ -56,11 +57,13 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 		# And meth.diff is always treatment - control
 		# group = c('Treatment' = max(treatment),'Control' = min(treatment))
 		# So hyper and hypo is with respect to the higher group number
-		groups = sort(as.integer(unlist(strsplit(group, ','))), decreasing=TRUE)
+		group_order = order(as.integer(unlist(strsplit(groups, ','))), decreasing = TRUE)
+		groups = as.integer(unlist(strsplit(groups, ',')))[group_order]
+		interps = unlist(strsplit(interpretation, ','))[group_order]
 
 		# Create a list
 		sample_groups = lapply(bisulfite_samples$group, function(g){
-			as.integer(unlist(strsplit(g, ',')))
+			as.integer(unlist(strsplit(as.character(g), ',')))
 		})
 
 		# Get the correct indices
@@ -85,8 +88,8 @@ OPT_MSIG_DM_DIFF_THRESHOLD = 10
 			bisulfite_samples$mc == mc_stat &
 			bisulfite_samples$hmc == hmc_stat &
 			bisulfite_samples$input == 0)
-		groupAname = subset(group_names, group == groups[1])$name
-		groupBname = subset(group_names, group == groups[2])$name
+		groupAname = interps[1]
+		groupBname = interps[2]
 
 		if(groupAname == '' || groupBname == '') {
 			stop('Groups used for comparisons must be named. Check your _groups.txt file.')

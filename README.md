@@ -31,7 +31,7 @@ v0.3.2
 		* [bowtie2](#bowtie2)
 		* [Genome coverage](#genome-coverage)
 		* [macs2](#macs2)
-		* [PePr](#pepr)
+		* [csaw](#csaw)
 	* [Classifications](#classifications)
 		* [Simple](#simple-classification)
 		* [Sample](#sample-classification)
@@ -49,7 +49,7 @@ The `mint` pipeline is executed with `make` and includes configurable steps for:
 * Adapter and quality trimming (`trim_galore`)
 * Alignment (`bismark` and `bowtie2`)
 * Sample-wise quantification (`bismark` and `macs2`)
-* Group-wise differential methylation detection (`methylSig` and `PePr`)
+* Group-wise differential methylation detection (`methylSig` and `csaw`)
 * Classification
 	* of samples into regions of no, low, medium, or high methylation
 	* of 5mc + 5hmc sample-wise integration into regions of 5mc, 5hmc, a mixture, or neither
@@ -121,8 +121,8 @@ It is also worthwhile to try loading the `virtualenv` and testing `which` on a P
 # as mint/apps/mint_venv
 source mint_venv
 
-which PePr
-# Should return /path/to/mint/apps/mint_env/bin/PePr
+which multiqc
+# Should return /path/to/mint/apps/mint_env/bin/multiqc
 ```
 
 [Top](#contents)
@@ -396,7 +396,7 @@ To see what will be run by the pipeline without *actually* running anything, you
 
 Depending on the computing hardware used, projects can be run with the `make -j n` command where `n` is a positive integer. The `-j` flag specifies how many commands `make` is allowed to run simultaneously. When it is not present, the default is to run commands in serial.
 
-**NOTE:** Some software in the `mint` pipeline have options for the number of processors to use, so some care should be taken not to exceed the computing limitations of the hardware. Tools that have parameters for the user of multiple processors are: `bismark_methylation_extractor`, `methylSig`, and `PePr`. By default, the number of processors to use is set to 1.
+**NOTE:** Some software in the `mint` pipeline have options for the number of processors to use, so some care should be taken not to exceed the computing limitations of the hardware. Tools that have parameters for the user of multiple processors are: `bismark_methylation_extractor`, `methylSig`. By default, the number of processors to use is set to 1.
 
 [Top](#contents)
 
@@ -479,9 +479,9 @@ The read pileups using `bedtools genomecov` go in `test_hybrid_small/pulldown/pu
 
 The `.narrowPeak` files resulting from `macs2` peak calling go in `test_hybrid_small/pulldown/macs2_peaks`. Additionally, the `.pdf` images of the model used for peak calling are in the same folder.
 
-#### PePr
+#### csaw
 
-The `*_chip1_peaks.bed` and `*_chip2_peaks.bed` files resulting from `PePr`'s test for differentially methylated regions go in `test_hybrid_small/pulldown/pepr_peaks`.
+The `*_csaw_significant.txt` file resulting from `csaw`'s test for differentially methylated regions goes in `test_hybrid_small/pulldown/csaw`.
 
 [Top](#contents)
 
@@ -585,7 +585,7 @@ chr21   16429700        16429850        hyper_hmc       1000    .       16429700
 
 ### Annotations and Visualizations
 
-The genomic regions given by `bismark_methylation_extractor`, [`methylSig`](https://github.com/sartorlab/methylSig), [`PePr`](https://github.com/shawnzhangyx/PePr), and the classifications are annotated to genomic annotations using [`annotatr`](https://github.com/rcavalcante/annotatr), a fast and flexible `R` package designed for exactly this task. As with `methylSig`, every `annotatr` session is saved as an `.RData` file in `test_hybrid_small/RData` to enable users to quickly go back to the annotations, investigate further, alter plots, or create new plots.
+The genomic regions given by `bismark_methylation_extractor`, [`methylSig`](https://github.com/sartorlab/methylSig), [`csaw`](http://bioconductor.org/packages/release/bioc/html/csaw.html), and the classifications are annotated to genomic annotations using [`annotatr`](https://github.com/rcavalcante/annotatr), a fast and flexible `R` package designed for exactly this task. As with `methylSig`, every `annotatr` session is saved as an `.RData` file in `test_hybrid_small/RData` to enable users to quickly go back to the annotations, investigate further, alter plots, or create new plots.
 
 Only the hg19, hg38, mm9, or mm10 genomes are currently supported for annotation in the `mint` pipeline. We plan to implement the use of custom annotations *within the pipeline* in the future (`annotatr` already supports custom annotations). All files are annotated against CpG features (islands, shores, shelves, and inter CGI) and genic features based on UCSC knownGene transcripts (1-5kb upstream of promoter, promoter (\<1kb upstream of TSS), 5'UTR, exons, introns, and 3'UTR). In the case of hg19, the FANTOM5 robust enhancers are also included. Annotations include UCSC transcript IDs, Entrez Gene IDs, and gene symbols.
 
@@ -637,7 +637,7 @@ Random Regions  hg19_knownGenes_introns 1938
 Random Regions  hg19_knownGenes_promoters       66
 ```
 
-Additionally, a variety of plots are output to help interpret the output of `bismark_methylation_extractor`, `methylSig`, `PePr`, and the classifications.
+Additionally, a variety of plots are output to help interpret the output of `bismark_methylation_extractor`, `methylSig`, `csaw`, and the classifications.
 
 [Top](#contents)
 
@@ -705,8 +705,8 @@ Included in each track hub, where applicable, are:
 
 * Pulldown coverage pileups from `bedtools genomecov`
 * Percent methylation tracks from `bismark_methylation_extractor`
-* Simple classification tracks for `bismark_methylation_extractor`, `macs2`, and `PePr`
-* Combined peaks from `PePr` with group labels
+* Simple classification tracks for `bismark_methylation_extractor`, `macs2`, and `csaw`
+* Differential methylation from `csaw` with group labels
 * Differential methylation from `methylSig`
 * Sample classifications
 * Comparison classifications

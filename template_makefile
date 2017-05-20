@@ -1,6 +1,6 @@
 SHELL=/bin/bash
 
-# This makefile was generated using mint v0.3.2
+# This makefile was generated using mint v0.4.0
 
 ################################################################################
 # Directories
@@ -33,7 +33,7 @@ DIR_PULL_RAW_FASTQS := pulldown/raw_fastqs
 DIR_PULL_MACS := pulldown/macs2_peaks
 
 # pulldown_compare directories
-DIR_PULL_PEPR := pulldown/pepr_peaks
+DIR_PULL_CSAW := pulldown/csaw
 
 # classification directories
 DIR_CLASS_SIMPLE := classifications/simple

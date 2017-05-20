@@ -25,52 +25,52 @@ $(DIR_BIS_MSIG)/%_bisulfite_noDM_nosignal.txt : $(DIR_BIS_MSIG)/%_bisulfite_$(OP
 
 make_rule_compare_class_pull_module = '
 # Intermediates for the pulldown piece
-.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt
-$(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt : $(DIR_PULL_PEPR)/%_pulldown__PePr_chip1_peaks.bed
+.INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_tmp_up.txt
+$(DIR_PULL_CSAW)/%_pulldown_tmp_up.txt : $(DIR_PULL_CSAW)/%_pulldown_csaw_for_annotatr.txt
 	$(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
 	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
 	> $@
 
-.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt
-$(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt : $(DIR_PULL_PEPR)/%_pulldown__PePr_chip2_peaks.bed
+.INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_tmp_down.txt
+$(DIR_PULL_CSAW)/%_pulldown_tmp_down.txt : $(DIR_PULL_CSAW)/%_pulldown_csaw_for_annotatr.txt
 	$(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
 	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
 	> $@
 
-.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_DMup.txt
-$(DIR_PULL_PEPR)/%_pulldown_DMup.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt
+.INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_DMup.txt
+$(DIR_PULL_CSAW)/%_pulldown_DMup.txt : $(DIR_PULL_CSAW)/%_pulldown_tmp_up.txt $(DIR_PULL_CSAW)/%_pulldown_tmp_down.txt
 	$(PATH_TO_BEDOPS) --difference $^ > $@
 
-.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_DMdown.txt
-$(DIR_PULL_PEPR)/%_pulldown_DMdown.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_down.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_up.txt
+.INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_DMdown.txt
+$(DIR_PULL_CSAW)/%_pulldown_DMdown.txt : $(DIR_PULL_CSAW)/%_pulldown_tmp_down.txt $(DIR_PULL_CSAW)/%_pulldown_tmp_up.txt
 	$(PATH_TO_BEDOPS) --difference $^ > $@
 
-.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt
-$(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt : $(DIR_PULL_PEPR)/%_pulldown_DMup.txt $(DIR_PULL_PEPR)/%_pulldown_DMdown.txt
+.INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_DM.txt
+$(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_DM.txt : $(DIR_PULL_CSAW)/%_pulldown_DMup.txt $(DIR_PULL_CSAW)/%_pulldown_DMdown.txt
 	cat $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 
-.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt
-$(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt: $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_DM.txt
+.INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_noDM.txt
+$(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_noDM.txt: $(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_DM.txt
 	$(PATH_TO_BEDTOOLS) complement -i $< -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) \\
 	| $(PATH_TO_AWK) -v OFS="\\t" \'$$2 != $$3 {print $$0}\' \\
 	> $@
 
-.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
-$(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt : $(DIR_PULL_PEPR)/%_pulldown_merged_signal.bed
+.INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_tmp_signal.txt
+$(DIR_PULL_CSAW)/%_pulldown_tmp_signal.txt : $(DIR_PULL_CSAW)/%_pulldown_merged_signal.bed
 	cp $< $@
 
-.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt
-$(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
+.INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_tmp_nosignal.txt
+$(DIR_PULL_CSAW)/%_pulldown_tmp_nosignal.txt : $(DIR_PULL_CSAW)/%_pulldown_tmp_signal.txt
 	$(PATH_TO_BEDTOOLS) complement -i $< -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) \\
 	| $(PATH_TO_AWK) -v OFS="\\t" \'$$2 != $$3 {print $$0}\' \\
 	> $@
 
-.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_noDM_signal.txt
-$(DIR_PULL_PEPR)/%_pulldown_noDM_signal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_signal.txt
+.INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_noDM_signal.txt
+$(DIR_PULL_CSAW)/%_pulldown_noDM_signal.txt : $(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_noDM.txt $(DIR_PULL_CSAW)/%_pulldown_tmp_signal.txt
 	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 
-.INTERMEDIATE : $(DIR_PULL_PEPR)/%_pulldown_noDM_nosignal.txt
-$(DIR_PULL_PEPR)/%_pulldown_noDM_nosignal.txt : $(DIR_PULL_PEPR)/%_pulldown_tmp_disjoint_noDM.txt $(DIR_PULL_PEPR)/%_pulldown_tmp_nosignal.txt
+.INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_noDM_nosignal.txt
+$(DIR_PULL_CSAW)/%_pulldown_noDM_nosignal.txt : $(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_noDM.txt $(DIR_PULL_CSAW)/%_pulldown_tmp_nosignal.txt
 	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 '
 
@@ -89,18 +89,18 @@ if(bool_bis_comp && bool_pull_comp) {
 								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
 								$(patsubst %,$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\
-								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
-								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
-								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
-								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\'
+								$(patsubst %,$(DIR_PULL_CSAW)/%_hmc_pulldown_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_CSAW)/%_hmc_pulldown_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_CSAW)/%_hmc_pulldown_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_CSAW)/%_hmc_pulldown_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\'
 	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed :	 $(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMup.txt \\
 								$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_DMdown.txt \\
 								$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_signal.txt \\
 								$(DIR_BIS_MSIG)/%_mc_hmc_bisulfite_noDM_nosignal.txt \\
-								$(DIR_PULL_PEPR)/%_hmc_pulldown_DMup.txt \\
-								$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt \\
-								$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt \\
-								$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt'
+								$(DIR_PULL_CSAW)/%_hmc_pulldown_DMup.txt \\
+								$(DIR_PULL_CSAW)/%_hmc_pulldown_DMdown.txt \\
+								$(DIR_PULL_CSAW)/%_hmc_pulldown_noDM_signal.txt \\
+								$(DIR_PULL_CSAW)/%_hmc_pulldown_noDM_nosignal.txt'
 	rule1 = make_rule_compare_class_bis_module
 	rule2 = make_rule_compare_class_pull_module
 	class_script = '../../scripts/classify_compare.sh'
@@ -128,22 +128,22 @@ if(bool_bis_comp && bool_pull_comp) {
 	rule2 = ''
 	class_script = '../../scripts/classify_compare.sh'
 } else if (!bool_bis_comp && bool_pull_comp) {
-	compare_class_tmps = 'COMPARE_CLASS_CLEAN_TMP := $(patsubst %,$(DIR_PULL_PEPR)/%_mc_pulldown_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
-								$(patsubst %,$(DIR_PULL_PEPR)/%_mc_pulldown_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
-								$(patsubst %,$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
-								$(patsubst %,$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\
-								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
-								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
-								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
-								$(patsubst %,$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\'
-	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed :	 $(DIR_PULL_PEPR)/%_mc_pulldown_DMup.txt \\
-								$(DIR_PULL_PEPR)/%_mc_pulldown_DMdown.txt \\
-								$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_signal.txt \\
-								$(DIR_PULL_PEPR)/%_mc_pulldown_noDM_nosignal.txt \\
-								$(DIR_PULL_PEPR)/%_hmc_pulldown_DMup.txt \\
-								$(DIR_PULL_PEPR)/%_hmc_pulldown_DMdown.txt \\
-								$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_signal.txt \\
-								$(DIR_PULL_PEPR)/%_hmc_pulldown_noDM_nosignal.txt'
+	compare_class_tmps = 'COMPARE_CLASS_CLEAN_TMP := $(patsubst %,$(DIR_PULL_CSAW)/%_mc_pulldown_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_CSAW)/%_mc_pulldown_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_CSAW)/%_mc_pulldown_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_CSAW)/%_mc_pulldown_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_CSAW)/%_hmc_pulldown_DMup.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_CSAW)/%_hmc_pulldown_DMdown.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_CSAW)/%_hmc_pulldown_noDM_signal.txt,$(COMPARE_CLASS_PREFIXES)) \\
+								$(patsubst %,$(DIR_PULL_CSAW)/%_hmc_pulldown_noDM_nosignal.txt,$(COMPARE_CLASS_PREFIXES)) \\'
+	compare_class_target = '$(DIR_CLASS_COMPARE)/%_compare_classification.bed :	 $(DIR_PULL_CSAW)/%_mc_pulldown_DMup.txt \\
+								$(DIR_PULL_CSAW)/%_mc_pulldown_DMdown.txt \\
+								$(DIR_PULL_CSAW)/%_mc_pulldown_noDM_signal.txt \\
+								$(DIR_PULL_CSAW)/%_mc_pulldown_noDM_nosignal.txt \\
+								$(DIR_PULL_CSAW)/%_hmc_pulldown_DMup.txt \\
+								$(DIR_PULL_CSAW)/%_hmc_pulldown_DMdown.txt \\
+								$(DIR_PULL_CSAW)/%_hmc_pulldown_noDM_signal.txt \\
+								$(DIR_PULL_CSAW)/%_hmc_pulldown_noDM_nosignal.txt'
 	rule1 = make_rule_compare_class_pull_module
 	rule2 = ''
 	class_script = '../../scripts/classify_compare.sh'
