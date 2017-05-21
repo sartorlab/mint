@@ -176,7 +176,7 @@ OPT_CSAW_DM_FDR_THRESHOLD = 0.05
 			sprintf('	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type csaw --group1 $(CHIP1_NAME_%s) --group0 $(CHIP0_NAME_%s)', i, i),
 			'',
 			'# Rule to merge input signals from the two groups',
-			sprintf('%s : %s', input_signal, var_input_pre),
+			sprintf('%s : %s', input_signal, var_merged_input_pre),
 			'	cat $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n | bedtools merge -d 20 | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@',
 			'',
 			'# Rule for UCSC bigBed track of csaw peaks',

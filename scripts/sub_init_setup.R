@@ -55,7 +55,7 @@ if(bool_bis_samp) {
 if(bool_bis_comp) {
 	setup_commands = c(
 		setup_commands,
-		sprintf('mkdir projects/%s/bisulfite/methylsig_calls', project)
+		sprintf('mkdir projects/%s/bisulfite/dss', project)
 	)
 }
 # Create folders for pulldown samples if there are ny
