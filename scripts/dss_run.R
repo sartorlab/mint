@@ -217,6 +217,11 @@ result = result[!is.na(result$stat),]
 
 # Significant
 significant_df = subset(result, fdrs < FDRthreshold & abs(methdiff) > methdiffthreshold)
+increment = 0.05
+while(nrow(significant_df) == 0) {
+	FDRthreshold = FDRthreshold + increment
+	significant_df = subset(combined_df, FDR < FDRthreshold)
+}
 
 # For annotatr
 annotatr_df = significant_df

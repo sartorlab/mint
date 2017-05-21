@@ -65,36 +65,36 @@ library(csaw)
 library(edgeR)
 
 # Things from opt that are hardcoded right now
-# use_input = TRUE
-#
-# chip_files = 'pulldown/bowtie2_bams/IDH2mut_1_hmc_pulldown_trimmed.fq.gz_aligned.bam,pulldown/bowtie2_bams/IDH2mut_2_hmc_pulldown_trimmed.fq.gz_aligned.bam,pulldown/bowtie2_bams/NBM_1_hmc_pulldown_trimmed.fq.gz_aligned.bam,pulldown/bowtie2_bams/NBM_2_hmc_pulldown_trimmed.fq.gz_aligned.bam'
-# if(use_input) {
-# 	input_files = 'pulldown/bowtie2_bams/IDH2mut_1_hmc_input_pulldown_trimmed.fq.gz_aligned.bam,pulldown/bowtie2_bams/IDH2mut_2_hmc_input_pulldown_trimmed.fq.gz_aligned.bam,pulldown/bowtie2_bams/NBM_1_hmc_input_pulldown_trimmed.fq.gz_aligned.bam,pulldown/bowtie2_bams/NBM_2_hmc_input_pulldown_trimmed.fq.gz_aligned.bam'
-# } else {
-# 	input_files = NA
-# }
-# chip_names = 'IDH2mut_1,IDH2mut_2,NBM_1,NBM_2'
-#
-# fragment_length = 110
-# window_width = 100
-# window_spacing = 50
-#
-# prior.count = 5
-# chipfold = 2
-#
-# model = '~ 1 + group'
-# groups = '1,1,0,0'
-# contrast = '0,1'
-# covariates = 'NA'
-# covisnumeric = 0
-#
-# mergewithin = 500
-# maxmerged = 2000
-# FDRthreshold = 0.1
-# interpretation = 'IDH2mut,NBM'
-#
-# quiet = TRUE
-# prefix = 'IDH2mut_v_NBM_hmc_pulldown'
+use_input = TRUE
+
+chip_files = 'pulldown/bowtie2_bams/IDH2mut_1_hmc_pulldown_trimmed.fq.gz_aligned.bam,pulldown/bowtie2_bams/IDH2mut_2_hmc_pulldown_trimmed.fq.gz_aligned.bam,pulldown/bowtie2_bams/NBM_1_hmc_pulldown_trimmed.fq.gz_aligned.bam,pulldown/bowtie2_bams/NBM_2_hmc_pulldown_trimmed.fq.gz_aligned.bam'
+if(use_input) {
+	input_files = 'pulldown/bowtie2_bams/IDH2mut_1_hmc_input_pulldown_trimmed.fq.gz_aligned.bam,pulldown/bowtie2_bams/IDH2mut_2_hmc_input_pulldown_trimmed.fq.gz_aligned.bam,pulldown/bowtie2_bams/NBM_1_hmc_input_pulldown_trimmed.fq.gz_aligned.bam,pulldown/bowtie2_bams/NBM_2_hmc_input_pulldown_trimmed.fq.gz_aligned.bam'
+} else {
+	input_files = NA
+}
+chip_names = 'IDH2mut_1,IDH2mut_2,NBM_1,NBM_2'
+
+fragment_length = 110
+window_width = 100
+window_spacing = 50
+
+prior.count = 5
+chipfold = 2
+
+model = '~ 1 + group'
+groups = '1,1,0,0'
+contrast = '0,1'
+covariates = 'NA'
+covisnumeric = 0
+
+mergewithin = 500
+maxmerged = 2000
+FDRthreshold = 0.05
+interpretation = 'IDH2mut,NBM'
+
+quiet = TRUE
+prefix = 'IDH2mut_v_NBM_hmc_pulldown'
 
 ######
 ###### Parse arguments
@@ -259,6 +259,11 @@ combined_df = combined_df[, c('chr','start','end','strand','nWindows','logFC.up'
 
 # Significant regions
 significant_df = subset(combined_df, FDR < FDRthreshold)
+increment = 0.05
+while(nrow(significant_df) == 0) {
+	FDRthreshold = FDRthreshold + increment
+	significant_df = subset(combined_df, FDR < FDRthreshold)
+}
 
 # For annotatr
 annotatr_df = significant_df[, c('chr','start','end','direction','logFC','strand','PValue')]
