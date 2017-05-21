@@ -98,7 +98,7 @@ OPT_DSS_DM_DIFF_THRESHOLD = 10
 
 		########################################################################
 		# Deal with covariates
-		if(covariates != 'NA') {
+		if(!is.na(covariates)) {
 			covariates = unlist(strsplit(covariates, ','))
 			var_covariates = c()
 			for(i in seq_along(covariates)) {
@@ -107,6 +107,8 @@ OPT_DSS_DM_DIFF_THRESHOLD = 10
 				var_covariates = c(var_covariates, var_covariate)
 			}
 			var_covariates = paste(var_covariates, collapse=';')
+		} else {
+			var_covariates = NA
 		}
 
 		var_comparison = fullHumanID
