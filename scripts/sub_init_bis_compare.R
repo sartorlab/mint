@@ -96,6 +96,19 @@ OPT_DSS_DM_DIFF_THRESHOLD = 10
 			stop('Groups used for comparisons must be named. Check your _groups.txt file.')
 		}
 
+		########################################################################
+		# Deal with covariates
+		if(covariates != 'NA') {
+			covariates = unlist(strsplit(covariates, ','))
+			var_covariates = c()
+			for(i in seq_along(covariates)) {
+				covariate_values = c(groupA[, covariates[i]], groupB[, covariates[i]])
+				var_covariate = paste(covariates[i], paste(covariate_values, collapse=','), sep=':')
+				var_covariates = c(var_covariates, var_covariate)
+			}
+			var_covariates = paste(var_covariates, collapse=';')
+		}
+
 		var_comparison = fullHumanID
 
 		# Targets after aggregation of per chromosome dss analyses
@@ -156,7 +169,7 @@ OPT_DSS_DM_DIFF_THRESHOLD = 10
 			'',
 			'# Rule for dss',
 			sprintf('%s : %s', dss_results, var_cytfiles_pre),
-			sprintf('	$(PATH_TO_R) ../../scripts/dss_run.R --project $(PROJECT) --genome $(GENOME) --files $(BISULFITE_COMPARE_%s_CYTFILES) --samplenames $(BISULFITE_COMPARE_%s_SAMPLEIDS) --model %s --groups $(BISULFITE_COMPARE_%s_GROUPS) --contrast %s --covariates %s --covisnumeric %s --interpretation %s --outprefix $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_DSS_%s)', i, i, model, i, contrast, covariates, covisnumeric, interpretation, i, var_comparison),
+			sprintf('	$(PATH_TO_R) ../../scripts/dss_run.R --project $(PROJECT) --genome $(GENOME) --files $(BISULFITE_COMPARE_%s_CYTFILES) --samplenames $(BISULFITE_COMPARE_%s_SAMPLEIDS) --model %s --groups $(BISULFITE_COMPARE_%s_GROUPS) --contrast %s --covariates %s --covisnumeric %s --interpretation %s --outprefix $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_DSS_%s)', i, i, model, i, contrast, var_covariates, covisnumeric, interpretation, i, var_comparison),
 			sprintf('%s : %s', dss_bedgraph, dss_results),
 			sprintf('%s : %s', annotatr_bed, dss_results))
 

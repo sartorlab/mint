@@ -111,6 +111,19 @@ OPT_CSAW_DM_FDR_THRESHOLD = 0.05
 			pulldown_samples$input == 1)
 
 		########################################################################
+		# Deal with covariates
+		if(covariates != 'NA') {
+			covariates = unlist(strsplit(covariates, ','))
+			var_covariates = c()
+			for(i in seq_along(covariates)) {
+				covariate_values = c(groupA[, covariates[i]], groupB[, covariates[i]])
+				var_covariate = paste(covariates[i], paste(covariate_values, collapse=','), sep=':')
+				var_covariates = c(var_covariates, var_covariate)
+			}
+			var_covariates = paste(var_covariates, collapse=';')
+		}
+
+		########################################################################
 		# Setup variables to put into the makefile
 
 		# For the csaw call from projects/project/
@@ -123,7 +136,6 @@ OPT_CSAW_DM_FDR_THRESHOLD = 0.05
 		var_groups = paste(sprintf('%s', c(groupA$group, groupB$group)), sep='', collapse=',')
 		var_interpretation = interpretation
 		var_contrast = contrast
-		var_covariates = covariates
 		var_covisnumeric = covisnumeric
 
 		# For the prerequisites in the make rule
