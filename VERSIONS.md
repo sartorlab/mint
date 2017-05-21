@@ -16,7 +16,7 @@ The current versions of software
 	* [`annotatr`](http://bioconductor.org/packages/release/bioc/html/annotatr.html)
 	* [`csaw`](http://bioconductor.org/packages/release/bioc/html/csaw.html)
 	* `devtools`
-	* [`methylSig` v0.4.4](https://github.com/sartorlab/methylSig/releases/tag/v0.4.4)
+	* [`DSS`](http://bioconductor.org/packages/release/bioc/html/DSS.html)
 	* `optparse`
 * [`samtools` v1.3.1](https://github.com/samtools/samtools/releases/tag/1.3.1)
 * [`trim_galore` v0.4.1](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_v0.4.1.zip)

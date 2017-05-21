@@ -8,7 +8,7 @@ if(bool_pull_comp) {
 	config_pull_compare = '################################################################################
 # pulldown_compare configuration options
 
-# Thresholds to use for DMCs or DMRs (above) methylSig output
+# Thresholds to use for csaw output
 # FDR significance level
 OPT_CSAW_DM_FDR_THRESHOLD = 0.05
 	'
@@ -51,7 +51,7 @@ OPT_CSAW_DM_FDR_THRESHOLD = 0.05
 		}
 
 		# Sorting this way ensures the higher group number is groupA
-		# NOTE: This makes the csaw DM test match that of methylSig,
+		# NOTE: This makes the csaw DM test match that of DSS,
 		# where control is the lower number (often 0) and the treatment
 		# is the higher number (often 1). csaw chip1 peaks mean differential binding
 		# in chip1 vs chip0 and chip0 peaks mean differential binding in chip0 vs chip1
@@ -213,18 +213,20 @@ OPT_CSAW_DM_FDR_THRESHOLD = 0.05
 
 		########################################################################
 		# OPTS for config.mk
-		config_pull_compare = sprintf('
-# Informative names for interpreting the results of differential binding
-# based on the model provided in the comparisons file. These can correspond
-# to groups if the test is group vs group, or can be something more complicated
-# for more complicated contrasts.
+		config_pull_compare = sprintf('########################################
+# pulldown_compare_%s configuration options
+
+# Informative names for group1 and group0
+# GROUP1_NAME should be the group with higher group number in the project annotation
+# file and GROUP0_NAME should be the group with the lower group number
+# If unsure, check the "workflow for pulldown_compare_%s" section of the makefile
 CHIP1_NAME_%s := %s
 CHIP0_NAME_%s := %s
 
-# For csaw parameters see https://ones.ccmb.med.umich.edu/wiki/csaw/
+# For csaw parameters see http://www.bioconductor.org/packages/csaw
 OPTS_CSAW_%s = --fraglength 110 --winwidth 100 --winspacing 50 --prior.count 5 --chipfold 2 --mergewithin 500 --maxmerged 2000 --FDRthreshold $(OPT_CSAW_DM_FDR_THRESHOLD)
 ',
-			i, groupAname, i, groupBname, var_name)
+			i, i, i, groupAname, i, groupBname, var_name)
 
 		# Track all the configs for the pulldown compares
 		pulldown_compare_configs = c(
@@ -273,9 +275,6 @@ OPTS_CSAW_%s = --fraglength 110 --winwidth 100 --winspacing 50 --prior.count 5 -
 	cat(make_rule_master_pull_compare, file = file_make, sep='\n', append=T)
 
 	config_master_pull_compare = c(
-		'################################################################################',
-		'# pulldown_compare configuration options',
-		'',
 		pulldown_compare_configs
 	)
 	cat(config_master_pull_compare, file = file_config, sep='\n', append=T)

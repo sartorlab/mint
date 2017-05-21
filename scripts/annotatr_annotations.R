@@ -9,7 +9,7 @@ library(optparse)
 option_list = list(
 	make_option('--file', type='character', help='[Required] Tab-delimited file with genomic locations and possibly associated data.'),
 	make_option('--genome', type='character', help='[Required] The shortname for the genome used, e.g. hg19, mm9, rn4.'),
-	make_option('--annot_type', type='character', help='[Required] One of bismark, simple_bisulfite_bismark, macs2, simple_pulldown_macs2, sample_class, methylSig, csaw, simple_pulldown_csaw, or compare_class. Indicates what type of data is being annotated.'),
+	make_option('--annot_type', type='character', help='[Required] One of bismark, simple_bisulfite_bismark, macs2, simple_pulldown_macs2, sample_class, dss, csaw, simple_pulldown_csaw, or compare_class. Indicates what type of data is being annotated.'),
 	make_option('--group1', type='character', help='[Required] A character indicating the name of group1 or NULL.'),
 	make_option('--group0', type='character', help='[Required] A character indicating the name of group0 or NULL.')
 )
@@ -190,13 +190,13 @@ if(annot_type == 'bismark') {
 
 	# Variable for summarize_categorical usage
 	by_vec = c('class','annot.type')
-} else if (annot_type == 'methylSig') {
+} else if (annot_type == 'dss') {
 	# bis_compare
 	# BARPLOT + NUMERICALS + CATEGORICALS
 	# Random for barplot and categoricals
-	# NOTE: Randoms will lack the CpG bias of methylSig regions...
+	# NOTE: Randoms will lack the CpG bias of dss regions...
 
-	# head ./bisulfite/methylsig_calls/IDH2mut_v_NBM_mc_hmc_bisulfite_DMR_methylSig_for_annotatr.txt
+	# head ./bisulfite/dss_calls/IDH2mut_v_NBM_mc_hmc_bisulfite_DMR_dss_for_annotatr.txt
 	# chr21	9437472	9437521   IDH2mut 0.00022857   .   28.675   81.424	52.748
 	# chr21	9437522	9437571   NBM	 0.02085531   .   22.738   85.875	63.136
 	extraCols = c(meth_diff = 'numeric', mu1 = 'numeric', mu0 = 'numeric')
@@ -212,7 +212,7 @@ if(annot_type == 'bismark') {
 	prefix = gsub('_for_annotatr.txt','', basename(file))
 
 	# Categories are the group1 and group0 command line parameters
-	cats_order = c(group1, group0, 'noDM')
+	cats_order = c(group1, group0)
 
 	# Variables for plot_categorical usage
 	x_str = 'DM_status'
@@ -240,7 +240,7 @@ if(annot_type == 'bismark') {
 	classifier_flag = FALSE
 	log10p_flag = TRUE
 	resolution = 'region'
-	prefix = gsub('_combined.bed','', basename(file))
+	prefix = gsub('_for_annotatr.txt','', basename(file))
 
 	# Categories are the group1 and group0 command line parameters
 	cats_order = c(group1, group0)
@@ -332,7 +332,7 @@ if(annot_type == 'bismark') {
 	# Variable for summarize_categorical usage
 	by_vec = c('class','annot.type')
 } else {
-	stop('annot_type is invalid. Must be one of bismark, simple_bisulfite_bismark, macs2, simple_pulldown_macs2, sample_class, methylSig, csaw, simple_pulldown_csaw, or compare_class.')
+	stop('annot_type is invalid. Must be one of bismark, simple_bisulfite_bismark, macs2, simple_pulldown_macs2, sample_class, dss, csaw, simple_pulldown_csaw, or compare_class.')
 }
 
 ################################################################################
@@ -396,8 +396,8 @@ if(log10p_flag) {
 
 ################################################################################
 # Deal with random regions depending on resolution
-# NOTE: Do not do random regions for methylSig at the moment, uses too much RAM
-if(resolution == 'region' && annot_type != 'sample_class' && annot_type != 'compare_class' && annot_type != 'methylSig') {
+# NOTE: Do not do random regions for dss at the moment, uses too much RAM
+if(resolution == 'region' && annot_type != 'sample_class' && annot_type != 'compare_class' && annot_type != 'dss') {
 	regions_rnd = NULL
 } else if (resolution == 'base' && genome == 'hg19') {
 	regions_rnd = NULL
@@ -586,42 +586,39 @@ if(annot_type == 'bismark') {
 }
 
 #############################################################
-# plot_numerical specific to methylSig
-if(annot_type == 'methylSig') {
+# plot_numerical specific to dss
+if(annot_type == 'dss') {
 	##############################
 	# Annotation counts by categorical
 	sum_cat = summarize_categorical(annotated_regions = annotated_regions, by = by_vec)
 	readr::write_tsv(x = sum_cat, path = sprintf('summary/tables/%s_annotation_counts_by_category.txt', prefix))
 
-	# Do these only if there are statuses other than noDM
-	if(!dplyr::setequal(sum_cat$DM_status, c('noDM'))) {
-		##############################
-		# Methylation difference over annotations
-		file_png = sprintf('summary/figures/%s_methdiff.png', prefix)
-		plot_methdiff = plot_numerical(
-			annotated_regions = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
-			x = 'meth_diff',
-			facet = 'annot.type',
-			facet_order = annot_all_order,
-			bin_width = 5,
-			plot_title = sprintf('%s meth. diff. over annotations', prefix),
-			x_label = sprintf('Methylation Difference (%s - %s)', group1, group0))
-		ggplot2::ggsave(filename = file_png, plot = plot_methdiff, width = 8, height = 8)
+	##############################
+	# Methylation difference over annotations
+	file_png = sprintf('summary/figures/%s_methdiff.png', prefix)
+	plot_methdiff = plot_numerical(
+		annotated_regions = annotated_regions,
+		x = 'meth_diff',
+		facet = 'annot.type',
+		facet_order = annot_all_order,
+		bin_width = 5,
+		plot_title = sprintf('%s meth. diff. over annotations', prefix),
+		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0))
+	ggplot2::ggsave(filename = file_png, plot = plot_methdiff, width = 8, height = 8)
 
-		##############################
-		# Volcano plots over annotations
-		file_png = sprintf('summary/figures/%s_volcano.png', prefix)
-		plot_volcano = plot_numerical(
-			annotated_regions = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
-			x = 'meth_diff',
-			y = 'pval',
-			facet = 'annot.type',
-			facet_order = annot_all_order,
-			plot_title = sprintf('%s meth. diff. vs -log10(pval)', prefix),
-			x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
-			y_label = '-log10(pval)')
-		ggplot2::ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
-	}
+	##############################
+	# Volcano plots over annotations
+	file_png = sprintf('summary/figures/%s_volcano.png', prefix)
+	plot_volcano = plot_numerical(
+		annotated_regions = annotated_regions,
+		x = 'meth_diff',
+		y = 'pval',
+		facet = 'annot.type',
+		facet_order = annot_all_order,
+		plot_title = sprintf('%s meth. diff. vs -log10(pval)', prefix),
+		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
+		y_label = '-log10(pval)')
+	ggplot2::ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
 }
 
 #############################################################
@@ -781,7 +778,7 @@ if(annot_type == 'csaw') {
 }
 
 #############################################################
-# plot_categorical specific to csaw, methylSig, simple, sample, and compare classifications
+# plot_categorical specific to csaw, dss, simple, sample, and compare classifications
 # Use x_str and x_desc variables determined near the top of this file when determining annot_type
 if(annot_type != 'bismark' && annot_type != 'macs2') {
 	##############################

@@ -40,7 +40,7 @@ dir_track = sprintf('%s/%s', dir_hub, genome)
 
 ################################################################################
 # READ project information
-annots = read.table(file = sprintf('projects/%s_annotation.txt', project), header = T, sep = '\t', stringsAsFactors = F)
+annots = read.table(file = sprintf('projects/%s_samples.txt', project), header = T, sep = '\t', stringsAsFactors = F)
 comparisons = read.table(file = sprintf('projects/%s_comparisons.txt', project), header = T, sep = '\t', stringsAsFactors = F)
 
 # Add the fullHumanID column to the annots table, which will be the prefix for all created files

@@ -109,6 +109,7 @@ if(use_input) {
 }
 chip_names = unlist(strsplit(chip_names, ','))
 groups = unlist(strsplit(groups, ','))
+
 if(!all(is.na(covisnumeric))) {
 	covisnumeric = unlist(strsplit(covisnumeric, ','))
 }
@@ -129,8 +130,10 @@ if(covariates != 'NA') {
 			cov_df[,i] = as.factor(cov_df[,1])
 		}
 	}
+	use_cov = TRUE
 } else {
 	cov_df = NA
+	use_cov = FALSE
 }
 
 interpretation = unlist(strsplit(interpretation, ','))
@@ -180,7 +183,7 @@ message('Converting to DGEList')
 y = asDGEList(chip, norm.factors = chip_offsets, group = groups)
 rownames(y$samples) = chip_names
 colnames(y$counts) = chip_names
-if(class(cov_df) == 'data.frame') {
+if(use_cov) {
 	y$samples = cbind(y$samples, cov_df)
 }
 

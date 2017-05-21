@@ -19,7 +19,7 @@ DIR_BIS_RAW_FASTQCS := bisulfite/raw_fastqcs
 DIR_BIS_RAW_FASTQS := bisulfite/raw_fastqs
 
 # bisulfite_compare directories
-DIR_BIS_MSIG := bisulfite/methylsig_calls
+DIR_BIS_DSS := bisulfite/dss
 
 # pulldown_align directories
 DIR_PULL_COVERAGES := pulldown/pulldown_coverages

@@ -107,7 +107,6 @@ config_bis_sample = '
 
 # Command line option for minimum coverage required for bismark_methylation_extractor
 # and scripts/classify_prepare_bisulfite_sample.awk in the sample classification module
-# NOTE: This does not affect methylSig runs
 OPT_MIN_COV = 5
 
 # bismark_methylation_extractor
