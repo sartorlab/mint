@@ -115,9 +115,9 @@ OPT_CSAW_DM_FDR_THRESHOLD = 0.05
 		if(!is.na(covariates)) {
 			covariates = unlist(strsplit(covariates, ','))
 			var_covariates = c()
-			for(i in seq_along(covariates)) {
-				covariate_values = c(groupA[, covariates[i]], groupB[, covariates[i]])
-				var_covariate = paste(covariates[i], paste(covariate_values, collapse=','), sep=':')
+			for(j in seq_along(covariates)) {
+				covariate_values = c(groupA[, covariates[j]], groupB[, covariates[j]])
+				var_covariate = paste(covariates[j], paste(covariate_values, collapse=','), sep=':')
 				var_covariates = c(var_covariates, var_covariate)
 			}
 			var_covariates = paste(var_covariates, collapse=';')
