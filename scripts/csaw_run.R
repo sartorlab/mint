@@ -262,7 +262,7 @@ combined_df = combined_df[, c('chr','start','end','strand','nWindows','logFC.up'
 # Significant regions
 significant_df = subset(combined_df, FDR <= FDRthreshold)
 increment = 0.05
-while(nrow(significant_df) == 0 && FDRthreshold <= 0.25) {
+while(nrow(significant_df) == 0 && FDRthreshold < 0.25) {
 	FDRthreshold = FDRthreshold + increment
 	significant_df = subset(combined_df, FDR <= FDRthreshold)
 }

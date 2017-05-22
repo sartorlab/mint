@@ -220,7 +220,7 @@ result = result[!is.na(result$stat),]
 # Significant
 significant_df = subset(result, fdrs < FDRthreshold & abs(methdiff) > methdiffthreshold)
 increment = 0.05
-while(nrow(significant_df) == 0 && FDRthreshold <= 0.25) {
+while(nrow(significant_df) == 0 && FDRthreshold < 0.25) {
 	FDRthreshold = FDRthreshold + increment
 	significant_df = subset(combined_df, fdrs < FDRthreshold)
 }
