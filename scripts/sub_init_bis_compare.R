@@ -167,7 +167,7 @@ OPT_DSS_DM_DIFF_THRESHOLD = 10
 			'# Rule for dss input of bismark CpG report',
 			'.INTERMEDIATE : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_dss.txt',
 			'$(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report_for_dss.txt : $(DIR_BIS_BISMARK)/%_trimmed_bismark_bt2.CpG_report.txt.gz',
-			'	$(PATH_TO_AWK) -v OFS="\\t" -v MIN_COV=$(OPT_MIN_COV) \'$$4 + $$5 < MIN_COV {print $$1, $$2, $$3, $$4 + $$5, $$4}\' <(gunzip -c $<) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@',
+			'	$(PATH_TO_AWK) -v OFS="\\t" -v MIN_COV=$(OPT_MIN_COV) \'$$4 + $$5 >= MIN_COV {print $$1, $$2, $$3, $$4 + $$5, $$4}\' <(gunzip -c $<) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@',
 			'',
 			'# Rule for dss',
 			sprintf('%s : %s', dss_results, var_cytfiles_pre),
