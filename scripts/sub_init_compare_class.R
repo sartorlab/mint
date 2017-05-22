@@ -189,7 +189,7 @@ cat(make_rule_class_compare, file = file_make, sep = '\n', append = TRUE)
 #	 'make -j 4 compare_classification')
 # cat(bisulfite_compare_q, file=sprintf('projects/%s/pbs_jobs/classify_compare.q', project), sep='\n')
 
-for(comparison in unique(comparisons$humanID)) {
+for(comparison in unique(comparisons$comparison)) {
 	# trackDb.txt entry for comparison classification
 	trackEntry = c(
 		sprintf('track %s_compare_classification', comparison),
