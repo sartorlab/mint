@@ -250,7 +250,7 @@ OPTS_CSAW_%s = --fraglength 110 --winwidth 100 --winspacing 50 --prior.count 5 -
 		# trackDb.txt entry for csaw output
 		trackEntry = c(
 			sprintf('track %s_DM', fullHumanID),
-			sprintf('parent %s_group_comparison', humanID),
+			sprintf('parent %s_group_comparison', comparison),
 			sprintf('bigDataUrl %s_csaw_peaks.bb', fullHumanID),
 			sprintf('shortLabel %s_DM', fullHumanID),
 			sprintf('longLabel %s_DM_csaw_peaks', fullHumanID),

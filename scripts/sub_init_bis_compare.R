@@ -230,7 +230,7 @@ OPTS_DSS_%s = --destrand TRUE --tilewidth 50 --methdiffthreshold $(OPT_DSS_DM_DI
 		# trackDb.txt entry for dss result
 		trackEntry = c(
 			sprintf('track %s_DM', fullHumanID),
-			sprintf('parent %s_group_comparison', humanID),
+			sprintf('parent %s_group_comparison', comparison),
 			sprintf('bigDataUrl %s_dss.bw', fullHumanID),
 			sprintf('shortLabel %s_DM', fullHumanID),
 			sprintf('longLabel %s_DM_dss', fullHumanID),
