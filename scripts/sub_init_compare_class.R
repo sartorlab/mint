@@ -69,7 +69,7 @@ make_var_compare_class_prefix = sprintf('
 ################################################################################
 # Workflow for compare_classification
 COMPARE_CLASS_PREFIXES := %s',
-	paste(unique(comparisons$humanID), collapse=' '))
+	paste(unique(comparisons$comparison), collapse=' '))
 cat(make_var_compare_class_prefix, file = file_make, sep = '\n', append = TRUE)
 
 # The compare class type depends on the type of compares present
