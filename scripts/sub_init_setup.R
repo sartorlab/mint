@@ -90,7 +90,8 @@ setup_commands = c(
 	sprintf('cat config_header.mk template_config.mk > projects/%s/config.mk', project, project),
 	sprintf('rm config_header.mk', project),
 	sprintf('cp narrowPeak.as projects/%s/', project),
-	sprintf('cp projects/%s_annotation.txt projects/%s/data', project, project)
+	sprintf('cp projects/%s_samples.txt projects/%s/data', project, project)
+	sprintf('cp projects/%s_comparisons.txt projects/%s/data', project, project)
 )
 
 ################################################################################
