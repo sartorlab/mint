@@ -30,7 +30,7 @@ cat(hub, file=sprintf('%s/hub.txt', dir_hub), sep='\n')
 priority = 1
 # superTracks
 if(bool_bis_comp || bool_pull_comp) {
-	for(comparison in unique(comparisons$humanID)) {
+	for(comparison in unique(comparisons$comparison)) {
 		trackEntry = c(
 			sprintf('track %s_group_comparison', comparison),
 			'superTrack on show',
