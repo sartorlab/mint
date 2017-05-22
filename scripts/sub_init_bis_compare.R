@@ -33,7 +33,7 @@ OPT_DSS_DM_DIFF_THRESHOLD = 10
 		model = bisulfite_comparisons[i,'model']
 		contrast = bisulfite_comparisons[i,'contrast']
 		covariates = bisulfite_comparisons[i,'covariates']
-		covisnumeric = bisulfite_comparisons[i,'covisnumeric']
+		covIsNumeric = bisulfite_comparisons[i,'covIsNumeric']
 		groups = bisulfite_comparisons[i,'groups']
 		interpretation = bisulfite_comparisons[i,'interpretation']
 		fullHumanID = bisulfite_comparisons[i,'fullHumanID']
@@ -172,7 +172,7 @@ OPT_DSS_DM_DIFF_THRESHOLD = 10
 			'',
 			'# Rule for dss',
 			sprintf('%s : %s', dss_results, var_cytfiles_pre),
-			sprintf('	$(PATH_TO_R) ../../scripts/dss_run.R --project $(PROJECT) --genome $(GENOME) --files $(BISULFITE_COMPARE_%s_CYTFILES) --samplenames $(BISULFITE_COMPARE_%s_SAMPLEIDS) --model %s --groups $(BISULFITE_COMPARE_%s_GROUPS) --contrast %s --covariates %s --covisnumeric %s --interpretation %s --outprefix $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_DSS_%s)', i, i, model, i, contrast, var_covariates, covisnumeric, interpretation, i, var_comparison),
+			sprintf('	$(PATH_TO_R) ../../scripts/dss_run.R --project $(PROJECT) --genome $(GENOME) --files $(BISULFITE_COMPARE_%s_CYTFILES) --samplenames $(BISULFITE_COMPARE_%s_SAMPLEIDS) --model %s --groups $(BISULFITE_COMPARE_%s_GROUPS) --contrast %s --covariates %s --covIsNumeric %s --interpretation %s --outprefix $(BISULFITE_COMPARE_%s_COMPARISON) $(OPTS_DSS_%s)', i, i, model, i, contrast, var_covariates, covIsNumeric, interpretation, i, var_comparison),
 			sprintf('%s : %s', dss_bedgraph, dss_results),
 			sprintf('%s : %s', annotatr_bed, dss_results))
 

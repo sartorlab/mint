@@ -15,7 +15,7 @@ option_list = list(
 	make_option('--groups', type='character', help='(Required) A comma-delimited list of the groups to which chipfiles belong. (e.g. if chipfiles has four files, 1,1,0,0)'),
 	make_option('--contrast', type='character', help='(Required) A comma-delimited list as long as the number of components in model, specifying the contrast to test.'),
 	make_option('--covariates', type='character', help='(Optional) Encoded covariates to use in the design matrix. E.g. "subject:1,2,1,2;cont:0.6,0.1,0.4,0.3". Use NA if none.'),
-	make_option('--covisnumeric', type='character', help='(Required if covariates!= NA) A comma-delimited list of 0s and 1s indicating if the covariates are continuous (1) or a factor (0).'),
+	make_option('--covIsNumeric', type='character', help='(Required if covariates!= NA) A comma-delimited list of 0s and 1s indicating if the covariates are continuous (1) or a factor (0).'),
 	make_option('--methdiffthreshold', type='numeric', help='(Required) A numeric scalar between 0 and 100. The threshold above which (in combination with FDRthreshold) a CpG or region to be significant.'),
 	make_option('--FDRthreshold', type='numeric', help='(Required) A numeric scalar specifying the required FDR to be considered "significant" and to be returned.'),
 	make_option('--interpretation', type='character', help='(Required) A comma-delimited list of how to interpret diff < 0 (first entry) and diff >= 0 (second entry).'),
@@ -36,7 +36,7 @@ model = opt$model
 groups = opt$groups
 contrast = opt$contrast
 covariates = opt$covariates
-covisnumeric = opt$covisnumeric
+covIsNumeric = opt$covIsNumeric
 
 methdiffthreshold = opt$methdiffthreshold
 FDRthreshold = opt$FDRthreshold
@@ -61,7 +61,7 @@ library(bsseq)
 # groups = '1,1,0,0'
 # contrast = '0,1'
 # covariates = 'NA'
-# covisnumeric = 0
+# covIsNumeric = 0
 #
 # methdiffthreshold = 0.05
 # FDRthreshold = 0.05
@@ -79,8 +79,8 @@ sample_names = unlist(strsplit(sample_names, ','))
 
 group = unlist(strsplit(groups, ','))
 
-if(!all(is.na(covisnumeric))) {
-	covisnumeric = unlist(strsplit(as.character(covisnumeric), ','))
+if(!all(is.na(covIsNumeric))) {
+	covIsNumeric = unlist(strsplit(as.character(covIsNumeric), ','))
 }
 
 if(covariates != 'NA') {
@@ -93,7 +93,7 @@ if(covariates != 'NA') {
 	colnames(cov_df) = covs_colnames
 
 	for(i in seq_along(colnames(cov_df))) {
-		if(covisnumeric[i] == 1) {
+		if(covIsNumeric[i] == 1) {
 			cov_df[,i] = as.numeric(cov_df[,i])
 		} else {
 			cov_df[,i] = as.factor(cov_df[,1])

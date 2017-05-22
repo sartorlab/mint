@@ -31,7 +31,7 @@ OPT_CSAW_DM_FDR_THRESHOLD = 0.05
 		model = pulldown_comparisons[i,'model']
 		contrast = pulldown_comparisons[i,'contrast']
 		covariates = pulldown_comparisons[i,'covariates']
-		covisnumeric = pulldown_comparisons[i,'covisnumeric']
+		covIsNumeric = pulldown_comparisons[i,'covIsNumeric']
 		groups = pulldown_comparisons[i,'groups']
 		interpretation = pulldown_comparisons[i,'interpretation']
 		fullHumanID = pulldown_comparisons[i,'fullHumanID']
@@ -138,7 +138,7 @@ OPT_CSAW_DM_FDR_THRESHOLD = 0.05
 		var_groups = paste(sprintf('%s', c(groupA$group, groupB$group)), sep='', collapse=',')
 		var_interpretation = interpretation
 		var_contrast = contrast
-		var_covisnumeric = covisnumeric
+		var_covIsNumeric = covIsNumeric
 
 		# For the prerequisites in the make rule
 		var_merged_input_pre = paste(sprintf('$(DIR_PULL_COVERAGES)/%s_coverage_merged.bdg', c(inputGroupA$fullHumanID, inputGroupB$fullHumanID)), sep='', collapse=' ')
@@ -181,7 +181,7 @@ OPT_CSAW_DM_FDR_THRESHOLD = 0.05
 			'',
 			'# Rule for csaw peaks',
 			sprintf('%s : %s %s', csaw_significant, var_input_pre, var_chip_pre),
-			sprintf('	$(PATH_TO_R) ../../scripts/csaw_run.R --project %s --chipfiles $(PULLDOWN_COMPARE_%s_CHIP) --inputfiles $(PULLDOWN_COMPARE_%s_INPUT) --chipnames %s --useinput %s --model %s --groups %s --contrast %s --covariates %s --covisnumeric %s --FDRthreshold $(OPT_CSAW_DM_FDR_THRESHOLD) --interpretation %s --quiet FALSE --outprefix $(PULLDOWN_COMPARE_%s_NAME) $(OPTS_CSAW_%s)', var_projectID, i, i, var_chipnames, var_useinput, var_model, var_groups, var_contrast, var_covariates, var_covisnumeric, var_interpretation, i, var_name),
+			sprintf('	$(PATH_TO_R) ../../scripts/csaw_run.R --project %s --chipfiles $(PULLDOWN_COMPARE_%s_CHIP) --inputfiles $(PULLDOWN_COMPARE_%s_INPUT) --chipnames %s --useinput %s --model %s --groups %s --contrast %s --covariates %s --covIsNumeric %s --FDRthreshold $(OPT_CSAW_DM_FDR_THRESHOLD) --interpretation %s --quiet FALSE --outprefix $(PULLDOWN_COMPARE_%s_NAME) $(OPTS_CSAW_%s)', var_projectID, i, i, var_chipnames, var_useinput, var_model, var_groups, var_contrast, var_covariates, var_covIsNumeric, var_interpretation, i, var_name),
 			sprintf('%s : %s', annotatr_txt, csaw_significant),
 			sprintf('%s : %s', bigBed_bed, csaw_significant),
 			'',

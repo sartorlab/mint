@@ -19,7 +19,7 @@ option_list = list(
 	make_option('--groups', type='character', help='(Required) A comma-delimited list of the groups to which chipfiles belong. (e.g. if chipfiles has four files, 1,1,0,0)'),
 	make_option('--contrast', type='character', help='(Required) A comma-delimited list as long as the number of components in model, specifying the contrast to test.'),
 	make_option('--covariates', type='character', help='(Optional) Encoded covariates to use in the design matrix. E.g. "subject:1,2,1,2;cont:0.6,0.1,0.4,0.3". Use NA if none.'),
-	make_option('--covisnumeric', type='character', help='(Required if covariates!= NA) A comma-delimited list of 0s and 1s indicating if the covariates are continuous (1) or a factor (0).'),
+	make_option('--covIsNumeric', type='character', help='(Required if covariates!= NA) A comma-delimited list of 0s and 1s indicating if the covariates are continuous (1) or a factor (0).'),
 	make_option('--mergewithin', type='numeric', help='(Required) A numeric scalar specifying the maximum distance between adjacent windows when combining windows after testing.'),
 	make_option('--maxmerged', type='numeric', help='(Required) A numeric scalar specifying the maximum size of merged intervals.'),
 	make_option('--FDRthreshold', type='numeric', help='(Required) A numeric scalar specifying the required FDR to be considered "significant" and to be returned in the outprefix_csaw_significant.txt table.'),
@@ -51,7 +51,7 @@ model = opt$model
 groups = opt$groups
 contrast = opt$contrast
 covariates = opt$covariates
-covisnumeric = opt$covisnumeric
+covIsNumeric = opt$covIsNumeric
 
 mergewithin = opt$mergewithin
 maxmerged = opt$maxmerged
@@ -86,7 +86,7 @@ library(edgeR)
 # groups = '1,1,0,0'
 # contrast = '0,1'
 # covariates = 'NA'
-# covisnumeric = 0
+# covIsNumeric = 0
 #
 # mergewithin = 500
 # maxmerged = 2000
@@ -110,8 +110,8 @@ if(use_input) {
 chip_names = unlist(strsplit(chip_names, ','))
 groups = unlist(strsplit(groups, ','))
 
-if(!all(is.na(covisnumeric))) {
-	covisnumeric = unlist(strsplit(covisnumeric, ','))
+if(!all(is.na(covIsNumeric))) {
+	covIsNumeric = unlist(strsplit(covIsNumeric, ','))
 }
 
 if(covariates != 'NA') {
@@ -124,7 +124,7 @@ if(covariates != 'NA') {
 	colnames(cov_df) = covs_colnames
 
 	for(i in seq_along(colnames(cov_df))) {
-		if(covisnumeric[i] == 1) {
+		if(covIsNumeric[i] == 1) {
 			cov_df[,i] = as.numeric(cov_df[,i])
 		} else {
 			cov_df[,i] = as.factor(cov_df[,1])
