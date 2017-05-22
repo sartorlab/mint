@@ -116,6 +116,7 @@ OPT_DSS_DM_DIFF_THRESHOLD = 10
 		# Targets after aggregation of per chromosome dss analyses
 		dss_results = sprintf('$(DIR_BIS_DSS)/%s_dss_significant.txt', var_comparison)
 		dss_bedgraph = sprintf('$(DIR_BIS_DSS)/%s_dss_for_bigWig.bedGraph', var_comparison)
+		dss_bedgraph_sorted = sprintf('$(DIR_BIS_DSS)/%s_dss_for_bigWig_sorted.bedGraph', var_comparison)
 		annotatr_bed = sprintf('$(DIR_BIS_DSS)/%s_dss_for_annotatr.txt', var_comparison)
 		annotatr_rdata = sprintf('$(DIR_RDATA)/%s_dss_annotatr_analysis.RData', var_comparison)
 		dss_bigwig = sprintf('$(DIR_TRACK)/%s_dss.bw', var_comparison)
@@ -181,7 +182,11 @@ OPT_DSS_DM_DIFF_THRESHOLD = 10
 			sprintf('%s : %s', annotatr_rdata, annotatr_bed),
 			sprintf('	$(PATH_TO_R) ../../scripts/annotatr_annotations.R --file $< --genome $(GENOME) --annot_type dss --group1 $(GROUP1_NAME_%s) --group0 $(GROUP0_NAME_%s)', i, i),
 			'',
-			'# Rule for UCSC bigWig of filtered dss results',
+			'# Rule to sort bedGraph to match CHROM_PATH sorting',
+			sprintf('%s : %s', dss_bedgraph_sorted, dss_bedgraph),
+			'	sort -T $(DIR_TMP) -k1,1 -k2,2n $^ > $@',
+			'',
+			'# Rule for UCSC bigWig of filtered dss_bedgraph_sorted results',
 			sprintf('%s : %s', dss_bigwig, dss_bedgraph),
 			'	$(PATH_TO_BDG2BW) $^ $(CHROM_PATH) $@',
 			'',
