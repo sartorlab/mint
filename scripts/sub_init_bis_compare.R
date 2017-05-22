@@ -187,7 +187,7 @@ OPT_DSS_DM_DIFF_THRESHOLD = 10
 			'	sort -T $(DIR_TMP) -k1,1 -k2,2n $^ > $@',
 			'',
 			'# Rule for UCSC bigWig of filtered dss_bedgraph_sorted results',
-			sprintf('%s : %s', dss_bigwig, dss_bedgraph),
+			sprintf('%s : %s', dss_bigwig, dss_bedgraph_sorted),
 			'	$(PATH_TO_BDG2BW) $^ $(CHROM_PATH) $@',
 			'',
 			'########################################',
