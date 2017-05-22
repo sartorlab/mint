@@ -11,6 +11,8 @@ if(bool_bis_comp) {
 # Thresholds to use for DMCs or DMRs (above) dss output
 # FDR significance level
 OPT_DSS_DM_FDR_THRESHOLD = 0.05
+# Alternative p-value significance level if no results FDR < 0.25
+OPT_DSS_DM_PVAL_THRESHOLD = 0.005
 # Desired absolute value of methylation difference
 OPT_DSS_DM_DIFF_THRESHOLD = 10
 '
@@ -219,7 +221,7 @@ GROUP1_NAME_%s := %s
 GROUP0_NAME_%s := %s
 
 # For dss parameters see http://www.bioconductor.org/packages/DSS
-OPTS_DSS_%s = --destrand TRUE --tilewidth 50 --methdiffthreshold $(OPT_DSS_DM_DIFF_THRESHOLD) --FDRthreshold $(OPT_DSS_DM_FDR_THRESHOLD) --quiet FALSE
+OPTS_DSS_%s = --destrand TRUE --tilewidth 50 --methdiffthreshold $(OPT_DSS_DM_DIFF_THRESHOLD) --FDRthreshold $(OPT_DSS_DM_FDR_THRESHOLD)  --pvalthreshold $(OPT_DSS_DM_PVAL_THRESHOLD) --quiet FALSE
 ',
 			i, i, i, groupAname, i, groupBname, var_comparison)
 

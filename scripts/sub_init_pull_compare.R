@@ -11,6 +11,8 @@ if(bool_pull_comp) {
 # Thresholds to use for csaw output
 # FDR significance level
 OPT_CSAW_DM_FDR_THRESHOLD = 0.05
+# Alternative p-value significance level if no results FDR < 0.25
+OPT_CSAW_DM_PVAL_THRESHOLD = 0.005
 	'
 	cat(config_pull_compare, file = file_config, sep='\n', append=T)
 
@@ -181,7 +183,7 @@ OPT_CSAW_DM_FDR_THRESHOLD = 0.05
 			'',
 			'# Rule for csaw peaks',
 			sprintf('%s : %s %s', csaw_significant, var_input_pre, var_chip_pre),
-			sprintf('	$(PATH_TO_R) ../../scripts/csaw_run.R --project %s --chipfiles $(PULLDOWN_COMPARE_%s_CHIP) --inputfiles $(PULLDOWN_COMPARE_%s_INPUT) --chipnames %s --useinput %s --model %s --groups %s --contrast %s --covariates %s --covIsNumeric %s --FDRthreshold $(OPT_CSAW_DM_FDR_THRESHOLD) --interpretation %s --quiet FALSE --outprefix $(PULLDOWN_COMPARE_%s_NAME) $(OPTS_CSAW_%s)', var_projectID, i, i, var_chipnames, var_useinput, var_model, var_groups, var_contrast, var_covariates, var_covIsNumeric, var_interpretation, i, var_name),
+			sprintf('	$(PATH_TO_R) ../../scripts/csaw_run.R --project %s --chipfiles $(PULLDOWN_COMPARE_%s_CHIP) --inputfiles $(PULLDOWN_COMPARE_%s_INPUT) --chipnames %s --useinput %s --model %s --groups %s --contrast %s --covariates %s --covIsNumeric %s --interpretation %s --quiet FALSE --outprefix $(PULLDOWN_COMPARE_%s_NAME) $(OPTS_CSAW_%s)', var_projectID, i, i, var_chipnames, var_useinput, var_model, var_groups, var_contrast, var_covariates, var_covIsNumeric, var_interpretation, i, var_name),
 			sprintf('%s : %s', annotatr_txt, csaw_significant),
 			sprintf('%s : %s', bigBed_bed, csaw_significant),
 			'',
@@ -238,7 +240,7 @@ CHIP1_NAME_%s := %s
 CHIP0_NAME_%s := %s
 
 # For csaw parameters see http://www.bioconductor.org/packages/csaw
-OPTS_CSAW_%s = --fraglength 110 --winwidth 100 --winspacing 50 --prior.count 5 --chipfold 2 --mergewithin 500 --maxmerged 2000 --FDRthreshold $(OPT_CSAW_DM_FDR_THRESHOLD)
+OPTS_CSAW_%s = --fraglength 110 --winwidth 100 --winspacing 50 --prior.count 5 --chipfold 2 --mergewithin 500 --maxmerged 2000 --FDRthreshold $(OPT_CSAW_DM_FDR_THRESHOLD) --pvalthreshold $(OPT_CSAW_DM_PVAL_THRESHOLD)
 ',
 			i, i, i, groupAname, i, groupBname, var_name)
 

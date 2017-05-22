@@ -18,6 +18,7 @@ option_list = list(
 	make_option('--covIsNumeric', type='character', help='(Required if covariates!= NA) A comma-delimited list of 0s and 1s indicating if the covariates are continuous (1) or a factor (0).'),
 	make_option('--methdiffthreshold', type='numeric', help='(Required) A numeric scalar between 0 and 100. The threshold above which (in combination with FDRthreshold) a CpG or region to be significant.'),
 	make_option('--FDRthreshold', type='numeric', help='(Required) A numeric scalar specifying the required FDR to be considered "significant" and to be returned.'),
+	make_option('--pvalthreshold', type='numeric', help='(Required) A numeric scalaer specifying the alternative p-value threshold for significance if no results FDR < 0.25.'),
 	make_option('--interpretation', type='character', help='(Required) A comma-delimited list of how to interpret diff < 0 (first entry) and diff >= 0 (second entry).'),
 	make_option('--quiet', type='logical', default=FALSE, help='TRUE/FALSE indicating whether progress messages should be printed.'),
 	make_option('--outprefix', type='character', help='(Required) A string inicating the prefix of the output file names.')
@@ -40,6 +41,7 @@ covIsNumeric = opt$covIsNumeric
 
 methdiffthreshold = opt$methdiffthreshold
 FDRthreshold = opt$FDRthreshold
+pvalthreshold = opt$pvalthreshold
 interpretation = opt$interpretation
 
 quiet = opt$quiet
@@ -218,9 +220,17 @@ result = result[!is.na(result$stat),]
 # Significant
 significant_df = subset(result, fdrs < FDRthreshold & abs(methdiff) > methdiffthreshold)
 increment = 0.05
-while(nrow(significant_df) == 0) {
+while(nrow(significant_df) == 0 && FDRthreshold <= 0.25) {
 	FDRthreshold = FDRthreshold + increment
-	significant_df = subset(combined_df, FDR < FDRthreshold)
+	significant_df = subset(combined_df, fdrs < FDRthreshold)
+}
+
+if(nrow(significant_df) == 0) {
+	significant_df = subset(combined_df, pvals <= pvalthreshold)
+
+	if(nrow(significant_df) == 0) {
+		stop(sprintf('No differential methylation at FDR <= %s or p-value <= %s!', FDRthreshold, pvalthreshold))
+	}
 }
 
 # For annotatr

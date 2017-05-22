@@ -23,6 +23,7 @@ option_list = list(
 	make_option('--mergewithin', type='numeric', help='(Required) A numeric scalar specifying the maximum distance between adjacent windows when combining windows after testing.'),
 	make_option('--maxmerged', type='numeric', help='(Required) A numeric scalar specifying the maximum size of merged intervals.'),
 	make_option('--FDRthreshold', type='numeric', help='(Required) A numeric scalar specifying the required FDR to be considered "significant" and to be returned in the outprefix_csaw_significant.txt table.'),
+	make_option('--pvalthreshold', type='numeric', help='(Required) A numeric scalaer specifying the alternative p-value threshold for significance if no results FDR < 0.25.'),
 	make_option('--interpretation', type='character', help='(Required) A comma-delimited list of how to interpret logFC < 0 (first entry) and logFC >= 0 (second entry).'),
 	make_option('--quiet', type='logical', default=FALSE, help='TRUE/FALSE indicating whether progress messages should be printed.'),
 	make_option('--outprefix', type='character', help='(Required) A string inicating the prefix of the output file names.')
@@ -56,6 +57,7 @@ covIsNumeric = opt$covIsNumeric
 mergewithin = opt$mergewithin
 maxmerged = opt$maxmerged
 FDRthreshold = opt$FDRthreshold
+pvalthreshold = opt$pvalthreshold
 interpretation = opt$interpretation
 
 quiet = opt$quiet
@@ -258,12 +260,21 @@ colnames(combined_df) = c('chr','start','end','width','strand','nWindows','logFC
 combined_df = combined_df[, c('chr','start','end','strand','nWindows','logFC.up','logFC.down','logFC','direction','PValue','FDR','color')]
 
 # Significant regions
-significant_df = subset(combined_df, FDR < FDRthreshold)
+significant_df = subset(combined_df, FDR <= FDRthreshold)
 increment = 0.05
-while(nrow(significant_df) == 0) {
+while(nrow(significant_df) == 0 && FDRthreshold <= 0.25) {
 	FDRthreshold = FDRthreshold + increment
-	significant_df = subset(combined_df, FDR < FDRthreshold)
+	significant_df = subset(combined_df, FDR <= FDRthreshold)
 }
+
+if(nrow(significant_df) == 0) {
+	significant_df = subset(combined_df, PValue <= pvalthreshold)
+
+	if(nrow(significant_df) == 0) {
+		stop(sprintf('No differential methylation at FDR <= %s or p-value <= %s!', FDRthreshold, pvalthreshold))
+	}
+}
+
 
 # For annotatr
 annotatr_df = significant_df[, c('chr','start','end','direction','logFC','strand','PValue')]
