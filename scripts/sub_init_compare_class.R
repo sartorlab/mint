@@ -16,11 +16,11 @@ $(DIR_BIS_DSS)/%_bisulfite_DMdown.txt : $(DIR_BIS_DSS)/%_bisulfite_dss_significa
 
 .INTERMEDIATE : $(DIR_BIS_DSS)/%_bisulfite_noDM_signal.txt
 $(DIR_BIS_DSS)/%_bisulfite_noDM_signal.txt : $(DIR_BIS_DSS)/%_bisulfite_dss_all.txt $(DIR_BIS_DSS)/%_bisulfite_dss_significant.txt
-	$(PATH_TO_BEDTOOLS) intersect -a <($(PATH_TO_AWK) -v OFS="\\t" -v \'NR > 1 { print $$1, $$2 - 1, $$3 }\' $(word 1, $^)) -b <($(PATH_TO_AWK) -v OFS="\\t" -v \'NR > 1 { print $$1, $$2 - 1, $$3 }\' $(word 2, $^)) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) intersect -a <($(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2 - 1, $$3 }\' $(word 1, $^)) -b <($(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2 - 1, $$3 }\' $(word 2, $^)) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 
 .INTERMEDIATE : $(DIR_BIS_DSS)/%_bisulfite_noDM_nosignal.txt
 $(DIR_BIS_DSS)/%_bisulfite_noDM_nosignal.txt : $(DIR_BIS_DSS)/%_bisulfite_dss_all.txt
-	$(PATH_TO_BEDTOOLS) complement -i <($(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2 - 1, $$3 }\' $<) -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) complement -i <($(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2 - 1, $$3 }\' <(sort -T $(DIR_TMP) -k1,1 -k2,2n $<)) -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
 '
 
 make_rule_compare_class_pull_module = '
