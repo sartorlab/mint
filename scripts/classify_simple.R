@@ -2,6 +2,8 @@ library(dplyr)
 library(readr)
 library(optparse)
 
+/usr/bin/Rscript ../../scripts/classify_simple.R --project test_hybrid_small --inFile pulldown/csaw/IDH2mut_v_NBM_age_hmc_pulldown_csaw_for_annotatr.txt --outFile classifications/simple/IDH2mut_v_NBM_age_hmc_pulldown_csaw_simple_classification.bed --group1 IDH2mut --group0 NBM
+
 option_list = list(
 	make_option('--project', type='character'),
 	make_option('--inFile', type='character'),
@@ -134,7 +136,7 @@ if(platform == 'pulldown') {
 	# as the maximum of the range of the fold changes.
 	fold_percentiles = dplyr::ntile(peaks$fold, 100)
 	minimum_fold = min(peaks$fold)
-	maximum_fold = min(peaks$fold[which(fold_percentiles==100)])
+	maximum_fold = min(peaks$fold[which(fold_percentiles == max(fold_percentiles))])
 	fold_range = c(minimum_fold, maximum_fold)
 	fold_thirds = seq(floor(min(fold_range)), ceiling(max(fold_range)), by = (ceiling(max(fold_range)) - floor(min(fold_range)))/3 )
 
