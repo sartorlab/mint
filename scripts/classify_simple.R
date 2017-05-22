@@ -2,8 +2,6 @@ library(dplyr)
 library(readr)
 library(optparse)
 
-/usr/bin/Rscript ../../scripts/classify_simple.R --project test_hybrid_small --inFile pulldown/csaw/IDH2mut_v_NBM_age_hmc_pulldown_csaw_for_annotatr.txt --outFile classifications/simple/IDH2mut_v_NBM_age_hmc_pulldown_csaw_simple_classification.bed --group1 IDH2mut --group0 NBM
-
 option_list = list(
 	make_option('--project', type='character'),
 	make_option('--inFile', type='character'),
