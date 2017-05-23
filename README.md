@@ -1,6 +1,6 @@
 ## mint: Analysis, integration, classification, and annotation of DNA methylation and hydroxymethylation data
 
-v0.3.2
+v0.4.0
 
 ## Contents
 
@@ -41,7 +41,7 @@ v0.3.2
 
 ## Overview
 
-The `mint` pipeline analyzes single-end reads coming from sequencing assays measuring DNA methylation and hydroxymethylation. The pipeline analyzes reads from both bisulfite-conversion assays such as WGBS and RRBS, and from pulldown assays such as MeDIP-seq, hMeDIP-seq, and hMeSeal. Moreover, with data measuring both 5-methylcytosine (5mc) and 5-hydroxymethylcytosine (5hmc), the `mint` pipeline integrates the two data types to classify genomic regions of 5mc, 5hmc, a mixture, or neither.
+The `mint` pipeline analyzes single-end reads coming from sequencing assays measuring DNA methylation and hydroxymethylation. The pipeline analyzes reads from both bisulfite-converted assays such as WGBS and RRBS, and from pulldown assays such as MeDIP-seq, hMeDIP-seq, and hMeSeal. Moreover, with data measuring both 5-methylcytosine (5mc) and 5-hydroxymethylcytosine (5hmc), the `mint` pipeline integrates the two data types to classify genomic regions of 5mc, 5hmc, a mixture, or neither.
 
 The `mint` pipeline is executed with `make` and includes configurable steps for:
 
@@ -49,7 +49,7 @@ The `mint` pipeline is executed with `make` and includes configurable steps for:
 * Adapter and quality trimming (`trim_galore`)
 * Alignment (`bismark` and `bowtie2`)
 * Sample-wise quantification (`bismark` and `macs2`)
-* Group-wise differential methylation detection (`DSS` and `csaw`)
+* Differential methylation detection with multi-factor models with categorical or continuous covariates (`DSS` and `csaw`)
 * Classification
 	* of samples into regions of no, low, medium, or high methylation
 	* of 5mc + 5hmc sample-wise integration into regions of 5mc, 5hmc, a mixture, or neither
@@ -238,11 +238,11 @@ After following the [installation instructions](#installation), we recommend tes
   nohup make -j 4 bisulfite_sample > nohup_bisulfite_sample.out &
 
   # After the above two are finished these can be run simultaneously
-  nohup make pulldown_compare > nohup_pulldown_compare.out &
-  nohup make bisulfite_compare > nohup_bisulfite_compare.out &
+  nohup make -j 3 pulldown_compare > nohup_pulldown_compare.out &
+  nohup make -j 4 bisulfite_compare > nohup_bisulfite_compare.out &
 
   # After the above two are finished, these should be run serially
-  nohup make compare_classification > nohup_compare_classification.out &
+  nohup make -j 3 compare_classification > nohup_compare_classification.out &
   nohup make -j 4 sample_classification > nohup_sample_classification.out &
   ```
 
@@ -290,9 +290,9 @@ Taking the example in [Testing `mint`](#testing-mint) as a guide, setting up a p
 
 [Top](#contents)
 
-#### Annotation file
+#### Samples file
 
-The annotation file is a tab-delimited text file named `[projectID]_annotation.txt` in `/path/to/mint/projects`, and contains the following 9 columns (with headers):
+The sample file is a tab-delimited text file named `[projectID]_samples.txt` in `/path/to/mint/projects`, and contains the following 9+ columns (with headers):
 
 1. `projectID`: The name of the project.
 2. `sampleID`: Often an alphanumeric ID (perhaps from SRA, GEO, a sequencing core, etc.). These will be the names of the `.fastq.gz` files containing the raw reads.
@@ -309,35 +309,37 @@ Additional columns can be included, but their heading cannot be one of the above
 In particular, for the [test](#testing-mint) data the annotation file looks like:
 
 ```
-projectID	sampleID	humanID	pulldown	bisulfite	mc	hmc	input	group
-test_hybrid_small	IDH2mut_1_hmeseal	IDH2mut_1	1	0	0	1	0	1
-test_hybrid_small	IDH2mut_2_hmeseal	IDH2mut_2	1	0	0	1	0	1
-test_hybrid_small	IDH2mut_1_hmeseal_input	IDH2mut_1	1	0	0	1	1	1
-test_hybrid_small	IDH2mut_2_hmeseal_input	IDH2mut_2	1	0	0	1	1	1
-test_hybrid_small	IDH2mut_1_errbs	IDH2mut_1	0	1	1	1	0	1
-test_hybrid_small	IDH2mut_2_errbs	IDH2mut_2	0	1	1	1	0	1
-test_hybrid_small	NBM_1_hmeseal	NBM_1	1	0	0	1	0	0
-test_hybrid_small	NBM_2_hmeseal	NBM_2	1	0	0	1	0	0
-test_hybrid_small	NBM_1_hmeseal_input	NBM_1	1	0	0	1	1	0
-test_hybrid_small	NBM_2_hmeseal_input	NBM_2	1	0	0	1	1	0
-test_hybrid_small	NBM_1_errbs	NBM_1	0	1	1	1	0	0
-test_hybrid_small	NBM_2_errbs	NBM_2	0	1	1	1	0	0
-test_hybrid_small	comparison	IDH2mut_v_NBM	1	0	0	1	0	"0,1"
-test_hybrid_small	comparison	IDH2mut_v_NBM	0	1	1	1	0	"0,1"
+projectID	sampleID	humanID	pulldown	bisulfite	mc	hmc	input	group	subject	age
+test_hybrid_small	IDH2mut_1_hmeseal	IDH2mut_1	1	0	0	1	0	1	1	3
+test_hybrid_small	IDH2mut_2_hmeseal	IDH2mut_2	1	0	0	1	0	1	2	6
+test_hybrid_small	IDH2mut_1_hmeseal_input	IDH2mut_1	1	0	0	1	1	1	1	3
+test_hybrid_small	IDH2mut_2_hmeseal_input	IDH2mut_2	1	0	0	1	1	1	2	6
+test_hybrid_small	IDH2mut_1_errbs	IDH2mut_1	0	1	1	1	0	1	1	3
+test_hybrid_small	IDH2mut_2_errbs	IDH2mut_2	0	1	1	1	0	1	2	6
+test_hybrid_small	NBM_1_hmeseal	NBM_1	1	0	0	1	0	0	1	10
+test_hybrid_small	NBM_2_hmeseal	NBM_2	1	0	0	1	0	0	2	15
+test_hybrid_small	NBM_1_hmeseal_input	NBM_1	1	0	0	1	1	0	1	10
+test_hybrid_small	NBM_2_hmeseal_input	NBM_2	1	0	0	1	1	0	2	15
+test_hybrid_small	NBM_1_errbs	NBM_1	0	1	1	1	0	0	1	10
+test_hybrid_small	NBM_2_errbs	NBM_2	0	1	1	1	0	0	2	15
 ```
 
 Note the comparison columns that indicate whether to test the pulldown or bisulfite samples, and which two groups are involved in the comparison.
 
 [Top](#contents)
 
-#### Group file
+#### Comparisons file
 
-The group file is a tab-delimeted file named `[projectID]_groups.txt` in `/path/to/mint/projects`, and contains two columns labelled `group` and `name`. In particular, for the [test](#testing-mint) data the group file looks like:
+The comparisons file is a tab-delimeted file named `[projectID]_comparisons.txt` in `/path/to/mint/projects`, and contains 13 columns. In particular, for the [test](#testing-mint) data the comparisons file looks like:
 
 ```
-group	name
-0	NBM
-1	IDH2mut
+projectID	comparison	pulldown	bisulfite	mc	hmc	input	model	contrast	covariates	covIsNumeric	groups	interpretation
+test_hybrid_small	IDH2mut_v_NBM	1	0	0	1	TRUE	~1+group	"0,1"	NA	0	"0,1"	"NBM,IDH2mut"
+test_hybrid_small	IDH2mut_v_NBM	0	1	1	1	FALSE	~1+group	"0,1"	NA	0	"0,1"	"NBM,IDH2mut"
+test_hybrid_small	IDH2mut_v_NBM_paired	1	0	0	1	TRUE	~1+group+subject	"0,1,0"	subject	0	"0,1"	"NBM,IDH2mut"
+test_hybrid_small	IDH2mut_v_NBM_paired	0	1	1	1	FALSE	~1+group+subject	"0,1,0"	subject	0	"0,1"	"NBM,IDH2mut"
+test_hybrid_small	IDH2mut_v_NBM_age	1	0	0	1	TRUE	~1+group+age	"0,1,0"	age	1	"0,1"	"NBM,IDH2mut"
+test_hybrid_small	IDH2mut_v_NBM_age	0	1	1	1	FALSE	~1+group+age	"0,1,0"	age	1	"0,1"	"NBM,IDH2mut"
 ```
 
 This file enables the `config.mk` file to be auto-filled so that results are labeled with the correct group names.
@@ -439,7 +441,7 @@ test_hybrid_small/pulldown/trim_fastqcs
 test_hybrid_small/pulldown/bowtie2_bams
 test_hybrid_small/pulldown/pulldown_coverages
 test_hybrid_small/pulldown/macs2_peaks
-test_hybrid_small/pulldown/pepr_peaks
+test_hybrid_small/pulldown/csaw
 test_hybrid_small/makefile
 test_hybrid_small/config.mk
 test_hybrid_small/narrowPeak.as
