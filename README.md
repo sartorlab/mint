@@ -276,7 +276,7 @@ The `mint` pipeline supports **either**:
 And the `mint` pipeline can analyze:
 
 * **sample-wise**, where no groups are present for comparison, and 5mc / 5hmc integration is done per-sample, **and/or**
-* **comparison-wise**, where two or more groups are tested for differential methylation, and 5mc / 5hmc differential methylation integration is done per-group.
+* **comparison-wise**, where groups are tested for differential methylation using a multi-factor design with categorical and/or continuous covariates, and 5mc / 5hmc differential methylation integration is done per-comparison.
 
 [Top](#contents)
 
@@ -284,8 +284,8 @@ And the `mint` pipeline can analyze:
 
 Taking the example in [Testing `mint`](#testing-mint) as a guide, setting up a project requires the following:
 
-1. A project [annotation file](#annotation-file) describing the samples, and any group comparisons to make. Put this in `/path/to/mint/projects`.
-2. A [group file](#group-file) mapping group numbers to group names, if any comparisons are made. Put this in `/path/to/mint/projects`.
+1. A [samples file](#samples-file) describing the samples and any covariates associated with them. Put this in `/path/to/mint/projects`.
+2. A [comparisons file](#comparisons-file) describing the comparisons to be made and models and covariates to use. Put this in `/path/to/mint/projects`.
 3. The location of the raw sequencing reads corresponding to the samples, and the relevant reference genome.
 
 [Top](#contents)
@@ -303,8 +303,7 @@ The sample file is a tab-delimited text file named `[projectID]_samples.txt` in 
 7. `hmc`: A binary indicating whether the sample represents 5hmc methylation (1) or not (0). If a sample was run on WGBS, this column and the `mc` column would both be 1.
 8. `input`: A binary indicating whether the sample represents an input (1) or not (0).
 9. `group`: A comma-separated string denoting the group numbers the sample belongs to for comparisons.
-
-Additional columns can be included, but their heading cannot be one of the above 9 headings.
+10. Any additional columns are categorical or continuous covariates, and their column headers should match what is used in the models in `[projectID]_comparisons.txt`.
 
 In particular, for the [test](#testing-mint) data the annotation file looks like:
 
@@ -324,13 +323,27 @@ test_hybrid_small	NBM_1_errbs	NBM_1	0	1	1	1	0	0	1	10
 test_hybrid_small	NBM_2_errbs	NBM_2	0	1	1	1	0	0	2	15
 ```
 
-Note the comparison columns that indicate whether to test the pulldown or bisulfite samples, and which two groups are involved in the comparison.
-
 [Top](#contents)
 
 #### Comparisons file
 
-The comparisons file is a tab-delimeted file named `[projectID]_comparisons.txt` in `/path/to/mint/projects`, and contains 13 columns. In particular, for the [test](#testing-mint) data the comparisons file looks like:
+The comparisons file is a tab-delimeted file named `[projectID]_comparisons.txt` in `/path/to/mint/projects`, and contains 13 columns:
+
+1. `projectID`: The name of the project.
+2. `comparison`: The prefix for the output files.
+4. `pulldown`: A binary indicating whether the sample is the result of a pulldown experiment (1) or not (0).
+5. `bisulfite`: A binary indicating whether the sample is the result of a bisulfite-conversion experiment (1) or not (0).
+6. `mc`: A binary indicating whether the sample represents 5mc methylation (1) or not (0). If a sample was run on WGBS, this column and the `hmc` column would both be 1.
+7. `hmc`: A binary indicating whether the sample represents 5hmc methylation (1) or not (0). If a sample was run on WGBS, this column and the `mc` column would both be 1.
+8. `input`: A logical indicating whether to use the input data in the test for differential methylation. This only applies to `csaw`.
+9. `model`: A string as one would pass to `formula()`. Note, `group` should be in the model, and any covariates should have matching column headings in `[projectID]_samples.txt`.
+10. `contrast`: A comma-separated binary string denoting which coefficient in the model to test.
+11. `covariates`: A comma-separated string indicating the names of the covariates to use.
+12. `covIsNumeric`: A comma-separated binary string denoting which covariates are numeric (1) and categorical (0).
+13. `groups`: A comma-separated string denoting which groups are present in this comparison. This is used to get the correct samples from `[projectID_samples.txt]`.
+14. `interpretation`: A comma-separated string with descriptions for what it means for a region to have `logFC` or `methdiff` less than 0 (first entry) and greater than 0 (second entry).
+
+In particular, for the [test](#testing-mint) data the comparisons file looks like:
 
 ```
 projectID	comparison	pulldown	bisulfite	mc	hmc	input	model	contrast	covariates	covIsNumeric	groups	interpretation
@@ -341,8 +354,6 @@ test_hybrid_small	IDH2mut_v_NBM_paired	0	1	1	1	FALSE	~1+group+subject	"0,1,0"	su
 test_hybrid_small	IDH2mut_v_NBM_age	1	0	0	1	TRUE	~1+group+age	"0,1,0"	age	1	"0,1"	"NBM,IDH2mut"
 test_hybrid_small	IDH2mut_v_NBM_age	0	1	1	1	FALSE	~1+group+age	"0,1,0"	age	1	"0,1"	"NBM,IDH2mut"
 ```
-
-This file enables the `config.mk` file to be auto-filled so that results are labeled with the correct group names.
 
 [Top](#contents)
 
@@ -398,7 +409,7 @@ To see what will be run by the pipeline without *actually* running anything, you
 
 Depending on the computing hardware used, projects can be run with the `make -j n` command where `n` is a positive integer. The `-j` flag specifies how many commands `make` is allowed to run simultaneously. When it is not present, the default is to run commands in serial.
 
-**NOTE:** Some software in the `mint` pipeline have options for the number of processors to use, so some care should be taken not to exceed the computing limitations of the hardware. Tools that have parameters for the user of multiple processors are: `bismark_methylation_extractor`, `DSS`. By default, the number of processors to use is set to 1.
+**NOTE:** Some software in the `mint` pipeline have options for the number of processors to use, so some care should be taken not to exceed the computing limitations of the hardware. Tools that have parameters for the user of multiple processors are: `bismark_methylation_extractor`. By default, the number of processors to use is set to 1.
 
 [Top](#contents)
 
@@ -465,7 +476,7 @@ The results of the `bismark` alignment and methylation quantification from `bism
 
 #### DSS
 
-The results of the tests for differential methylation with `DSS` go in `test_hybrid_small/bisulfite/dss`. The `R` session image for each `DSS` run is saved as an `.RData` file in `test_hybrid_small/RData`. This allows for retesting for differential methylation with different parameters without having to read in all the data again.
+The results of the tests for differential methylation with `DSS` go in `test_hybrid_small/bisulfite/dss`.
 
 ### Pulldown
 
