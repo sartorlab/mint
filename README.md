@@ -331,10 +331,10 @@ The comparisons file is a tab-delimeted file named `[projectID]_comparisons.txt`
 
 1. `projectID`: The name of the project.
 2. `comparison`: The prefix for the output files.
-4. `pulldown`: A binary indicating whether the sample is the result of a pulldown experiment (1) or not (0).
-5. `bisulfite`: A binary indicating whether the sample is the result of a bisulfite-conversion experiment (1) or not (0).
-6. `mc`: A binary indicating whether the sample represents 5mc methylation (1) or not (0). If a sample was run on WGBS, this column and the `hmc` column would both be 1.
-7. `hmc`: A binary indicating whether the sample represents 5hmc methylation (1) or not (0). If a sample was run on WGBS, this column and the `mc` column would both be 1.
+4. `pulldown`: A binary indicating whether the comparison is for a pulldown experiment (1) or not (0).
+5. `bisulfite`: A binary indicating whether the comparison is for a bisulfite-conversion experiment (1) or not (0).
+6. `mc`: A binary indicating whether the comparison is for 5mc methylation (1) or not (0). If for WGBS, this column and the `hmc` column would both be 1.
+7. `hmc`: A binary indicating whether the comparison is for 5hmc methylation (1) or not (0). If for WGBS, this column and the `mc` column would both be 1.
 8. `input`: A logical indicating whether to use the input data in the test for differential methylation. This only applies to `csaw`.
 9. `model`: A string as one would pass to `formula()`. Note, `group` should be in the model, and any covariates should have matching column headings in `[projectID]_samples.txt`.
 10. `contrast`: A comma-separated binary string denoting which coefficient in the model to test.
