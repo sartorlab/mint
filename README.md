@@ -351,8 +351,6 @@ test_hybrid_small	IDH2mut_v_NBM	1	0	0	1	TRUE	~1+group	"0,1"	NA	0	"0,1"	"NBM,IDH2
 test_hybrid_small	IDH2mut_v_NBM	0	1	1	1	FALSE	~1+group	"0,1"	NA	0	"0,1"	"NBM,IDH2mut"
 test_hybrid_small	IDH2mut_v_NBM_paired	1	0	0	1	TRUE	~1+group+subject	"0,1,0"	subject	0	"0,1"	"NBM,IDH2mut"
 test_hybrid_small	IDH2mut_v_NBM_paired	0	1	1	1	FALSE	~1+group+subject	"0,1,0"	subject	0	"0,1"	"NBM,IDH2mut"
-test_hybrid_small	IDH2mut_v_NBM_age	1	0	0	1	TRUE	~1+group+age	"0,1,0"	age	1	"0,1"	"NBM,IDH2mut"
-test_hybrid_small	IDH2mut_v_NBM_age	0	1	1	1	FALSE	~1+group+age	"0,1,0"	age	1	"0,1"	"NBM,IDH2mut"
 ```
 
 [Top](#contents)
