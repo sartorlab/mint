@@ -286,8 +286,8 @@ annotatr_df$end = format(annotatr_df$end, scientific = FALSE)
 
 # For bigBed
 bigbed_df = significant_df[, c('chr','start','end','direction','start','end','color')]
-bedgraph_df$start = format(bedgraph_df$start - 1, scientific = FALSE)
-bedgraph_df$end = format(bedgraph_df$end, scientific = FALSE)
+bigbed_df$start = format(bigbed_df$start - 1, scientific = FALSE)
+bigbed_df$end = format(bigbed_df$end, scientific = FALSE)
 bigbed_df$score = '1000'
 bigbed_df$strand = '.'
 bigbed_df = bigbed_df[, c('chr','start','end','direction','score','strand','start.1','end.1','color')]
