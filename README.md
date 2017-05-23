@@ -248,13 +248,13 @@ After following the [installation instructions](#installation), we recommend tes
 
 As documented in <https://github.com/sartorlab/mint_test>, the test data contains reads drawn from the following regions, and have the following resulting features:
 
-* chr1:2220910-2270909 (hyper_mc_hyper_hmc)
-* chr16:3046564-3096563 (hyper_mc_hyper_hmc)
-* chr11:67046158-67096157 (hypo_mc_hypo_hmc)
+* chr1:2209176-2214175 (hyper_mc_hyper_hmc)
 * chr2:71942840-72005839 (hypo_mc_hyper_hmc)
-* chr19:39702429-39752428 (hyper_mc_hypo_hmc)
 * chr7:36074781-36102780 (hyper_hmc)
 * chr8:35090385-35095384 (hyper_mc)
+* chr11:67384075-67389174 (hypo_mc_hypo_hmc)
+* chr16:3046564-3096563 (hyper_mc_hyper_hmc and hyper_mc_hyper_hmc)
+* chr19:39702429-39752428 (hyper_mc_hypo_hmc)
 
 [Top](#contents)
 
