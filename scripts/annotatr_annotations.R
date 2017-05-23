@@ -9,7 +9,7 @@ library(optparse)
 option_list = list(
 	make_option('--file', type='character', help='[Required] Tab-delimited file with genomic locations and possibly associated data.'),
 	make_option('--genome', type='character', help='[Required] The shortname for the genome used, e.g. hg19, mm9, rn4.'),
-	make_option('--annot_type', type='character', help='[Required] One of bismark, simple_bisulfite_bismark, macs2, simple_pulldown_macs2, sample_class, methylSig, PePr, simple_pulldown_PePr, or compare_class. Indicates what type of data is being annotated.'),
+	make_option('--annot_type', type='character', help='[Required] One of bismark, simple_bisulfite_bismark, macs2, simple_pulldown_macs2, sample_class, dss, csaw, simple_pulldown_csaw, or compare_class. Indicates what type of data is being annotated.'),
 	make_option('--group1', type='character', help='[Required] A character indicating the name of group1 or NULL.'),
 	make_option('--group0', type='character', help='[Required] A character indicating the name of group0 or NULL.')
 )
@@ -26,7 +26,7 @@ if(!is.null(opt$group1)) {
 }
 if(!is.null(opt$group0)) {
 	group0 = opt$group0
-	chip2 = group0
+	chip0 = group0
 }
 
 # Interpret mark
@@ -190,13 +190,13 @@ if(annot_type == 'bismark') {
 
 	# Variable for summarize_categorical usage
 	by_vec = c('class','annot.type')
-} else if (annot_type == 'methylSig') {
+} else if (annot_type == 'dss') {
 	# bis_compare
 	# BARPLOT + NUMERICALS + CATEGORICALS
 	# Random for barplot and categoricals
-	# NOTE: Randoms will lack the CpG bias of methylSig regions...
+	# NOTE: Randoms will lack the CpG bias of dss regions...
 
-	# head ./bisulfite/methylsig_calls/IDH2mut_v_NBM_mc_hmc_bisulfite_DMR_methylSig_for_annotatr.txt
+	# head ./bisulfite/dss_calls/IDH2mut_v_NBM_mc_hmc_bisulfite_DMR_dss_for_annotatr.txt
 	# chr21	9437472	9437521   IDH2mut 0.00022857   .   28.675   81.424	52.748
 	# chr21	9437522	9437571   NBM	 0.02085531   .   22.738   85.875	63.136
 	extraCols = c(meth_diff = 'numeric', mu1 = 'numeric', mu0 = 'numeric')
@@ -212,7 +212,7 @@ if(annot_type == 'bismark') {
 	prefix = gsub('_for_annotatr.txt','', basename(file))
 
 	# Categories are the group1 and group0 command line parameters
-	cats_order = c(group1, group0, 'noDM')
+	cats_order = c(group1, group0)
 
 	# Variables for plot_categorical usage
 	x_str = 'DM_status'
@@ -220,12 +220,12 @@ if(annot_type == 'bismark') {
 
 	# Variable for summarize_categorical usage
 	by_vec = c('DM_status','annot.type')
-} else if (annot_type == 'PePr') {
+} else if (annot_type == 'csaw') {
 	# pulldown_compare
 	# BARPLOT + NUMERICALS + CATEGORICALS
 	# Random for barplot and categoricals
 
-	# head pulldown/pepr_peaks/IDH2mut_v_NBM_hmc_pulldown_PePr_combined.bed
+	# head pulldown/csaw/IDH2mut_v_NBM_hmc_pulldown_csaw_for_annotatr.txt
 	# chr21	46387680	46388640	IDH2mut	2.80016862356	*	2.28100636773e-165
 	# chr21	36207120	36208800	IDH2mut	3.36810346155	*	2.74839325284e-143
 	# chr21	39810080	39810880	IDH2mut	4.23550374893	*	1.25690543952e-142
@@ -240,7 +240,7 @@ if(annot_type == 'bismark') {
 	classifier_flag = FALSE
 	log10p_flag = TRUE
 	resolution = 'region'
-	prefix = gsub('_combined.bed','', basename(file))
+	prefix = gsub('_for_annotatr.txt','', basename(file))
 
 	# Categories are the group1 and group0 command line parameters
 	cats_order = c(group1, group0)
@@ -251,17 +251,17 @@ if(annot_type == 'bismark') {
 
 	# Variable for summarize_categorical usage
 	by_vec = c('group','annot.type')
-} else if (annot_type == 'simple_pulldown_PePr') {
+} else if (annot_type == 'simple_pulldown_csaw') {
 	# pulldown_compare
 	# BARPLOT + CATEGORICALS
 	# Random for barplot and categoricals
 
-	# head classifications/simple/HPVpos_v_HPVneg_hmc_pulldown_pulldown_PePr_simple_classification.bed
-	# chr1	565250	565350	diff_hmc_weak	1000	.	565250	565350	102,102,255
-	# chr1	565700	565800	diff_hmc_weak	1000	.	565700	565800	102,102,255
-	# chr1	565900	566000	diff_hmc_weak	1000	.	565900	566000	102,102,255
-	# chr1	565950	566100	diff_hmc_strong	1000	.	565950	566100	0,0,102
-	# chr1	567350	567450	diff_hmc_strong	1000	.	567350	567450	0,0,102
+	# head classifications/simple/HPVpos_v_HPVneg_hmc_pulldown_csaw_simple_classification.bed
+	# chr1	565250	565350	diff_HPVpos_hmc_weak	1000	.	565250	565350	102,102,255
+	# chr1	565700	565800	diff_HPVpos_hmc_weak	1000	.	565700	565800	102,102,255
+	# chr1	565900	566000	diff_HPVneg_hmc_weak	1000	.	565900	566000	102,102,255
+	# chr1	565950	566100	diff_HPVpos_hmc_strong	1000	.	565950	566100	0,0,102
+	# chr1	567350	567450	diff_HPVneg_hmc_strong	1000	.	567350	567450	0,0,102
 	extraCols = NULL
 	rename_name = 'class'
 	rename_score = NULL
@@ -278,16 +278,16 @@ if(annot_type == 'bismark') {
 	if (mark == 'hmc') {
 		cats_order = c(
 			paste('diff', chip1, c('hmc_strong','hmc_mod','hmc_weak'), sep='_'),
-			paste('diff', chip2, c('hmc_strong','hmc_mod','hmc_weak'), sep='_'))
+			paste('diff', chip0, c('hmc_strong','hmc_mod','hmc_weak'), sep='_'))
 	} else if (mark == 'mc') {
 		cats_order = c(
 			paste('diff', chip1, c('mc_strong','mc_mod','mc_weak'), sep='_'),
-			paste('diff', chip2, c('mc_strong','mc_mod','mc_weak'), sep='_'))
+			paste('diff', chip0, c('mc_strong','mc_mod','mc_weak'), sep='_'))
 	}
 
 	# Variables for plot_categorical usage
 	x_str = 'class'
-	x_desc = 'PePr Simple Classification'
+	x_desc = 'csaw Simple Classification'
 
 	# Variable for summarize_categorical usage
 	by_vec = c('class','annot.type')
@@ -332,7 +332,7 @@ if(annot_type == 'bismark') {
 	# Variable for summarize_categorical usage
 	by_vec = c('class','annot.type')
 } else {
-	stop('annot_type is invalid. Must be one of bismark, simple_bisulfite_bismark, macs2, simple_pulldown_macs2, sample_class, methylSig, PePr, simple_pulldown_PePr, or compare_class.')
+	stop('annot_type is invalid. Must be one of bismark, simple_bisulfite_bismark, macs2, simple_pulldown_macs2, sample_class, dss, csaw, simple_pulldown_csaw, or compare_class.')
 }
 
 ################################################################################
@@ -396,8 +396,8 @@ if(log10p_flag) {
 
 ################################################################################
 # Deal with random regions depending on resolution
-# NOTE: Do not do random regions for methylSig at the moment, uses too much RAM
-if(resolution == 'region' && annot_type != 'sample_class' && annot_type != 'compare_class' && annot_type != 'methylSig') {
+# NOTE: Do not do random regions for dss at the moment, uses too much RAM
+if(resolution == 'region' && annot_type != 'sample_class' && annot_type != 'compare_class' && annot_type != 'dss') {
 	regions_rnd = NULL
 } else if (resolution == 'base' && genome == 'hg19') {
 	regions_rnd = NULL
@@ -472,7 +472,7 @@ if (annot_type == 'sample_class') {
 }
 
 ################################################################################
-# For strict macs2 and PePr output, create dplyr::tbl_df on which to create
+# For strict macs2 and csaw output, create dplyr::tbl_df on which to create
 # overall distributions of fold change
 if(annot_type == 'macs2') {
 	regions_tbl = dplyr::tbl_df(data.frame(
@@ -482,7 +482,7 @@ if(annot_type == 'macs2') {
 		'fold' = mcols(regions)$fold,
 		'pval' = mcols(regions)$pval,
 		stringsAsFactors=F))
-} else if (annot_type == 'PePr') {
+} else if (annot_type == 'csaw') {
 	regions_tbl = dplyr::tbl_df(data.frame(
 		'seqnames' = seqnames(regions),
 		'start' = start(regions),
@@ -586,46 +586,43 @@ if(annot_type == 'bismark') {
 }
 
 #############################################################
-# plot_numerical specific to methylSig
-if(annot_type == 'methylSig') {
+# plot_numerical specific to dss
+if(annot_type == 'dss') {
 	##############################
 	# Annotation counts by categorical
 	sum_cat = summarize_categorical(annotated_regions = annotated_regions, by = by_vec)
 	readr::write_tsv(x = sum_cat, path = sprintf('summary/tables/%s_annotation_counts_by_category.txt', prefix))
 
-	# Do these only if there are statuses other than noDM
-	if(!dplyr::setequal(sum_cat$DM_status, c('noDM'))) {
-		##############################
-		# Methylation difference over annotations
-		file_png = sprintf('summary/figures/%s_methdiff.png', prefix)
-		plot_methdiff = plot_numerical(
-			annotated_regions = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
-			x = 'meth_diff',
-			facet = 'annot.type',
-			facet_order = annot_all_order,
-			bin_width = 5,
-			plot_title = sprintf('%s meth. diff. over annotations', prefix),
-			x_label = sprintf('Methylation Difference (%s - %s)', group1, group0))
-		ggplot2::ggsave(filename = file_png, plot = plot_methdiff, width = 8, height = 8)
+	##############################
+	# Methylation difference over annotations
+	file_png = sprintf('summary/figures/%s_methdiff.png', prefix)
+	plot_methdiff = plot_numerical(
+		annotated_regions = annotated_regions,
+		x = 'meth_diff',
+		facet = 'annot.type',
+		facet_order = annot_all_order,
+		bin_width = 5,
+		plot_title = sprintf('%s meth. diff. over annotations', prefix),
+		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0))
+	ggplot2::ggsave(filename = file_png, plot = plot_methdiff, width = 8, height = 8)
 
-		##############################
-		# Volcano plots over annotations
-		file_png = sprintf('summary/figures/%s_volcano.png', prefix)
-		plot_volcano = plot_numerical(
-			annotated_regions = subset(annotated_regions, annotated_regions$DM_status != 'noDM'),
-			x = 'meth_diff',
-			y = 'pval',
-			facet = 'annot.type',
-			facet_order = annot_all_order,
-			plot_title = sprintf('%s meth. diff. vs -log10(pval)', prefix),
-			x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
-			y_label = '-log10(pval)')
-		ggplot2::ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
-	}
+	##############################
+	# Volcano plots over annotations
+	file_png = sprintf('summary/figures/%s_volcano.png', prefix)
+	plot_volcano = plot_numerical(
+		annotated_regions = annotated_regions,
+		x = 'meth_diff',
+		y = 'pval',
+		facet = 'annot.type',
+		facet_order = annot_all_order,
+		plot_title = sprintf('%s meth. diff. vs -log10(pval)', prefix),
+		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
+		y_label = '-log10(pval)')
+	ggplot2::ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
 }
 
 #############################################################
-# Overall fold-change, peak width, and volcano plots for macs2 & PePr
+# Overall fold-change, peak width, and volcano plots for macs2 & csaw
 
 if(!is.null(regions_tbl)) {
 	##############################
@@ -696,10 +693,10 @@ if(annot_type == 'macs2') {
 }
 
 #############################################################
-# plot_numerical specific to PePr
-if(annot_type == 'PePr') {
+# plot_numerical specific to csaw
+if(annot_type == 'csaw') {
 	# ##############################
-	# # Fold change with facet over group (chip1/chip2)
+	# # Fold change with facet over group (chip1/chip0)
 	# file_png = sprintf('summary/figures/%s_foldchg_groups.png', prefix)
 	# plot_foldchg = plot_numerical(
 	# 	annotated_regions = regions_tbl,
@@ -712,7 +709,7 @@ if(annot_type == 'PePr') {
 	# ggsave(filename = file_png, plot = plot_foldchg, width = 12, height = 6)
 	#
 	# ##############################
-	# # Volcano plots with facet over group (chip1/chip2)
+	# # Volcano plots with facet over group (chip1/chip0)
 	# file_png = sprintf('summary/figures/%s_volcano_groups.png', prefix)
 	# plot_volcano = plot_numerical(
 	# 	annotated_regions = regions_tbl,
@@ -753,35 +750,35 @@ if(annot_type == 'PePr') {
 	ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
 
 	##############################
-	# Fold change in chip2 with facet over annots
-	file_png = sprintf('summary/figures/%s_foldchg_%s_annots.png', prefix, chip2)
+	# Fold change in chip0 with facet over annots
+	file_png = sprintf('summary/figures/%s_foldchg_%s_annots.png', prefix, chip0)
 	plot_foldchg = plot_numerical(
-		annotated_regions = subset(annotated_regions, group == chip2),
+		annotated_regions = subset(annotated_regions, group == chip0),
 		x = 'fold',
 		facet = 'annot.type',
 		facet_order = annot_all_order,
 		bin_width = 5,
-		plot_title = sprintf('%s %s fold change over annotations', prefix, chip2),
-		x_label = sprintf('%s fold change', chip2))
+		plot_title = sprintf('%s %s fold change over annotations', prefix, chip0),
+		x_label = sprintf('%s fold change', chip0))
 	ggsave(filename = file_png, plot = plot_foldchg, width = 8, height = 8)
 
 	##############################
-	# Volcano in chip2 with facet over annots
-	file_png = sprintf('summary/figures/%s_volcano_%s_annots.png', prefix, chip2)
+	# Volcano in chip0 with facet over annots
+	file_png = sprintf('summary/figures/%s_volcano_%s_annots.png', prefix, chip0)
 	plot_volcano = plot_numerical(
-		annotated_regions = subset(annotated_regions, group == chip2),
+		annotated_regions = subset(annotated_regions, group == chip0),
 		x = 'fold',
 		y = 'pval',
 		facet = 'annot.type',
 		facet_order = annot_all_order,
-		plot_title = sprintf('%s %s fold change vs -log10(pval)', prefix, chip2),
-		x_label = sprintf('%s fold change', chip2),
+		plot_title = sprintf('%s %s fold change vs -log10(pval)', prefix, chip0),
+		x_label = sprintf('%s fold change', chip0),
 		y_label = '-log10(pval)')
 	ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
 }
 
 #############################################################
-# plot_categorical specific to PePr, methylSig, simple, sample, and compare classifications
+# plot_categorical specific to csaw, dss, simple, sample, and compare classifications
 # Use x_str and x_desc variables determined near the top of this file when determining annot_type
 if(annot_type != 'bismark' && annot_type != 'macs2') {
 	##############################

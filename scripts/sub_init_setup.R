@@ -1,7 +1,7 @@
 # Configuration header
 config_header = sprintf('# Configuration for mint pipeline analyses
 
-# This makefile was generated using mint v0.3.2
+# This makefile was generated using mint v0.4.0
 
 ################################################################################
 # Project and experimental information
@@ -55,7 +55,7 @@ if(bool_bis_samp) {
 if(bool_bis_comp) {
 	setup_commands = c(
 		setup_commands,
-		sprintf('mkdir projects/%s/bisulfite/methylsig_calls', project)
+		sprintf('mkdir projects/%s/bisulfite/dss', project)
 	)
 }
 # Create folders for pulldown samples if there are ny
@@ -70,7 +70,7 @@ if(bool_pull_samp) {
 if(bool_pull_comp) {
 	setup_commands = c(
 		setup_commands,
-		sprintf('mkdir projects/%s/pulldown/pepr_peaks', project)
+		sprintf('mkdir projects/%s/pulldown/csaw', project)
 	)
 }
 # Create folders for comparison classification if any comparisons are done
@@ -90,7 +90,8 @@ setup_commands = c(
 	sprintf('cat config_header.mk template_config.mk > projects/%s/config.mk', project, project),
 	sprintf('rm config_header.mk', project),
 	sprintf('cp narrowPeak.as projects/%s/', project),
-	sprintf('cp projects/%s_annotation.txt projects/%s/data', project, project)
+	sprintf('cp projects/%s_samples.txt projects/%s/data', project, project),
+	sprintf('cp projects/%s_comparisons.txt projects/%s/data', project, project)
 )
 
 ################################################################################

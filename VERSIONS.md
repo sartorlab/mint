@@ -12,11 +12,11 @@ The current versions of software
 * [`FastQC` v0.11.5](http://www.bioinformatics.babraham.ac.uk/projects/fastqc/fastqc_v0.11.5.zip)
 * [`macs2` v2.1.0.20140616](https://pypi.python.org/pypi/MACS2/2.1.0.20140616)
 * [`multiqc` v0.9.0](https://github.com/ewels/MultiQC/releases/tag/v0.9)
-* [`PePr` v1.1.14](https://github.com/shawnzhangyx/PePr/releases/tag/1.1.14)
 * [`R` >= v3.3.0](https://cran.r-project.org)
-	* [`annotatr` v1.1.7](https://github.com/rcavalcante/annotatr/releases/tag/v1.1.7)
+	* [`annotatr`](http://bioconductor.org/packages/release/bioc/html/annotatr.html)
+	* [`csaw`](http://bioconductor.org/packages/release/bioc/html/csaw.html)
 	* `devtools`
-	* [`methylSig` v0.4.4](https://github.com/sartorlab/methylSig/releases/tag/v0.4.4)
+	* [`DSS`](http://bioconductor.org/packages/release/bioc/html/DSS.html)
 	* `optparse`
 * [`samtools` v1.3.1](https://github.com/samtools/samtools/releases/tag/1.3.1)
 * [`trim_galore` v0.4.1](http://www.bioinformatics.babraham.ac.uk/projects/trim_galore/trim_galore_v0.4.1.zip)

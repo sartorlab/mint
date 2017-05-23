@@ -21,16 +21,16 @@ if(!is.null(opt$group1)) {
 }
 if(!is.null(opt$group0)) {
 	group0 = opt$group0
-	chip2 = group0
+	chip0 = group0
 }
 
 # Interpret platform
 if(grepl('pulldown', inFile)) {
 	platform = 'pulldown'
 
-	# Interpret macs2 or PePr peaks
-	if(grepl('PePr', inFile)) {
-		peak_type = 'PePr'
+	# Interpret macs2 or csaw peaks
+	if(grepl('csaw', inFile)) {
+		peak_type = 'csaw'
 	} else if (grepl('macs2', inFile)) {
 		peak_type = 'macs2'
 	}
@@ -70,7 +70,7 @@ if(platform == 'pulldown') {
 			color = colors,
 			stringsAsFactors=F)
 
-	} else if (peak_type == 'PePr') {
+	} else if (peak_type == 'csaw') {
 		column_names = c('chr','start','end','DM_status','fold','strand','pval')
 		skip = 0
 
@@ -78,12 +78,12 @@ if(platform == 'pulldown') {
 			colors = c('255,102,102','255,0,0','102,0,0','255,255,102','204,204,0','102,102,0')
 			classes = c(
 				paste('diff', chip1, c('mc_weak','mc_mod','mc_strong'), sep='_'),
-				paste('diff', chip2, c('mc_weak','mc_mod','mc_strong'), sep='_'))
+				paste('diff', chip0, c('mc_weak','mc_mod','mc_strong'), sep='_'))
 		} else if (mark == 'hmc') {
 			colors = c('102,102,255','0,0,255','0,0,102','102,255,255','0,204,204','0,102,102')
 			classes = c(
 				paste('diff', chip1, c('hmc_weak','hmc_mod','hmc_strong'), sep='_'),
-				paste('diff', chip2, c('hmc_weak','hmc_mod','hmc_strong'), sep='_'))
+				paste('diff', chip0, c('hmc_weak','hmc_mod','hmc_strong'), sep='_'))
 		}
 
 		classification = data.frame(
@@ -134,7 +134,7 @@ if(platform == 'pulldown') {
 	# as the maximum of the range of the fold changes.
 	fold_percentiles = dplyr::ntile(peaks$fold, 100)
 	minimum_fold = min(peaks$fold)
-	maximum_fold = min(peaks$fold[which(fold_percentiles==100)])
+	maximum_fold = min(peaks$fold[which(fold_percentiles == max(fold_percentiles))])
 	fold_range = c(minimum_fold, maximum_fold)
 	fold_thirds = seq(floor(min(fold_range)), ceiling(max(fold_range)), by = (ceiling(max(fold_range)) - floor(min(fold_range)))/3 )
 
@@ -148,8 +148,8 @@ if(platform == 'pulldown') {
 	peaks$code[second_third] = 2
 	peaks$code[third_third] = 3
 
-	# If the peak_type is PePr, need to add directional status
-	if(peak_type == 'PePr') {
+	# If the peak_type is csaw, need to add directional status
+	if(peak_type == 'csaw') {
 		# Direction
 		direction = sapply(peaks$DM_status, function(dm) {
 			if(dm == group1) {
