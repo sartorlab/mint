@@ -233,7 +233,7 @@ if(nrow(significant_df) == 0) {
 		stop(sprintf('No differential methylation at FDR <= %s or p-value <= %s!', FDRthreshold, pvalthreshold))
 	}
 } else {
-	message('Using FDR <= %s', FDRthreshold)
+	sprintf('Using FDR <= %s', FDRthreshold)
 }
 
 # For annotatr
