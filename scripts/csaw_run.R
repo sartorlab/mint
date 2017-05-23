@@ -268,30 +268,29 @@ while(nrow(significant_df) == 0 && FDRthreshold < 0.25) {
 }
 
 if(nrow(significant_df) == 0) {
+	message(sprintf('No tests are FDR <= %s, using alternative p-value threshold.', FDRthreshold))
 	significant_df = subset(combined_df, PValue <= pvalthreshold)
 
 	if(nrow(significant_df) == 0) {
 		stop(sprintf('No differential methylation at FDR <= %s or p-value <= %s!', FDRthreshold, pvalthreshold))
 	}
+} else {
+	message('Using FDR <= %s', FDRthreshold)
 }
 
 
 # For annotatr
 annotatr_df = significant_df[, c('chr','start','end','direction','logFC','strand','PValue')]
+annotatr_df$start = format(annotatr_df$start - 1, scientific = FALSE)
+annotatr_df$end = format(annotatr_df$end, scientific = FALSE)
 
 # For bigBed
 bigbed_df = significant_df[, c('chr','start','end','direction','start','end','color')]
+bedgraph_df$start = format(bedgraph_df$start - 1, scientific = FALSE)
+bedgraph_df$end = format(bedgraph_df$end, scientific = FALSE)
 bigbed_df$score = '1000'
 bigbed_df$strand = '.'
 bigbed_df = bigbed_df[, c('chr','start','end','direction','score','strand','start.1','end.1','color')]
-
-######
-###### Save session in RData/
-######
-
-message('Writing R Session')
-rdata_file = sprintf('RData/%s_csaw_analysis.RData', prefix)
-save(list = setdiff(ls(), c('all','combined_gr')), file=rdata_file, compress='xz')
 
 ######
 ###### Save results meeting FDR threshold

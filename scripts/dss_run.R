@@ -226,22 +226,27 @@ while(nrow(significant_df) == 0 && FDRthreshold < 0.25) {
 }
 
 if(nrow(significant_df) == 0) {
+	message(sprintf('No tests are FDR <= %s, using alternative p-value threshold.', FDRthreshold))
 	significant_df = subset(combined_df, pvals <= pvalthreshold)
 
 	if(nrow(significant_df) == 0) {
 		stop(sprintf('No differential methylation at FDR <= %s or p-value <= %s!', FDRthreshold, pvalthreshold))
 	}
+} else {
+	message('Using FDR <= %s', FDRthreshold)
 }
 
 # For annotatr
 annotatr_df = significant_df
-annotatr_df$start = annotatr_df$start - 1
+annotatr_df$start = format(annotatr_df$start - 1, scientific = FALSE)
+annotatr_df$end = format(annotatr_df$end, scientific = FALSE)
 annotatr_df$strand = '*'
 annotatr_df = annotatr_df[,c('chr','start','end','direction','pvals','strand','methdiff','mu1','mu0')]
 
 # For bedgraph
 bedgraph_df = significant_df
-bedgraph_df$start = bedgraph_df$start - 1
+bedgraph_df$start = format(bedgraph_df$start - 1, scientific = FALSE)
+bedgraph_df$end = format(bedgraph_df$end, scientific = FALSE)
 bedgraph_df = bedgraph_df[, c('chr','start','end','methdiff')]
 
 ######
