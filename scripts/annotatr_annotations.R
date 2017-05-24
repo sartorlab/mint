@@ -567,7 +567,9 @@ if(annot_type == 'bismark') {
 		facet_order = annot_all_order,
 		bin_width = 10,
 		plot_title = sprintf('%s coverage over annotations', prefix),
-		x_label = 'Coverage')
+		x_label = 'Coverage',
+		legend_facet_label = 'Coverage in annotation',
+		legend_cum_label = 'Overall coverage')
 	plot_coverage = plot_coverage + xlim(0,500)
 	ggsave(filename = file_png, plot = plot_coverage, width = 8, height = 8)
 
@@ -581,7 +583,9 @@ if(annot_type == 'bismark') {
 		facet_order = annot_all_order,
 		bin_width = 5,
 		plot_title = sprintf('%s perc. meth. over annotations', prefix),
-		x_label = 'Percent Methylation')
+		x_label = 'Percent Methylation',
+		legend_facet_label = 'Percent methylation in annotation',
+		legend_cum_label = 'Overall percent methylation')
 	ggsave(filename = file_png, plot = plot_percmeth, width = 8, height = 8)
 }
 
@@ -603,7 +607,9 @@ if(annot_type == 'dss') {
 		facet_order = annot_all_order,
 		bin_width = 5,
 		plot_title = sprintf('%s meth. diff. over annotations', prefix),
-		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0))
+		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
+		legend_facet_label = 'Methylation difference in annotation',
+		legend_cum_label = 'Overall methylation difference')
 	ggplot2::ggsave(filename = file_png, plot = plot_methdiff, width = 8, height = 8)
 
 	##############################
@@ -674,7 +680,9 @@ if(annot_type == 'macs2') {
 		facet_order = annot_all_order,
 		bin_width = 5,
 		plot_title = sprintf('%s fold change over annotations', prefix),
-		x_label = 'Fold Change')
+		x_label = 'Fold Change',
+		legend_facet_label = 'Fold change in annotation',
+		legend_cum_label = 'Overall fold change')
 	ggsave(filename = file_png, plot = plot_foldchg, width = 8, height = 8)
 
 	##############################
@@ -732,7 +740,9 @@ if(annot_type == 'csaw') {
 		facet_order = annot_all_order,
 		bin_width = 5,
 		plot_title = sprintf('%s %s fold change over annotations', prefix, chip1),
-		x_label = sprintf('%s fold change', chip1))
+		x_label = sprintf('%s fold change', chip1),
+		legend_facet_label = 'Fold change in annotation',
+		legend_cum_label = 'Overall fold change')
 	ggsave(filename = file_png, plot = plot_foldchg, width = 8, height = 8)
 
 	##############################
@@ -759,7 +769,9 @@ if(annot_type == 'csaw') {
 		facet_order = annot_all_order,
 		bin_width = 5,
 		plot_title = sprintf('%s %s fold change over annotations', prefix, chip0),
-		x_label = sprintf('%s fold change', chip0))
+		x_label = sprintf('%s fold change', chip0),
+		legend_facet_label = 'Fold change in annotation',
+		legend_cum_label = 'Overall fold change')
 	ggsave(filename = file_png, plot = plot_foldchg, width = 8, height = 8)
 
 	##############################
