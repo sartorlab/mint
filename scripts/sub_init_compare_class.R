@@ -8,19 +8,19 @@ make_rule_compare_class_bis_module = '
 # Each needs 0-based start and 1-based end to match other files
 .INTERMEDIATE : $(DIR_BIS_DSS)/%_bisulfite_DMup.txt
 $(DIR_BIS_DSS)/%_bisulfite_DMup.txt : $(DIR_BIS_DSS)/%_bisulfite_dss_significant.txt
-	$(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 && $$7 >= 0 { print $$1, $$2 - 1, $$3 }\' $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 && $$7 >= 0 { print $$1, $$2 - 1, $$3 }\' $< | sort -T $(DIR_TMP) -k1,1 -k2,2n | bedtools merge > $@
 
 .INTERMEDIATE : $(DIR_BIS_DSS)/%_bisulfite_DMdown.txt
 $(DIR_BIS_DSS)/%_bisulfite_DMdown.txt : $(DIR_BIS_DSS)/%_bisulfite_dss_significant.txt
-	$(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 && $$7 < 0 { print $$1, $$2 - 1, $$3 }\' $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 && $$7 < 0 { print $$1, $$2 - 1, $$3 }\' $< | sort -T $(DIR_TMP) -k1,1 -k2,2n | bedtools merge > $@
 
 .INTERMEDIATE : $(DIR_BIS_DSS)/%_bisulfite_noDM_signal.txt
 $(DIR_BIS_DSS)/%_bisulfite_noDM_signal.txt : $(DIR_BIS_DSS)/%_bisulfite_dss_all.txt $(DIR_BIS_DSS)/%_bisulfite_dss_significant.txt
-	$(PATH_TO_BEDTOOLS) intersect -a <($(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2 - 1, $$3 }\' $(word 1, $^)) -b <($(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2 - 1, $$3 }\' $(word 2, $^)) -v | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) intersect -a <($(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2 - 1, $$3 }\' $(word 1, $^)) -b <($(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2 - 1, $$3 }\' $(word 2, $^)) -v | sort -T $(DIR_TMP) -k1,1 -k2,2n | bedtools merge > $@
 
 .INTERMEDIATE : $(DIR_BIS_DSS)/%_bisulfite_noDM_nosignal.txt
 $(DIR_BIS_DSS)/%_bisulfite_noDM_nosignal.txt : $(DIR_BIS_DSS)/%_bisulfite_dss_all.txt
-	$(PATH_TO_BEDTOOLS) complement -i <($(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2 - 1, $$3 }\' <(sort -T $(DIR_TMP) -k1,1 -k2,2n $<)) -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) complement -i <($(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2 - 1, $$3 }\' <(sort -T $(DIR_TMP) -k1,1 -k2,2n $<)) -g <(sort -T $(DIR_TMP) -k1,1 $(CHROM_PATH)) | sort -T $(DIR_TMP) -k1,1 -k2,2n | bedtools merge > $@
 '
 
 make_rule_compare_class_pull_module = '
@@ -41,11 +41,11 @@ $(DIR_PULL_CSAW)/%_pulldown_tmp_down.txt : $(DIR_PULL_CSAW)/%_pulldown_csaw_sign
 # Each needs 0-based start and 1-based end to match other files
 .INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_DMup.txt
 $(DIR_PULL_CSAW)/%_pulldown_DMup.txt : $(DIR_PULL_CSAW)/%_pulldown_tmp_up.txt $(DIR_PULL_CSAW)/%_pulldown_tmp_down.txt
-	$(PATH_TO_BEDOPS) --difference $^ > $@
+	$(PATH_TO_BEDOPS) --difference $^ | bedtools merge > $@
 
 .INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_DMdown.txt
 $(DIR_PULL_CSAW)/%_pulldown_DMdown.txt : $(DIR_PULL_CSAW)/%_pulldown_tmp_down.txt $(DIR_PULL_CSAW)/%_pulldown_tmp_up.txt
-	$(PATH_TO_BEDOPS) --difference $^ > $@
+	$(PATH_TO_BEDOPS) --difference $^ | bedtools merge > $@
 
 .INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_DM.txt
 $(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_DM.txt : $(DIR_PULL_CSAW)/%_pulldown_DMup.txt $(DIR_PULL_CSAW)/%_pulldown_DMdown.txt
@@ -69,11 +69,11 @@ $(DIR_PULL_CSAW)/%_pulldown_tmp_nosignal.txt : $(DIR_PULL_CSAW)/%_pulldown_tmp_s
 
 .INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_noDM_signal.txt
 $(DIR_PULL_CSAW)/%_pulldown_noDM_signal.txt : $(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_noDM.txt $(DIR_PULL_CSAW)/%_pulldown_tmp_signal.txt
-	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) | sort -T $(DIR_TMP) -k1,1 -k2,2n | bedtools merge > $@
 
 .INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_noDM_nosignal.txt
 $(DIR_PULL_CSAW)/%_pulldown_noDM_nosignal.txt : $(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_noDM.txt $(DIR_PULL_CSAW)/%_pulldown_tmp_nosignal.txt
-	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+	$(PATH_TO_BEDTOOLS) intersect -a $(word 1, $^) -b $(word 2, $^) | sort -T $(DIR_TMP) -k1,1 -k2,2n | bedtools merge > $@
 '
 
 # Collect
