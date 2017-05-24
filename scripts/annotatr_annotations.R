@@ -536,7 +536,7 @@ if(!is.null(annotated_regions_rnd)) {
 		plot_title = sprintf('%s regions per annotation', prefix),
 		x_label = 'Annotations',
 		y_label = '# Regions')
-	plot_counts = plot_counts + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_counts = plot_counts + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggsave(filename = file_eps, plot = plot_counts, width = 8, height = 6)
 } else {
 	# Use CpG annotations as a post annotatr add on
@@ -547,7 +547,7 @@ if(!is.null(annotated_regions_rnd)) {
 		plot_title = sprintf('%s regions per annotation', prefix),
 		x_label = 'Annotations',
 		y_label = '# Regions')
-	plot_counts = plot_counts + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_counts = plot_counts + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggsave(filename = file_eps, plot = plot_counts, width = 8, height = 6)
 }
 
@@ -573,7 +573,7 @@ if(annot_type == 'bismark') {
 		legend_facet_label = 'Coverage in annotation',
 		legend_cum_label = 'Overall coverage')
 	plot_coverage = plot_coverage + xlim(0,500)
-	plot_coverage = plot_coverage + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_coverage = plot_coverage + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggsave(filename = file_eps, plot = plot_coverage, width = 8, height = 8)
 
 	##############################
@@ -589,7 +589,7 @@ if(annot_type == 'bismark') {
 		x_label = 'Percent Methylation',
 		legend_facet_label = 'Percent methylation in annotation',
 		legend_cum_label = 'Overall percent methylation')
-	plot_percmeth = plot_percmeth + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_percmeth = plot_percmeth + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggsave(filename = file_eps, plot = plot_percmeth, width = 8, height = 8)
 }
 
@@ -614,7 +614,7 @@ if(annot_type == 'dss') {
 		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
 		legend_facet_label = 'Methylation difference in annotation',
 		legend_cum_label = 'Overall methylation difference')
-	plot_methdiff = plot_methdiff + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_methdiff = plot_methdiff + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggplot2::ggsave(filename = file_eps, plot = plot_methdiff, width = 8, height = 8)
 
 	##############################
@@ -629,7 +629,7 @@ if(annot_type == 'dss') {
 		plot_title = sprintf('%s meth. diff. vs -log10(pval)', prefix),
 		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
 		y_label = '-log10(pval)')
-	plot_volcano = plot_volcano + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_volcano = plot_volcano + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggplot2::ggsave(filename = file_eps, plot = plot_volcano, width = 8, height = 8)
 }
 
@@ -649,7 +649,7 @@ if(!is.null(regions_tbl)) {
 		theme_bw() +
 		xlab('Peak Widths (log10 scale)') +
 		ggtitle(sprintf('%s peak widths', prefix))
-	plot_region_widths = plot_region_widths + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_region_widths = plot_region_widths + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggsave(filename = file_eps, plot = plot_region_widths, width = 6, height = 6)
 
 	##############################
@@ -660,7 +660,7 @@ if(!is.null(regions_tbl)) {
 		theme_bw() +
 		xlab('Fold Change') +
 		ggtitle(sprintf('%s Overall Fold Change', prefix))
-	plot_foldchg = plot_foldchg + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_foldchg = plot_foldchg + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggsave(filename = file_eps, plot = plot_foldchg, width = 6, height = 6)
 
 	##############################
@@ -672,7 +672,7 @@ if(!is.null(regions_tbl)) {
 		xlab('Fold Change') +
 		ylab('-log10(pval)')
 		ggtitle(sprintf('%s Overall Fold Change', prefix))
-	plot_volcano = plot_volcano + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_volcano = plot_volcano + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggsave(filename = file_eps, plot = plot_volcano, width = 6, height = 6)
 }
 
@@ -692,7 +692,7 @@ if(annot_type == 'macs2') {
 		x_label = 'Fold Change',
 		legend_facet_label = 'Fold change in annotation',
 		legend_cum_label = 'Overall fold change')
-	plot_foldchg = plot_foldchg + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_foldchg = plot_foldchg + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggsave(filename = file_eps, plot = plot_foldchg, width = 8, height = 8)
 
 	##############################
@@ -707,7 +707,7 @@ if(annot_type == 'macs2') {
 		plot_title = sprintf('%s fold change vs -log10(pval)', prefix),
 		x_label = 'Fold change IP / input',
 		y_label = '-log10(pval)')
-	plot_volcano = plot_volcano + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_volcano = plot_volcano + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggsave(filename = file_eps, plot = plot_volcano, width = 8, height = 8)
 }
 
@@ -754,7 +754,7 @@ if(annot_type == 'csaw') {
 		x_label = sprintf('%s fold change', chip1),
 		legend_facet_label = 'Fold change in annotation',
 		legend_cum_label = 'Overall fold change')
-	plot_foldchg = plot_foldchg + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_foldchg = plot_foldchg + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggsave(filename = file_eps, plot = plot_foldchg, width = 8, height = 8)
 
 	##############################
@@ -769,7 +769,7 @@ if(annot_type == 'csaw') {
 		plot_title = sprintf('%s %s fold change vs -log10(pval)', prefix, chip1),
 		x_label = sprintf('%s fold change', chip1),
 		y_label = '-log10(pval)')
-	plot_volcano = plot_volcano + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_volcano = plot_volcano + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggsave(filename = file_eps, plot = plot_volcano, width = 8, height = 8)
 
 	##############################
@@ -785,7 +785,7 @@ if(annot_type == 'csaw') {
 		x_label = sprintf('%s fold change', chip0),
 		legend_facet_label = 'Fold change in annotation',
 		legend_cum_label = 'Overall fold change')
-	plot_foldchg = plot_foldchg + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_foldchg = plot_foldchg + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggsave(filename = file_eps, plot = plot_foldchg, width = 8, height = 8)
 
 	##############################
@@ -800,7 +800,7 @@ if(annot_type == 'csaw') {
 		plot_title = sprintf('%s %s fold change vs -log10(pval)', prefix, chip0),
 		x_label = sprintf('%s fold change', chip0),
 		y_label = '-log10(pval)')
-	plot_volcano = plot_volcano + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	plot_volcano = plot_volcano + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 	ggsave(filename = file_eps, plot = plot_volcano, width = 8, height = 8)
 }
 
@@ -826,7 +826,7 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'CpG annots.',
 			x_label = x_desc,
 			y_label = 'Count')
-		plot_cat_count_cpgs = plot_cat_count_cpgs + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		plot_cat_count_cpgs = plot_cat_count_cpgs + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 		ggsave(filename = file_eps, plot = plot_cat_count_cpgs, width = 8, height = 8)
 
 		##############################
@@ -841,7 +841,7 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'knownGene annots.',
 			x_label = x_desc,
 			y_label = 'Count')
-		plot_cat_count_genes = plot_cat_count_genes + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		plot_cat_count_genes = plot_cat_count_genes + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 		ggsave(filename = file_eps, plot = plot_cat_count_genes, width = 8, height = 8)
 
 		##############################
@@ -856,7 +856,7 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'CpG annots.',
 			x_label = x_desc,
 			y_label = 'Proportion')
-		plot_cat_prop_cpgs = plot_cat_prop_cpgs + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		plot_cat_prop_cpgs = plot_cat_prop_cpgs + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 		ggsave(filename = file_eps, plot = plot_cat_prop_cpgs, width = 8, height = 8)
 
 		##############################
@@ -871,7 +871,7 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'knownGene annots.',
 			x_label = x_desc,
 			y_label = 'Proportion')
-		plot_cat_prop_genes = plot_cat_prop_genes + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		plot_cat_prop_genes = plot_cat_prop_genes + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 		ggsave(filename = file_eps, plot = plot_cat_prop_genes, width = 8, height = 8)
 	} else {
 		##############################
@@ -885,7 +885,7 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'CpG annots.',
 			x_label = x_desc,
 			y_label = 'Count')
-		plot_cat_count_cpgs = plot_cat_count_cpgs + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		plot_cat_count_cpgs = plot_cat_count_cpgs + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 		ggsave(filename = file_eps, plot = plot_cat_count_cpgs, width = 8, height = 8)
 
 		##############################
@@ -899,7 +899,7 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'knownGene annots.',
 			x_label = x_desc,
 			y_label = 'Count')
-		plot_cat_count_genes = plot_cat_count_genes + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		plot_cat_count_genes = plot_cat_count_genes + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 		ggsave(filename = file_eps, plot = plot_cat_count_genes, width = 8, height = 8)
 
 		##############################
@@ -913,7 +913,7 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'CpG annots.',
 			x_label = x_desc,
 			y_label = 'Proportion')
-		plot_cat_prop_cpgs = plot_cat_prop_cpgs + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		plot_cat_prop_cpgs = plot_cat_prop_cpgs + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 		ggsave(filename = file_eps, plot = plot_cat_prop_cpgs, width = 8, height = 8)
 
 		##############################
@@ -927,7 +927,7 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'knownGene annots.',
 			x_label = x_desc,
 			y_label = 'Proportion')
-		plot_cat_prop_genes = plot_cat_prop_genes + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		plot_cat_prop_genes = plot_cat_prop_genes + theme(axis.text = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
 		ggsave(filename = file_eps, plot = plot_cat_prop_genes, width = 8, height = 8)
 	}
 }
