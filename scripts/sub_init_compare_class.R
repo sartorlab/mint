@@ -25,18 +25,31 @@ $(DIR_BIS_DSS)/%_bisulfite_noDM_nosignal.txt : $(DIR_BIS_DSS)/%_bisulfite_dss_al
 
 make_rule_compare_class_pull_module = '
 # Intermediates for the pulldown piece
+.INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_tmp_up.txt
+$(DIR_PULL_CSAW)/%_pulldown_tmp_up.txt : $(DIR_PULL_CSAW)/%_pulldown_csaw_significant.txt
+	$(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
+	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
+	> $@
+
+.INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_tmp_down.txt
+$(DIR_PULL_CSAW)/%_pulldown_tmp_down.txt : $(DIR_PULL_CSAW)/%_pulldown_csaw_significant.txt
+	$(PATH_TO_AWK) -v OFS="\\t" \'{print $$1, $$2, $$3}\' $< \\
+	| sort -T $(DIR_TMP) -k1,1 -k2,2n \\
+	> $@
+
+
 # Each needs 0-based start and 1-based end to match other files
 .INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_DMup.txt
-$(DIR_PULL_CSAW)/%_pulldown_DMup.txt : $(DIR_PULL_CSAW)/%_pulldown_csaw_significant.txt
-	$(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 && $$8 >= 0 { print $$1, $$2 - 1, $$3 }\' $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+$(DIR_PULL_CSAW)/%_pulldown_DMup.txt : $(DIR_PULL_CSAW)/%_pulldown_tmp_up.txt $(DIR_PULL_CSAW)/%_pulldown_tmp_down.txt
+	$(PATH_TO_BEDOPS) --difference $^ > $@
 
 .INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_DMdown.txt
-$(DIR_PULL_CSAW)/%_pulldown_DMdown.txt : $(DIR_PULL_CSAW)/%_pulldown_csaw_significant.txt
-	$(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 && $$8 < 0 { print $$1, $$2 - 1, $$3 }\' $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+$(DIR_PULL_CSAW)/%_pulldown_DMdown.txt : $(DIR_PULL_CSAW)/%_pulldown_tmp_down.txt $(DIR_PULL_CSAW)/%_pulldown_tmp_up.txt
+	$(PATH_TO_BEDOPS) --difference $^ > $@
 
 .INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_DM.txt
-$(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_DM.txt : $(DIR_PULL_CSAW)/%_pulldown_csaw_significant.txt
-	$(PATH_TO_AWK) -v OFS="\\t" \'NR > 1 { print $$1, $$2 - 1, $$3}\' $< | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@
+$(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_DM.txt : $(DIR_PULL_CSAW)/%_pulldown_DMup.txt $(DIR_PULL_CSAW)/%_pulldown_DMdown.txt
+	cat $^ | sort -T $(DIR_TMP) -k1,1 -k2,2n > $@ 
 
 .INTERMEDIATE : $(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_noDM.txt
 $(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_noDM.txt: $(DIR_PULL_CSAW)/%_pulldown_tmp_disjoint_DM.txt
