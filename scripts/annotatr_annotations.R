@@ -528,7 +528,7 @@ readr::write_tsv(x = count_annots, path = sprintf('summary/tables/%s_annotation_
 # NOTE: This is the same for all the types
 if(!is.null(annotated_regions_rnd)) {
 	# Use randomized regions
-	file_png = sprintf('summary/figures/%s_counts.png', prefix)
+	file_eps = sprintf('summary/figures/%s_counts.eps', prefix)
 	plot_counts = plot_annotation(
 		annotated_regions = annotated_regions,
 		annotated_random = annotated_regions_rnd,
@@ -536,17 +536,19 @@ if(!is.null(annotated_regions_rnd)) {
 		plot_title = sprintf('%s regions per annotation', prefix),
 		x_label = 'Annotations',
 		y_label = '# Regions')
-	ggsave(filename = file_png, plot = plot_counts, width = 8, height = 6)
+	plot_counts = plot_counts + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggsave(filename = file_eps, plot = plot_counts, width = 8, height = 6)
 } else {
 	# Use CpG annotations as a post annotatr add on
-	file_png = sprintf('summary/figures/%s_counts.png', prefix)
+	file_eps = sprintf('summary/figures/%s_counts.eps', prefix)
 	plot_counts = plot_annotation(
 		annotated_regions = annotated_regions,
 		annotation_order = annot_all_order,
 		plot_title = sprintf('%s regions per annotation', prefix),
 		x_label = 'Annotations',
 		y_label = '# Regions')
-	ggsave(filename = file_png, plot = plot_counts, width = 8, height = 6)
+	plot_counts = plot_counts + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggsave(filename = file_eps, plot = plot_counts, width = 8, height = 6)
 }
 
 #############################################################
@@ -559,7 +561,7 @@ if(annot_type == 'bismark') {
 	# 1: Removed 578 rows containing non-finite values (stat_bin).
 	# 2: Removed 6936 rows containing non-finite values (stat_bin).
 	# When there are coverages exceeding the x limits
-	file_png = sprintf('summary/figures/%s_coverage.png', prefix)
+	file_eps = sprintf('summary/figures/%s_coverage.eps', prefix)
 	plot_coverage = plot_numerical(
 		annotated_regions = annotated_regions,
 		x = 'coverage',
@@ -571,11 +573,12 @@ if(annot_type == 'bismark') {
 		legend_facet_label = 'Coverage in annotation',
 		legend_cum_label = 'Overall coverage')
 	plot_coverage = plot_coverage + xlim(0,500)
-	ggsave(filename = file_png, plot = plot_coverage, width = 8, height = 8)
+	plot_coverage = plot_coverage + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggsave(filename = file_eps, plot = plot_coverage, width = 8, height = 8)
 
 	##############################
 	# Percent methylation over annotations
-	file_png = sprintf('summary/figures/%s_percmeth.png', prefix)
+	file_eps = sprintf('summary/figures/%s_percmeth.eps', prefix)
 	plot_percmeth = plot_numerical(
 		annotated_regions = annotated_regions,
 		x = 'perc_meth',
@@ -586,7 +589,8 @@ if(annot_type == 'bismark') {
 		x_label = 'Percent Methylation',
 		legend_facet_label = 'Percent methylation in annotation',
 		legend_cum_label = 'Overall percent methylation')
-	ggsave(filename = file_png, plot = plot_percmeth, width = 8, height = 8)
+	plot_percmeth = plot_percmeth + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggsave(filename = file_eps, plot = plot_percmeth, width = 8, height = 8)
 }
 
 #############################################################
@@ -599,7 +603,7 @@ if(annot_type == 'dss') {
 
 	##############################
 	# Methylation difference over annotations
-	file_png = sprintf('summary/figures/%s_methdiff.png', prefix)
+	file_eps = sprintf('summary/figures/%s_methdiff.eps', prefix)
 	plot_methdiff = plot_numerical(
 		annotated_regions = annotated_regions,
 		x = 'meth_diff',
@@ -610,11 +614,12 @@ if(annot_type == 'dss') {
 		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
 		legend_facet_label = 'Methylation difference in annotation',
 		legend_cum_label = 'Overall methylation difference')
-	ggplot2::ggsave(filename = file_png, plot = plot_methdiff, width = 8, height = 8)
+	plot_methdiff = plot_methdiff + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggplot2::ggsave(filename = file_eps, plot = plot_methdiff, width = 8, height = 8)
 
 	##############################
 	# Volcano plots over annotations
-	file_png = sprintf('summary/figures/%s_volcano.png', prefix)
+	file_eps = sprintf('summary/figures/%s_volcano.eps', prefix)
 	plot_volcano = plot_numerical(
 		annotated_regions = annotated_regions,
 		x = 'meth_diff',
@@ -624,7 +629,8 @@ if(annot_type == 'dss') {
 		plot_title = sprintf('%s meth. diff. vs -log10(pval)', prefix),
 		x_label = sprintf('Methylation Difference (%s - %s)', group1, group0),
 		y_label = '-log10(pval)')
-	ggplot2::ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
+	plot_volcano = plot_volcano + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggplot2::ggsave(filename = file_eps, plot = plot_volcano, width = 8, height = 8)
 }
 
 #############################################################
@@ -637,34 +643,37 @@ if(!is.null(regions_tbl)) {
 		region = 1:length(regions),
 		width = end(regions) - start(regions), stringsAsFactors=F)
 
-	file_png = sprintf('summary/figures/%s_peak_widths.png', prefix)
+	file_eps = sprintf('summary/figures/%s_peak_widths.eps', prefix)
 	plot_region_widths = ggplot(data = widths, aes(x = width, y=..density..)) +
 		scale_x_log10() + geom_histogram(stat = 'bin', fill = NA, color='gray', bins=30) +
 		theme_bw() +
 		xlab('Peak Widths (log10 scale)') +
 		ggtitle(sprintf('%s peak widths', prefix))
-	ggsave(filename = file_png, plot = plot_region_widths, width = 6, height = 6)
+	plot_region_widths = plot_region_widths + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggsave(filename = file_eps, plot = plot_region_widths, width = 6, height = 6)
 
 	##############################
 	# Fold changes
-	file_png = sprintf('summary/figures/%s_foldchg_overall.png', prefix)
+	file_eps = sprintf('summary/figures/%s_foldchg_overall.eps', prefix)
 	plot_foldchg = ggplot(data = regions_tbl, aes(x = fold, y=..density..)) +
 		geom_histogram(stat = 'bin', fill = NA, color='gray', bins=30) +
 		theme_bw() +
 		xlab('Fold Change') +
 		ggtitle(sprintf('%s Overall Fold Change', prefix))
-	ggsave(filename = file_png, plot = plot_foldchg, width = 6, height = 6)
+	plot_foldchg = plot_foldchg + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggsave(filename = file_eps, plot = plot_foldchg, width = 6, height = 6)
 
 	##############################
 	# Volcano plots
-	file_png = sprintf('summary/figures/%s_volcano_overall.png', prefix)
+	file_eps = sprintf('summary/figures/%s_volcano_overall.eps', prefix)
 	plot_volcano = ggplot(data = regions_tbl, aes(x = fold, y = pval)) +
 		geom_point(alpha = 1/8, size = 1) +
 		theme_bw() +
 		xlab('Fold Change') +
 		ylab('-log10(pval)')
 		ggtitle(sprintf('%s Overall Fold Change', prefix))
-	ggsave(filename = file_png, plot = plot_volcano, width = 6, height = 6)
+	plot_volcano = plot_volcano + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggsave(filename = file_eps, plot = plot_volcano, width = 6, height = 6)
 }
 
 #############################################################
@@ -672,7 +681,7 @@ if(!is.null(regions_tbl)) {
 if(annot_type == 'macs2') {
 	##############################
 	# Fold change over annotations
-	file_png = sprintf('summary/figures/%s_foldchg_annots.png', prefix)
+	file_eps = sprintf('summary/figures/%s_foldchg_annots.eps', prefix)
 	plot_foldchg = plot_numerical(
 		annotated_regions = annotated_regions,
 		x = 'fold',
@@ -683,11 +692,12 @@ if(annot_type == 'macs2') {
 		x_label = 'Fold Change',
 		legend_facet_label = 'Fold change in annotation',
 		legend_cum_label = 'Overall fold change')
-	ggsave(filename = file_png, plot = plot_foldchg, width = 8, height = 8)
+	plot_foldchg = plot_foldchg + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggsave(filename = file_eps, plot = plot_foldchg, width = 8, height = 8)
 
 	##############################
 	# Volcano plots over annotations
-	file_png = sprintf('summary/figures/%s_volcano_annots.png', prefix)
+	file_eps = sprintf('summary/figures/%s_volcano_annots.eps', prefix)
 	plot_volcano = plot_numerical(
 		annotated_regions = annotated_regions,
 		x = 'fold',
@@ -697,7 +707,8 @@ if(annot_type == 'macs2') {
 		plot_title = sprintf('%s fold change vs -log10(pval)', prefix),
 		x_label = 'Fold change IP / input',
 		y_label = '-log10(pval)')
-	ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
+	plot_volcano = plot_volcano + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggsave(filename = file_eps, plot = plot_volcano, width = 8, height = 8)
 }
 
 #############################################################
@@ -705,7 +716,7 @@ if(annot_type == 'macs2') {
 if(annot_type == 'csaw') {
 	# ##############################
 	# # Fold change with facet over group (chip1/chip0)
-	# file_png = sprintf('summary/figures/%s_foldchg_groups.png', prefix)
+	# file_eps = sprintf('summary/figures/%s_foldchg_groups.eps', prefix)
 	# plot_foldchg = plot_numerical(
 	# 	annotated_regions = regions_tbl,
 	# 	x = 'fold',
@@ -714,11 +725,11 @@ if(annot_type == 'csaw') {
 	# 	bin_width = 5,
 	# 	plot_title = sprintf('%s fold change over annotations', prefix),
 	# 	x_label = 'Fold Change')
-	# ggsave(filename = file_png, plot = plot_foldchg, width = 12, height = 6)
+	# ggsave(filename = file_eps, plot = plot_foldchg, width = 12, height = 6)
 	#
 	# ##############################
 	# # Volcano plots with facet over group (chip1/chip0)
-	# file_png = sprintf('summary/figures/%s_volcano_groups.png', prefix)
+	# file_eps = sprintf('summary/figures/%s_volcano_groups.eps', prefix)
 	# plot_volcano = plot_numerical(
 	# 	annotated_regions = regions_tbl,
 	# 	x = 'fold',
@@ -728,11 +739,11 @@ if(annot_type == 'csaw') {
 	# 	plot_title = sprintf('%s fold change vs -log10(pval)', prefix),
 	# 	x_label = 'Fold change',
 	# 	y_label = '-log10(pval)')
-	# ggsave(filename = file_png, plot = plot_volcano, width = 12, height = 6)
+	# ggsave(filename = file_eps, plot = plot_volcano, width = 12, height = 6)
 
 	##############################
 	# Fold change in chip1 with facet over annots
-	file_png = sprintf('summary/figures/%s_foldchg_%s_annots.png', prefix, chip1)
+	file_eps = sprintf('summary/figures/%s_foldchg_%s_annots.eps', prefix, chip1)
 	plot_foldchg = plot_numerical(
 		annotated_regions = subset(annotated_regions, group == chip1),
 		x = 'fold',
@@ -743,11 +754,12 @@ if(annot_type == 'csaw') {
 		x_label = sprintf('%s fold change', chip1),
 		legend_facet_label = 'Fold change in annotation',
 		legend_cum_label = 'Overall fold change')
-	ggsave(filename = file_png, plot = plot_foldchg, width = 8, height = 8)
+	plot_foldchg = plot_foldchg + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggsave(filename = file_eps, plot = plot_foldchg, width = 8, height = 8)
 
 	##############################
 	# Volcano in chip1 with facet over annots
-	file_png = sprintf('summary/figures/%s_volcano_%s_annots.png', prefix, chip1)
+	file_eps = sprintf('summary/figures/%s_volcano_%s_annots.eps', prefix, chip1)
 	plot_volcano = plot_numerical(
 		annotated_regions = subset(annotated_regions, group == chip1),
 		x = 'fold',
@@ -757,11 +769,12 @@ if(annot_type == 'csaw') {
 		plot_title = sprintf('%s %s fold change vs -log10(pval)', prefix, chip1),
 		x_label = sprintf('%s fold change', chip1),
 		y_label = '-log10(pval)')
-	ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
+	plot_volcano = plot_volcano + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggsave(filename = file_eps, plot = plot_volcano, width = 8, height = 8)
 
 	##############################
 	# Fold change in chip0 with facet over annots
-	file_png = sprintf('summary/figures/%s_foldchg_%s_annots.png', prefix, chip0)
+	file_eps = sprintf('summary/figures/%s_foldchg_%s_annots.eps', prefix, chip0)
 	plot_foldchg = plot_numerical(
 		annotated_regions = subset(annotated_regions, group == chip0),
 		x = 'fold',
@@ -772,11 +785,12 @@ if(annot_type == 'csaw') {
 		x_label = sprintf('%s fold change', chip0),
 		legend_facet_label = 'Fold change in annotation',
 		legend_cum_label = 'Overall fold change')
-	ggsave(filename = file_png, plot = plot_foldchg, width = 8, height = 8)
+	plot_foldchg = plot_foldchg + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggsave(filename = file_eps, plot = plot_foldchg, width = 8, height = 8)
 
 	##############################
 	# Volcano in chip0 with facet over annots
-	file_png = sprintf('summary/figures/%s_volcano_%s_annots.png', prefix, chip0)
+	file_eps = sprintf('summary/figures/%s_volcano_%s_annots.eps', prefix, chip0)
 	plot_volcano = plot_numerical(
 		annotated_regions = subset(annotated_regions, group == chip0),
 		x = 'fold',
@@ -786,7 +800,8 @@ if(annot_type == 'csaw') {
 		plot_title = sprintf('%s %s fold change vs -log10(pval)', prefix, chip0),
 		x_label = sprintf('%s fold change', chip0),
 		y_label = '-log10(pval)')
-	ggsave(filename = file_png, plot = plot_volcano, width = 8, height = 8)
+	plot_volcano = plot_volcano + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+	ggsave(filename = file_eps, plot = plot_volcano, width = 8, height = 8)
 }
 
 #############################################################
@@ -801,7 +816,7 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 	if(!is.null(annotated_regions_rnd)) {
 		##############################
 		# Regions split by category and stacked by CpG annotations (count)
-		file_png = sprintf('summary/figures/%s_cat_count_cpgs.png', prefix)
+		file_eps = sprintf('summary/figures/%s_cat_count_cpgs.eps', prefix)
 		plot_cat_count_cpgs = plot_categorical(
 			annotated_regions = annotated_regions,
 			annotated_random = annotated_regions_rnd,
@@ -811,11 +826,12 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'CpG annots.',
 			x_label = x_desc,
 			y_label = 'Count')
-		ggsave(filename = file_png, plot = plot_cat_count_cpgs, width = 8, height = 8)
+		plot_cat_count_cpgs = plot_cat_count_cpgs + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		ggsave(filename = file_eps, plot = plot_cat_count_cpgs, width = 8, height = 8)
 
 		##############################
 		# Regions split by category and stacked by knownGene annotations (count)
-		file_png = sprintf('summary/figures/%s_cat_count_genes.png', prefix)
+		file_eps = sprintf('summary/figures/%s_cat_count_genes.eps', prefix)
 		plot_cat_count_genes = plot_categorical(
 			annotated_regions = annotated_regions,
 			annotated_random = annotated_regions_rnd,
@@ -825,11 +841,12 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'knownGene annots.',
 			x_label = x_desc,
 			y_label = 'Count')
-		ggsave(filename = file_png, plot = plot_cat_count_genes, width = 8, height = 8)
+		plot_cat_count_genes = plot_cat_count_genes + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		ggsave(filename = file_eps, plot = plot_cat_count_genes, width = 8, height = 8)
 
 		##############################
 		# Regions split by category and filled by CpG annotations (prop)
-		file_png = sprintf('summary/figures/%s_cat_prop_cpgs.png', prefix)
+		file_eps = sprintf('summary/figures/%s_cat_prop_cpgs.eps', prefix)
 		plot_cat_prop_cpgs = plot_categorical(
 			annotated_regions = annotated_regions,
 			annotated_random = annotated_regions_rnd,
@@ -839,11 +856,12 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'CpG annots.',
 			x_label = x_desc,
 			y_label = 'Proportion')
-		ggsave(filename = file_png, plot = plot_cat_prop_cpgs, width = 8, height = 8)
+		plot_cat_prop_cpgs = plot_cat_prop_cpgs + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		ggsave(filename = file_eps, plot = plot_cat_prop_cpgs, width = 8, height = 8)
 
 		##############################
 		# Regions split by category and filled by knownGene annotations (prop)
-		file_png = sprintf('summary/figures/%s_cat_prop_genes.png', prefix)
+		file_eps = sprintf('summary/figures/%s_cat_prop_genes.eps', prefix)
 		plot_cat_prop_genes = plot_categorical(
 			annotated_regions = annotated_regions,
 			annotated_random = annotated_regions_rnd,
@@ -853,11 +871,12 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'knownGene annots.',
 			x_label = x_desc,
 			y_label = 'Proportion')
-		ggsave(filename = file_png, plot = plot_cat_prop_genes, width = 8, height = 8)
+		plot_cat_prop_genes = plot_cat_prop_genes + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		ggsave(filename = file_eps, plot = plot_cat_prop_genes, width = 8, height = 8)
 	} else {
 		##############################
 		# Regions split by category and stacked by CpG annotations (count)
-		file_png = sprintf('summary/figures/%s_cat_count_cpgs.png', prefix)
+		file_eps = sprintf('summary/figures/%s_cat_count_cpgs.eps', prefix)
 		plot_cat_count_cpgs = plot_categorical(
 			annotated_regions = annotated_regions,
 			x=x_str, fill='annot.type',
@@ -866,11 +885,12 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'CpG annots.',
 			x_label = x_desc,
 			y_label = 'Count')
-		ggsave(filename = file_png, plot = plot_cat_count_cpgs, width = 8, height = 8)
+		plot_cat_count_cpgs = plot_cat_count_cpgs + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		ggsave(filename = file_eps, plot = plot_cat_count_cpgs, width = 8, height = 8)
 
 		##############################
 		# Regions split by category and stacked by knownGene annotations (count)
-		file_png = sprintf('summary/figures/%s_cat_count_genes.png', prefix)
+		file_eps = sprintf('summary/figures/%s_cat_count_genes.eps', prefix)
 		plot_cat_count_genes = plot_categorical(
 			annotated_regions = annotated_regions,
 			x=x_str, fill='annot.type',
@@ -879,11 +899,12 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'knownGene annots.',
 			x_label = x_desc,
 			y_label = 'Count')
-		ggsave(filename = file_png, plot = plot_cat_count_genes, width = 8, height = 8)
+		plot_cat_count_genes = plot_cat_count_genes + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		ggsave(filename = file_eps, plot = plot_cat_count_genes, width = 8, height = 8)
 
 		##############################
 		# Regions split by category and filled by CpG annotations (prop)
-		file_png = sprintf('summary/figures/%s_cat_prop_cpgs.png', prefix)
+		file_eps = sprintf('summary/figures/%s_cat_prop_cpgs.eps', prefix)
 		plot_cat_prop_cpgs = plot_categorical(
 			annotated_regions = annotated_regions,
 			x=x_str, fill='annot.type',
@@ -892,11 +913,12 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'CpG annots.',
 			x_label = x_desc,
 			y_label = 'Proportion')
-		ggsave(filename = file_png, plot = plot_cat_prop_cpgs, width = 8, height = 8)
+		plot_cat_prop_cpgs = plot_cat_prop_cpgs + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		ggsave(filename = file_eps, plot = plot_cat_prop_cpgs, width = 8, height = 8)
 
 		##############################
 		# Regions split by category and filled by knownGene annotations (prop)
-		file_png = sprintf('summary/figures/%s_cat_prop_genes.png', prefix)
+		file_eps = sprintf('summary/figures/%s_cat_prop_genes.eps', prefix)
 		plot_cat_prop_genes = plot_categorical(
 			annotated_regions = annotated_regions,
 			x=x_str, fill='annot.type',
@@ -905,7 +927,8 @@ if(annot_type != 'bismark' && annot_type != 'macs2') {
 			legend_title = 'knownGene annots.',
 			x_label = x_desc,
 			y_label = 'Proportion')
-		ggsave(filename = file_png, plot = plot_cat_prop_genes, width = 8, height = 8)
+		plot_cat_prop_genes = plot_cat_prop_genes + theme(axis.txt = element_text(size = 16), axis.title=element_text(size = 16), legend.text=element_text(size = 16))
+		ggsave(filename = file_eps, plot = plot_cat_prop_genes, width = 8, height = 8)
 	}
 }
 
