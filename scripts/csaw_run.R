@@ -262,16 +262,16 @@ combined_df = combined_df[, c('chr','start','end','strand','nWindows','logFC.up'
 # Significant regions
 significant_df = subset(combined_df, FDR <= FDRthreshold)
 increment = 0.05
-while(nrow(significant_df) == 0 && FDRthreshold < 0.25) {
+while(nrow(significant_df) < 5 && FDRthreshold < 0.25) {
 	FDRthreshold = FDRthreshold + increment
 	significant_df = subset(combined_df, FDR <= FDRthreshold)
 }
 
-if(nrow(significant_df) == 0) {
+if(nrow(significant_df) < 5) {
 	message(sprintf('No tests are FDR <= %s, using alternative p-value threshold.', FDRthreshold))
 	significant_df = subset(combined_df, PValue <= pvalthreshold)
 
-	if(nrow(significant_df) == 0) {
+	if(nrow(significant_df) < 5) {
 		stop(sprintf('No differential methylation at FDR <= %s or p-value <= %s!', FDRthreshold, pvalthreshold))
 	}
 } else {

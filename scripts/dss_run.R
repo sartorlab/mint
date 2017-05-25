@@ -220,16 +220,16 @@ result = result[!is.na(result$stat),]
 # Significant
 significant_df = subset(result, fdrs < FDRthreshold & abs(methdiff) > methdiffthreshold)
 increment = 0.05
-while(nrow(significant_df) == 0 && FDRthreshold < 0.25) {
+while(nrow(significant_df) < 5 && FDRthreshold < 0.25) {
 	FDRthreshold = FDRthreshold + increment
 	significant_df = subset(combined_df, fdrs < FDRthreshold)
 }
 
-if(nrow(significant_df) == 0) {
+if(nrow(significant_df) < 5) {
 	message(sprintf('No tests are FDR <= %s, using alternative p-value threshold.', FDRthreshold))
 	significant_df = subset(combined_df, pvals <= pvalthreshold)
 
-	if(nrow(significant_df) == 0) {
+	if(nrow(significant_df) < 5) {
 		stop(sprintf('No differential methylation at FDR <= %s or p-value <= %s!', FDRthreshold, pvalthreshold))
 	}
 } else {
