@@ -369,6 +369,8 @@ Rscript init.R --project projectID --genome genome_build --genomepath /path/to/g
 
 The `init.R` script creates an appropriate directory structure in `mint/projects/projectID/`, creates symlinks to the `.fastq.gz` files in `/path/to/data`, and creates the `makefile` and `config.mk` files that control the analysis of your project.
 
+NOTE: The genome should use the UCSC notation of `hg19, hg38, mm9`, or `mm10` in order to take advantage of genomic annotations. The `--genome` parameter should be the same genome as the `--genomepath` in spirit, if not in name. e.g. `--genome hg38` and `--genomepath /path/to/GRCh38`.
+
 [Top](#contents)
 
 #### Configuring a project
