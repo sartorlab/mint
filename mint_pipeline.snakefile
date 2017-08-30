@@ -49,7 +49,7 @@ PULLDOWN_COMPARISONS = config.get("pulldown_comparisons")
 # print(expand("pulldown/04-fastqc/{sample}_trimmed_fastqc.zip", sample = PULL_SAMPLE_IDS))
 # print(expand("pulldown/05-bowtie2/{sample}_trimmed.fq.gz_aligned.bam", sample = PULL_SAMPLE_IDS))
 
-Create the path and switch
+# Create the path and switch
 if not os.path.exists(PROJECT_DIR):
 	os.makedirs(PROJECT_DIR)
 
