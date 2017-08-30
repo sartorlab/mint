@@ -1,0 +1,69 @@
+genome : hg19
+
+project_dir : "/ccmb/BioinfCore/ActiveProjects/EpiCore/mint_test_analysis"
+
+data_dir : "/ccmb/BioinfCore/ActiveProjects/EpiCore/mint_test/hybrid"
+
+genome_dir : "/ccmb/BioinfCore/Common/iGenomes/Homo_sapiens/UCSC/hg19"
+
+chrom_lengths : "/ccmb/BioinfCore/Common/iGenomes/Homo_sapiens/UCSC/hg19/Annotation/Archives/archive-2013-03-06-11-23-03/Genes/ChromInfo.txt"
+
+paired : false
+
+# Human readable is the key, SeqCore ID is item
+bisulfite_samples:
+    IDH2mut_1_errbs : IDH2mut_1_errbs
+    IDH2mut_2_errbs : IDH2mut_2_errbs
+    NBM_1_errbs : NBM_1_errbs
+    NBM_2_errbs : NBM_2_errbs
+
+# Human readable is the key, SeqCore ID is item
+pulldown_samples:
+    IDH2mut_1_hmeseal : IDH2mut_1_hmeseal
+    IDH2mut_2_hmeseal : IDH2mut_2_hmeseal
+    NBM_1_hmeseal : NBM_1_hmeseal
+    NBM_2_hmeseal : NBM_2_hmeseal
+    IDH2mut_1_hmeseal_input : IDH2mut_1_hmeseal_input
+    IDH2mut_2_hmeseal_input : IDH2mut_2_hmeseal_input
+    NBM_1_hmeseal_input : NBM_1_hmeseal_input
+    NBM_2_hmeseal_input : NBM_2_hmeseal_input
+
+# bisulfite_comparisons :
+#     IDH2mut_v_NBM :
+#         exp : [IDH2mut_1_errbs, IDH2mut_2_errbs]
+#         con : [NBM_1_errbs, NBM_2_errbs]
+#         covariates :
+#         numerical_covariates :
+#         model : '~ 1 + group'
+#         contrast : [0,1]
+#
+#     IDH2mut_v_NBM_age :
+#         exp : [IDH2mut_1_errbs, IDH2mut_2_errbs]
+#         con : [NBM_1_errbs, NBM_2_errbs]
+#         covariates : [age : [3,6,10,15]]
+#         numerical_covariates : [1]
+#         model : '~ 1 + group + age'
+#         contrast : [0,1,0]
+#
+#     IDH2mut_v_NBM_age :
+#         exp : [IDH2mut_1_errbs, IDH2mut_2_errbs]
+#         con : [NBM_1_errbs, NBM_2_errbs]
+#         covariates : [subject : [1,2,1,2]]
+#         numerical_covariates : [0]
+#         model : '~ 1 + group + subject'
+#         contrast : [0,1,0]
+#
+#     IDH2mut_v_NBM_subject_age :
+#         exp : [IDH2mut_1_errbs, IDH2mut_2_errbs]
+#         con : [NBM_1_errbs, NBM_2_errbs]
+#         covariates : [subject : [1,2,1,2], age : [3,6,10,15]]
+#         numerical_covariates : [0, 1]
+#         model : '~ 1 + group + subject + age'
+#         contrast : [0,1,0,0]
+#
+# pulldown_comparisons :
+#     IDH2mut_v_NBM :
+#         exp : [IDH2mut_1_hmeseal, IDH2mut_2_hmeseal]
+#         exp_input : [IDH2mut_1_hmeseal_input, IDH2mut_2_hmeseal_input]
+#         con : [NBM_1_hmeseal, NBM_2_hmeseal]
+#         con_input : [NBM_1_hmeseal_input, NBM_2_hmeseal_input]
