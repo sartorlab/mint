@@ -57,7 +57,7 @@ os.chdir(PROJECT_DIR)
 
 rule all:
     input:
-        setup
+        expand("01-raw_fastq/{sample}.fastq.gz", sample = ALL_SAMPLE_IDS)
 
 rule setup:
     input:
