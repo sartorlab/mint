@@ -1,8 +1,8 @@
 genome : hg19
 
-project_dir : "/ccmb/BioinfCore/ActiveProjects/EpiCore/mint_test_analysis"
+project_dir : "/Users/rcavalca/Projects/mint_test_analysis"
 
-data_dir : "/ccmb/BioinfCore/ActiveProjects/EpiCore/mint_test/hybrid"
+data_dir : "/Users/rcavalca/Projects/mint_test/hybrid"
 
 genome_dir : "/ccmb/BioinfCore/Common/iGenomes/Homo_sapiens/UCSC/hg19"
 
@@ -12,21 +12,21 @@ paired : false
 
 # Human readable is the key, SeqCore ID is item
 bisulfite_samples:
-    IDH2mut_1_errbs : IDH2mut_1_errbs
-    IDH2mut_2_errbs : IDH2mut_2_errbs
-    NBM_1_errbs : NBM_1_errbs
-    NBM_2_errbs : NBM_2_errbs
+    IDH2mut_1_errbs : 6000
+    IDH2mut_2_errbs : 6001
+    NBM_1_errbs : 6002
+    NBM_2_errbs : 6003
 
 # Human readable is the key, SeqCore ID is item
 pulldown_samples:
-    IDH2mut_1_hmeseal : IDH2mut_1_hmeseal
-    IDH2mut_2_hmeseal : IDH2mut_2_hmeseal
-    NBM_1_hmeseal : NBM_1_hmeseal
-    NBM_2_hmeseal : NBM_2_hmeseal
-    IDH2mut_1_hmeseal_input : IDH2mut_1_hmeseal_input
-    IDH2mut_2_hmeseal_input : IDH2mut_2_hmeseal_input
-    NBM_1_hmeseal_input : NBM_1_hmeseal_input
-    NBM_2_hmeseal_input : NBM_2_hmeseal_input
+    IDH2mut_1_hmeseal : 7000
+    IDH2mut_2_hmeseal : 7001
+    NBM_1_hmeseal : 7002
+    NBM_2_hmeseal : 7003
+    IDH2mut_1_hmeseal_input : 7004
+    IDH2mut_2_hmeseal_input : 7005
+    NBM_1_hmeseal_input : 7006
+    NBM_2_hmeseal_input : 7007
 
 # bisulfite_comparisons :
 #     IDH2mut_v_NBM :

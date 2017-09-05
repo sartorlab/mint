@@ -3,51 +3,24 @@ from snakemake.workflow import expand
 import glob
 import getpass
 
+################################################################################
+
 # Get things from .yaml and do some massage
 PROJECT_DIR = config.get("project_dir")
 DATA_DIR = config.get("data_dir")
 GENOME_DIR = config.get("genome_dir")
 CHROM_LENGTHS = config.get("chrom_lengths")
+BOWTIE2_INDEX = GENOME_DIR + "/genome"
 
 GENOME = config.get("genome")
+
 BIS_SAMPLE_DICT = config.get("bisulfite_samples")
 PULL_SAMPLE_DICT = config.get("pulldown_samples")
-
-BIS_SAMPLE_IDS = list(BIS_SAMPLE_DICT.keys())
-PULL_SAMPLE_IDS = list(PULL_SAMPLE_DICT.keys())
-ALL_SAMPLE_IDS = BIS_SAMPLE_IDS + PULL_SAMPLE_IDS
-
-BIS_SAMPLE_ORIG = list(BIS_SAMPLE_DICT.values())
-PULL_SAMPLE_ORIG = list(PULL_SAMPLE_DICT.values())
-ALL_SAMPLE_ORIG = BIS_SAMPLE_ORIG + PULL_SAMPLE_ORIG
 
 BISULFITE_COMPARISONS = config.get("bisulfite_comparisons")
 PULLDOWN_COMPARISONS = config.get("pulldown_comparisons")
 
-# print(PROJECT_DIR)
-# print(DATA_DIR)
-# print(GENOME_DIR)
-# print(CHROM_LENGTHS)
-# print(GENOME)
-#
-# print(BIS_SAMPLE_ORIG)
-# print(PULL_SAMPLE_ORIG)
-# print(ALL_SAMPLE_ORIG)
-#
-# print(BIS_SAMPLE_IDS)
-# print(PULL_SAMPLE_IDS)
-# print(ALL_SAMPLE_IDS)
-#
-# print(expand("{data_dir}/{sample}.fastq.gz", data_dir = DATA_DIR, sample = ALL_SAMPLE_IDS))
-# print(expand("01-raw_fastq/{sample}.fastq.gz", sample = ALL_SAMPLE_IDS))
-# print(expand("bisulfite/02-fastqc/{sample}_fastqc.zip", sample = BIS_SAMPLE_IDS))
-# print(expand("bisulfite/03-trim_galore/{sample}_trimmed.fq.gz", sample = BIS_SAMPLE_IDS))
-# print(expand("bisulfite/04-fastqc/{sample}_trimmed_fastqc.zip", sample = BIS_SAMPLE_IDS))
-# print(expand("bisulfite/05-bismark/{sample}_trimmed.fq.gz_bismark_bt2.bam", sample = BIS_SAMPLE_IDS))
-# print(expand("pulldown/02-fastqc/{sample}_fastqc.zip", sample = PULL_SAMPLE_IDS))
-# print(expand("pulldown/03-trim_galore/{sample}_trimmed.fq.gz", sample = PULL_SAMPLE_IDS))
-# print(expand("pulldown/04-fastqc/{sample}_trimmed_fastqc.zip", sample = PULL_SAMPLE_IDS))
-# print(expand("pulldown/05-bowtie2/{sample}_trimmed.fq.gz_aligned.bam", sample = PULL_SAMPLE_IDS))
+################################################################################
 
 # Create the path and switch
 if not os.path.exists(PROJECT_DIR):
@@ -55,60 +28,173 @@ if not os.path.exists(PROJECT_DIR):
 
 os.chdir(PROJECT_DIR)
 
+################################################################################
+
+print(expand("bisulfite/01-raw_fastq/{sample}.fastq.gz", sample = BIS_SAMPLE_DICT.keys()))
+print(expand("pulldown/01-raw_fastq/{sample}.fastq.gz", sample = PULL_SAMPLE_DICT.keys()))
+
 rule all:
     input:
-        expand("01-raw_fastq/{sample}.fastq.gz", sample = ALL_SAMPLE_IDS)
+        expand("bisulfite/01-raw_fastq/{sample}.fastq.gz", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/02-fastqc/{sample}_fastqc.zip", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/03-trim_galore/{sample}_trimmed.fq.gz", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/04-fastqc/{sample}_trimmed_fastqc.zip", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/05-bismark/{sample}_trimmed.fq.gz_bismark_bt2.bam", sample = BIS_SAMPLE_DICT.keys()),
+        "bisulfite/06-multiqc/multiqc_report.html",
+        expand("pulldown/01-raw_fastq/{sample}.fastq.gz", sample = PULL_SAMPLE_DICT.keys()),
+        expand("pulldown/02-fastqc/{sample}_fastqc.zip", sample = PULL_SAMPLE_DICT.keys()),
+        expand("pulldown/03-trim_galore/{sample}_trimmed.fq.gz", sample = PULL_SAMPLE_DICT.keys()),
+        expand("pulldown/04-fastqc/{sample}_trimmed_fastqc.zip", sample = PULL_SAMPLE_DICT.keys()),
+        expand("pulldown/05-bowtie2/{sample}_trimmed.fq.gz_aligned.bam", sample = PULL_SAMPLE_DICT.keys()),
+        "pulldown/06-multiqc/multiqc_report.html"
 
-rule setup:
+################################################################################
+
+rule bisulfite_setup:
     input:
-        expand("{data_dir}/{sample}.fastq.gz", data_dir = DATA_DIR, sample = ALL_SAMPLE_IDS)
+        lambda wildcards: DATA_DIR + "/" + str(BIS_SAMPLE_DICT[wildcards.sample]) + ".fastq.gz"
     output:
-        expand("01-raw_fastq/{sample}.fastq.gz", sample = ALL_SAMPLE_IDS)
-    shell:
-        "ln -s {input} {output}"
-#
-# rule bisulfite_align:
-#     output:
-#         expand("bisulfite/02-fastqc/{sample}_fastqc.zip", sample = BIS_SAMPLE_IDS),
-#         expand("bisulfite/03-trim_galore/{sample}_trimmed.fq.gz", sample = BIS_SAMPLE_IDS),
-#         expand("bisulfite/04-fastqc/{sample}_trimmed_fastqc.zip", sample = BIS_SAMPLE_IDS),
-#         expand("bisulfite/05-bismark/{sample}_trimmed.fq.gz_bismark_bt2.bam", sample = BIS_SAMPLE_IDS)
-#
-# rule pulldown_align:
-#     output:
-#         expand("pulldown/02-fastqc/{sample}_fastqc.zip", sample = PULL_SAMPLE_IDS),
-#         expand("pulldown/03-trim_galore/{sample}_trimmed.fq.gz", sample = PULL_SAMPLE_IDS),
-#         expand("pulldown/04-fastqc/{sample}_trimmed_fastqc.zip", sample = PULL_SAMPLE_IDS),
-#         expand("pulldown/05-bowtie2/{sample}_trimmed.fq.gz_aligned.bam", sample = PULL_SAMPLE_IDS)
+        "bisulfite/01-raw_fastq/{sample}.fastq.gz"
+    shell:  """
+            ln -s {input} {output}
+            """
 
-# print(GENOME)
-# print(BISULFITE_SAMPLES)
-# print(len(BISULFITE_SAMPLES))
-# if PULLDOWN_SAMPLES is None:
-#     print("No pulldown samples")
-# else:
-#     print(PULLDOWN_SAMPLES)
-#
-# for sample_id in BISULFITE_SAMPLES.keys():
-#     print(sample_id)
-#
-# for sample_id in BISULFITE_SAMPLES.items():
-#     print(sample_id[1])
-#
-# print(BISULFITE_COMPARISONS)
-# print(PULLDOWN_COMPARISONS)
-#
-# print(PULLDOWN_COMPARISONS['IDH2mut_v_NBM']['exp_input'])
-#
-# for bis_comp in BISULFITE_COMPARISONS.keys():
-#     print(bis_comp)
-#     print(BISULFITE_COMPARISONS[bis_comp])
-#     print(BISULFITE_COMPARISONS[bis_comp]['model'])
-#     print(unpack(BISULFITE_COMPARISONS[bis_comp]))
-#
-# if JUST_BISULFITE:
-#     print("Just Bisulfite!")
-# else:
-#     print("Hybrid!")
-#
-# print(expand("{one}/file.{two}", one = ['dir1','dir2'], two = ['ext1','ext2']))
+rule pulldown_setup:
+    input:
+        lambda wildcards: DATA_DIR + "/" + str(PULL_SAMPLE_DICT[wildcards.sample]) + ".fastq.gz"
+    output:
+        "pulldown/01-raw_fastq/{sample}.fastq.gz"
+    shell:  """
+            ln -s {input} {output}
+            """
+
+################################################################################
+
+rule bisulfite_raw_fastqc:
+    input:
+        "bisulfite/01-raw_fastq/{sample}.fastq.gz"
+    output:
+        "bisulfite/02-fastqc/{sample}_fastqc.zip"
+    params:
+        out_dir = "bisulfite/02-fastqc"
+    shell:  """
+            fastqc --format fastq --noextract --outdir {params.out_dir} {input}
+            """
+
+rule bisulfite_trimgalore:
+    input:
+        "bisulfite/01-raw_fastq/{sample}.fastq.gz"
+    output:
+        "bisulfite/03-trim_galore/{sample}_trimmed.fq.gz"
+    params:
+        adapter = "TGAGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATCTCGTATGC",
+        quality = 20,
+        stringency = 6,
+        error = 0.2,
+        length = 25,
+        out_dir = "bisulfite/03-trim_galore"
+    shell:  """
+            trim_galore --quality {params.quality} --adapter {params.adapter} --stringency {params.stringency} -e {params.error} --gzip --length {params.length} --rrbs --output_dir {params.out_dir} {input}
+            """
+
+rule bisulfite_trim_fastqc:
+    input:
+        "bisulfite/03-trim_galore/{sample}_trimmed.fq.gz"
+    output:
+        "bisulfite/04-fastqc/{sample}_trimmed_fastqc.zip"
+    shell:  """
+            fastqc --format fastq --noextract --outdir bisulfite/04-fastqc {input}
+            """
+
+rule bisulfite_bismark:
+    input:
+        "bisulfite/03-trim_galore/{sample}_trimmed.fq.gz"
+    output:
+        "bisulfite/05-bismark/{sample}_trimmed.fq.gz_bismark_bt2.bam",
+        "bisulfite/05-bismark/{sample}_trimmed_bismark_bt2_SE_report.txt"
+    params:
+        genome_dir = GENOME_DIR,
+        out_dir = "bisulfite/05-bismark"
+    shell:  """
+            bismark --bowtie2 {params.genome_dir} --output_dir {params.out_dir} --temp_dir {params.out_dir} {input}
+            samtools sort -o {output} {output}
+            samtools index {output}
+            """
+
+rule bisulfite_multiqc:
+    input:
+        expand("bisulfite/02-fastqc/{sample}_fastqc.zip", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/04-fastqc/{sample}_trimmed_fastqc.zip", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/05-bismark/{sample}_trimmed_bismark_bt2_SE_report.txt", sample = BIS_SAMPLE_DICT.keys())
+    output:
+        "bisulfite/06-multiqc/multiqc_report.html"
+    params:
+        out_dir = "bisulfite/06-multiqc"
+    shell:  """
+            multiqc --force ./bisulfite --outdir {params.out_dir}
+            """
+
+################################################################################
+
+rule pulldown_raw_fastqc:
+    input:
+        "pulldown/01-raw_fastq/{sample}.fastq.gz"
+    output:
+        "pulldown/02-fastqc/{sample}_fastqc.zip"
+    params:
+        out_dir = "pulldown/02-fastqc"
+    shell:  """
+            fastqc --format fastq --noextract --outdir {params.out_dir} {input}
+            """
+
+rule pulldown_trimgalore:
+    input:
+        "pulldown/01-raw_fastq/{sample}.fastq.gz"
+    output:
+        "pulldown/03-trim_galore/{sample}_trimmed.fq.gz"
+    params:
+        adapter = "TGAGATCGGAAGAGCGGTTCAGCAGGAATGCCGAGACCGATCTCGTATGC",
+        quality = 20,
+        stringency = 6,
+        error = 0.2,
+        length = 25,
+        out_dir = "pulldown/03-trim_galore"
+    shell:  """
+            trim_galore --quality {params.quality} --illumina --stringency {params.stringency} -e {params.error} --gzip --length {params.length} --output_dir {params.out_dir} {input}
+            """
+
+rule pulldown_trim_fastqc:
+    input:
+        "pulldown/03-trim_galore/{sample}_trimmed.fq.gz"
+    output:
+        "pulldown/04-fastqc/{sample}_trimmed_fastqc.zip"
+    shell:  """
+            fastqc --format fastq --noextract --outdir pulldown/04-fastqc {input}
+            """
+
+rule pulldown_bowtie2:
+    input:
+        "pulldown/03-trim_galore/{sample}_trimmed.fq.gz"
+    output:
+        "pulldown/05-bowtie2/{sample}_trimmed.fq.gz_aligned.bam"
+    params:
+        align_summary = "05-bowtie2/{sample}_bowtie2_summary.txt",
+        bowtie2_index = BOWTIE2_INDEX
+    shell:  """
+            bowtie2 -q --no-unal -x {params.bowtie2_index} -U {input} 2> {params.align_summary} | samtools view -bS - > {output}
+            samtools sort -o {output} {output}
+            samtools index {output}
+            """
+
+rule pulldown_multiqc:
+    input:
+        expand("pulldown/02-fastqc/{sample}_fastqc.zip", sample = PULL_SAMPLE_DICT.keys()),
+        expand("pulldown/04-fastqc/{sample}_trimmed_fastqc.zip", sample = PULL_SAMPLE_DICT.keys()),
+        expand("pulldown/05-bowtie2/{sample}_trimmed.fq.gz_aligned.bam", sample = PULL_SAMPLE_DICT.keys())
+    output:
+        "pulldown/06-multiqc/multiqc_report.html"
+    params:
+        out_dir = "pulldown/06-multiqc"
+    shell:  """
+            multiqc --force ./pulldown --outdir {params.out_dir}
+            """
