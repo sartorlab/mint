@@ -118,7 +118,7 @@ rule bisulfite_bismark:
     shell:  """
             module purge && module load bowtie2/2.2.4 samtools/1.2 bismark/0.16.3
             bismark --bowtie2 {params.genome_dir} --output_dir {params.out_dir} --temp_dir {params.out_dir} {input}
-            samtools sort -o {output.bam} {output.bam}
+            samtools sort -f {output.bam} {output.bam}
             samtools index {output.bam}
             """
 
@@ -187,7 +187,7 @@ rule pulldown_bowtie2:
     shell:  """
             module purge && module load bowtie2/2.2.4 samtools/1.2
             bowtie2 -q --no-unal -x {params.bowtie2_index} -U {input} 2> {params.align_summary} | samtools view -bS - > {output}
-            samtools sort -o {output} {output}
+            samtools sort -f {output} {output}
             samtools index {output}
             """
 
