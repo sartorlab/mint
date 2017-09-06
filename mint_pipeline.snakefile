@@ -113,16 +113,16 @@ rule bisulfite_bismark:
     input:
         "bisulfite/03-trim_galore/{sample}_trimmed.fq.gz"
     output:
-        "bisulfite/05-bismark/{sample}_trimmed.fq.gz_bismark_bt2.bam",
-        "bisulfite/05-bismark/{sample}_trimmed_bismark_bt2_SE_report.txt"
+        bam = "bisulfite/05-bismark/{sample}_trimmed.fq.gz_bismark_bt2.bam",
+        report = "bisulfite/05-bismark/{sample}_trimmed_bismark_bt2_SE_report.txt"
     params:
         genome_dir = GENOME_DIR,
         out_dir = "bisulfite/05-bismark"
     shell:  """
             module purge && module load bowtie2/2.2.1 samtools/1.2 bismark/0.16.3
             bismark --bowtie2 {params.genome_dir} --output_dir {params.out_dir} --temp_dir {params.out_dir} {input}
-            samtools sort -o {output} {output}
-            samtools index {output}
+            samtools sort -o {output.bam} {output.bam}
+            samtools index {output.bam}
             """
 
 rule bisulfite_multiqc:
