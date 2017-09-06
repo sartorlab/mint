@@ -45,6 +45,24 @@ rule all:
         expand("pulldown/05-bowtie2/{sample}_trimmed.fq.gz_aligned.bam", sample = PULL_SAMPLE_DICT.keys()),
         "pulldown/06-multiqc/multiqc_report.html"
 
+rule bisulfite_align:
+    input:
+        expand("bisulfite/01-raw_fastq/{sample}.fastq.gz", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/02-fastqc/{sample}_fastqc.zip", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/03-trim_galore/{sample}_trimmed.fq.gz", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/04-fastqc/{sample}_trimmed_fastqc.zip", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/05-bismark/{sample}_trimmed_bismark_bt2.bam", sample = BIS_SAMPLE_DICT.keys()),
+        "bisulfite/06-multiqc/multiqc_report.html"
+
+rule pulldown_align:
+    input:
+        expand("pulldown/01-raw_fastq/{sample}.fastq.gz", sample = PULL_SAMPLE_DICT.keys()),
+        expand("pulldown/02-fastqc/{sample}_fastqc.zip", sample = PULL_SAMPLE_DICT.keys()),
+        expand("pulldown/03-trim_galore/{sample}_trimmed.fq.gz", sample = PULL_SAMPLE_DICT.keys()),
+        expand("pulldown/04-fastqc/{sample}_trimmed_fastqc.zip", sample = PULL_SAMPLE_DICT.keys()),
+        expand("pulldown/05-bowtie2/{sample}_trimmed.fq.gz_aligned.bam", sample = PULL_SAMPLE_DICT.keys()),
+        "pulldown/06-multiqc/multiqc_report.html"
+
 ################################################################################
 
 rule bisulfite_setup:
