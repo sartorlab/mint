@@ -119,7 +119,7 @@ rule bisulfite_bismark:
         genome_dir = GENOME_DIR,
         out_dir = "bisulfite/05-bismark"
     shell:  """
-            module purge && module load bowtie2/2.2.1 samtools/1.2 bismark/0.16.3
+            module purge && module load bowtie2/2.2.4 samtools/1.2 bismark/0.16.3
             bismark --bowtie2 {params.genome_dir} --output_dir {params.out_dir} --temp_dir {params.out_dir} {input}
             samtools sort -o {output.bam} {output.bam}
             samtools index {output.bam}
@@ -185,10 +185,10 @@ rule pulldown_bowtie2:
     output:
         "pulldown/05-bowtie2/{sample}_trimmed.fq.gz_aligned.bam"
     params:
-        align_summary = "05-bowtie2/{sample}_bowtie2_summary.txt",
+        align_summary = "pulldown/05-bowtie2/{sample}_bowtie2_summary.txt",
         bowtie2_index = BOWTIE2_INDEX
     shell:  """
-            module purge && module load bowtie2/2.2.1 samtools/1.2
+            module purge && module load bowtie2/2.2.4 samtools/1.2
             bowtie2 -q --no-unal -x {params.bowtie2_index} -U {input} 2> {params.align_summary} | samtools view -bS - > {output}
             samtools sort -o {output} {output}
             samtools index {output}
