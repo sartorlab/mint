@@ -30,9 +30,6 @@ os.chdir(PROJECT_DIR)
 
 ################################################################################
 
-print(expand("bisulfite/01-raw_fastq/{sample}.fastq.gz", sample = BIS_SAMPLE_DICT.keys()))
-print(expand("pulldown/01-raw_fastq/{sample}.fastq.gz", sample = PULL_SAMPLE_DICT.keys()))
-
 rule all:
     input:
         expand("bisulfite/01-raw_fastq/{sample}.fastq.gz", sample = BIS_SAMPLE_DICT.keys()),
