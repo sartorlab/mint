@@ -78,6 +78,7 @@ rule bisulfite_raw_fastqc:
     params:
         out_dir = "bisulfite/02-fastqc"
     shell:  """
+            module purge && module load fastqc/0.11.4
             fastqc --format fastq --noextract --outdir {params.out_dir} {input}
             """
 
@@ -94,6 +95,7 @@ rule bisulfite_trimgalore:
         length = 25,
         out_dir = "bisulfite/03-trim_galore"
     shell:  """
+            module purge && module load python/2.7.9 cutadapt/1.8.1 trim_galore/0.4.0
             trim_galore --quality {params.quality} --adapter {params.adapter} --stringency {params.stringency} -e {params.error} --gzip --length {params.length} --rrbs --output_dir {params.out_dir} {input}
             """
 
@@ -103,6 +105,7 @@ rule bisulfite_trim_fastqc:
     output:
         "bisulfite/04-fastqc/{sample}_trimmed_fastqc.zip"
     shell:  """
+            module purge && module load fastqc/0.11.4
             fastqc --format fastq --noextract --outdir bisulfite/04-fastqc {input}
             """
 
@@ -116,6 +119,7 @@ rule bisulfite_bismark:
         genome_dir = GENOME_DIR,
         out_dir = "bisulfite/05-bismark"
     shell:  """
+            module purge && module load bowtie2/2.2.1 samtools/1.2 bismark/0.16.3
             bismark --bowtie2 {params.genome_dir} --output_dir {params.out_dir} --temp_dir {params.out_dir} {input}
             samtools sort -o {output} {output}
             samtools index {output}
@@ -144,6 +148,7 @@ rule pulldown_raw_fastqc:
     params:
         out_dir = "pulldown/02-fastqc"
     shell:  """
+            module purge && module load fastqc/0.11.4
             fastqc --format fastq --noextract --outdir {params.out_dir} {input}
             """
 
@@ -160,6 +165,7 @@ rule pulldown_trimgalore:
         length = 25,
         out_dir = "pulldown/03-trim_galore"
     shell:  """
+            module purge && module load python/2.7.9 cutadapt/1.8.1 trim_galore/0.4.0
             trim_galore --quality {params.quality} --illumina --stringency {params.stringency} -e {params.error} --gzip --length {params.length} --output_dir {params.out_dir} {input}
             """
 
@@ -169,6 +175,7 @@ rule pulldown_trim_fastqc:
     output:
         "pulldown/04-fastqc/{sample}_trimmed_fastqc.zip"
     shell:  """
+            module purge && module load fastqc/0.11.4
             fastqc --format fastq --noextract --outdir pulldown/04-fastqc {input}
             """
 
@@ -181,6 +188,7 @@ rule pulldown_bowtie2:
         align_summary = "05-bowtie2/{sample}_bowtie2_summary.txt",
         bowtie2_index = BOWTIE2_INDEX
     shell:  """
+            module purge && module load bowtie2/2.2.1 samtools/1.2
             bowtie2 -q --no-unal -x {params.bowtie2_index} -U {input} 2> {params.align_summary} | samtools view -bS - > {output}
             samtools sort -o {output} {output}
             samtools index {output}

@@ -1,8 +1,8 @@
 genome : hg19
 
-project_dir : "/Users/rcavalca/Projects/mint_test_analysis"
+project_dir : "/bfx/home/rcavalca/Projects/mint_test_analysis"
 
-data_dir : "/Users/rcavalca/Projects/mint_test/hybrid"
+data_dir : "/bfx/home/rcavalca/Projects/mint_test/hybrid"
 
 genome_dir : "/ccmb/BioinfCore/Common/iGenomes/Homo_sapiens/UCSC/hg19"
 
