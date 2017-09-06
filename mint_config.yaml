@@ -4,7 +4,7 @@ project_dir : "/bfx/home/rcavalca/mint_test_analysis"
 
 data_dir : "/bfx/home/rcavalca/mint_test/hybrid"
 
-genome_dir : "/ccmb/BioinfCore/Common/iGenomes/Homo_sapiens/UCSC/hg19"
+genome_dir : "/ccmb/BioinfCore/Common/iGenomes/Homo_sapiens/UCSC/hg19/Sequence/Bowtie2Index"
 
 chrom_lengths : "/ccmb/BioinfCore/Common/iGenomes/Homo_sapiens/UCSC/hg19/Annotation/Archives/archive-2013-03-06-11-23-03/Genes/ChromInfo.txt"
 
