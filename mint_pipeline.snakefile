@@ -110,7 +110,7 @@ rule bisulfite_bismark:
     input:
         "bisulfite/03-trim_galore/{sample}_trimmed.fq.gz"
     output:
-        bam = "bisulfite/05-bismark/{sample}_trimmed.fq.gz_bismark_bt2.bam",
+        bam = "bisulfite/05-bismark/{sample}_trimmed_bismark_bt2.bam",
         report = "bisulfite/05-bismark/{sample}_trimmed_bismark_bt2_SE_report.txt"
     params:
         genome_dir = GENOME_DIR,
