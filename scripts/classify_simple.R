@@ -3,14 +3,12 @@ library(readr)
 library(optparse)
 
 option_list = list(
-	make_option('--project', type='character'),
 	make_option('--inFile', type='character'),
 	make_option('--outFile', type='character'),
 	make_option('--group1', type='character'),
 	make_option('--group0', type='character')
 )
 opt = parse_args(OptionParser(option_list=option_list))
-project = opt$project
 inFile = opt$inFile		# Can be macs2 peaks or bismark bedGraphs
 outFile = opt$outFile	# Is the bed file with *_mark_pulldown_simple_classification.bed
 
