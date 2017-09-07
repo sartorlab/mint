@@ -219,8 +219,8 @@ rule bisulfite_sample_annotatr:
         "RData/{sample}_trimmed_bismark_annotatr_analysis.RData"
     params:
         genome = GENOME
-    script: """
-            scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type bismark --group1 NULL --group0 NULL
+    shell: """
+            Rscript scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type bismark --group1 NULL --group0 NULL
             """
 rule bisulfite_sample_pretrack:
     input:
@@ -263,8 +263,8 @@ rule bisulfite_sample_simple:
         "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz"
     output:
         "bisulfite/09-simple_classification/{sample}_bismark_simple_classification.bed"
-    script: """
-            scripts/classify_simple.R --inFile {input} --outFile {output} --group1 NULL --group0 NULL
+    shell: """
+            Rscript scripts/classify_simple.R --inFile {input} --outFile {output} --group1 NULL --group0 NULL
             """
 
 rule bisulfite_sample_simple_annotatr:
@@ -274,8 +274,8 @@ rule bisulfite_sample_simple_annotatr:
         "RData/{sample}_bismark_simple_classification_annotatr_analysis.RData"
     params:
         genome = GENOME
-    script: """
-            scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type simple_bisulfite_bismark --group1 NULL --group0 NULL
+    shell: """
+            Rscript scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type simple_bisulfite_bismark --group1 NULL --group0 NULL
             """
 
 rule bisulfite_sample_simple_track:
