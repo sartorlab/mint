@@ -219,7 +219,7 @@ rule bisulfite_sample_annotatr:
         "RData/{sample}_trimmed_bismark_annotatr_analysis.RData"
     params:
         genome = GENOME
-    shell:  """
+    script:  """
             module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
             R scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type bismark --group1 NULL --group0 NULL
             """
@@ -264,7 +264,7 @@ rule bisulfite_sample_simple:
         "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz"
     output:
         "bisulfite/09-simple_classification/{sample}_bismark_simple_classification.bed"
-    shell:  """
+    script:  """
             module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
             R scripts/classify_simple.R --inFile {input} --outFile {output} --group1 NULL --group0 NULL
             """
@@ -276,7 +276,7 @@ rule bisulfite_sample_simple_annotatr:
         "RData/{sample}_bismark_simple_classification_annotatr_analysis.RData"
     params:
         genome = GENOME
-    shell:  """
+    script:  """
             module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
             R scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type simple_bisulfite_bismark --group1 NULL --group0 NULL
             """
