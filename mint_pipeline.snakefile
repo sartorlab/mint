@@ -28,6 +28,7 @@ if not os.path.exists(PROJECT_DIR):
 os.chdir(PROJECT_DIR)
 
 ################################################################################
+################################################################################
 
 rule all:
     input:
@@ -37,15 +38,15 @@ rule all:
         expand("bisulfite/04-fastqc/{sample}_trimmed_fastqc.zip", sample = BIS_SAMPLE_DICT.keys()),
         expand("bisulfite/05-bismark/{sample}_trimmed_bismark_bt2.bam", sample = BIS_SAMPLE_DICT.keys()),
         "bisulfite/06-multiqc/multiqc_report.html",
-        expand("bisulfite/06-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz", sample = BIS_SAMPLE_DICT.keys()),
-        expand("bisulfite/06-methCall/{sample}_trimmed_bismark_bt2.bismark.cov.gz", sample = BIS_SAMPLE_DICT.keys()),
-        expand("bisulfite/06-methCall/{sample}_trimmed_bismark_bt2.CpG_report.txt.gz", sample = BIS_SAMPLE_DICT.keys()),
-        # expand("bisulfite/06-methCall/{sample}_trimmed_bismark_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
-        # expand("bisulfite/06-methCall/{sample}_trimmed_bismark_bt2.bw", sample = BIS_SAMPLE_DICT.keys()),
-        # expand("bisulfite/06-methCall/{sample}_bismark_simple_classification.bed", sample = BIS_SAMPLE_DICT.keys()),
-        # expand("bisulfite/06-methCall/{sample}_bismark_simple_classification_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
-        # expand("bisulfite/06-methCall/{sample}_bismark_simple_classification.bb", sample = BIS_SAMPLE_DICT.keys()),
-        # "bisulfite/07-multiqc/multiqc_report.html",
+        expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bismark.cov.gz", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report.txt.gz", sample = BIS_SAMPLE_DICT.keys()),
+        expand("RData/{sample}_trimmed_bismark_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
+        expand("trackhub/{sample}_trimmed_bismark_bt2.bw", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/09-simple_classification/{sample}_bismark_simple_classification.bed", sample = BIS_SAMPLE_DICT.keys()),
+        expand("RData/{sample}_bismark_simple_classification_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
+        expand("trackhub/{sample}_bismark_simple_classification.bb", sample = BIS_SAMPLE_DICT.keys()),
+        "bisulfite/08-multiqc/multiqc_report.html",
         expand("pulldown/01-raw_fastq/{sample}.fastq.gz", sample = PULL_SAMPLE_DICT.keys()),
         expand("pulldown/02-fastqc/{sample}_fastqc.zip", sample = PULL_SAMPLE_DICT.keys()),
         expand("pulldown/03-trim_galore/{sample}_trimmed.fq.gz", sample = PULL_SAMPLE_DICT.keys()),
@@ -53,6 +54,7 @@ rule all:
         expand("pulldown/05-bowtie2/{sample}_trimmed.fq.gz_aligned.bam", sample = PULL_SAMPLE_DICT.keys()),
         "pulldown/06-multiqc/multiqc_report.html"
 
+################################################################################
 ################################################################################
 
 rule bisulfite_align:
@@ -74,8 +76,9 @@ rule bisulfite_sample:
         expand("bisulfite/09-simple_classification/{sample}_bismark_simple_classification.bed", sample = BIS_SAMPLE_DICT.keys()),
         expand("RData/{sample}_bismark_simple_classification_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
         expand("trackhub/{sample}_bismark_simple_classification.bb", sample = BIS_SAMPLE_DICT.keys()),
-        # "bisulfite/08-multiqc/multiqc_report.html"
+        "bisulfite/08-multiqc/multiqc_report.html"
 
+################################################################################
 ################################################################################
 
 rule pulldown_align:
@@ -87,6 +90,7 @@ rule pulldown_align:
         expand("pulldown/05-bowtie2/{sample}_trimmed.fq.gz_aligned.bam", sample = PULL_SAMPLE_DICT.keys()),
         "pulldown/06-multiqc/multiqc_report.html"
 
+################################################################################
 ################################################################################
 
 rule bisulfite_setup:
@@ -288,6 +292,8 @@ rule bisulfite_sample_simple_track:
             bedGraphToBigBed {input} {params.chrom_lengths} {output}
             """
 
+################################################################################
+################################################################################
 ################################################################################
 
 rule pulldown_align_raw_fastqc:
