@@ -68,9 +68,9 @@ rule bisulfite_sample:
     input:
         expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz", sample = BIS_SAMPLE_DICT.keys()),
         expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bismark.cov.gz", sample = BIS_SAMPLE_DICT.keys()),
-        expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report.txt.gz", sample = BIS_SAMPLE_DICT.keys())
-        # expand("bisulfite/07-methCall/{sample}_trimmed_bismark_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
-        # expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bw", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report.txt.gz", sample = BIS_SAMPLE_DICT.keys()),
+        expand("RData/{sample}_trimmed_bismark_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
+        expand("trackhub/{sample}_trimmed_bismark_bt2.bw", sample = BIS_SAMPLE_DICT.keys())
         # expand("bisulfite/07-methCall/{sample}_bismark_simple_classification.bed", sample = BIS_SAMPLE_DICT.keys()),
         # expand("bisulfite/07-methCall/{sample}_bismark_simple_classification_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
         # expand("bisulfite/07-methCall/{sample}_bismark_simple_classification.bb", sample = BIS_SAMPLE_DICT.keys()),
@@ -109,7 +109,7 @@ rule pulldown_setup:
 
 ################################################################################
 
-rule bisulfite_raw_fastqc:
+rule bisulfite_align_raw_fastqc:
     input:
         "bisulfite/01-raw_fastq/{sample}.fastq.gz"
     output:
@@ -121,7 +121,7 @@ rule bisulfite_raw_fastqc:
             fastqc --format fastq --noextract --outdir {params.out_dir} {input}
             """
 
-rule bisulfite_trimgalore:
+rule bisulfite_align_trimgalore:
     input:
         "bisulfite/01-raw_fastq/{sample}.fastq.gz"
     output:
@@ -138,7 +138,7 @@ rule bisulfite_trimgalore:
             trim_galore --quality {params.quality} --adapter {params.adapter} --stringency {params.stringency} -e {params.error} --gzip --length {params.length} --rrbs --output_dir {params.out_dir} {input}
             """
 
-rule bisulfite_trim_fastqc:
+rule bisulfite_align_trim_fastqc:
     input:
         "bisulfite/03-trim_galore/{sample}_trimmed.fq.gz"
     output:
@@ -148,7 +148,7 @@ rule bisulfite_trim_fastqc:
             fastqc --format fastq --noextract --outdir bisulfite/04-fastqc {input}
             """
 
-rule bisulfite_bismark:
+rule bisulfite_align_bismark:
     input:
         "bisulfite/03-trim_galore/{sample}_trimmed.fq.gz"
     output:
@@ -164,7 +164,7 @@ rule bisulfite_bismark:
             samtools index {output.bam}
             """
 
-rule bisulfite_multiqc:
+rule bisulfite_align_multiqc:
     input:
         expand("bisulfite/02-fastqc/{sample}_fastqc.zip", sample = BIS_SAMPLE_DICT.keys()),
         expand("bisulfite/04-fastqc/{sample}_trimmed_fastqc.zip", sample = BIS_SAMPLE_DICT.keys()),
@@ -179,13 +179,16 @@ rule bisulfite_multiqc:
 
 ################################################################################
 
-rule bisulfite_extractor:
+rule bisulfite_sample_extractor:
     input:
         "bisulfite/05-bismark/{sample}_trimmed_bismark_bt2.bam"
     output:
         bdg = "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz",
         cov = "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bismark.cov.gz",
-        cpg = "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report.txt.gz"
+        cpg = "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report.txt.gz",
+        mbtxt = "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.M-bias.txt",
+        mbplot = "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.M-bias_R1.png",
+        srep = "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2_splitting_report.txt"
     params:
         genome_dir = GENOME_DIR,
         min_cov = 5,
@@ -196,9 +199,49 @@ rule bisulfite_extractor:
             bismark_methylation_extractor --single-end --gzip --bedGraph --cutoff {params.min_cov} --cytosine_report --genome_folder {params.genome_dir} --multicore {threads} --output {params.out_dir} {input}
             """
 
+rule bisulfite_sample_to_annotatr:
+    input:
+        "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bismark.cov.gz"
+    output:
+        temp("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bismark.cov")
+    shell: """
+            gunzip -c {input} | awk -v OFS="\t" '{print $1, $2 - 1, $3, ".", $4, ".", $5 + $$6}' > {output}
+            """
+
+rule bisulfite_sample_annotatr:
+    input:
+        "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bismark.cov"
+    output:
+        "RData/{sample}_trimmed_bismark_annotatr_analysis.RData"
+    params:
+        genome = GENOME
+    shell:  """
+            module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
+            R scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type bismark --group1 NULL --group0 NULL
+            """
+rule bisulfite_sample_pretrack:
+    input:
+        "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz"
+    output:
+        temp("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph")
+    shell:  """
+            gunzip -c {input} | awk 'NR > 1 {print $0}' | sort -T . -k1,1 -k2,2n > {output}
+            """
+
+rule bisulfite_sample_track:
+    input:
+        "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph"
+    output:
+        "trackhub/{sample}_trimmed_bismark_bt2.bw"
+    params:
+        chrom_lengths = CHROM_LENGTHS
+    shell:  """
+            bedGraphToBigWig {input} {params.chrom_lengths} {output}
+            """
+
 ################################################################################
 
-rule pulldown_raw_fastqc:
+rule pulldown_align_raw_fastqc:
     input:
         "pulldown/01-raw_fastq/{sample}.fastq.gz"
     output:
@@ -210,7 +253,7 @@ rule pulldown_raw_fastqc:
             fastqc --format fastq --noextract --outdir {params.out_dir} {input}
             """
 
-rule pulldown_trimgalore:
+rule pulldown_align_trimgalore:
     input:
         "pulldown/01-raw_fastq/{sample}.fastq.gz"
     output:
@@ -227,7 +270,7 @@ rule pulldown_trimgalore:
             trim_galore --quality {params.quality} --illumina --stringency {params.stringency} -e {params.error} --gzip --length {params.length} --output_dir {params.out_dir} {input}
             """
 
-rule pulldown_trim_fastqc:
+rule pulldown_align_trim_fastqc:
     input:
         "pulldown/03-trim_galore/{sample}_trimmed.fq.gz"
     output:
@@ -237,7 +280,7 @@ rule pulldown_trim_fastqc:
             fastqc --format fastq --noextract --outdir pulldown/04-fastqc {input}
             """
 
-rule pulldown_bowtie2:
+rule pulldown_align_bowtie2:
     input:
         "pulldown/03-trim_galore/{sample}_trimmed.fq.gz"
     output:
@@ -252,7 +295,7 @@ rule pulldown_bowtie2:
             samtools index {output}
             """
 
-rule pulldown_multiqc:
+rule pulldown_align_multiqc:
     input:
         expand("pulldown/02-fastqc/{sample}_fastqc.zip", sample = PULL_SAMPLE_DICT.keys()),
         expand("pulldown/04-fastqc/{sample}_trimmed_fastqc.zip", sample = PULL_SAMPLE_DICT.keys()),
