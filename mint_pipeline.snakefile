@@ -70,10 +70,10 @@ rule bisulfite_sample:
         expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bismark.cov.gz", sample = BIS_SAMPLE_DICT.keys()),
         expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report.txt.gz", sample = BIS_SAMPLE_DICT.keys()),
         expand("RData/{sample}_trimmed_bismark_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
-        expand("trackhub/{sample}_trimmed_bismark_bt2.bw", sample = BIS_SAMPLE_DICT.keys())
-        # expand("bisulfite/07-methCall/{sample}_bismark_simple_classification.bed", sample = BIS_SAMPLE_DICT.keys()),
-        # expand("bisulfite/07-methCall/{sample}_bismark_simple_classification_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
-        # expand("bisulfite/07-methCall/{sample}_bismark_simple_classification.bb", sample = BIS_SAMPLE_DICT.keys()),
+        expand("trackhub/{sample}_trimmed_bismark_bt2.bw", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/09-simple_classification/{sample}_bismark_simple_classification.bed", sample = BIS_SAMPLE_DICT.keys()),
+        expand("RData/{sample}_bismark_simple_classification_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
+        expand("trackhub/{sample}_bismark_simple_classification.bb", sample = BIS_SAMPLE_DICT.keys()),
         # "bisulfite/08-multiqc/multiqc_report.html"
 
 ################################################################################
@@ -237,6 +237,55 @@ rule bisulfite_sample_track:
         chrom_lengths = CHROM_LENGTHS
     shell:  """
             bedGraphToBigWig {input} {params.chrom_lengths} {output}
+            """
+
+rule bisulfite_sample_multiqc:
+    input:
+        expand("bisulfite/02-fastqc/{sample}_fastqc.zip", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/04-fastqc/{sample}_trimmed_fastqc.zip", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/05-bismark/{sample}_trimmed_bismark_bt2_SE_report.txt", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2_splitting_report.txt", sample = BIS_SAMPLE_DICT.keys())
+    output:
+        "bisulfite/08-multiqc/multiqc_report.html"
+    params:
+        out_dir = "bisulfite/08-multiqc"
+    shell:  """
+            multiqc --force ./bisulfite --outdir {params.out_dir}
+            """
+
+################################################################################
+
+rule bisulfite_sample_simple:
+    input:
+        "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz"
+    output:
+        "bisulfite/09-simple_classification/{sample}_bisulfite_bismark_simple_classification.bed"
+    shell:  """
+            module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
+            R scripts/classify_simple.R --inFile {input} --outFile {output} --group1 NULL --group0 NULL
+            """
+
+rule bisulfite_sample_simple_annotatr:
+    input:
+        "bisulfite/09-simple_classification/{sample}_bisulfite_bismark_simple_classification.bed"
+    output:
+        "RData/{sample}_bisulfite_bismark_simple_classification_annotatr_analysis.RData"
+    params:
+        genome = GENOME
+    shell:  """
+            module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
+            R scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type simple_bisulfite_bismark --group1 NULL --group0 NULL
+            """
+
+rule bisulfite_sample_simple_track:
+    input:
+        "bisulfite/09-simple_classification/{sample}_bisulfite_bismark_simple_classification.bed"
+    output:
+        "trackhub/{sample}_bisulfite_bismark_simple_classification.bb"
+    params:
+        chrom_lengths = CHROM_LENGTHS
+    shell:  """
+            bedGraphToBigBed {input} {params.chrom_lengths} {output}
             """
 
 ################################################################################
