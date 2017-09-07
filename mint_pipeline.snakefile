@@ -209,7 +209,7 @@ rule bisulfite_sample_to_annotatr:
     output:
         temp("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bismark.cov")
     shell: """
-            gunzip -c {input} | awk -v OFS="\t" '{print $1, $2 - 1, $3, ".", $4, ".", $5 + $$6}' > {output}
+            gunzip -c {input} | awk -v OFS="\t" '{{print $1, $2 - 1, $3, ".", $4, ".", $5 + $$6}}' > {output}
             """
 
 rule bisulfite_sample_annotatr:
@@ -229,7 +229,7 @@ rule bisulfite_sample_pretrack:
     output:
         temp("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph")
     shell:  """
-            gunzip -c {input} | awk 'NR > 1 {print $0}' | sort -T . -k1,1 -k2,2n > {output}
+            gunzip -c {input} | awk 'NR > 1 {{print $0}}' | sort -T . -k1,1 -k2,2n > {output}
             """
 
 rule bisulfite_sample_track:
