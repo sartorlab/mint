@@ -263,7 +263,7 @@ rule bisulfite_sample_simple:
     input:
         "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz"
     output:
-        "bisulfite/09-simple_classification/{sample}_bisulfite_bismark_simple_classification.bed"
+        "bisulfite/09-simple_classification/{sample}_bismark_simple_classification.bed"
     shell:  """
             module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
             R scripts/classify_simple.R --inFile {input} --outFile {output} --group1 NULL --group0 NULL
@@ -271,9 +271,9 @@ rule bisulfite_sample_simple:
 
 rule bisulfite_sample_simple_annotatr:
     input:
-        "bisulfite/09-simple_classification/{sample}_bisulfite_bismark_simple_classification.bed"
+        "bisulfite/09-simple_classification/{sample}_bismark_simple_classification.bed"
     output:
-        "RData/{sample}_bisulfite_bismark_simple_classification_annotatr_analysis.RData"
+        "RData/{sample}_bismark_simple_classification_annotatr_analysis.RData"
     params:
         genome = GENOME
     shell:  """
@@ -283,9 +283,9 @@ rule bisulfite_sample_simple_annotatr:
 
 rule bisulfite_sample_simple_track:
     input:
-        "bisulfite/09-simple_classification/{sample}_bisulfite_bismark_simple_classification.bed"
+        "bisulfite/09-simple_classification/{sample}_bismark_simple_classification.bed"
     output:
-        "trackhub/{sample}_bisulfite_bismark_simple_classification.bb"
+        "trackhub/{sample}_bismark_simple_classification.bb"
     params:
         chrom_lengths = CHROM_LENGTHS
     shell:  """
