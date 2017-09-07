@@ -220,7 +220,7 @@ rule bisulfite_sample_annotatr:
     params:
         genome = GENOME
     shell: """
-            Rscript scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type bismark --group1 NULL --group0 NULL
+            Rscript ./scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type bismark --group1 NULL --group0 NULL
             """
 rule bisulfite_sample_pretrack:
     input:
@@ -264,7 +264,7 @@ rule bisulfite_sample_simple:
     output:
         "bisulfite/09-simple_classification/{sample}_bismark_simple_classification.bed"
     shell: """
-            Rscript scripts/classify_simple.R --inFile {input} --outFile {output} --group1 NULL --group0 NULL
+            Rscript ./scripts/classify_simple.R --inFile {input} --outFile {output} --group1 NULL --group0 NULL
             """
 
 rule bisulfite_sample_simple_annotatr:
@@ -275,7 +275,7 @@ rule bisulfite_sample_simple_annotatr:
     params:
         genome = GENOME
     shell: """
-            Rscript scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type simple_bisulfite_bismark --group1 NULL --group0 NULL
+            Rscript ./scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type simple_bisulfite_bismark --group1 NULL --group0 NULL
             """
 
 rule bisulfite_sample_simple_track:
