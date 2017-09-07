@@ -66,15 +66,15 @@ rule bisulfite_align:
 
 rule bisulfite_sample:
     input:
-        expand("bisulfite/06-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz", sample = BIS_SAMPLE_DICT.keys()),
-        expand("bisulfite/06-methCall/{sample}_trimmed_bismark_bt2.bismark.cov.gz", sample = BIS_SAMPLE_DICT.keys()),
-        expand("bisulfite/06-methCall/{sample}_trimmed_bismark_bt2.CpG_report.txt.gz", sample = BIS_SAMPLE_DICT.keys())
-        # expand("bisulfite/06-methCall/{sample}_trimmed_bismark_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
-        # expand("bisulfite/06-methCall/{sample}_trimmed_bismark_bt2.bw", sample = BIS_SAMPLE_DICT.keys()),
-        # expand("bisulfite/06-methCall/{sample}_bismark_simple_classification.bed", sample = BIS_SAMPLE_DICT.keys()),
-        # expand("bisulfite/06-methCall/{sample}_bismark_simple_classification_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
-        # expand("bisulfite/06-methCall/{sample}_bismark_simple_classification.bb", sample = BIS_SAMPLE_DICT.keys()),
-        # "bisulfite/07-multiqc/multiqc_report.html"
+        expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bismark.cov.gz", sample = BIS_SAMPLE_DICT.keys()),
+        expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report.txt.gz", sample = BIS_SAMPLE_DICT.keys())
+        # expand("bisulfite/07-methCall/{sample}_trimmed_bismark_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
+        # expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bw", sample = BIS_SAMPLE_DICT.keys()),
+        # expand("bisulfite/07-methCall/{sample}_bismark_simple_classification.bed", sample = BIS_SAMPLE_DICT.keys()),
+        # expand("bisulfite/07-methCall/{sample}_bismark_simple_classification_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
+        # expand("bisulfite/07-methCall/{sample}_bismark_simple_classification.bb", sample = BIS_SAMPLE_DICT.keys()),
+        # "bisulfite/08-multiqc/multiqc_report.html"
 
 ################################################################################
 
@@ -183,16 +183,17 @@ rule bisulfite_extractor:
     input:
         "bisulfite/05-bismark/{sample}_trimmed_bismark_bt2.bam"
     output:
-        bdg = "bisulfite/06-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz",
-        cov = "bisulfite/06-methCall/{sample}_trimmed_bismark_bt2.bismark.cov.gz",
-        cpg = "bisulfite/06-methCall/{sample}_trimmed_bismark_bt2.CpG_report.txt.gz"
+        bdg = "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz",
+        cov = "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bismark.cov.gz",
+        cpg = "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report.txt.gz"
     params:
         genome_dir = GENOME_DIR,
-        min_cov = 5
+        min_cov = 5,
+        out_dir = "bisulfite/07-methCall"
     threads: 4
     shell:  """
             module purge && module load bowtie2/2.2.4 samtools/1.2 bismark/0.16.3
-            bismark_methylation_extractor --single-end --gzip --bedGraph --cutoff {params.min_cov} --cytosine_report --genome_folder {params.genome_dir} --multicore {threads} {input}
+            bismark_methylation_extractor --single-end --gzip --bedGraph --cutoff {params.min_cov} --cytosine_report --genome_folder {params.genome_dir} --multicore {threads} --output {params.out_dir} {input}
             """
 
 ################################################################################
