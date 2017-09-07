@@ -20,6 +20,8 @@ PULL_SAMPLE_DICT = config.get("pulldown_samples")
 BISULFITE_COMPARISONS = config.get("bisulfite_comparisons")
 PULLDOWN_COMPARISONS = config.get("pulldown_comparisons")
 
+EXECUTE_DIR = os.getcwd()
+
 ################################################################################
 
 # Create the path and switch
@@ -218,10 +220,11 @@ rule bisulfite_sample_annotatr:
     output:
         "RData/{sample}_trimmed_bismark_annotatr_analysis.RData"
     params:
-        genome = GENOME
-    shell: """
-            echo `pwd`
-            Rscript ./scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type bismark --group1 NULL --group0 NULL
+        genome = GENOME,
+        exec_dir = EXECUTE_DIR
+    shell:  """
+            module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
+            Rscript {params.exec_dir}/scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type bismark --group1 NULL --group0 NULL
             """
 
 rule bisulfite_sample_pretrack:
@@ -265,9 +268,11 @@ rule bisulfite_sample_simple:
         "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bedGraph.gz"
     output:
         "bisulfite/09-simple_classification/{sample}_bismark_simple_classification.bed"
-    shell: """
-            echo `pwd`
-            Rscript ./scripts/classify_simple.R --inFile {input} --outFile {output} --group1 NULL --group0 NULL
+    params:
+        exec_dir = EXECUTE_DIR
+    shell:  """
+            module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
+            Rscript {params.exec_dir}/scripts/classify_simple.R --inFile {input} --outFile {output} --group1 NULL --group0 NULL
             """
 
 rule bisulfite_sample_simple_annotatr:
@@ -276,10 +281,11 @@ rule bisulfite_sample_simple_annotatr:
     output:
         "RData/{sample}_bismark_simple_classification_annotatr_analysis.RData"
     params:
-        genome = GENOME
-    shell: """
-            echo `pwd`
-            Rscript ./scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type simple_bisulfite_bismark --group1 NULL --group0 NULL
+        genome = GENOME,
+        exec_dir = EXECUTE_DIR
+    shell:  """
+            module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
+            Rscript {params.exec_dir}/scripts/annotatr_annotations.R --file {input} --genome {params.genome} --annot_type simple_bisulfite_bismark --group1 NULL --group0 NULL
             """
 
 rule bisulfite_sample_simple_track:
