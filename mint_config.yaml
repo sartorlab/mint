@@ -12,50 +12,50 @@ paired : false
 
 # Human readable is the key, SeqCore ID is item
 bisulfite_samples:
-    IDH2mut_1_errbs : 6000
-    IDH2mut_2_errbs : 6001
-    NBM_1_errbs : 6002
-    NBM_2_errbs : 6003
+    IDH2mut_1_mc_hmc_bisulfite : 6000
+    IDH2mut_2_mc_hmc_bisulfite : 6001
+    NBM_1_mc_hmc_bisulfite : 6002
+    NBM_2_mc_hmc_bisulfite : 6003
 
 # Human readable is the key, SeqCore ID is item
 pulldown_samples:
-    IDH2mut_1_hmeseal : 7000
-    IDH2mut_2_hmeseal : 7001
-    NBM_1_hmeseal : 7002
-    NBM_2_hmeseal : 7003
-    IDH2mut_1_hmeseal_input : 7004
-    IDH2mut_2_hmeseal_input : 7005
-    NBM_1_hmeseal_input : 7006
-    NBM_2_hmeseal_input : 7007
+    IDH2mut_1_hmc_pulldown : 7000
+    IDH2mut_2_hmc_pulldown : 7001
+    NBM_1_hmc_pulldown : 7002
+    NBM_2_hmc_pulldown : 7003
+    IDH2mut_1_hmc_input_pulldown : 7004
+    IDH2mut_2_hmc_input_pulldown : 7005
+    NBM_1_hmc_input_pulldown : 7006
+    NBM_2_hmc_input_pulldown : 7007
 
 # bisulfite_comparisons :
 #     IDH2mut_v_NBM :
-#         exp : [IDH2mut_1_errbs, IDH2mut_2_errbs]
-#         con : [NBM_1_errbs, NBM_2_errbs]
+#         exp : [IDH2mut_1_mc_hmc_bisulfite, IDH2mut_2_mc_hmc_bisulfite]
+#         con : [NBM_1_mc_hmc_bisulfite, NBM_2_mc_hmc_bisulfite]
 #         covariates :
 #         numerical_covariates :
 #         model : '~ 1 + group'
 #         contrast : [0,1]
 #
 #     IDH2mut_v_NBM_age :
-#         exp : [IDH2mut_1_errbs, IDH2mut_2_errbs]
-#         con : [NBM_1_errbs, NBM_2_errbs]
+#         exp : [IDH2mut_1_mc_hmc_bisulfite, IDH2mut_2_mc_hmc_bisulfite]
+#         con : [NBM_1_mc_hmc_bisulfite, NBM_2_mc_hmc_bisulfite]
 #         covariates : [age : [3,6,10,15]]
 #         numerical_covariates : [1]
 #         model : '~ 1 + group + age'
 #         contrast : [0,1,0]
 #
 #     IDH2mut_v_NBM_age :
-#         exp : [IDH2mut_1_errbs, IDH2mut_2_errbs]
-#         con : [NBM_1_errbs, NBM_2_errbs]
+#         exp : [IDH2mut_1_mc_hmc_bisulfite, IDH2mut_2_mc_hmc_bisulfite]
+#         con : [NBM_1_mc_hmc_bisulfite, NBM_2_mc_hmc_bisulfite]
 #         covariates : [subject : [1,2,1,2]]
 #         numerical_covariates : [0]
 #         model : '~ 1 + group + subject'
 #         contrast : [0,1,0]
 #
 #     IDH2mut_v_NBM_subject_age :
-#         exp : [IDH2mut_1_errbs, IDH2mut_2_errbs]
-#         con : [NBM_1_errbs, NBM_2_errbs]
+#         exp : [IDH2mut_1_mc_hmc_bisulfite, IDH2mut_2_mc_hmc_bisulfite]
+#         con : [NBM_1_mc_hmc_bisulfite, NBM_2_mc_hmc_bisulfite]
 #         covariates : [subject : [1,2,1,2], age : [3,6,10,15]]
 #         numerical_covariates : [0, 1]
 #         model : '~ 1 + group + subject + age'
@@ -63,7 +63,7 @@ pulldown_samples:
 #
 # pulldown_comparisons :
 #     IDH2mut_v_NBM :
-#         exp : [IDH2mut_1_hmeseal, IDH2mut_2_hmeseal]
-#         exp_input : [IDH2mut_1_hmeseal_input, IDH2mut_2_hmeseal_input]
-#         con : [NBM_1_hmeseal, NBM_2_hmeseal]
-#         con_input : [NBM_1_hmeseal_input, NBM_2_hmeseal_input]
+#         exp : [IDH2mut_1_hmc_pulldown, IDH2mut_2_hmc_pulldown]
+#         exp_input : [IDH2mut_1_hmc_input_pulldown, IDH2mut_2_hmc_input_pulldown]
+#         con : [NBM_1_hmc_pulldown, NBM_2_hmc_pulldown]
+#         con_input : [NBM_1_hmc_input_pulldown, NBM_2_hmc_input_pulldown]
