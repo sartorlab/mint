@@ -211,7 +211,7 @@ rule bisulfite_sample_to_annotatr:
     output:
         temp("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.bismark.cov")
     shell: """
-            gunzip -c {input} | awk -v OFS="\t" '{{print $1, $2 - 1, $3, ".", $4, ".", $5 + $$6}}' > {output}
+            gunzip -c {input} | awk -v OFS="\t" '{{print $1, $2 - 1, $3, ".", $4, ".", $5 + $6}}' > {output}
             """
 
 rule bisulfite_sample_annotatr:
