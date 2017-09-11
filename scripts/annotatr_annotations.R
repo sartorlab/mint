@@ -512,7 +512,7 @@ if(annot_type == 'macs2') {
 
 annotated_regions = annotate_regions(regions = regions, annotations = annotations)
 
-readr::write_tsv(x = as.data.frame(annotated_regions), path = sprintf('summary/tables/%s_annotations.txt'))
+readr::write_tsv(x = as.data.frame(annotated_regions), path = sprintf('summary/tables/%s_annotations.txt', prefix))
 
 # If regions_rnd has GRanges class, then annotate, otherwise you read in the CpG annotation table
 if(!is.null(regions_rnd)) {
