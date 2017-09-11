@@ -39,6 +39,18 @@ if(grepl('mc_hmc', file)) {
 	mark = 'mc'
 }
 
+if(!dir.exists('summary')) {
+	dir.create(file.path(getwd(), 'summary'), recursive = TRUE, mode = "775")
+}
+
+if(!dir.exists('summary/figures')) {
+	dir.create(file.path(getwd(), 'summary/figures'), recursive = TRUE, mode = "775")
+}
+
+if(!dir.exists('summary/tables')) {
+	dir.create(file.path(getwd(), 'summary/tables'), recursive = TRUE, mode = "775")
+}
+
 ################################################################################
 # Deal with the annot_type
 if(annot_type == 'bismark') {
@@ -499,6 +511,8 @@ if(annot_type == 'macs2') {
 # Do the annotation of the regions
 
 annotated_regions = annotate_regions(regions = regions, annotations = annotations)
+
+readr::write_tsv(x = as.data.frame(annotated_regions), path = sprintf('summary/tables/%s_annotations.txt'))
 
 # If regions_rnd has GRanges class, then annotate, otherwise you read in the CpG annotation table
 if(!is.null(regions_rnd)) {
