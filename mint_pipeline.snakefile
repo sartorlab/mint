@@ -296,7 +296,7 @@ rule bisulfite_sample_simple_track:
     params:
         chrom_lengths = CHROM_LENGTHS
     shell:  """
-            bedGraphToBigBed {input} {params.chrom_lengths} {output}
+            bedToBigBed {input} {params.chrom_lengths} {output}
             """
 
 ################################################################################
