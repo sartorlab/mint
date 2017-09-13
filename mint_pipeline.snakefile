@@ -23,7 +23,7 @@ PULL_COMPARISONS_DICT = config.get("pulldown_comparisons")
 EXECUTE_DIR = os.getcwd()
 
 print(expand("bisulfite/10-diffMeth/{comparison}_dss_significant.txt", comparison = BIS_COMPARISONS_DICT.keys()))
-print(str(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['exp']) + str(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['con']))
+print(str(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['exp'] + BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['con']))
 print(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['model'])
 print(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['contrast'])
 print(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['covariates'])
@@ -333,7 +333,7 @@ rule bisulfite_compare_dss:
     params:
         genome = GENOME,
         exec_dir = EXECUTE_DIR,
-        names = lambda wildcards: str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp']) + str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['con']),
+        names = lambda wildcards: str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] + BIS_COMPARISONS_DICT[{wildcards.comparison}]['con']),
         model = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['model'],
         contrast = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['contrast'],
         covariates = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['covariates'],
