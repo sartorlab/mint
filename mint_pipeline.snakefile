@@ -318,14 +318,14 @@ rule bisulfite_compare_predss:
 
 rule bisulfite_compare_dss:
     input:
-        lambda wildcards: expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report_for_dss.txt", sample = BIS_COMPARISONS_DICT[wildcards.comparison]['exp'])
+        lambda wildcards: expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report_for_dss.txt", sample = BIS_COMPARISONS_DICT[wildcards.comparison]['exp'] + BIS_COMPARISONS_DICT[wildcards.comparison]['con'])
     output:
         "bisulfite/10-diffMeth/{comparison}_dss_significant.txt"
     params:
-        files = lambda wildcards: ','.join(expand("{sample}", sample = BIS_COMPARISONS_DICT[wildcards.comparison]['exp'])),
+        files = lambda wildcards: ','.join(expand("{sample}", sample = BIS_COMPARISONS_DICT[wildcards.comparison]['exp'] + BIS_COMPARISONS_DICT[wildcards.comparison]['con'])),
         genome = GENOME,
         exec_dir = EXECUTE_DIR,
-        names = lambda wildcards: ','.join(BIS_COMPARISONS_DICT[wildcards.comparison]['exp']),
+        names = lambda wildcards: ','.join(BIS_COMPARISONS_DICT[wildcards.comparison]['exp'] + BIS_COMPARISONS_DICT[wildcards.comparison]['con']),
         model = lambda wildcards: BIS_COMPARISONS_DICT[wildcards.comparison]['model'],
         contrast = lambda wildcards: ','.join(list(map(str, BIS_COMPARISONS_DICT[wildcards.comparison]['contrast']))),
         covariates = lambda wildcards: BIS_COMPARISONS_DICT[wildcards.comparison]['covariates'],
