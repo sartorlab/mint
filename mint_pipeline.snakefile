@@ -327,7 +327,7 @@ rule bisulfite_compare_predss:
 
 rule bisulfite_compare_dss:
     input:
-        lambda wildcards: expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report_for_dss.txt", sample = str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] BIS_COMPARISONS_DICT[{wildcards.comparison}]['con']))
+        lambda wildcards: expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report_for_dss.txt", sample = str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] +  BIS_COMPARISONS_DICT[{wildcards.comparison}]['con']))
     output:
         "bisulfite/10-diffMeth/{comparison}_dss_significant.txt"
     params:
