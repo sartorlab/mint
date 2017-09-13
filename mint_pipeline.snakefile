@@ -22,6 +22,15 @@ PULL_COMPARISONS_DICT = config.get("pulldown_comparisons")
 
 EXECUTE_DIR = os.getcwd()
 
+print(expand("bisulfite/10-diffMeth/{comparison}_dss_significant.txt", comparison = BIS_COMPARISONS_DICT.keys()))
+print(str(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['exp']) + str(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['con']))
+print(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['model'])
+print(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['contrast'])
+print(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['covariates'])
+print(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['numerical_covariates'])
+print(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['groups'])
+print(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['interpretation'])
+
 ################################################################################
 
 # Create the path and switch
