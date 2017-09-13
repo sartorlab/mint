@@ -22,13 +22,17 @@ PULL_COMPARISONS_DICT = config.get("pulldown_comparisons")
 
 EXECUTE_DIR = os.getcwd()
 
+print(BIS_SAMPLE_DICT.keys())
+print(BIS_COMPARISONS_DICT.keys())
+print(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['exp'] +  BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['con'])
 print(expand("bisulfite/10-diffMeth/{comparison}_dss_significant.txt", comparison = BIS_COMPARISONS_DICT.keys()))
+print(expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report_for_dss.txt", sample = BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['exp'] +  BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['con']))
 print(','.join(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['exp'] + BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['con']))
 print(str(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['model']))
-print(','.join(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['contrast']))
-print(','.join(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['covariates']))
-print(','.join(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['numerical_covariates']))
-print(','.join(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['groups']))
+print(','.join(list(map(str,BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['contrast']))))
+print(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['covariates'])
+print(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['numerical_covariates'])
+print(','.join(list(map(str,BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['groups']))))
 print(','.join(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['interpretation']))
 
 ################################################################################
@@ -327,29 +331,29 @@ rule bisulfite_compare_predss:
 
 rule bisulfite_compare_dss:
     input:
-        lambda wildcards: expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report_for_dss.txt", sample = BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] +  BIS_COMPARISONS_DICT[{wildcards.comparison}]['con'])
+#        lambda wildcards: expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report_for_dss.txt", sample = BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] +  BIS_COMPARISONS_DICT[{wildcards.comparison}]['con'])
     output:
         "bisulfite/10-diffMeth/{comparison}_dss_significant.txt"
     params:
-        files = ','.join({wildcards.input}),
+#        files = lambda wildcards: ','.join({wildcards.input}),
         genome = GENOME,
         exec_dir = EXECUTE_DIR,
-        names = ','.join(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] + BIS_COMPARISONS_DICT[{wildcards.comparison}]['con']),
-        model = str(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['model']),
-        contrast = ','.join(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['contrast']),
-        covariates = ','.join(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['covariates']),
-        numerical_covariates = ','.join(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['numerical_covariates']),
-        groups = ','.join(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['groups']),
-        interpretation = ','.join(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['interpretation']),
+        names = lambda wildcards: ','.join(BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] + BIS_COMPARISONS_DICT[{wildcards.comparison}]['con']),
+#        model = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['model'],
+#        contrast = lambda wildcards: ','.join(list(map(str, BIS_COMPARISONS_DICT[{wildcards.comparison}]['contrast']))),
+#        covariates = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['covariates'],
+#        numerical_covariates = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['numerical_covariates'],
+#        groups = lambda wildcards: ','.join(list(map(str, BIS_COMPARISONS_DICT[{wildcards.comparison}]['groups']))),
+#        interpretation = lambda wildcards: ','.join(BIS_COMPARISONS_DICT[{wildcards.comparison}]['interpretation']),
         dm_diff = 10,
         dm_fdr = 0.05,
         dm_p = 0.005,
         destrand = 'TRUE',
         tilewidth = 50,
-        outprefix = lambda wildcards: {wildcards.comparison}
+#        outprefix = lambda wildcards: {wildcards.comparison}
     shell:  """
             module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
-            Rscript {params.exec_dir}/scripts/dss_run.R --genome {params.genome} --files {params.files} --samplenames {params.names} --model {params.model} --groups {params.groups} --contrast {params.contrast} --covariates {params.covariates} --covIsNumeric {params.numerical_covariates} --interpretation {params.interpretation} --outprefix {params.outprefix} --destrand {params.destrand} --tilewidth {params.tilewidth} --methdiffthreshold {params.dm_diff} --FDRthreshold {params.dm_fdr}  --pvalthreshold {params.dm_p} --quiet FALSE
+            Rscript {params.exec_dir}/scripts/dss_run.R --genome {params.genome} --files test --samplenames {params.names} --model '~ 1 + group` --groups 1,1,0,0 --contrast 0,1 --covariates NULL --covIsNumeric NULL --interpretation NBM,IDH2mut --outprefix IDH2mut_v_NBM --destrand {params.destrand} --tilewidth {params.tilewidth} --methdiffthreshold {params.dm_diff} --FDRthreshold {params.dm_fdr}  --pvalthreshold {params.dm_p} --quiet FALSE
             """
 
 ################################################################################
