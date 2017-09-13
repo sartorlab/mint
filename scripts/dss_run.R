@@ -5,7 +5,6 @@ library(optparse)
 ######
 
 option_list = list(
-	make_option('--project', type='character', help='(Required) Name of the project the analysis is a part of.'),
 	make_option('--genome', type='character', help='(Required) A supported genome from ??GenomeInfoDb::fetchExtendedChromInfoFromUCSC.'),
 	make_option('--files', type='character', help='(Required) Comma-delimited list of input files containing columns chr, pos, N (number of reads), and X (number of methylated reads).'),
 	make_option('--samplenames', type='character', help='(Required) Comma-delimited list of sample names to give the files.'),

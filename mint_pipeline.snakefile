@@ -17,8 +17,8 @@ GENOME = config.get("genome")
 BIS_SAMPLE_DICT = config.get("bisulfite_samples")
 PULL_SAMPLE_DICT = config.get("pulldown_samples")
 
-BISULFITE_COMPARISONS = config.get("bisulfite_comparisons")
-PULLDOWN_COMPARISONS = config.get("pulldown_comparisons")
+BIS_COMPARISONS_DICT = config.get("bisulfite_comparisons")
+PULL_COMPARISONS_DICT = config.get("pulldown_comparisons")
 
 EXECUTE_DIR = os.getcwd()
 
@@ -79,6 +79,10 @@ rule bisulfite_sample:
         expand("RData/{sample}_bismark_simple_classification_annotatr_analysis.RData", sample = BIS_SAMPLE_DICT.keys()),
         expand("trackhub/{sample}_bismark_simple_classification.bb", sample = BIS_SAMPLE_DICT.keys()),
         "bisulfite/08-multiqc/multiqc_report.html"
+
+rule bisulfite_compare:
+    input:
+        expand("bisulfite/10-diffMeth/{comparison}_dss_significant.txt", comparison = BIS_COMPARISONS_DICT.keys())
 
 ################################################################################
 ################################################################################
@@ -297,6 +301,45 @@ rule bisulfite_sample_simple_track:
         chrom_lengths = CHROM_LENGTHS
     shell:  """
             bedToBigBed {input} {params.chrom_lengths} {output}
+            """
+
+################################################################################
+
+rule bisulfite_compare_predss:
+    input:
+        "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report.txt.gz"
+    output:
+        "bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report_for_dss.txt"
+    params:
+        min_cov = 5
+    shell:  """
+            awk -v OFS='\t' -v MIN_COV={params.min_cov} '$4 + $5 >= MIN_COV {print $1, $2, $3, $4 + $5, $4}' <(gunzip -c {input}) | sort -T . -k1,1 -k2,2n > {output}
+            """
+
+rule bisulfite_compare_dss:
+    input:
+        lambda wildcards: expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report_for_dss.txt", sample = str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp']) + str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['con']))
+    output:
+        "bisulfite/10-diffMeth/{comparison}_dss_significant.txt"
+    params:
+        genome = GENOME,
+        exec_dir = EXECUTE_DIR,
+        names = lambda wildcards: str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp']) + str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['con']),
+        model = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['model'],
+        contrast = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['contrast'],
+        covariates = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['covariates'],
+        numerical_covariates = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['numerical_covariates'],
+        groups = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['groups'],
+        interpretation = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['interpretation'],
+        dm_diff = 10,
+        dm_fdr = 0.05,
+        dm_p = 0.005,
+        destrand = TRUE,
+        tilewidth = 50,
+        outprefix = lambda wildcards: {wildcards.comparison}
+    shell:  """
+            module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
+            Rscript {params.exec_dir}/scripts/dss_run.R --genome {params.genome} --files {input} --samplenames {params.names} --model {params.model} --groups {params.groups} --contrast {params.contrast} --covariates {params.covariates} --covIsNumeric {params.numerical_covariates} --interpretation {params.interpretation} --outprefix $(BISULFITE_COMPARE_%s_COMPARISON) --destrand {params.destrand} --tilewidth {params.tilewidth} --methdiffthreshold {params.dm_diff} --FDRthreshold {params.dm_fdr}  --pvalthreshold {params.dm_p} --quiet FALSE
             """
 
 ################################################################################

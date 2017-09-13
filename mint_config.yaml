@@ -28,14 +28,16 @@ pulldown_samples:
     NBM_1_hmc_input_pulldown : 7006
     NBM_2_hmc_input_pulldown : 7007
 
-# bisulfite_comparisons :
-#     IDH2mut_v_NBM :
-#         exp : [IDH2mut_1_mc_hmc_bisulfite, IDH2mut_2_mc_hmc_bisulfite]
-#         con : [NBM_1_mc_hmc_bisulfite, NBM_2_mc_hmc_bisulfite]
-#         covariates :
-#         numerical_covariates :
-#         model : '~ 1 + group'
-#         contrast : [0,1]
+bisulfite_comparisons :
+    IDH2mut_v_NBM :
+        exp : [IDH2mut_1_mc_hmc_bisulfite, IDH2mut_2_mc_hmc_bisulfite]
+        con : [NBM_1_mc_hmc_bisulfite, NBM_2_mc_hmc_bisulfite]
+        groups : [1,1,0,0]
+        covariates : 'NULL'
+        numerical_covariates : 'NULL'
+        model : '~ 1 + group'
+        contrast : [0,1]
+        interpretation : ['NBM','IDH2mut']
 #
 #     IDH2mut_v_NBM_age :
 #         exp : [IDH2mut_1_mc_hmc_bisulfite, IDH2mut_2_mc_hmc_bisulfite]
