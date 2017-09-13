@@ -331,7 +331,7 @@ rule bisulfite_compare_dss:
     output:
         "bisulfite/10-diffMeth/{comparison}_dss_significant.txt"
     params:
-        files = ','.join({wildcards.input})
+        files = ','.join({wildcards.input}),
         genome = GENOME,
         exec_dir = EXECUTE_DIR,
         names = ','.join(lambda wildcards: str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] + BIS_COMPARISONS_DICT[{wildcards.comparison}]['con'])),
