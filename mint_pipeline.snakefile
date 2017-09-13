@@ -23,7 +23,7 @@ PULL_COMPARISONS_DICT = config.get("pulldown_comparisons")
 EXECUTE_DIR = os.getcwd()
 
 print(expand("bisulfite/10-diffMeth/{comparison}_dss_significant.txt", comparison = BIS_COMPARISONS_DICT.keys()))
-print(','.join(str(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['exp'] + BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['con'])))
+print(','.join(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['exp'] + BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['con']))
 print(str(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['model']))
 print(','.join(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['contrast']))
 print(','.join(BIS_COMPARISONS_DICT['IDH2mut_v_NBM']['covariates']))
@@ -327,14 +327,14 @@ rule bisulfite_compare_predss:
 
 rule bisulfite_compare_dss:
     input:
-        lambda wildcards: expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report_for_dss.txt", sample = str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] +  BIS_COMPARISONS_DICT[{wildcards.comparison}]['con']))
+        lambda wildcards: expand("bisulfite/07-methCall/{sample}_trimmed_bismark_bt2.CpG_report_for_dss.txt", sample = BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] +  BIS_COMPARISONS_DICT[{wildcards.comparison}]['con'])
     output:
         "bisulfite/10-diffMeth/{comparison}_dss_significant.txt"
     params:
         files = ','.join({wildcards.input}),
         genome = GENOME,
         exec_dir = EXECUTE_DIR,
-        names = ','.join(lambda wildcards: str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] + BIS_COMPARISONS_DICT[{wildcards.comparison}]['con'])),
+        names = ','.join(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] + BIS_COMPARISONS_DICT[{wildcards.comparison}]['con']),
         model = str(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['model']),
         contrast = ','.join(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['contrast']),
         covariates = ','.join(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['covariates']),
