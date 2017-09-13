@@ -340,7 +340,7 @@ rule bisulfite_compare_dss:
         outprefix = lambda wildcards: wildcards.comparison
     shell:  """
             module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
-            Rscript {params.exec_dir}/scripts/dss_run.R --genome {params.genome} --files test --samplenames {params.names} --model '~ 1 + group` --groups 1,1,0,0 --contrast 0,1 --covariates NULL --covIsNumeric NULL --interpretation NBM,IDH2mut --outprefix {params.outprefix} --destrand {params.destrand} --tilewidth {params.tilewidth} --methdiffthreshold {params.dm_diff} --FDRthreshold {params.dm_fdr}  --pvalthreshold {params.dm_p} --quiet FALSE
+            Rscript {params.exec_dir}/scripts/dss_run.R --genome {params.genome} --files {params.files} --samplenames {params.names} --model {param.model} --groups {param.groups} --contrast {param.contrast} --covariates {param.covariates} --covIsNumeric {param.numerical_covariates} --interpretation {param.interpretation} --outprefix {params.outprefix} --destrand {params.destrand} --tilewidth {params.tilewidth} --methdiffthreshold {params.dm_diff} --FDRthreshold {params.dm_fdr}  --pvalthreshold {params.dm_p} --quiet FALSE
             """
 
 ################################################################################
