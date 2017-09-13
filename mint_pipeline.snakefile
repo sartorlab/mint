@@ -334,7 +334,7 @@ rule bisulfite_compare_dss:
         dm_diff = 10,
         dm_fdr = 0.05,
         dm_p = 0.005,
-        destrand = TRUE,
+        destrand = 'TRUE',
         tilewidth = 50,
         outprefix = lambda wildcards: {wildcards.comparison}
     shell:  """
