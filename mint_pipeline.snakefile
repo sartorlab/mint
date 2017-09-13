@@ -333,19 +333,19 @@ rule bisulfite_compare_dss:
     params:
         genome = GENOME,
         exec_dir = EXECUTE_DIR,
-        names = lambda wildcards: str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] + BIS_COMPARISONS_DICT[{wildcards.comparison}]['con']),
-        model = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['model'],
-        contrast = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['contrast'],
-        covariates = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['covariates'],
-        numerical_covariates = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['numerical_covariates'],
-        groups = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['groups'],
-        interpretation = lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['interpretation'],
+        names = str(lambda wildcards: str(BIS_COMPARISONS_DICT[{wildcards.comparison}]['exp'] + BIS_COMPARISONS_DICT[{wildcards.comparison}]['con'])),
+        model = str(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['model']),
+        contrast = str(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['contrast']),
+        covariates = str(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['covariates']),
+        numerical_covariates = str(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['numerical_covariates']),
+        groups = str(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['groups']),
+        interpretation = str(lambda wildcards: BIS_COMPARISONS_DICT[{wildcards.comparison}]['interpretation']),
         dm_diff = 10,
         dm_fdr = 0.05,
         dm_p = 0.005,
         destrand = 'TRUE',
         tilewidth = 50,
-        outprefix = lambda wildcards: {wildcards.comparison}
+        outprefix = str(lambda wildcards: {wildcards.comparison})
     shell:  """
             module purge && module load java/1.8.0 gcc/4.9.3 R/3.4.0
             Rscript {params.exec_dir}/scripts/dss_run.R --genome {params.genome} --files {input} --samplenames {params.names} --model {params.model} --groups {params.groups} --contrast {params.contrast} --covariates {params.covariates} --covIsNumeric {params.numerical_covariates} --interpretation {params.interpretation} --outprefix {params.outprefix} --destrand {params.destrand} --tilewidth {params.tilewidth} --methdiffthreshold {params.dm_diff} --FDRthreshold {params.dm_fdr}  --pvalthreshold {params.dm_p} --quiet FALSE
