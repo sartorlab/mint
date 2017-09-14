@@ -38,17 +38,7 @@ bisulfite_comparisons :
         model : '~ 1 + group'
         contrast : [0,1]
         interpretation : ['NBM','IDH2mut']
-
-    NBM_v_IDH2mut :
-        exp : [NBM_1_mc_hmc_bisulfite, NBM_2_mc_hmc_bisulfite]
-        con : [IDH2mut_1_mc_hmc_bisulfite, IDH2mut_2_mc_hmc_bisulfite]
-        groups : [0,0,1,1]
-        covariates : 'NULL'
-        numerical_covariates : 'NULL'
-        model : '~ 1 + group'
-        contrast : [0,1]
-        interpretation : ['IDH2mut','NBM']
-    #
+    # 
     # IDH2mut_v_NBM_age :
     #     exp : [IDH2mut_1_mc_hmc_bisulfite, IDH2mut_2_mc_hmc_bisulfite]
     #     con : [NBM_1_mc_hmc_bisulfite, NBM_2_mc_hmc_bisulfite]
