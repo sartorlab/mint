@@ -53,15 +53,9 @@ OPT_CSAW_DM_PVAL_THRESHOLD = 0.005
 		}
 
 		# Sorting this way ensures the higher group number is groupA
-		# NOTE: This makes the csaw DM test match that of DSS,
-		# where control is the lower number (often 0) and the treatment
-		# is the higher number (often 1). csaw chip1 peaks mean differential binding
-		# in chip1 vs chip0 and chip0 peaks mean differential binding in chip0 vs chip1
-		# Later, chip1 goes to DMup and chip0 goes to DMdown so
-		# hyper and hypo and with respect to groupA, or the larger group number
 		group_order = order(as.integer(unlist(strsplit(groups, ','))), decreasing = TRUE)
 		groups = as.integer(unlist(strsplit(groups, ',')))[group_order]
-		interps = unlist(strsplit(interpretation, ','))[group_order]
+		interps = unlist(strsplit(interpretation, ','))[rev(group_order)]
 
 		# Create a list
 		sample_groups = lapply(pulldown_samples$group, function(g){

@@ -54,7 +54,7 @@ OPT_DSS_DM_DIFF_THRESHOLD = 10
 		  mark = "hmc"
 		}
 
-		# Sorting this ensures that the lower group number is A
+		# Sorting this ensures that the higher group number is A
 		# From scripts/dss_run.R, the bigger number is considered
 		# the treatment and the smaller is considered the control
 		# And meth.diff is always treatment - control
@@ -62,7 +62,7 @@ OPT_DSS_DM_DIFF_THRESHOLD = 10
 		# So hyper and hypo is with respect to the higher group number
 		group_order = order(as.integer(unlist(strsplit(groups, ','))), decreasing = TRUE)
 		groups = as.integer(unlist(strsplit(groups, ',')))[group_order]
-		interps = unlist(strsplit(interpretation, ','))[group_order]
+		interps = unlist(strsplit(interpretation, ','))[rev(group_order)]
 
 		# Create a list
 		sample_groups = lapply(bisulfite_samples$group, function(g){
